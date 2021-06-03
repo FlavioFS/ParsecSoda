@@ -2,7 +2,7 @@
 
 //#pragma comment(lib, "parsec.dll")
 
-#include "parsec-dso.h"
+#include "parsec.h"
 #include "matoya.h"
 #include <string>
 #include <sstream>

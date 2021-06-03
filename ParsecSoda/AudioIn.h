@@ -6,10 +6,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "Stringer.h"
 #include <functiondiscoverykeys.h>
 #include <initguid.h>
-#include "parsec-dso.h"
+#include "Stringer.h"
 
 typedef struct AudioInDevice
 {

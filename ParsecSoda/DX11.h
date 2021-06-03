@@ -7,7 +7,7 @@
 #include <wrl/client.h>
 #include <atlbase.h>
 #include <atlcomcli.h>
-#include "parsec-dso.h"
+#include "parsec.h"
 
 class DX11
 {
@@ -20,7 +20,7 @@ public:
 	void clear();
 	bool recover();
 	bool init();
-	bool captureScreen(ParsecDSO *ps);
+	bool captureScreen(Parsec *ps);
 
 private:
 	// Windows

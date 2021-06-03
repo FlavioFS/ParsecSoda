@@ -24,8 +24,6 @@
 const std::vector<int> admins { 3888558, 6711547 };
 const std::vector<BannedUser> banned {};
 
-#define SDK_PATH "C:/Users/melonsoda/source/repos/Empty/Dependencies/parsecsdk/windows/parsec.dll"
-//#define SDK_PATH "C:/Users/melonsoda/source/repos/Empty/Dependencies/parsecsdk/windows/parsec32.dll"
 #define PARSEC_APP_CHAT_MSG 0
 
 #define ROOM_NAME "Coding my own Parsec\nGamepad streaming\0"
@@ -99,24 +97,24 @@ static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
 	//printf("[%s] %s\n", level == LOG_DEBUG ? "D" : "I", msg);
 }
 
-ParsecDSO* ParsecArcadeStart(ParsecSession *parsecSession, ParsecHostConfig config)
+Parsec* ParsecArcadeStart(ParsecSession *parsecSession, ParsecHostConfig hostConfig)
 {
-	ParsecDSO *ps;
-	ParsecStatus status = ParsecInit(NULL, NULL, (char*)SDK_PATH, &ps);
+	Parsec *ps = nullptr;
+	ParsecStatus status = ParsecInit(PARSEC_VER, NULL, NULL, &ps);
 	if (status == PARSEC_OK) {
-		ParsecSetLogCallback(ps, logCallback, NULL);
-		ParsecHostStart(ps, HOST_GAME, &config, parsecSession->sessionId.c_str());
+		ParsecSetLogCallback(logCallback, NULL);
+		ParsecHostStart(ps, HOST_GAME, &hostConfig, parsecSession->sessionId.c_str());
 		return ps;
 	}
 
 	return NULL;
 }
 
-void clearGuests(ParsecDSO *ps, ParsecGuest **guests, int *guestCount)
+void clearGuests(Parsec *ps, int *guestCount)
 {
 	if (*guestCount > 0)
 	{
-		ParsecFree(ps, guests);
+		ParsecFree(ps);
 		*guestCount = 0;
 	}
 }
@@ -134,7 +132,7 @@ void logDataMessage(const char* msg, ParsecHostEvent event)
 		<< " | msg: " << msg;
 }
 
-void broadcastChatMessage(ParsecDSO *ps, ParsecGuest *guests, int guestCount, std::string message)
+void broadcastChatMessage(Parsec *ps, ParsecGuest *guests, int guestCount, std::string message)
 {
 	ParsecGuest it;
 	for (int i = 0; i < guestCount; i++)
@@ -144,7 +142,7 @@ void broadcastChatMessage(ParsecDSO *ps, ParsecGuest *guests, int guestCount, st
 	}
 }
 
-void tryBroadcastChatMessage(ParsecDSO * ps, ParsecGuest * guests, int guestCount, std::string replyMsg)
+void tryBroadcastChatMessage(Parsec * ps, ParsecGuest * guests, int guestCount, std::string replyMsg)
 {
 	if (!replyMsg.empty())
 	{
@@ -256,7 +254,7 @@ int main(int argc, char **argv)
 	cfg.maxGuests = 19;
 	cfg.publicGame = false;
 
-	ParsecDSO *ps = ParsecArcadeStart(&parsecSession, cfg);
+	Parsec *ps = ParsecArcadeStart(&parsecSession, cfg);
 
 	DX11 dx11;
 	dx11.init();
@@ -290,8 +288,13 @@ int main(int argc, char **argv)
 				ParsecHostSubmitAudio(ps, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size()/2);
 			}
 
+			if (ParsecHostPollInput(ps, 1, &inputGuest, &inputGuestMsg))
+			{
+				padClient.sendMessage(inputGuest, inputGuestMsg);
+			}
+
 			ParsecHostEvent event;
-			if (ParsecHostPollEvents(ps, 2, &event)) {
+			if (ParsecHostPollEvents(ps, 1, &event)) {
 				ParsecGuest guest = event.guestStateChange.guest;
 				
 				switch (event.type) {
@@ -329,7 +332,7 @@ int main(int argc, char **argv)
 						{
 							ParsecHostKickGuest(ps, event.userData.guest.id);
 							tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
-							ParsecFree(ps, msg);
+							ParsecFree(msg);
 							break;
 						}
 
@@ -390,14 +393,9 @@ int main(int argc, char **argv)
 						tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
 					}
 					
-					ParsecFree(ps, msg);
+					ParsecFree(msg);
 					break;
 				}
-			}
-
-			if (ParsecHostPollInput(ps, 2, &inputGuest, &inputGuestMsg))
-			{
-				padClient.sendMessage(inputGuest, inputGuestMsg);
 			}
 		}
 	}

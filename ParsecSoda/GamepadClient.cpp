@@ -121,7 +121,7 @@ bool GamepadClient::sendMessage(ParsecGuest guest, ParsecMessage message)
 			padId = message.gamepadAxis.id;
 			if (guest.userID == (*it).getOwnerGuestUserId() && message.gamepadAxis.id == (*it).getOwnerPadId())
 			{
-				if ((*it).setState(message.gamepadAxis));
+				(*it).setState(message.gamepadAxis);
 				return true;
 			}
 			break;
@@ -129,7 +129,7 @@ bool GamepadClient::sendMessage(ParsecGuest guest, ParsecMessage message)
 			padId = message.gamepadButton.id;
 			if (guest.userID == (*it).getOwnerGuestUserId() && message.gamepadButton.id == (*it).getOwnerPadId())
 			{
-				if ((*it).setState(message.gamepadButton));
+				(*it).setState(message.gamepadButton);
 				return true;
 			}
 			break;

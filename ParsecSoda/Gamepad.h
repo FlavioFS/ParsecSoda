@@ -5,7 +5,7 @@
 #include "ViGEm/Client.h"
 #include <vector>
 #include <iostream>
-#include "parsec-dso.h"
+#include "parsec.h"
 
 #define GAMEPAD_INDEX_ERROR -1
 #define OWNER_ID_NONE 0

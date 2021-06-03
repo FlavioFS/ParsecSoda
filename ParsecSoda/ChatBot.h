@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <regex>
-#include "parsec-dso.h"
+#include "parsec.h"
 #include "Dice.h"
 #include "Stringer.h"
 #include "GamepadClient.h"
