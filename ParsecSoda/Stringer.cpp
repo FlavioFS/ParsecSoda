@@ -37,3 +37,13 @@ const bool Stringer::startsWithPattern(const char * str, const char * pattern)
 
 	return true;
 }
+
+const bool Stringer::isCloseEnough(const char* str1, const char* str2, uint8_t matches)
+{
+	return Stringer::fuzzyDistance(str1, str2) <= STRINGER_DISTANCE_CHARS(matches);
+}
+
+const bool Stringer::isCloseEnough(const std::string str1, const std::string str2, uint8_t matches)
+{
+	return Stringer::isCloseEnough(str1.c_str(), str2.c_str(), matches);
+}

@@ -35,9 +35,9 @@ private:
 
 	// IDGX
 	IDXGISwapChain *dxSwapChain = NULL;
-	IDXGIFactory *dxFactory;
-	IDXGIAdapter *dxAdapter;
-	IDXGIOutput *dxOutput;
+	IDXGIFactory *dxFactory = NULL;
+	IDXGIAdapter *dxAdapter = NULL;
+	IDXGIOutput *dxOutput = NULL;
 	DXGI_OUTPUT_DESC dxOutDesc;
 	DXGI_SWAP_CHAIN_DESC dxSwapDesc;
 };

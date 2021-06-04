@@ -170,7 +170,7 @@ void AudioOut::captureAudio()
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
-					sampleI = max(min(sampleF, 1), -1) * 32767.0;
+					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
 					_outBuffers[_activeBuffer].push_back(sampleI);
 				}
 
@@ -182,7 +182,7 @@ void AudioOut::captureAudio()
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
-					sampleI = max(min(sampleF, 1), -1) * 32767.0;
+					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
 					_outBuffers[_activeBuffer].push_back(sampleI);
 				}
 			}
@@ -195,7 +195,7 @@ void AudioOut::captureAudio()
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
-					sampleI = max(min(sampleF, 1), -1) * 32767.0;
+					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
 					_outBuffers[_activeBuffer].push_back(sampleI);
 				}
 			}

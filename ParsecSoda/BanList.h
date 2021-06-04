@@ -2,22 +2,20 @@
 
 #include <iostream>
 #include <vector>
-
-typedef struct BannedUser {
-	uint32_t userId;
-	std::string name;
-} BannedUser;
+#include "GuestData.h"
 
 class BanList
 {
 public:
 	BanList();
-	BanList(const std::vector<BannedUser> bannedUsers);
-	void ban (const BannedUser user);
-	const bool unban(const BannedUser user);
+	BanList(const std::vector<GuestData> bannedUsers);
+	void ban (const GuestData user);
+	const bool unban(const char* guestName, GuestData * unbannedGuest = nullptr);
+	const bool unban(std::string guestName, GuestData* unbannedGuest = nullptr);
+	const bool unban(const uint32_t userId, GuestData * unbannedGuest = nullptr);
 	const bool isBanned(const uint32_t userId);
 
 private:
-	std::vector<BannedUser> _bannedUsers;
+	std::vector<GuestData> _bannedUsers;
 };
 

@@ -9,6 +9,8 @@ const char * TestChatBot::test()
 	bool success;
 	ParsecHostConfig config = EMPTY_HOST_CONFIG;
 
+	CommandSetConfig cmd;
+	cmd.run()
 	if (!bot.isSetConfigMessage("/setconfig", &reply)) { return "/setconfig failed."; }
 	if (reply.compare("[ChatBot] | Room settings applied.\0") != 0) { return "/setconfig gives wrong message."; }
 

@@ -11,7 +11,6 @@
 #include "DX11.h"
 #include "AdminList.h"
 #include "ChatBot.h"
-#include "TestChatBot.h"
 #include "Stringer.h"
 #include "StressTest.h"
 #include "Mock.h"
@@ -22,7 +21,7 @@
 #include "BanList.h"
 
 const std::vector<int> admins { 3888558, 6711547 };
-const std::vector<BannedUser> banned {};
+const std::vector<GuestData> banned {};
 
 #define PARSEC_APP_CHAT_MSG 0
 
@@ -142,15 +141,6 @@ void broadcastChatMessage(Parsec *ps, ParsecGuest *guests, int guestCount, std::
 	}
 }
 
-void tryBroadcastChatMessage(Parsec * ps, ParsecGuest * guests, int guestCount, std::string replyMsg)
-{
-	if (!replyMsg.empty())
-	{
-		broadcastChatMessage(ps, guests, guestCount, replyMsg);
-		std::cout << std::endl << replyMsg;
-	}
-}
-
 void displayInputMessage(ParsecMessage inputGuestMsg)
 {
 	switch (inputGuestMsg.type)
@@ -226,6 +216,7 @@ int main(int argc, char **argv)
 	padClient.setLimit(6711547, 0);
 
 	ParsecGuest *guests = NULL;
+	ParsecGuest dataGuest;
 	ParsecGuest inputGuest;
 	ParsecMessage inputGuestMsg;
 	int guestCount = 0;
@@ -275,7 +266,9 @@ int main(int argc, char **argv)
 
 	if (ps != NULL)
 	{
-		while (true) {
+		bool isRunning = true;
+
+		while (isRunning) {
 			dx11.captureScreen(ps);
 			
 			audioIn.captureAudio();
@@ -297,7 +290,8 @@ int main(int argc, char **argv)
 			if (ParsecHostPollEvents(ps, 1, &event)) {
 				ParsecGuest guest = event.guestStateChange.guest;
 				
-				switch (event.type) {
+				switch (event.type)
+				{
 				case HOST_EVENT_GUEST_STATE_CHANGE:
 					logGuestStateChange(&event.guestStateChange.guest);
 					if ((guest.state == GUEST_CONNECTED || guest.state == GUEST_CONNECTING) && banList.isBanned(guest.userID))
@@ -318,79 +312,157 @@ int main(int argc, char **argv)
 						);
 					}
 					break;
+
 				case HOST_EVENT_USER_DATA:
 					char *msg = (char*)ParsecGetBuffer(ps, event.userData.key);
 					std::cout << msg << "\n";
 					if (event.userData.id == PARSEC_APP_CHAT_MSG)
 					{
+						dataGuest = event.userData.guest;
 						guestCount = ParsecHostGetGuests(ps, GUEST_CONNECTED, &guests);
-						isAdmin = adminList.isAdmin(event.userData.guest.userID);
-
-						// Banned messages
-						chatBotReply.clear();
-						if (chatBot.isTrollMessage(msg, event.userData.guest, &chatBotReply))
+						isAdmin = adminList.isAdmin(dataGuest.userID);
+						ACommand *command = chatBot.identifyUserDataMessage(msg);
+						COMMAND_TYPE type = command->type();
+						
+						switch (command->type())
 						{
-							ParsecHostKickGuest(ps, event.userData.guest.id);
-							tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
-							ParsecFree(msg);
+						case COMMAND_TYPE::DEFAULT_MESSAGE:
+							break;
+						case COMMAND_TYPE::BAN:
+							((CommandBan*)command)->run(msg, ps, dataGuest, guests, guestCount, &banList);
+							break;
+						case COMMAND_TYPE::BONK:
+							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
+							break;
+						case COMMAND_TYPE::COMMANDS:
+							((CommandListCommands*)command)->run(isAdmin);
+							break;
+						case COMMAND_TYPE::GAMEID:
+							((CommandGameId*)command)->run(msg, &cfg);
+							break;
+						case COMMAND_TYPE::GUESTS:
+							((CommandGuests*)command)->run(msg, &cfg);
+							break;
+						case COMMAND_TYPE::IP:
+							((CommandIpFilter*)command)->run(ps, dataGuest);
+							break;
+						case COMMAND_TYPE::KICK:
+							((CommandKick*)command)->run(msg, ps, dataGuest, guests, guestCount);
+							break;
+						case COMMAND_TYPE::MIC:
+							((CommandMic*)command)->run(msg, &audioMix);
+							break;
+						case COMMAND_TYPE::NAME:
+							((CommandName*)command)->run(msg, &cfg);
+							break;
+						case COMMAND_TYPE::PADS:
+							((CommandPads*)command)->run(msg, guests, guestCount, &padClient);
+							break;
+						case COMMAND_TYPE::PRIVATE:
+							((CommandPrivate*)command)->run(&cfg);
+							break;
+						case COMMAND_TYPE::PUBLIC:
+							((CommandPublic*)command)->run(&cfg);
+							break;
+						case COMMAND_TYPE::QUIT:
+							((CommandQuit*)command)->run(&isRunning);
+							break;
+						case COMMAND_TYPE::SETCONFIG:
+							((CommandSetConfig*)command)->run(ps, &cfg, parsecSession.sessionId.c_str());
+							break;
+						case COMMAND_TYPE::SPEAKERS:
+							((CommandSpeakers*)command)->run(msg, &audioMix);
+							break;
+						case COMMAND_TYPE::UNBAN:
+							((CommandUnban*)command)->run(msg, dataGuest, &banList);
+							break;
+						case COMMAND_TYPE::VIDEOFIX:
+							((CommandVideoFix*)command)->run(&dx11);
+							break;
+						case COMMAND_TYPE::GIVE:
+							break;
+						case COMMAND_TYPE::TAKE:
+							break;
+						case COMMAND_TYPE::FF:
+							break;
+						default:
+						case COMMAND_TYPE::INVALID:
 							break;
 						}
 
-						// Pleb user message
-						guestMsg.clear();
-						guestMsg = chatBot.formatGuestMessage(event.userData.guest, msg, isAdmin);
-						broadcastChatMessage(ps, guests, guestCount, guestMsg);
-						logDataMessage(msg, event);
-						std::cout << guestMsg;
-
-						chatBotReply.clear();
-						chatBot.tryBonkMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply);
-
-						chatBot.processCommandsListMessage(msg, isAdmin, &chatBotReply);
-
-						// This user is admin, thus allowed to use commands
-						if (isAdmin && chatBotReply.empty())
+						if (!command->replyMessage().empty())
 						{
-							chatBotReply.clear();
-							float volume = 50;
-							ParsecGuest targetGuest;
-							
-							if (chatBot.isSetConfigMessage(msg, &chatBotReply))
-							{
-								ParsecHostSetConfig(ps, &cfg, parsecSession.sessionId.c_str());
-							}
-							else if (chatBot.isDX11RefreshMessage(msg, &chatBotReply))
-							{
-								dx11.recover();
-							}
-							else if (chatBot.isQuitMessage(msg, &chatBotReply))
-							{
-								broadcastChatMessage(ps, guests, guestCount, chatBotReply);
-								goto gameover;
-							}
-							else if (chatBot.isMicVolumeMessage(msg, &chatBotReply, &volume))
-							{
-								audioMix.setVolume1(volume);
-							}
-							else if (chatBot.isSpeakersVolumeMessage(msg, &chatBotReply, &volume))
-							{
-								audioMix.setVolume2(volume);
-							}
-							else if (chatBot.tryKickMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply, &targetGuest))
-							{
-								if (event.userData.guest.userID != targetGuest.userID)
-								{
-									ParsecHostKickGuest(ps, targetGuest.id);
-								}
-							}
-							else if (!chatBot.isPadsLimitMessage(msg, guests, guestCount, &padClient, &chatBotReply))
-							{
-								chatBot.processHostConfigMessage(msg, &cfg, &chatBotReply);
-							}
+							broadcastChatMessage(ps, guests, guestCount, command->replyMessage());
+							std::cout << std::endl << command->replyMessage();
 						}
 
+						delete command;
 
-						tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
+						// Banned messages
+						//chatBotReply.clear();
+						//if (chatBot.isTrollMessage(msg, event.userData.guest, &chatBotReply))
+						//{
+						//	ParsecHostKickGuest(ps, event.userData.guest.id);
+						//	tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
+						//	ParsecFree(msg);
+						//	break;
+						//}
+
+						//// Pleb user message
+						//guestMsg.clear();
+						//guestMsg = chatBot.formatGuestMessage(event.userData.guest, msg, isAdmin);
+						//broadcastChatMessage(ps, guests, guestCount, guestMsg);
+						//logDataMessage(msg, event);
+						//std::cout << guestMsg;
+
+						//chatBotReply.clear();
+						//chatBot.tryBonkMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply);
+
+						//chatBot.processCommandsListMessage(msg, isAdmin, &chatBotReply);
+
+						//// This user is admin, thus allowed to use commands
+						//if (isAdmin && chatBotReply.empty())
+						//{
+						//	chatBotReply.clear();
+						//	float volume = 50;
+						//	ParsecGuest targetGuest;
+						//	
+						//	if (chatBot.isSetConfigMessage(msg, &chatBotReply))
+						//	{
+						//		ParsecHostSetConfig(ps, &cfg, parsecSession.sessionId.c_str());
+						//	}
+						//	else if (chatBot.isDX11RefreshMessage(msg, &chatBotReply))
+						//	{
+						//		dx11.recover();
+						//	}
+						//	else if (chatBot.isQuitMessage(msg, &chatBotReply))
+						//	{
+						//		broadcastChatMessage(ps, guests, guestCount, chatBotReply);
+						//		goto gameover;
+						//	}
+						//	else if (chatBot.isMicVolumeMessage(msg, &chatBotReply, &volume))
+						//	{
+						//		audioMix.setVolume1(volume);
+						//	}
+						//	else if (chatBot.isSpeakersVolumeMessage(msg, &chatBotReply, &volume))
+						//	{
+						//		audioMix.setVolume2(volume);
+						//	}
+						//	else if (chatBot.tryKickMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply, &targetGuest))
+						//	{
+						//		if (event.userData.guest.userID != targetGuest.userID)
+						//		{
+						//			ParsecHostKickGuest(ps, targetGuest.id);
+						//		}
+						//	}
+						//	else if (!chatBot.isPadsLimitMessage(msg, guests, guestCount, &padClient, &chatBotReply))
+						//	{
+						//		chatBot.processHostConfigMessage(msg, &cfg, &chatBotReply);
+						//	}
+						//}
+
+
+						//tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
 					}
 					
 					ParsecFree(msg);
