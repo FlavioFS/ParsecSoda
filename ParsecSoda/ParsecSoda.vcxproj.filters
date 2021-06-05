@@ -167,7 +167,7 @@
     <ClInclude Include="Commands\CommandSpeakers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Commands\CommandPads.h">
+    <ClInclude Include="Commands\CommandLimit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandPrivate.h">
@@ -194,7 +194,7 @@
     <ClInclude Include="Commands\CommandMirror.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Commands\CommandOwners.h">
+    <ClInclude Include="Commands\CommandPads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandFF.h">

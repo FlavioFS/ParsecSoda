@@ -12,6 +12,13 @@
 #define OWNER_ID_NONE 0
 #define GAMEPAD_DEADZONE 4096
 
+typedef struct GamepadStatus
+{
+	uint32_t ownerUserId = OWNER_ID_NONE;
+	std::string ownerName = "";
+	bool isConnected = false;
+};
+
 class Gamepad
 {
 public:
@@ -32,6 +39,7 @@ public:
 	uint32_t getOwnerPadId();
 	void onRageQuit();
 	void setMirror(bool mirror);
+	GamepadStatus getStatus();
 
 private:
 	void setOwnerGuest (uint32_t ownerId = OWNER_ID_NONE, const char * ownerName = "", uint32_t padId = GAMEPAD_INDEX_ERROR, bool mirror = false);
@@ -41,7 +49,7 @@ private:
 	ULONG _index = -1;
 	bool _isAlive = false;
 	bool _isConnected = false;
-	uint32_t _ownerId = OWNER_ID_NONE;
+	uint32_t _ownerUserId = OWNER_ID_NONE;
 	std::string _ownerName = "";
 	uint32_t _ownerPadId = 0;
 	bool _mirror = false;

@@ -1,28 +1,43 @@
 #pragma once
 
-#include <sstream>
-#include "ACommandSearchUserIntArg.h"
+#include "ACommand.h"
+#include <iostream>
 #include "../GamepadClient.h"
+#include <sstream>
 
-class CommandPads : public ACommandSearchUserIntArg
+class CommandPads : public ACommand
 {
 public:
 	const COMMAND_TYPE type() const { return COMMAND_TYPE::PADS; }
 
-	void run(const char * msg, ParsecGuest * guests, int guestCount, GamepadClient * padClient)
+	void run(GamepadClient * padClient)
 	{
-		ParsecGuest targetUser;
-		int padLimit = XUSER_MAX_COUNT;
-		if ( !ACommandSearchUserIntArg::run(msg, "/pads ", guests, guestCount, &targetUser, &padLimit) )
-		{
-			_replyMessage = "[ChatBot] | Usage: /pads <username> <number>\nExample: /pads melon 2\0";
-			return;
-		}
-
-		padClient->setLimit(targetUser.userID, padLimit);
-
+		std::vector<GamepadStatus> owners = padClient->getGamepadStatus();
+		
 		std::ostringstream reply;
-		reply << "[ChatBot] | " << targetUser.name << " gamepad limit set to " << padLimit << "\0";
+		reply << "[ChatBot] | Gamepad Holders:\n";
+
+		std::vector<GamepadStatus>::iterator it = owners.begin();
+		uint16_t i = 1;
+		for (; it != owners.end(); ++it)
+		{
+			reply << "\t\t"
+				<< ((*it).isConnected ? "ON  " : "OFF") << "\t"
+				<< "[" << i << "] \t";
+
+			if ((*it).ownerUserId == OWNER_ID_NONE)
+			{
+				reply << "\n";
+			}
+			else
+			{
+				reply << "(" << (*it).ownerUserId << ")\t" << (*it).ownerName << "\n";
+			}
+			++i;
+		}
+		reply << "\0";
+
 		_replyMessage = reply.str();
 	}
 };
+

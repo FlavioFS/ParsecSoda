@@ -176,7 +176,7 @@
   <ItemGroup>
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="Commands\CommandFF.h" />
-    <ClInclude Include="Commands\CommandOwners.h" />
+    <ClInclude Include="Commands\CommandPads.h" />
     <ClInclude Include="Commands\CommandMirror.h" />
     <ClInclude Include="Commands\CommandUnban.h" />
     <ClInclude Include="Commands\CommandBan.h" />
@@ -189,7 +189,7 @@
     <ClInclude Include="ChatBot.h" />
     <ClInclude Include="Commands\CommandSetConfig.h" />
     <ClInclude Include="Commands\CommandPublic.h" />
-    <ClInclude Include="Commands\CommandPads.h" />
+    <ClInclude Include="Commands\CommandLimit.h" />
     <ClInclude Include="Commands\CommandSpeakers.h" />
     <ClInclude Include="Commands\CommandMic.h" />
     <ClInclude Include="Commands\CommandName.h" />

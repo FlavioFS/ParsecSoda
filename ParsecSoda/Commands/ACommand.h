@@ -9,14 +9,15 @@ enum class COMMAND_TYPE
 	BAN,
 	BONK,
 	COMMANDS,
+	FF,
 	GAMEID,
 	GUESTS,
 	IP,
 	KICK,
+	LIMIT,
 	MIC,
 	MIRROR,
 	NAME,
-	OWNERS,
 	PADS,
 	PRIVATE,
 	PUBLIC,
@@ -30,10 +31,7 @@ enum class COMMAND_TYPE
 	GIVE,		// new
 
 	// Search
-	TAKE,		// new
-
-	// Self
-	FF			// new
+	TAKE		// new
 };
 
 class ACommand

@@ -16,7 +16,7 @@ public:
 			+ "\n  " + "/commands\t|\tShow command list."
 			+ "\n  " + "/ff\t\t\t\t\t\t |\tGive back your gamepads to the room."
 			+ "\n  " + "/mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
-			+ "\n  " + "/owners\t\t\t |\tShow the list of gamepad holders."
+			+ "\n  " + "/pads\t\t\t\t  |\tShow the list of gamepad holders."
 			;
 
 		const std::string admin_commands = std::string()
@@ -32,7 +32,7 @@ public:
 			+ "\n  " + "/private\t\t |\tMake the room private."
 			+ "\n  " + "/public\t\t   |\tMake the room public."
 			+ "\n  " + "/q\t\t\t\t\t |\tClose stream."
-			+ "\n  " + "/pads\t\t\t  |\tSet the maximum amount of pads a guest can hold."
+			+ "\n  " + "/limit\t\t\t   |\tSet the maximum amount of pads a guest can hold."
 			+ "\n  " + "/setconfig\t |\tApply config changes."
 			+ "\n  " + "/speakers\t  |\tSet microphone volume."
 			+ "\n  " + "/unban\t\t   |\tUnban a guest."

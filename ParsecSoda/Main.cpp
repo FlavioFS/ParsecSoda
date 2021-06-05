@@ -355,6 +355,7 @@ int main(int argc, char **argv)
 								((CommandListCommands*)command)->run(isAdmin);
 								break;
 							case COMMAND_TYPE::FF:
+								((CommandFF*)command)->run(dataGuest, &padClient);
 								break;
 							case COMMAND_TYPE::IP:
 								((CommandIpFilter*)command)->run(ps, dataGuest, &banList);
@@ -362,8 +363,8 @@ int main(int argc, char **argv)
 							case COMMAND_TYPE::MIRROR:
 								((CommandMirror*)command)->run(dataGuest, &padClient);
 								break;
-							case COMMAND_TYPE::OWNERS:
-								((CommandOwners*)command)->run(&padClient);
+							case COMMAND_TYPE::PADS:
+								((CommandPads*)command)->run(&padClient);
 								break;
 							default:
 								break;
@@ -387,6 +388,7 @@ int main(int argc, char **argv)
 								((CommandListCommands*)command)->run(isAdmin);
 								break;
 							case COMMAND_TYPE::FF:
+								((CommandFF*)command)->run(dataGuest, &padClient);
 								break;
 							case COMMAND_TYPE::GAMEID:
 								((CommandGameId*)command)->run(msg, &cfg);
@@ -400,6 +402,9 @@ int main(int argc, char **argv)
 							case COMMAND_TYPE::KICK:
 								((CommandKick*)command)->run(msg, ps, dataGuest, guests, guestCount);
 								break;
+							case COMMAND_TYPE::LIMIT:
+								((CommandLimit*)command)->run(msg, guests, guestCount, &padClient);
+								break;
 							case COMMAND_TYPE::MIC:
 								((CommandMic*)command)->run(msg, &audioMix);
 								break;
@@ -410,7 +415,7 @@ int main(int argc, char **argv)
 								((CommandName*)command)->run(msg, &cfg);
 								break;
 							case COMMAND_TYPE::PADS:
-								((CommandPads*)command)->run(msg, guests, guestCount, &padClient);
+								((CommandPads*)command)->run(&padClient);
 								break;
 							case COMMAND_TYPE::PRIVATE:
 								((CommandPrivate*)command)->run(&cfg);
@@ -420,9 +425,6 @@ int main(int argc, char **argv)
 								break;
 							case COMMAND_TYPE::QUIT:
 								((CommandQuit*)command)->run(&isRunning);
-								break;
-							case COMMAND_TYPE::OWNERS:
-								((CommandOwners*)command)->run(&padClient);
 								break;
 							case COMMAND_TYPE::SETCONFIG:
 								((CommandSetConfig*)command)->run(ps, &cfg, parsecSession.sessionId.c_str());
@@ -463,6 +465,7 @@ int main(int argc, char **argv)
 						{
 							broadcastChatMessage(ps, guests, guestCount, command->replyMessage());
 							std::cout << std::endl << command->replyMessage();
+							chatBot.setLastUserId();
 						}
 
 						delete command;

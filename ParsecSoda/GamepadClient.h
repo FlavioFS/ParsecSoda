@@ -36,14 +36,15 @@ public:
 	void setMirror(uint32_t guestUserId, bool mirror);
 	bool toggleMirror(uint32_t guestUserId);
 	void refreshSlots(ParsecGuestPrefs *prefs);
-	const std::vector<GuestData> getOwners();
+	const std::vector<GamepadStatus> getGamepadStatus();
 
 private:
+	void freeSlots(uint32_t userId);
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
 	ParsecGuestPrefs * getLimit(uint32_t guestUserId);
 	PVIGEM_CLIENT _client;
 	std::vector<Gamepad> _gamepads;
-	std::vector<ParsecGuestPrefs> _guestLimits;
+	std::vector<ParsecGuestPrefs> _guestPrefs;
 };
 

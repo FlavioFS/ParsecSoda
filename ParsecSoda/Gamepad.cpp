@@ -281,7 +281,7 @@ std::string Gamepad::getOwnerGuestName()
 
 uint32_t Gamepad::getOwnerGuestUserId()
 {
-	return _ownerId;
+	return _ownerUserId;
 }
 
 uint32_t Gamepad::getOwnerPadId()
@@ -299,9 +299,14 @@ void Gamepad::setMirror(bool mirror)
 	_mirror = mirror;
 }
 
+GamepadStatus Gamepad::getStatus()
+{
+	return { _ownerUserId, _ownerName, _isConnected };
+}
+
 void Gamepad::setOwnerGuest(uint32_t ownerId, const char* ownerName, uint32_t padId, bool mirror)
 {
-	_ownerId = ownerId;
+	_ownerUserId = ownerId;
 	_ownerName = ownerName;
 	_ownerPadId = padId;
 	setMirror(mirror);
