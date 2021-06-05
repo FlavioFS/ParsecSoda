@@ -12,9 +12,9 @@ public:
 		_replyMessage = "[ChatBot] | Closing stream...\0";
 	}
 
-	void run(bool * isRunning)
+	void run(bool * mainLoopController)
 	{
-		*isRunning = false;
+		*mainLoopController = false;
 	}
 };
 

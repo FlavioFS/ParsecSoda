@@ -126,7 +126,15 @@ bool Gamepad::setState(ParsecGamepadStateMessage state)
 		xState.Gamepad.sThumbLX = state.thumbLX;
 		xState.Gamepad.sThumbLY = state.thumbLY;
 		xState.Gamepad.sThumbRX = state.thumbRX;
-		xState.Gamepad.sThumbRY = state.thumbRX;
+		xState.Gamepad.sThumbRY = state.thumbRY;
+
+		if (_mirror)
+		{
+			Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, state.thumbLX < -GAMEPAD_DEADZONE);
+			Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, state.thumbLX > GAMEPAD_DEADZONE);
+			Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, state.thumbLY > GAMEPAD_DEADZONE);
+			Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, state.thumbLY < -GAMEPAD_DEADZONE);
+		}
 
 		vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&xState.Gamepad));
 		return true;
@@ -198,11 +206,7 @@ bool Gamepad::setState(ParsecGamepadButtonMessage buttons)
 		
 		if (isOk)
 		{
-			if (buttons.pressed)
-				xState.Gamepad.wButtons |= buttonCode;
-			else
-				xState.Gamepad.wButtons &= ~buttonCode;
-
+			Bitwise::setValue(&xState.Gamepad.wButtons, buttonCode, buttons.pressed);			
 			vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&xState.Gamepad));
 			
 			return true;
@@ -223,15 +227,25 @@ bool Gamepad::setState(ParsecGamepadAxisMessage axis)
 		{
 		case GAMEPAD_AXIS_LX:
 			xState.Gamepad.sThumbLX = axis.value;
+			if (_mirror)
+			{
+				Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, axis.value < -GAMEPAD_DEADZONE);
+				Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, axis.value > GAMEPAD_DEADZONE);
+			}
 			break;
 		case GAMEPAD_AXIS_LY:
-			xState.Gamepad.sThumbLY = axis.value;
+			xState.Gamepad.sThumbLY = -axis.value;
+			if (_mirror)
+			{
+				Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, axis.value < -GAMEPAD_DEADZONE);
+				Bitwise::setValue(&xState.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, axis.value > GAMEPAD_DEADZONE);
+			}
 			break;
 		case GAMEPAD_AXIS_RX:
 			xState.Gamepad.sThumbRX = axis.value;
 			break;
 		case GAMEPAD_AXIS_RY:
-			xState.Gamepad.sThumbRY = axis.value;
+			xState.Gamepad.sThumbRY = -axis.value;
 			break;
 		case GAMEPAD_AXIS_TRIGGERL:
 			xState.Gamepad.bLeftTrigger = axis.value;
@@ -255,9 +269,9 @@ bool Gamepad::setState(ParsecGamepadAxisMessage axis)
 	return false;
 }
 
-void Gamepad::setOwnerGuest(ParsecGuest guest, uint32_t padId)
+void Gamepad::setOwnerGuest(ParsecGuest guest, uint32_t padId, bool mirror)
 {
-	setOwnerGuest(guest.userID, guest.name, padId);
+	setOwnerGuest(guest.userID, guest.name, padId, mirror);
 }
 
 std::string Gamepad::getOwnerGuestName()
@@ -280,9 +294,15 @@ void Gamepad::onRageQuit()
 	setOwnerGuest();
 }
 
-void Gamepad::setOwnerGuest(uint32_t ownerId, const char* ownerName, uint32_t padId)
+void Gamepad::setMirror(bool mirror)
+{
+	_mirror = mirror;
+}
+
+void Gamepad::setOwnerGuest(uint32_t ownerId, const char* ownerName, uint32_t padId, bool mirror)
 {
 	_ownerId = ownerId;
 	_ownerName = ownerName;
 	_ownerPadId = padId;
+	setMirror(mirror);
 }

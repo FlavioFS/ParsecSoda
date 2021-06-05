@@ -17,6 +17,17 @@ public:
 			return;
 		}
 
+		// Replaces \ + n with \n
+		size_t index = 0;
+		while (true)
+		{
+			index = roomName.find("\\n", index);
+			if (index == std::string::npos) break;
+
+			roomName.replace(index, 2, "\n");
+			index++;
+		}
+
 		strcpy_s(config->name, roomName.c_str());
 
 		_replyMessage = std::string() + "[ChatBot] | Room name changed:\n" + roomName + "\0";

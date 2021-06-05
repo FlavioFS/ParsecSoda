@@ -18,10 +18,11 @@ public:
 		return std::regex_search(message, match, ipRegex);
 	}
 
-	void run (Parsec *ps, ParsecGuest sender)
+	void run(Parsec* ps, ParsecGuest sender, BanList* banList)
 	{
+		banList->ban(GuestData(sender.name, sender.userID));
 		ParsecHostKickGuest(ps, sender.id);
-		_replyMessage = std::string() + "! [ChatBot] | " + sender.name + " was kicked by chat bot. BEGONE! *MEGA BONK*\0";
+		_replyMessage = std::string() + "! [ChatBot] | " + sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
 	}
 };
 

@@ -27,6 +27,11 @@ bool Utils::findUser(std::string targetUserName, ParsecGuest* guests, int guestC
 	uint64_t di = STRINGER_MAX_DISTANCE;
 	bool result = false;
 
+	if (targetUserName.length() < minimum_bonk_match)
+	{
+		return false;
+	}
+
 	ParsecGuest it;
 	for (int i = 0; i < guestCount; i++)
 	{
@@ -34,8 +39,37 @@ bool Utils::findUser(std::string targetUserName, ParsecGuest* guests, int guestC
 		di = Stringer::fuzzyDistance(it.name, targetUserName);
 		if (di <= closestDistance && di <= STRINGER_DISTANCE_CHARS(minimum_bonk_match))
 		{
+			// If this is a draw, choose one based on following criteria...
+			if (di == closestDistance)
+			{
+				std::string candidateName = it.name;
+				std::string currentName = targetUser->name;
+				
+				// If search tag is shorter than both
+				if (targetUserName.length() < candidateName.length() && targetUserName.length() < currentName.length())
+				{
+					// Pick the shortest
+					if (candidateName.length() < currentName.length())
+					{
+						*targetUser = guests[i];
+					}
+				}
+				// If search tag is larger than any of them
+				else
+				{
+					// Pick the largest
+					if (candidateName.length() > currentName.length())
+					{
+						*targetUser = guests[i];
+					}
+				}
+			}
+			else
+			{
+				*targetUser = guests[i];
+			}
+
 			closestDistance = di;
-			*targetUser = guests[i];
 			result = true;
 		}
 	}

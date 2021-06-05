@@ -11,6 +11,7 @@
 #include "Commands/ACommand.h"	
 #include "Commands/CommandBan.h"
 #include "Commands/CommandBonk.h"
+#include "Commands/CommandFF.h"
 #include "Commands/CommandGameId.h"
 #include "Commands/CommandGuests.h"
 #include "Commands/CommandDefaultMessage.h"
@@ -18,7 +19,9 @@
 #include "Commands/CommandKick.h"
 #include "Commands/CommandListCommands.h"
 #include "Commands/CommandMic.h"
+#include "Commands/CommandMirror.h"
 #include "Commands/CommandName.h"
+#include "Commands/CommandOwners.h"
 #include "Commands/CommandPads.h"
 #include "Commands/CommandPrivate.h"
 #include "Commands/CommandPublic.h"
@@ -37,6 +40,9 @@ public:
 	//ChatBot();
 
 	ACommand * identifyUserDataMessage(const char * msg);
+
+	const uint32_t getLastUserId() const;
+	void setLastUserId(const uint32_t lastId);
 
 	//bool isTrollMessage(const char* msg, ParsecGuest guest, std::string* replyMsg);
 	//bool isSetConfigMessage(const char* msg, std::string* replyMsg);
@@ -81,9 +87,8 @@ private:
 
 	//bool findUser(uint32_t targetUserID, ParsecGuest* guests, int guestCount, ParsecGuest *targetUser);
 	//bool findUser(std::string targetUserName, ParsecGuest* guests, int guestCount, ParsecGuest *targetUser);
-	void setLastGuestID(uint32_t lastID);
 
-	uint32_t lastGuestID = 0;
+	uint32_t _lastUserId = 0;
 
 	//Dice _dice;
 };

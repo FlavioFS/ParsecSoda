@@ -26,8 +26,7 @@ public:
 			std::string args = str.substr(strlen(prefix));
 			std::string username = args.substr(0, args.size() - 2);
 
-			ParsecGuest target;
-			bool found = Utils::findUser(username, guests, guestCount, &target);
+			bool found = Utils::findUser(username, guests, guestCount, targetUser);
 			if (!found)
 			{
 				return false;

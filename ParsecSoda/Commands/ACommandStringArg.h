@@ -13,7 +13,7 @@ public:
 			return false;
 		}
 
-		size_t cmdSize = strlen("/gameid ");
+		size_t cmdSize = strlen(prefix);
 		std::string str = msg;
 		*result = str.substr(cmdSize);
 

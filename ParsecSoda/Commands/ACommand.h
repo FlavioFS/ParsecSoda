@@ -6,8 +6,6 @@ enum class COMMAND_TYPE
 {
 	INVALID = -1,
 	DEFAULT_MESSAGE,
-	
-	
 	BAN,
 	BONK,
 	COMMANDS,
@@ -16,7 +14,9 @@ enum class COMMAND_TYPE
 	IP,
 	KICK,
 	MIC,
+	MIRROR,
 	NAME,
+	OWNERS,
 	PADS,
 	PRIVATE,
 	PUBLIC,
@@ -25,7 +25,6 @@ enum class COMMAND_TYPE
 	SPEAKERS,
 	UNBAN,
 	VIDEOFIX,
-
 	
 	// Search + number
 	GIVE,		// new

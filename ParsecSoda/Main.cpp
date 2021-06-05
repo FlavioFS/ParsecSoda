@@ -20,8 +20,9 @@
 #include "GamepadClient.h"
 #include "BanList.h"
 
-const std::vector<int> admins { 3888558, 6711547 };
+const std::vector<int> admins { 3888558 /*, 6711547*/};
 const std::vector<GuestData> banned {};
+std::vector<COMMAND_TYPE> filteredCommands { COMMAND_TYPE::IP };
 
 #define PARSEC_APP_CHAT_MSG 0
 
@@ -207,13 +208,28 @@ void displayInputMessage(ParsecMessage inputGuestMsg)
 	}
 }
 
+bool isFilteredCommand(ACommand *command)
+{
+	COMMAND_TYPE type;
+	for (std::vector<COMMAND_TYPE>::iterator it = filteredCommands.begin(); it != filteredCommands.end(); ++it)
+	{
+		type = command->type();
+		if (command->type() == *it)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 int main(int argc, char **argv)
 {
 	// Instance all gamepads at once
 	padClient.init();
 	padClient.createMaximumGamepads();
 	padClient.setLimit(3888558, 0);		// Remove myself
-	padClient.setLimit(6711547, 0);
+	padClient.setLimit(6711547, 1);
 
 	ParsecGuest *guests = NULL;
 	ParsecGuest dataGuest;
@@ -289,7 +305,7 @@ int main(int argc, char **argv)
 			ParsecHostEvent event;
 			if (ParsecHostPollEvents(ps, 1, &event)) {
 				ParsecGuest guest = event.guestStateChange.guest;
-				
+
 				switch (event.type)
 				{
 				case HOST_EVENT_GUEST_STATE_CHANGE:
@@ -323,71 +339,124 @@ int main(int argc, char **argv)
 						isAdmin = adminList.isAdmin(dataGuest.userID);
 						ACommand *command = chatBot.identifyUserDataMessage(msg);
 						COMMAND_TYPE type = command->type();
-						
-						switch (command->type())
+
+
+						// =================================
+						//  Pleb commands
+						// =================================
+						if (!isAdmin)
 						{
-						case COMMAND_TYPE::DEFAULT_MESSAGE:
-							break;
-						case COMMAND_TYPE::BAN:
-							((CommandBan*)command)->run(msg, ps, dataGuest, guests, guestCount, &banList);
-							break;
-						case COMMAND_TYPE::BONK:
-							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
-							break;
-						case COMMAND_TYPE::COMMANDS:
-							((CommandListCommands*)command)->run(isAdmin);
-							break;
-						case COMMAND_TYPE::GAMEID:
-							((CommandGameId*)command)->run(msg, &cfg);
-							break;
-						case COMMAND_TYPE::GUESTS:
-							((CommandGuests*)command)->run(msg, &cfg);
-							break;
-						case COMMAND_TYPE::IP:
-							((CommandIpFilter*)command)->run(ps, dataGuest);
-							break;
-						case COMMAND_TYPE::KICK:
-							((CommandKick*)command)->run(msg, ps, dataGuest, guests, guestCount);
-							break;
-						case COMMAND_TYPE::MIC:
-							((CommandMic*)command)->run(msg, &audioMix);
-							break;
-						case COMMAND_TYPE::NAME:
-							((CommandName*)command)->run(msg, &cfg);
-							break;
-						case COMMAND_TYPE::PADS:
-							((CommandPads*)command)->run(msg, guests, guestCount, &padClient);
-							break;
-						case COMMAND_TYPE::PRIVATE:
-							((CommandPrivate*)command)->run(&cfg);
-							break;
-						case COMMAND_TYPE::PUBLIC:
-							((CommandPublic*)command)->run(&cfg);
-							break;
-						case COMMAND_TYPE::QUIT:
-							((CommandQuit*)command)->run(&isRunning);
-							break;
-						case COMMAND_TYPE::SETCONFIG:
-							((CommandSetConfig*)command)->run(ps, &cfg, parsecSession.sessionId.c_str());
-							break;
-						case COMMAND_TYPE::SPEAKERS:
-							((CommandSpeakers*)command)->run(msg, &audioMix);
-							break;
-						case COMMAND_TYPE::UNBAN:
-							((CommandUnban*)command)->run(msg, dataGuest, &banList);
-							break;
-						case COMMAND_TYPE::VIDEOFIX:
-							((CommandVideoFix*)command)->run(&dx11);
-							break;
-						case COMMAND_TYPE::GIVE:
-							break;
-						case COMMAND_TYPE::TAKE:
-							break;
-						case COMMAND_TYPE::FF:
-							break;
-						default:
-						case COMMAND_TYPE::INVALID:
-							break;
+							switch (command->type())
+							{
+							case COMMAND_TYPE::BONK:
+								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
+								break;
+							case COMMAND_TYPE::COMMANDS:
+								((CommandListCommands*)command)->run(isAdmin);
+								break;
+							case COMMAND_TYPE::FF:
+								break;
+							case COMMAND_TYPE::IP:
+								((CommandIpFilter*)command)->run(ps, dataGuest, &banList);
+								break;
+							case COMMAND_TYPE::MIRROR:
+								((CommandMirror*)command)->run(dataGuest, &padClient);
+								break;
+							case COMMAND_TYPE::OWNERS:
+								((CommandOwners*)command)->run(&padClient);
+								break;
+							default:
+								break;
+							}
+						}
+						
+						// =================================
+						//  Admin commands
+						// =================================
+						else
+						{
+							switch (command->type())
+							{
+							case COMMAND_TYPE::BAN:
+								((CommandBan*)command)->run(msg, ps, dataGuest, guests, guestCount, &banList);
+								break;
+							case COMMAND_TYPE::BONK:
+								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
+								break;
+							case COMMAND_TYPE::COMMANDS:
+								((CommandListCommands*)command)->run(isAdmin);
+								break;
+							case COMMAND_TYPE::FF:
+								break;
+							case COMMAND_TYPE::GAMEID:
+								((CommandGameId*)command)->run(msg, &cfg);
+								break;
+							case COMMAND_TYPE::GUESTS:
+								((CommandGuests*)command)->run(msg, &cfg);
+								break;
+							case COMMAND_TYPE::IP:
+								((CommandIpFilter*)command)->run(ps, dataGuest, &banList);
+								break;
+							case COMMAND_TYPE::KICK:
+								((CommandKick*)command)->run(msg, ps, dataGuest, guests, guestCount);
+								break;
+							case COMMAND_TYPE::MIC:
+								((CommandMic*)command)->run(msg, &audioMix);
+								break;
+							case COMMAND_TYPE::MIRROR:
+								((CommandMirror*)command)->run(dataGuest, &padClient);
+								break;
+							case COMMAND_TYPE::NAME:
+								((CommandName*)command)->run(msg, &cfg);
+								break;
+							case COMMAND_TYPE::PADS:
+								((CommandPads*)command)->run(msg, guests, guestCount, &padClient);
+								break;
+							case COMMAND_TYPE::PRIVATE:
+								((CommandPrivate*)command)->run(&cfg);
+								break;
+							case COMMAND_TYPE::PUBLIC:
+								((CommandPublic*)command)->run(&cfg);
+								break;
+							case COMMAND_TYPE::QUIT:
+								((CommandQuit*)command)->run(&isRunning);
+								break;
+							case COMMAND_TYPE::OWNERS:
+								((CommandOwners*)command)->run(&padClient);
+								break;
+							case COMMAND_TYPE::SETCONFIG:
+								((CommandSetConfig*)command)->run(ps, &cfg, parsecSession.sessionId.c_str());
+								break;
+							case COMMAND_TYPE::SPEAKERS:
+								((CommandSpeakers*)command)->run(msg, &audioMix);
+								break;
+							case COMMAND_TYPE::UNBAN:
+								((CommandUnban*)command)->run(msg, dataGuest, &banList);
+								break;
+							case COMMAND_TYPE::VIDEOFIX:
+								((CommandVideoFix*)command)->run(&dx11);
+								break;
+							//case COMMAND_TYPE::GIVE:
+							//	break;
+							//case COMMAND_TYPE::TAKE:
+							//	break;
+							default:
+								break;
+							}
+						}
+
+						// Blocked messages
+						if (!isFilteredCommand(command))
+						{
+							CommandDefaultMessage defaultMessage;
+							defaultMessage.run(msg, dataGuest, chatBot.getLastUserId(), isAdmin);
+							chatBot.setLastUserId(dataGuest.userID);
+
+							if (!defaultMessage.replyMessage().empty())
+							{
+								broadcastChatMessage(ps, guests, guestCount, defaultMessage.replyMessage());
+								std::cout << std::endl << defaultMessage.replyMessage();
+							}
 						}
 
 						if (!command->replyMessage().empty())
@@ -397,72 +466,6 @@ int main(int argc, char **argv)
 						}
 
 						delete command;
-
-						// Banned messages
-						//chatBotReply.clear();
-						//if (chatBot.isTrollMessage(msg, event.userData.guest, &chatBotReply))
-						//{
-						//	ParsecHostKickGuest(ps, event.userData.guest.id);
-						//	tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
-						//	ParsecFree(msg);
-						//	break;
-						//}
-
-						//// Pleb user message
-						//guestMsg.clear();
-						//guestMsg = chatBot.formatGuestMessage(event.userData.guest, msg, isAdmin);
-						//broadcastChatMessage(ps, guests, guestCount, guestMsg);
-						//logDataMessage(msg, event);
-						//std::cout << guestMsg;
-
-						//chatBotReply.clear();
-						//chatBot.tryBonkMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply);
-
-						//chatBot.processCommandsListMessage(msg, isAdmin, &chatBotReply);
-
-						//// This user is admin, thus allowed to use commands
-						//if (isAdmin && chatBotReply.empty())
-						//{
-						//	chatBotReply.clear();
-						//	float volume = 50;
-						//	ParsecGuest targetGuest;
-						//	
-						//	if (chatBot.isSetConfigMessage(msg, &chatBotReply))
-						//	{
-						//		ParsecHostSetConfig(ps, &cfg, parsecSession.sessionId.c_str());
-						//	}
-						//	else if (chatBot.isDX11RefreshMessage(msg, &chatBotReply))
-						//	{
-						//		dx11.recover();
-						//	}
-						//	else if (chatBot.isQuitMessage(msg, &chatBotReply))
-						//	{
-						//		broadcastChatMessage(ps, guests, guestCount, chatBotReply);
-						//		goto gameover;
-						//	}
-						//	else if (chatBot.isMicVolumeMessage(msg, &chatBotReply, &volume))
-						//	{
-						//		audioMix.setVolume1(volume);
-						//	}
-						//	else if (chatBot.isSpeakersVolumeMessage(msg, &chatBotReply, &volume))
-						//	{
-						//		audioMix.setVolume2(volume);
-						//	}
-						//	else if (chatBot.tryKickMessage(msg, event.userData.guest, guests, guestCount, &chatBotReply, &targetGuest))
-						//	{
-						//		if (event.userData.guest.userID != targetGuest.userID)
-						//		{
-						//			ParsecHostKickGuest(ps, targetGuest.id);
-						//		}
-						//	}
-						//	else if (!chatBot.isPadsLimitMessage(msg, guests, guestCount, &padClient, &chatBotReply))
-						//	{
-						//		chatBot.processHostConfigMessage(msg, &cfg, &chatBotReply);
-						//	}
-						//}
-
-
-						//tryBroadcastChatMessage(ps, guests, guestCount, chatBotReply);
 					}
 					
 					ParsecFree(msg);

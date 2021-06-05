@@ -160,6 +160,7 @@
     <ClCompile Include="AudioMix.cpp" />
     <ClCompile Include="AudioOut.cpp" />
     <ClCompile Include="BanList.cpp" />
+    <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="DX11.cpp" />
@@ -173,6 +174,10 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bitwise.h" />
+    <ClInclude Include="Commands\CommandFF.h" />
+    <ClInclude Include="Commands\CommandOwners.h" />
+    <ClInclude Include="Commands\CommandMirror.h" />
     <ClInclude Include="Commands\CommandUnban.h" />
     <ClInclude Include="Commands\CommandBan.h" />
     <ClInclude Include="Commands\ACommandSearchUserIntArg.h" />

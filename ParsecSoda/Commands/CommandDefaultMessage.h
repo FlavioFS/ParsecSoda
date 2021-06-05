@@ -10,12 +10,12 @@ class CommandDefaultMessage : public ACommand
 public:
 	const COMMAND_TYPE type() const { return COMMAND_TYPE::DEFAULT_MESSAGE; }
 
-	void run(std::string msg, GuestData guest, uint32_t lastGuestUserId, bool isAdmin = false)
+	void run(std::string msg, ParsecGuest sender, uint32_t lastUserId, bool isAdmin = false)
 	{
 		std::ostringstream reply;
-		if (guest.userId != lastGuestUserId)
+		if (sender.userID != lastUserId)
 		{
-			reply << (isAdmin ? "$  " : ">  ") << guest.name << " \t (#" << guest.userId << "):\n";
+			reply << (isAdmin ? "$  " : ">  ") << sender.name << " \t (#" << sender.userID << "):\n";
 		}
 
 		reply << "\t\t " << msg << "\0";

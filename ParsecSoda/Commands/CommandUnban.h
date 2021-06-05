@@ -24,8 +24,8 @@ public:
 		{
 			std::ostringstream reply;
 			reply
-				<< "[ChatBot] | " << sender.name << " has revoked the ban from a guest: "
-				<< unbannedGuest.name << "\t(#" << unbannedGuest.userId << ")\0";
+				<< "[ChatBot] | " << sender.name << " has revoked a ban:\n"
+				<< "\t\t" << unbannedGuest.name << "\t(#" << unbannedGuest.userId << ")\0";
 			_replyMessage = reply.str();
 		}
 		else

@@ -12,13 +12,18 @@ public:
 	{
 		const std::string pleb_commands = std::string()
 			+ "\n  " + "---- Normal Commands ----"
-			+ "\n  " + "/bonk\t\t\t |\tBonk another user."
+			+ "\n  " + "/bonk\t\t\t\t |\tBonk another user."
+			+ "\n  " + "/commands\t|\tShow command list."
+			+ "\n  " + "/ff\t\t\t\t\t\t |\tGive back your gamepads to the room."
+			+ "\n  " + "/mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
+			+ "\n  " + "/owners\t\t\t |\tShow the list of gamepad holders."
 			;
 
 		const std::string admin_commands = std::string()
 			+ pleb_commands
 			+ "\n  " + ""
 			+ "\n  " + "---- Admin Commands ----"
+			+ "\n  " + "/ban\t\t\t\t|\tBan a guest."
 			+ "\n  " + "/gameid\t\t|\tSet game id."
 			+ "\n  " + "/guests\t\t  |\tSet the amount of room slots."
 			+ "\n  " + "/kick\t\t\t   |\tKick user from the room."
@@ -29,7 +34,9 @@ public:
 			+ "\n  " + "/q\t\t\t\t\t |\tClose stream."
 			+ "\n  " + "/pads\t\t\t  |\tSet the maximum amount of pads a guest can hold."
 			+ "\n  " + "/setconfig\t |\tApply config changes."
-			+ "\n  " + "/speakers\t |\tSet microphone volume."
+			+ "\n  " + "/speakers\t  |\tSet microphone volume."
+			+ "\n  " + "/unban\t\t   |\tUnban a guest."
+			+ "\n  " + "/videofix\t    |\tRefresh DirectX context."
 			;
 
 		_replyMessage =
