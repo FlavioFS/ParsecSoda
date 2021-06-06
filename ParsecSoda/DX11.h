@@ -7,6 +7,7 @@
 #include <wrl/client.h>
 #include <atlbase.h>
 #include <atlcomcli.h>
+#include <mutex>
 #include "parsec.h"
 
 class DX11
@@ -40,5 +41,8 @@ private:
 	IDXGIOutput *dxOutput = NULL;
 	DXGI_OUTPUT_DESC dxOutDesc;
 	DXGI_SWAP_CHAIN_DESC dxSwapDesc;
+
+	// Lock prevention
+	std::mutex mutex;
 };
 

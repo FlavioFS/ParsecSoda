@@ -7,13 +7,13 @@ Gamepad::Gamepad()
 	_isAlive = false;
 	_index = GAMEPAD_INDEX_ERROR;
 	_isConnected = false;
-	setOwnerGuest();
+	clearOwner();
 }
 
 Gamepad::Gamepad(PVIGEM_CLIENT client)
 {
 	_client = client;
-	setOwnerGuest();
+	clearOwner();
 	_index = GAMEPAD_INDEX_ERROR;
 	_isConnected = false;
 
@@ -36,13 +36,13 @@ bool Gamepad::connect()
 	if (VIGEM_SUCCESS(err))
 	{
 		getIndex();
-		setOwnerGuest();
+		clearOwner();
 		_isConnected = true;
 		return true;
 	}
 
-	disconnect();
-	_isConnected = false;
+	//disconnect();
+	//_isConnected = false;
 	return false;
 }
 
@@ -61,7 +61,7 @@ bool Gamepad::disconnect()
 
 	_index = GAMEPAD_INDEX_ERROR;
 	_isConnected = false;
-	setOwnerGuest();
+	clearOwner();
 	return true;
 }
 
@@ -71,7 +71,7 @@ void Gamepad::release()
 	{
 		disconnect();
 		vigem_target_free(pad);
-		setOwnerGuest();
+		clearOwner();
 		_index = GAMEPAD_INDEX_ERROR;
 		_isAlive = false;
 		_isConnected = false;
@@ -113,6 +113,19 @@ XINPUT_STATE Gamepad::getState()
 	}
 
 	return state;
+}
+
+void Gamepad::clearState()
+{
+	XINPUT_STATE xState;
+	xState.Gamepad.wButtons = 0;
+	xState.Gamepad.bLeftTrigger = 0;
+	xState.Gamepad.bRightTrigger = 0;
+	xState.Gamepad.sThumbLX = 0;
+	xState.Gamepad.sThumbLY = 0;
+	xState.Gamepad.sThumbRX = 0;
+	xState.Gamepad.sThumbRY = 0;
+	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&xState.Gamepad));
 }
 
 bool Gamepad::setState(ParsecGamepadStateMessage state)
@@ -274,6 +287,22 @@ void Gamepad::setOwnerGuest(ParsecGuest guest, uint32_t padId, bool mirror)
 	setOwnerGuest(guest.userID, guest.name, padId, mirror);
 }
 
+void Gamepad::copyOwner(Gamepad pad)
+{
+	setOwnerGuest(pad._ownerUserId, pad._ownerName.c_str(), pad._ownerPadId, pad._mirror);
+}
+
+void Gamepad::clearOwner()
+{
+	setOwnerGuest();
+	clearState();
+}
+
+const bool Gamepad::isOwned()
+{
+	return _ownerUserId != OWNER_ID_NONE;
+}
+
 std::string Gamepad::getOwnerGuestName()
 {
 	return _ownerName;
@@ -291,7 +320,7 @@ uint32_t Gamepad::getOwnerPadId()
 
 void Gamepad::onRageQuit()
 {
-	setOwnerGuest();
+	clearOwner();
 }
 
 void Gamepad::setMirror(bool mirror)

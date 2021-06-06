@@ -30,10 +30,14 @@ public:
 	bool isAttached();
 	ULONG getIndex();
 	XINPUT_STATE getState();
+	void clearState();
 	bool setState(ParsecGamepadStateMessage state);
 	bool setState(ParsecGamepadButtonMessage buttons);
 	bool setState(ParsecGamepadAxisMessage axis);
 	void setOwnerGuest(ParsecGuest guest, uint32_t padId, bool mirror = false);
+	void copyOwner(Gamepad pad);
+	void clearOwner();
+	const bool isOwned();
 	std::string getOwnerGuestName();
 	uint32_t getOwnerGuestUserId();
 	uint32_t getOwnerPadId();

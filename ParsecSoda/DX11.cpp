@@ -41,6 +41,7 @@ void DX11::clear()
 
 bool DX11::recover()
 {
+	mutex.lock();
 	HRESULT hr;
 
 	// Get DXGI device
@@ -48,14 +49,20 @@ bool DX11::recover()
 	hr = _lDevice.As(&lDxgiDevice);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	// Get DXGI adapter
 	ComPtr<IDXGIAdapter> lDxgiAdapter;
 	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), &lDxgiAdapter);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	lDxgiDevice.Reset();
 
@@ -66,21 +73,30 @@ bool DX11::recover()
 	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	lDxgiAdapter.Reset();
 
 	hr = lDxgiOutput->GetDesc(&_lOutputDesc);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	// QI for Output 1
 	ComPtr<IDXGIOutput1> lDxgiOutput1;
 	hr = lDxgiOutput.As(&lDxgiOutput1);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	lDxgiOutput.Reset();
 
@@ -88,7 +104,10 @@ bool DX11::recover()
 	hr = lDxgiOutput1->DuplicateOutput(_lDevice.Get(), &_lDeskDupl);
 
 	if (FAILED(hr))
+	{
+		mutex.unlock();
 		return false;
+	}
 
 	lDxgiOutput1.Reset();
 
@@ -109,6 +128,7 @@ bool DX11::recover()
 	_desc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_READ;
 	_desc.Usage = D3D11_USAGE::D3D11_USAGE_STAGING;
 
+	mutex.unlock();
 	return true;
 }
 
@@ -210,9 +230,13 @@ bool DX11::captureScreen(Parsec *ps)
 {
 	if (!_lDeskDupl)
 	{
-		if(!recover()) return false;
+		if (!recover())
+		{
+			return false;
+		}
 	}
-
+	
+	mutex.lock();
 	HRESULT hr(E_FAIL), hr0(E_FAIL);
 	ComPtr<IDXGIResource> lDesktopResource = nullptr;
 	DXGI_OUTDUPL_FRAME_INFO lFrameInfo;
@@ -227,6 +251,7 @@ bool DX11::captureScreen(Parsec *ps)
 			recover();
 		}
 
+		mutex.unlock();
 		return false;
 	}
 
@@ -242,5 +267,6 @@ bool DX11::captureScreen(Parsec *ps)
 	_lDeskDupl->ReleaseFrame();
 	
 
+	mutex.unlock();
 	return true;
 }

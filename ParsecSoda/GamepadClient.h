@@ -9,6 +9,17 @@
 #include "GuestData.h"
 
 #define GAMEPAD_LIMIT_NOT_FOUND -1
+#define GAMEPAD_PICK_TIMEOUT_MS 1000
+
+enum class GAMEPAD_PICK_REQUEST
+{
+	OK,
+	SAME_USER,
+	TAKEN,
+	EMPTY_HANDS,
+	LIMIT_BLOCK,
+	OUT_OF_RANGE
+};
 
 class GamepadClient
 {
@@ -25,7 +36,9 @@ public:
 	bool init();
 	Gamepad createGamepad();
 	void createMaximumGamepads();
+	void connectAllGamepads();
 	Gamepad connectNextGamepad();
+	bool disconnect(int gamepadIndex);
 	void release();
 	void releaseGamepads();
 	Gamepad getGamepad(int index);
@@ -36,13 +49,14 @@ public:
 	void setMirror(uint32_t guestUserId, bool mirror);
 	bool toggleMirror(uint32_t guestUserId);
 	void refreshSlots(ParsecGuestPrefs *prefs);
+	const GAMEPAD_PICK_REQUEST pick(ParsecGuest guest, int gamepadIndex);
 	const std::vector<GamepadStatus> getGamepadStatus();
 
 private:
 	void freeSlots(uint32_t userId);
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
-	ParsecGuestPrefs * getLimit(uint32_t guestUserId);
+	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
 	PVIGEM_CLIENT _client;
 	std::vector<Gamepad> _gamepads;
 	std::vector<ParsecGuestPrefs> _guestPrefs;

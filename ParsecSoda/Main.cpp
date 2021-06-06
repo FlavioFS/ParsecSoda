@@ -6,7 +6,7 @@
 #include <d3d11.h>
 #include <dxgi.h>
 #include <dxgi1_2.h>
-#include <sstream>
+#include <thread>
 #include "ParsecSession.h"
 #include "DX11.h"
 #include "AdminList.h"
@@ -19,10 +19,12 @@
 #include "AudioMix.h"
 #include "GamepadClient.h"
 #include "BanList.h"
+#include "Dice.h"
 
-const std::vector<int> admins { 3888558 /*, 6711547*/};
+const std::vector<int> admins { 3888558 , 6711547 };
 const std::vector<GuestData> banned {};
 std::vector<COMMAND_TYPE> filteredCommands { COMMAND_TYPE::IP };
+Dice dice;
 
 #define PARSEC_APP_CHAT_MSG 0
 
@@ -225,9 +227,12 @@ bool isFilteredCommand(ACommand *command)
 
 int main(int argc, char **argv)
 {
+	dice.init();
+
 	// Instance all gamepads at once
 	padClient.init();
 	padClient.createMaximumGamepads();
+	padClient.connectAllGamepads();
 	padClient.setLimit(3888558, 0);		// Remove myself
 	padClient.setLimit(6711547, 1);
 
@@ -241,7 +246,7 @@ int main(int argc, char **argv)
 	#define EMAIL ""
 	#define PASSWORD ""
 	ParsecSoda::ParsecSession parsecSession;
-	parsecSession.mockSession(true);	// Replace with fetchSession in final version
+	parsecSession.mockSession();	// Replace with fetchSession in final version
 	//parsecSession.fetchSession(EMAIL, PASSWORD);
 
 	const int stop = 2;
@@ -349,7 +354,7 @@ int main(int argc, char **argv)
 							switch (command->type())
 							{
 							case COMMAND_TYPE::BONK:
-								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
+								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &dice);
 								break;
 							case COMMAND_TYPE::COMMANDS:
 								((CommandListCommands*)command)->run(isAdmin);
@@ -365,6 +370,9 @@ int main(int argc, char **argv)
 								break;
 							case COMMAND_TYPE::PADS:
 								((CommandPads*)command)->run(&padClient);
+								break;
+							case COMMAND_TYPE::SWAP:
+								((CommandSwap*)command)->run(msg, dataGuest, &padClient);
 								break;
 							default:
 								break;
@@ -382,10 +390,13 @@ int main(int argc, char **argv)
 								((CommandBan*)command)->run(msg, ps, dataGuest, guests, guestCount, &banList);
 								break;
 							case COMMAND_TYPE::BONK:
-								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount);
+								((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &dice);
 								break;
 							case COMMAND_TYPE::COMMANDS:
 								((CommandListCommands*)command)->run(isAdmin);
+								break;
+							case COMMAND_TYPE::DC:
+								((CommandDC*)command)->run(msg, &padClient);
 								break;
 							case COMMAND_TYPE::FF:
 								((CommandFF*)command)->run(dataGuest, &padClient);
@@ -422,6 +433,9 @@ int main(int argc, char **argv)
 								break;
 							case COMMAND_TYPE::PUBLIC:
 								((CommandPublic*)command)->run(&cfg);
+								break;
+							case COMMAND_TYPE::SWAP:
+								((CommandSwap*)command)->run(msg, dataGuest, &padClient);
 								break;
 							case COMMAND_TYPE::QUIT:
 								((CommandQuit*)command)->run(&isRunning);

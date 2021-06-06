@@ -24,9 +24,21 @@ public:
 			*intArg = std::stoi(argNumber);
 
 			std::string args = str.substr(strlen(prefix));
-			std::string username = args.substr(0, args.size() - 2);
+			std::string targetUsername = args.substr(0, args.size() - 2);
 
-			bool found = Utils::findUser(username, guests, guestCount, targetUser);
+
+			bool found = false;
+			try
+			{
+				found = Utils::findUser(stoul(targetUsername), guests, guestCount, targetUser);
+			}
+			catch (const std::exception&) {}
+
+			if (!found)
+			{
+				found = Utils::findUser(targetUsername, guests, guestCount, targetUser);
+			}
+			
 			if (!found)
 			{
 				return false;

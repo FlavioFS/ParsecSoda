@@ -8,13 +8,15 @@
 #include "Stringer.h"
 #include "GamepadClient.h"
 
-#include "Commands/ACommand.h"	
+#include "Commands/ACommand.h"
 #include "Commands/CommandBan.h"
 #include "Commands/CommandBonk.h"
+#include "Commands/CommandBotMessage.h"
+#include "Commands/CommandDefaultMessage.h"
+#include "Commands/CommandDC.h"
 #include "Commands/CommandFF.h"
 #include "Commands/CommandGameId.h"
 #include "Commands/CommandGuests.h"
-#include "Commands/CommandDefaultMessage.h"
 #include "Commands/CommandIpFilter.h"
 #include "Commands/CommandKick.h"
 #include "Commands/CommandListCommands.h"
@@ -28,6 +30,7 @@
 #include "Commands/CommandQuit.h"
 #include "Commands/CommandSetConfig.h"
 #include "Commands/CommandSpeakers.h"
+#include "Commands/CommandSwap.h"
 #include "Commands/CommandUnban.h"
 #include "Commands/CommandVideoFix.h"
 
@@ -40,10 +43,9 @@ public:
 
 	const uint32_t getLastUserId() const;
 	void setLastUserId(const uint32_t lastId = BOT_GUESTID);
-
 	const std::string formatGuestConnection(ParsecGuest guest, bool isAdmin = false);
-
 	const std::string formatBannedGuestMessage(ParsecGuest guest);
+	CommandBotMessage sendBotMessage(const char * msg);
 
 private:
 	static bool msgStartsWith(const char* msg, const char* pattern);

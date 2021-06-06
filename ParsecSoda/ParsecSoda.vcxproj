@@ -175,6 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitwise.h" />
+    <ClInclude Include="Commands\CommandDC.h" />
+    <ClInclude Include="Commands\CommandBotMessage.h" />
+    <ClInclude Include="Commands\CommandSwap.h" />
     <ClInclude Include="Commands\CommandFF.h" />
     <ClInclude Include="Commands\CommandPads.h" />
     <ClInclude Include="Commands\CommandMirror.h" />

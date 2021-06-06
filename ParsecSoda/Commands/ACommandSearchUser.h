@@ -28,7 +28,17 @@ public:
 			size_t cmdSize = strlen(prefix);
 			std::string targetUsername = str.substr(cmdSize);
 
-			bool found = Utils::findUser(targetUsername, guests, guestCount, targetUser);
+			bool found = false;
+			try
+			{
+				found = Utils::findUser(stoul(targetUsername), guests, guestCount, targetUser);
+			}
+			catch (const std::exception&) {}
+
+			if (!found)
+			{
+				found = Utils::findUser(targetUsername, guests, guestCount, targetUser);
+			}
 			
 			return found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;
 		}

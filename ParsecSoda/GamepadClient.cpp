@@ -54,6 +54,17 @@ void GamepadClient::createMaximumGamepads()
 	}
 }
 
+void GamepadClient::connectAllGamepads()
+{
+	std::vector<Gamepad>::iterator it;
+	for (it = _gamepads.begin(); it != _gamepads.end(); ++it)
+	{
+		(*it).connect();
+		Sleep(200);
+	}
+}
+
+
 Gamepad GamepadClient::connectNextGamepad()
 {
 	std::vector<Gamepad>::iterator it;
@@ -65,6 +76,15 @@ Gamepad GamepadClient::connectNextGamepad()
 		}
 	}
 	return Gamepad();
+}
+
+bool GamepadClient::disconnect(int gamepadIndex)
+{
+	if (gamepadIndex < 0 || gamepadIndex > _gamepads.size())
+	{
+		return false;
+	}
+	return _gamepads[gamepadIndex].disconnect();
 }
 
 void GamepadClient::release()
@@ -157,7 +177,7 @@ bool GamepadClient::sendMessage(ParsecGuest guest, ParsecMessage message)
 
 bool GamepadClient::tryAssignGamepad(ParsecGuest guest, uint32_t padId)
 {
-	GamepadClient::ParsecGuestPrefs* limit = getLimit(guest.userID);
+	GamepadClient::ParsecGuestPrefs* limit = getPrefs(guest.userID);
 
 	if (limit != nullptr && limit->slots >= limit->padLimit)
 	{
@@ -195,7 +215,7 @@ int GamepadClient::onRageQuit(ParsecGuest guest)
 	{
 		if ((*it).getOwnerGuestUserId() == guest.userID)
 		{
-			(*it).onRageQuit();
+			(*it).clearOwner();
 			result++;
 		}
 	}
@@ -255,6 +275,44 @@ bool GamepadClient::toggleMirror(uint32_t guestUserId)
 	return true;
 }
 
+const GAMEPAD_PICK_REQUEST GamepadClient::pick(ParsecGuest guest, int gamepadIndex)
+{
+	if (gamepadIndex < 0 || gamepadIndex >= _gamepads.size())
+	{
+		return GAMEPAD_PICK_REQUEST::OUT_OF_RANGE;
+	}
+
+	if (_gamepads[gamepadIndex].getOwnerGuestUserId() == guest.userID)
+	{
+		return GAMEPAD_PICK_REQUEST::SAME_USER;
+	}
+	
+	if (_gamepads[gamepadIndex].isOwned())
+	{
+		return GAMEPAD_PICK_REQUEST::TAKEN;
+	}
+
+	ParsecGuestPrefs *prefs = getPrefs(guest.userID);
+	if (prefs != nullptr && prefs->padLimit <= 0)
+	{
+		return GAMEPAD_PICK_REQUEST::LIMIT_BLOCK;
+	}
+
+	std::vector<Gamepad>::iterator it;
+	for (it = _gamepads.begin(); it != _gamepads.end(); ++it)
+	{
+		if ((*it).getOwnerGuestUserId() == guest.userID)
+		{
+			_gamepads[gamepadIndex].connect();
+			_gamepads[gamepadIndex].copyOwner(*it);
+			(*it).clearOwner();
+			return GAMEPAD_PICK_REQUEST::OK;
+		}
+	}
+
+	return GAMEPAD_PICK_REQUEST::EMPTY_HANDS;
+}
+
 void GamepadClient::freeSlots(uint32_t userId)
 {
 	std::vector<ParsecGuestPrefs>::iterator it;
@@ -279,7 +337,7 @@ void GamepadClient::refreshSlots(ParsecGuestPrefs *prefs)
 		{
 			if (prefs->slots >= prefs->padLimit)
 			{
-				(*it).onRageQuit();
+				(*it).clearOwner();
 			}
 			else
 			{
@@ -319,7 +377,7 @@ bool GamepadClient::isRequestButton(ParsecMessage message)
 	);
 }
 
-GamepadClient::ParsecGuestPrefs * GamepadClient::getLimit(uint32_t guestUserId)
+GamepadClient::ParsecGuestPrefs * GamepadClient::getPrefs(uint32_t guestUserId)
 {
 	std::vector<ParsecGuestPrefs>::iterator it;
 	for (it = _guestPrefs.begin(); it != _guestPrefs.end(); ++it)

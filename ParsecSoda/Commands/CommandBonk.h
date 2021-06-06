@@ -11,12 +11,7 @@ class CommandBonk : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() const { return COMMAND_TYPE::BONK; }
 
-	CommandBonk()
-	{
-		_dice.init();
-	}
-
-	void run(const char* msg, ParsecGuest sender, ParsecGuest* guests, int guestCount)
+	void run(const char* msg, ParsecGuest sender, ParsecGuest* guests, int guestCount, Dice *dice)
 	{
 		const uint8_t BONK_CHANCE = 50;
 
@@ -26,7 +21,7 @@ public:
 		switch (search)
 		{
 		case SEARCH_USER_RESULT::NOT_FOUND:
-			if (_dice.roll(BONK_CHANCE))
+			if (dice->roll(BONK_CHANCE))
 				_replyMessage = std::string() + "[ChatBot] | " + sender.name + " dreams of bonking but the target out of reach.\0";
 			else
 				_replyMessage = std::string() + "[ChatBot] | " + sender.name + " yearns for bonking but the victim is not here.\0";
@@ -35,7 +30,7 @@ public:
 		case SEARCH_USER_RESULT::FOUND:
 			if (sender.userID == targetUser.userID)
 				_replyMessage = std::string() + "[ChatBot] | " + sender.name + " self-bonked. *Bonk!*\0";
-			else if (_dice.roll(BONK_CHANCE))
+			else if (dice->roll(BONK_CHANCE))
 				_replyMessage = std::string() + "[ChatBot] | " + sender.name + " bonked " + targetUser.name + ". *Bonk!*\0";
 			else
 				_replyMessage = std::string() + "[ChatBot] | " + targetUser.name + " dodged " + sender.name + "'s bonk. *Swoosh!*\0";
@@ -47,8 +42,5 @@ public:
 			break;
 		}
 	}
-
-private:
-	Dice _dice;
 };
 
