@@ -43,6 +43,6 @@ private:
 	DXGI_SWAP_CHAIN_DESC dxSwapDesc;
 
 	// Lock prevention
-	std::mutex mutex;
+	std::mutex _mutex;
 };
 

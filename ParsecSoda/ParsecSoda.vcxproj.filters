@@ -209,5 +209,8 @@
     <ClInclude Include="Commands\CommandDC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Commands\CommandAFK.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

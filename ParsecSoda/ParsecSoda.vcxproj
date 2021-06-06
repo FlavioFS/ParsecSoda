@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitwise.h" />
+    <ClInclude Include="Commands\CommandAFK.h" />
     <ClInclude Include="Commands\CommandDC.h" />
     <ClInclude Include="Commands\CommandBotMessage.h" />
     <ClInclude Include="Commands\CommandSwap.h" />

@@ -6,7 +6,8 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg)
 	const uint32_t previous = this->_lastUserId;
 
 	setLastUserId(BOT_GUESTID);
-	if		(msgStartsWith(msg, "/ban"))		return new CommandBan();
+	if		(msgIsEqual(msg, "/afk"))			return new CommandAFK();
+	else if	(msgStartsWith(msg, "/ban"))		return new CommandBan();
 	else if	(msgStartsWith(msg, "/bonk"))		return new CommandBonk();
 	else if (msgStartsWith(msg, "/dc"))			return new CommandDC();
 	else if (msgIsEqual(msg, "/ff"))			return new CommandFF();

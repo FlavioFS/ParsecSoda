@@ -9,6 +9,7 @@
 #include "GamepadClient.h"
 
 #include "Commands/ACommand.h"
+#include "Commands/CommandAFK.h"
 #include "Commands/CommandBan.h"
 #include "Commands/CommandBonk.h"
 #include "Commands/CommandBotMessage.h"

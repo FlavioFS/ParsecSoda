@@ -41,7 +41,7 @@ void DX11::clear()
 
 bool DX11::recover()
 {
-	mutex.lock();
+	// _mutex.lock();
 	HRESULT hr;
 
 	// Get DXGI device
@@ -50,7 +50,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -74,7 +74,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -84,7 +84,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -94,7 +94,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -105,7 +105,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -128,7 +128,7 @@ bool DX11::recover()
 	_desc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_READ;
 	_desc.Usage = D3D11_USAGE::D3D11_USAGE_STAGING;
 
-	mutex.unlock();
+	// _mutex.unlock();
 	return true;
 }
 
@@ -236,7 +236,7 @@ bool DX11::captureScreen(Parsec *ps)
 		}
 	}
 	
-	mutex.lock();
+	// _mutex.lock();
 	HRESULT hr(E_FAIL), hr0(E_FAIL);
 	ComPtr<IDXGIResource> lDesktopResource = nullptr;
 	DXGI_OUTDUPL_FRAME_INFO lFrameInfo;
@@ -251,7 +251,7 @@ bool DX11::captureScreen(Parsec *ps)
 			recover();
 		}
 
-		mutex.unlock();
+		// _mutex.unlock();
 		return false;
 	}
 
@@ -267,6 +267,6 @@ bool DX11::captureScreen(Parsec *ps)
 	_lDeskDupl->ReleaseFrame();
 	
 
-	mutex.unlock();
+	// _mutex.unlock();
 	return true;
 }
