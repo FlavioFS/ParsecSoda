@@ -10,16 +10,21 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg)
 	else if	(msgStartsWith(msg, "/ban"))		return new CommandBan();
 	else if	(msgStartsWith(msg, "/bonk"))		return new CommandBonk();
 	else if (msgStartsWith(msg, "/dc"))			return new CommandDC();
-	else if (msgIsEqual(msg, "/ff"))			return new CommandFF();
+	else if (msgIsEqual(msg, "/ff")
+		|| msgIsEqual(msg, "/drop")
+		|| msgIsEqual(msg, "/quit"))			return new CommandFF();
 	else if	(msgStartsWith(msg, "/gameid"))		return new CommandGameId();
 	else if (msgStartsWith(msg, "/guests"))		return new CommandGuests();
 	else if (CommandIpFilter::containsIp(msg))	return new CommandIpFilter();
+	else if (msgIsEqual(msg, "/join"))			return new CommandJoin();
 	else if (msgStartsWith(msg, "/kick"))		return new CommandKick();
-	else if	(msgIsEqual(msg, "/commands"))		return new CommandListCommands();
+	else if	(msgIsEqual(msg, "/commands")
+		|| msgIsEqual(msg, "/help"))			return new CommandListCommands();
 	else if (msgStartsWith(msg, "/mic"))		return new CommandMic();
 	else if (msgIsEqual(msg, "/mirror"))		return new CommandMirror();
 	else if (msgStartsWith(msg, "/name"))		return new CommandName();
-	else if (msgIsEqual(msg, "/pads"))			return new CommandPads();
+	else if (msgIsEqual(msg, "/pads")
+		|| msgIsEqual(msg, "/pad"))				return new CommandPads();
 	else if (msgStartsWith(msg, "/swap"))		return new CommandSwap();
 	else if (msgStartsWith(msg, "/limit"))		return new CommandLimit();
 	else if (msgIsEqual(msg, "/private"))		return new CommandPrivate();

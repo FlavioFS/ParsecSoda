@@ -175,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitwise.h" />
+    <ClInclude Include="Commands\CommandJoin.h" />
     <ClInclude Include="Commands\CommandAFK.h" />
     <ClInclude Include="Commands\CommandDC.h" />
     <ClInclude Include="Commands\CommandBotMessage.h" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Commands\CommandListCommands.h" />
     <ClInclude Include="Commands\CommandVideoFix.h" />
     <ClInclude Include="Commands\CommandPrivate.h" />
+    <ClInclude Include="KeyboardMaps.h" />
     <ClInclude Include="Dice.h" />
     <ClInclude Include="DX11.h" />
     <ClInclude Include="Gamepad.h" />

@@ -10,9 +10,13 @@ class CommandFF : public ACommand
 public:
 	const COMMAND_TYPE type() const { return COMMAND_TYPE::FF; }
 
-	void run(ParsecGuest guest, GamepadClient * padClient)
+	void run(ParsecGuest guest, GamepadClient * padClient, int *droppedPads = nullptr)
 	{
 		int count = padClient->onRageQuit(guest);
+		if (droppedPads != nullptr)
+		{
+			*droppedPads = count;
+		}
 
 		std::ostringstream reply;
 		if (count > 1)

@@ -12,12 +12,12 @@ public:
 	{
 		const std::string pleb_commands = std::string()
 			+ "\n  " + "---- Normal Commands ----"
-			+ "\n  " + "/afk\t\t\t\t |\tRemoves gamepads from players who left the room."
+			+ "\n  " + "/afk\t\t\t\t\t|\tRemoves gamepads from players who left the room."
 			+ "\n  " + "/bonk\t\t\t\t |\tBonk another user."
 			+ "\n  " + "/commands\t|\tShow command list."
 			+ "\n  " + "/ff\t\t\t\t\t\t |\tDrop your gamepads."
 			+ "\n  " + "/mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
-			+ "\n  " + "/pads\t\t\t\t  |\tShow the list of gamepad holders."
+			+ "\n  " + "/pads\t\t\t\t  |\tShow who's holding each gamepad."
 			+ "\n  " + "/swap\t\t\t\t |\tReplace your gamepad with another one."
 			;
 

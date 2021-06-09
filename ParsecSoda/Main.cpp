@@ -95,21 +95,6 @@ static bool app_func(void *opaque)
 	return !ctx->quit;
 }
 
-static void logGuestStateChange(ParsecGuest *guest)
-{
-	switch (guest->state) {
-	case GUEST_CONNECTED:
-		printf("%s (#%d)    >> joined\n", guest->name, guest->userID);
-		break;
-	case GUEST_DISCONNECTED:
-		padClient.onRageQuit(*guest);
-		printf("%s (#%d)    quit >>\n", guest->name, guest->userID);
-		break;
-	default:
-		break;
-	}
-}
-
 static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
 {
 	opaque;
@@ -255,11 +240,12 @@ void initAllModules()
 	padClient.init();
 	padClient.createMaximumGamepads();
 	padClient.connectAllGamepads();
+	padClient.sortGamepads();
 	padClient.setLimit(3888558, 0);		// Remove myself
 	padClient.setLimit(6711547, 1);
 
 	// Data is mocked for now - arguments don't matter
-	parsecSession.mockSession(false);	// Replace with fetchSession in final version
+	parsecSession.mockSession();	// Replace with fetchSession in final version
 	//parsecSession.fetchSession(EMAIL, PASSWORD);
 
 	hostConfig = EMPTY_HOST_CONFIG;
@@ -286,7 +272,7 @@ void liveStreamMedia()
 {
 	using clock = std::chrono::system_clock;
 	using milli = std::chrono::duration<double, std::milli>;
-	const double FPS = 60.0;
+	const double FPS = 250.0;
 	const double MS_PER_FRAME = 1000.0 / FPS;
 
 	while (isRunning)
@@ -320,7 +306,7 @@ void pollInputs()
 
 	while (isRunning)
 	{
-		if (ParsecHostPollInput(ps, 1, &inputGuest, &inputGuestMsg))
+		if (ParsecHostPollInput(ps, 4, &inputGuest, &inputGuestMsg))
 		{
 			padClient.sendMessage(inputGuest, inputGuestMsg);
 		}
@@ -339,13 +325,12 @@ void pollEvents ()
 
 	while (isRunning)
 	{
-		if (ParsecHostPollEvents(ps, 1, &event)) {
+		if (ParsecHostPollEvents(ps, 30, &event)) {
 			ParsecGuest guest = event.guestStateChange.guest;
 
 			switch (event.type)
 			{
 			case HOST_EVENT_GUEST_STATE_CHANGE:
-				logGuestStateChange(&event.guestStateChange.guest);
 				if ((guest.state == GUEST_CONNECTED || guest.state == GUEST_CONNECTING) && banList.isBanned(guest.userID))
 				{
 					ParsecHostKickGuest(ps, guest.id);
@@ -362,6 +347,22 @@ void pollEvents ()
 						ps, guests, guestCount,
 						chatBot.formatGuestConnection(event.guestStateChange.guest, isAdmin)
 					);
+
+					if (guest.state == GUEST_CONNECTED)
+					{
+						printf("%s (#%d)    >> joined\n", guest.name, guest.userID);
+					}
+					else
+					{
+						printf("%s (#%d)    quit >>\n", guest.name, guest.userID);
+						int droppedPads = 0;
+						CommandFF command;
+						command.run(guest, &padClient, &droppedPads);
+						if (droppedPads > 0)
+						{
+							broadcastChatMessage(ps, guests, guestCount, command.replyMessage());
+						}
+					}
 				}
 				break;
 
@@ -529,6 +530,10 @@ void pollEvents ()
 	}
 }
 
+void guiLoop()
+{
+	//MTY_App *app = MTY_AppCreate();
+}
 
 int main(int argc, char** argv)
 {
@@ -536,9 +541,9 @@ int main(int argc, char** argv)
 
 	if (ps != NULL)
 	{
+		std::thread mediaThread (liveStreamMedia);
 		std::thread inputThread (pollInputs);
 		std::thread eventsThread (pollEvents);
-		std::thread mediaThread (liveStreamMedia);
 
 		inputThread.join();
 		eventsThread.join();
@@ -548,7 +553,6 @@ int main(int argc, char** argv)
 		ParsecHostStop(ps);
 		ParsecDestroy(ps);
 	}
-
 
 	return 0;
 }

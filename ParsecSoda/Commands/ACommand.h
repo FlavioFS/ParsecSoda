@@ -16,6 +16,7 @@ enum class COMMAND_TYPE
 	GAMEID,
 	GUESTS,
 	IP,
+	JOIN,
 	KICK,
 	LIMIT,
 	MIC,

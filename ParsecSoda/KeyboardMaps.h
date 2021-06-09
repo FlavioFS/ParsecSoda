@@ -1,0 +1,42 @@
+#pragma once
+
+#include "parsec.h"
+
+enum class KEY_TO_GAMEPAD {
+	LEFT = KEY_A,
+	RIGHT = KEY_D,
+	UP = KEY_W,
+	DOWN = KEY_S,
+	A = KEY_L,
+	B = KEY_O,
+	X = KEY_K,
+	Y = KEY_I,
+	BACK = KEY_BACKSPACE,
+	START = KEY_ENTER,
+	LB = KEY_Q,
+	RB = KEY_P,
+	LT = KEY_F,
+	RT = KEY_J,
+	LTHUMB = KEY_C,
+	RTHUMB = KEY_M
+};
+
+enum class KEY_TO_GAMEPAD2
+{
+	LEFT = KEY_LEFT,
+	RIGHT = KEY_RIGHT,
+	UP = KEY_UP,
+	DOWN = KEY_DOWN,
+	A = KEY_KP_1,
+	B = KEY_KP_2,
+	X = KEY_KP_4,
+	Y = KEY_KP_5,
+	BACK = KEY_KP_MULTIPLY,
+	START = KEY_KP_MINUS,
+	LB = KEY_KP_7,
+	RB = KEY_KP_8,
+	LT = KEY_KP_6,
+	RT = KEY_KP_3,
+	LTHUMB = KEY_KP_0,
+	RTHUMB = KEY_KP_PERIOD
+};

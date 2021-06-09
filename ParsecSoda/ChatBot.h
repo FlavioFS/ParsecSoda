@@ -19,6 +19,7 @@
 #include "Commands/CommandGameId.h"
 #include "Commands/CommandGuests.h"
 #include "Commands/CommandIpFilter.h"
+#include "Commands/CommandJoin.h"
 #include "Commands/CommandKick.h"
 #include "Commands/CommandListCommands.h"
 #include "Commands/CommandMic.h"

@@ -7,10 +7,13 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
+#include <algorithm>
 #include "GuestData.h"
+#include "KeyboardMaps.h"
 
 #define GAMEPAD_LIMIT_NOT_FOUND -1
 #define GAMEPAD_PICK_TIMEOUT_MS 1000
+
 
 enum class GAMEPAD_PICK_REQUEST
 {
@@ -38,6 +41,7 @@ public:
 	Gamepad createGamepad();
 	void createMaximumGamepads();
 	void connectAllGamepads();
+	void sortGamepads();
 	Gamepad connectNextGamepad();
 	void release();
 	Gamepad getGamepad(int index);
@@ -60,6 +64,7 @@ private:
 	void freeSlots(uint32_t userId);
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
+	bool isRequestKeyboard(ParsecMessage message);
 	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
 	PVIGEM_CLIENT _client;
 	std::vector<Gamepad> _gamepads;
