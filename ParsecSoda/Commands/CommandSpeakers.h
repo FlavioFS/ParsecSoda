@@ -7,21 +7,38 @@
 class CommandSpeakers : public ACommandIntegerArg
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::SPEAKERS; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::SPEAKERS; }
 
-	void run(const char * msg, AudioMix * mixer)
+	CommandSpeakers(const char* msg, AudioMix& mixer)
+		: ACommandIntegerArg(msg, internalPrefixes()), _mixer(mixer)
+	{}
+
+	bool run() override
 	{
-		int volume = 0;
-		if ( !ACommandIntegerArg::run(msg, "/speakers ", &volume) )
+		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = std::string() + "[ChatBot] | Usage: /speakers <integer in range [0, 100]>\nExample: /speakers 42\0";
-			return;
+			_replyMessage = std::string() + "[ChatBot] | Usage: !speakers <integer in range [0, 100]>\nExample: !speakers 42\0";
+			return false;
 		}
 
-		mixer->setVolume2(volume / 100.0f);
+		_mixer.setVolume2(_intArg / 100.0f);
 
 		std::ostringstream reply;
-		reply << "[ChatBot] | Speakers volume set to " << volume << "%\0";
+		reply << "[ChatBot] | Speakers volume set to " << _intArg << "%\0";
 		_replyMessage = reply.str();
+		return true;
 	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!speakers" };
+	}
+
+protected:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!speakers " };
+	}
+
+	AudioMix& _mixer;
 };

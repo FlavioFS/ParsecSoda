@@ -75,11 +75,11 @@ void Hosting::applyHostConfig()
 void Hosting::broadcastChatMessage(string message)
 {
 	vector<Guest> guests = _guestList.getGuests();
-	vector<Guest>::iterator i;
+	vector<Guest>::iterator gi;
 
-	for (i = guests.begin(); i != guests.end(); ++i)
+	for (gi = guests.begin(); gi != guests.end(); ++gi)
 	{
-		ParsecHostSendUserData(_parsec, (*i).getID(), HOSTING_CHAT_MSG_ID, message.c_str());
+		ParsecHostSendUserData(_parsec, (*gi).userID, HOSTING_CHAT_MSG_ID, message.c_str());
 	}
 }
 
@@ -89,6 +89,8 @@ void Hosting::init()
 	_dx11.init();
 	_gamepadClient.init();
 	_gamepadClient.createMaximumGamepads();
+
+	_chatBot = new ChatBot(_audioMix, _banList, _dice, _dx11, _gamepadClient, _guestList, _parsec, _hostConfig, _parsecSession, _isRunning);
 }
 
 bool Hosting::isReady()
@@ -307,28 +309,29 @@ void Hosting::pollEvents()
 	while (_isRunning)
 	{
 		if (ParsecHostPollEvents(_parsec, 30, &event)) {
-			ParsecGuest guest = event.guestStateChange.guest;
+			ParsecGuest parsecGuest = event.guestStateChange.guest;
+			ParsecGuestState state;
+			Guest guest = Guest(parsecGuest.name, parsecGuest.userID, parsecGuest.id);
+			isAdmin = _adminList.isAdmin(guest.userID);
+			guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
+			_guestList.setGuests(guests, guestCount);
 
 			switch (event.type)
 			{
 			case HOST_EVENT_GUEST_STATE_CHANGE:
-				guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
-				_guestList.setGuests(guests, guestCount);
-
-				if ((guest.state == GUEST_CONNECTED || guest.state == GUEST_CONNECTING) && _banList.isBanned(guest.userID))
+				if ((state == GUEST_CONNECTED || state == GUEST_CONNECTING) && _banList.isBanned(guest.userID))
 				{
 					ParsecHostKickGuest(_parsec, guest.id);
-					broadcastChatMessage(_chatBot.formatBannedGuestMessage(guest));
+					broadcastChatMessage(_chatBot->formatBannedGuestMessage(guest));
 				}
-				else if (guest.state == GUEST_CONNECTED || guest.state == GUEST_DISCONNECTED)
+				else if (state == GUEST_CONNECTED || state == GUEST_DISCONNECTED)
 				{
 					guestMsg.clear();
 					guestMsg = string(event.guestStateChange.guest.name);
+					
+					broadcastChatMessage(_chatBot->formatGuestConnection(guest, state, isAdmin));
 
-					isAdmin = _adminList.isAdmin(event.userData.guest.userID);
-					broadcastChatMessage(_chatBot.formatGuestConnection(event.guestStateChange.guest, isAdmin));
-
-					if (guest.state == GUEST_CONNECTED)
+					if (state == GUEST_CONNECTED)
 					{
 						printf("%s (#%d)    >> joined\n", guest.name, guest.userID);
 					}
@@ -336,8 +339,8 @@ void Hosting::pollEvents()
 					{
 						printf("%s (#%d)    quit >>\n", guest.name, guest.userID);
 						int droppedPads = 0;
-						CommandFF command;
-						command.run(guest, &_gamepadClient, &droppedPads);
+						CommandFF command(guest, _gamepadClient);
+						command.run();
 						if (droppedPads > 0)
 						{
 							broadcastChatMessage(command.replyMessage());
@@ -349,142 +352,20 @@ void Hosting::pollEvents()
 			case HOST_EVENT_USER_DATA:
 				char* msg = (char*)ParsecGetBuffer(_parsec, event.userData.key);
 				cout << msg << "\n";
+
 				if (event.userData.id == PARSEC_APP_CHAT_MSG)
 				{
-					dataGuest = event.userData.guest;
 					guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
-					isAdmin = _adminList.isAdmin(dataGuest.userID);
-					ACommand* command = _chatBot.identifyUserDataMessage(msg);
-					COMMAND_TYPE type = command->type();
-
-
-					// =================================
-					//  Pleb commands
-					// =================================
-					if (!isAdmin)
-					{
-						switch (command->type())
-						{
-						case COMMAND_TYPE::AFK:
-							((CommandAFK*)command)->run(guests, guestCount, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::BONK:
-							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &_dice);
-							break;
-						case COMMAND_TYPE::COMMANDS:
-							((CommandListCommands*)command)->run(isAdmin);
-							break;
-						case COMMAND_TYPE::FF:
-							((CommandFF*)command)->run(dataGuest, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::IP:
-							((CommandIpFilter*)command)->run(_parsec, dataGuest, &_banList);
-							break;
-						case COMMAND_TYPE::MIRROR:
-							((CommandMirror*)command)->run(dataGuest, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::PADS:
-							((CommandPads*)command)->run(&_gamepadClient);
-							break;
-						case COMMAND_TYPE::SWAP:
-							((CommandSwap*)command)->run(msg, dataGuest, &_gamepadClient);
-							break;
-						default:
-							break;
-						}
-					}
-
-					// =================================
-					//  Admin commands
-					// =================================
-					else
-					{
-						switch (command->type())
-						{
-						case COMMAND_TYPE::AFK:
-							((CommandAFK*)command)->run(guests, guestCount, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::BAN:
-							((CommandBan*)command)->run(msg, _parsec, dataGuest, guests, guestCount, &_banList);
-							break;
-						case COMMAND_TYPE::BONK:
-							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &_dice);
-							break;
-						case COMMAND_TYPE::COMMANDS:
-							((CommandListCommands*)command)->run(isAdmin);
-							break;
-						case COMMAND_TYPE::DC:
-							((CommandDC*)command)->run(msg, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::FF:
-							((CommandFF*)command)->run(dataGuest, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::GAMEID:
-							((CommandGameId*)command)->run(msg, &_hostConfig);
-							break;
-						case COMMAND_TYPE::GUESTS:
-							((CommandGuests*)command)->run(msg, &_hostConfig);
-							break;
-						case COMMAND_TYPE::IP:
-							((CommandIpFilter*)command)->run(_parsec, dataGuest, &_banList);
-							break;
-						case COMMAND_TYPE::KICK:
-							((CommandKick*)command)->run(msg, _parsec, dataGuest, guests, guestCount);
-							break;
-						case COMMAND_TYPE::LIMIT:
-							((CommandLimit*)command)->run(msg, guests, guestCount, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::MIC:
-							((CommandMic*)command)->run(msg, &_audioMix);
-							break;
-						case COMMAND_TYPE::MIRROR:
-							((CommandMirror*)command)->run(dataGuest, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::NAME:
-							((CommandName*)command)->run(msg, &_hostConfig);
-							break;
-						case COMMAND_TYPE::PADS:
-							((CommandPads*)command)->run(&_gamepadClient);
-							break;
-						case COMMAND_TYPE::PRIVATE:
-							((CommandPrivate*)command)->run(&_hostConfig);
-							break;
-						case COMMAND_TYPE::PUBLIC:
-							((CommandPublic*)command)->run(&_hostConfig);
-							break;
-						case COMMAND_TYPE::SWAP:
-							((CommandSwap*)command)->run(msg, dataGuest, &_gamepadClient);
-							break;
-						case COMMAND_TYPE::QUIT:
-							((CommandQuit*)command)->run(&_isRunning);
-							break;
-						case COMMAND_TYPE::SETCONFIG:
-							((CommandSetConfig*)command)->run(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
-							break;
-						case COMMAND_TYPE::SPEAKERS:
-							((CommandSpeakers*)command)->run(msg, &_audioMix);
-							break;
-						case COMMAND_TYPE::UNBAN:
-							((CommandUnban*)command)->run(msg, dataGuest, &_banList);
-							break;
-						case COMMAND_TYPE::VIDEOFIX:
-							((CommandVideoFix*)command)->run(&_dx11);
-							break;
-							//case COMMAND_TYPE::GIVE:
-							//	break;
-							//case COMMAND_TYPE::TAKE:
-							//	break;
-						default:
-							break;
-						}
-					}
+					isAdmin = _adminList.isAdmin(guest.userID);
+					ACommand* command = _chatBot->identifyUserDataMessage(msg, guest, isAdmin);
+					command->run();
 
 					// Blocked messages
 					if (!isFilteredCommand(command))
 					{
-						CommandDefaultMessage defaultMessage;
-						defaultMessage.run(msg, dataGuest, _chatBot.getLastUserId(), isAdmin);
-						_chatBot.setLastUserId(dataGuest.userID);
+						CommandDefaultMessage defaultMessage (msg, guest, _chatBot->getLastUserId(), isAdmin);
+						defaultMessage.run();
+						_chatBot->setLastUserId(guest.userID);
 
 						if (!defaultMessage.replyMessage().empty())
 						{
@@ -497,7 +378,7 @@ void Hosting::pollEvents()
 					{
 						broadcastChatMessage(command->replyMessage());
 						cout << endl << command->replyMessage();
-						_chatBot.setLastUserId();
+						_chatBot->setLastUserId();
 					}
 
 					delete command;

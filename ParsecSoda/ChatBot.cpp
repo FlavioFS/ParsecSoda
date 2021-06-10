@@ -1,42 +1,45 @@
 #include "ChatBot.h"
 
 
-ACommand * ChatBot::identifyUserDataMessage(const char* msg)
+ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool &isAdmin)
 {
 	const uint32_t previous = this->_lastUserId;
 
 	setLastUserId(BOT_GUESTID);
-	if		(msgIsEqual(msg, "/afk"))			return new CommandAFK();
-	else if	(msgStartsWith(msg, "/ban"))		return new CommandBan();
-	else if	(msgStartsWith(msg, "/bonk"))		return new CommandBonk();
-	else if (msgStartsWith(msg, "/dc"))			return new CommandDC();
-	else if (msgIsEqual(msg, "/ff")
-		|| msgIsEqual(msg, "/drop")
-		|| msgIsEqual(msg, "/quit"))			return new CommandFF();
-	else if	(msgStartsWith(msg, "/gameid"))		return new CommandGameId();
-	else if (msgStartsWith(msg, "/guests"))		return new CommandGuests();
-	else if (CommandIpFilter::containsIp(msg))	return new CommandIpFilter();
-	else if (msgIsEqual(msg, "/join"))			return new CommandJoin();
-	else if (msgStartsWith(msg, "/kick"))		return new CommandKick();
-	else if	(msgIsEqual(msg, "/commands")
-		|| msgIsEqual(msg, "/help"))			return new CommandListCommands();
-	else if (msgStartsWith(msg, "/mic"))		return new CommandMic();
-	else if (msgIsEqual(msg, "/mirror"))		return new CommandMirror();
-	else if (msgStartsWith(msg, "/name"))		return new CommandName();
-	else if (msgIsEqual(msg, "/pads")
-		|| msgIsEqual(msg, "/pad"))				return new CommandPads();
-	else if (msgStartsWith(msg, "/swap"))		return new CommandSwap();
-	else if (msgStartsWith(msg, "/limit"))		return new CommandLimit();
-	else if (msgIsEqual(msg, "/private"))		return new CommandPrivate();
-	else if (msgIsEqual(msg, "/public"))		return new CommandPublic();
-	else if	(msgIsEqual(msg, "/q"))				return new CommandQuit();
-	else if (msgIsEqual(msg, "/setconfig"))		return new CommandSetConfig();
-	else if (msgStartsWith(msg, "/speakers"))	return new CommandSpeakers();
-	else if (msgStartsWith(msg, "/unban"))		return new CommandUnban();
-	else if	(msgIsEqual(msg, "/videofix"))		return new CommandVideoFix();
+
+	// Pleb commands
+	if		(msgIsEqual(msg, CommandAFK::prefixes()))			return new CommandAFK(_guests, _gamepadClient);
+	else if	(msgStartsWith(msg, CommandBonk::prefixes()))		return new CommandBonk(msg, sender, _guests, _dice);
+	else if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
+	else if	(msgIsEqual(msg, CommandHelp::prefixes()))			return new CommandHelp(isAdmin);
+	else if (CommandIpFilter::containsIp(msg))					return new CommandIpFilter(msg, sender, _parsec, _ban);
+	else if (msgIsEqual(msg, CommandJoin::prefixes()))			return new CommandJoin();
+	else if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
+	else if (msgIsEqual(msg, CommandPads::prefixes()))			return new CommandPads(_gamepadClient);
+	else if (msgStartsWith(msg, CommandSwap::prefixes()))		return new CommandSwap(msg, sender, _gamepadClient);
+
+	// Admin commands
+	if (isAdmin)
+	{
+		if		(msgStartsWith(msg, CommandBan::prefixes()))		return new CommandBan(msg, sender, _parsec, _guests, _ban);
+		else if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
+		else if	(msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
+		else if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
+		else if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests);
+		else if (msgStartsWith(msg, CommandLimit::prefixes()))		return new CommandLimit(msg, _guests, _gamepadClient);
+		else if (msgStartsWith(msg, CommandMic::prefixes()))		return new CommandMic(msg, _audioMixer);
+		else if (msgStartsWith(msg, CommandName::prefixes()))		return new CommandName(msg, _hostConfig);
+		else if (msgIsEqual(msg, CommandPrivate::prefixes()))		return new CommandPrivate(_hostConfig);
+		else if (msgIsEqual(msg, CommandPublic::prefixes()))		return new CommandPublic(_hostConfig);
+		else if	(msgIsEqual(msg, CommandQuit::prefixes()))			return new CommandQuit(_hostingLoopController);
+		else if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
+		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioMixer);
+		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban);
+		else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11);
+	}
 
 	this->setLastUserId(previous);
-	return new CommandDefaultMessage();
+	return new CommandDefaultMessage(msg, sender, _lastUserId, isAdmin);
 }
 
 const uint32_t ChatBot::getLastUserId() const
@@ -44,12 +47,12 @@ const uint32_t ChatBot::getLastUserId() const
 	return this->_lastUserId;
 }
 
-const std::string ChatBot::formatGuestConnection(ParsecGuest guest, bool isAdmin)
+const std::string ChatBot::formatGuestConnection(Guest guest, ParsecGuestState state, bool isAdmin)
 {
 	setLastUserId(BOT_GUESTID);
 
 	std::ostringstream reply;
-	if (guest.state == GUEST_CONNECTED)
+	if (state == GUEST_CONNECTED)
 	{
 		reply << "@ >>  joined \t " << guest.name << " \t(#" << guest.userID << ")\0";
 	}
@@ -64,7 +67,7 @@ const std::string ChatBot::formatGuestConnection(ParsecGuest guest, bool isAdmin
 	return formattedMessage;
 }
 
-const std::string ChatBot::formatBannedGuestMessage(ParsecGuest guest)
+const std::string ChatBot::formatBannedGuestMessage(Guest guest)
 {
 	std::ostringstream reply;
 	reply << "[ChatBot] | None shall pass! Banned guests don't join us:\n\t\t" << guest.name << " \t (#" << guest.userID << ")\0";
@@ -74,20 +77,64 @@ const std::string ChatBot::formatBannedGuestMessage(ParsecGuest guest)
 
 CommandBotMessage ChatBot::sendBotMessage(const char* msg)
 {
-	CommandBotMessage message;
-	message.run(msg);
+	CommandBotMessage message(msg);
+	message.run();
 	setLastUserId(BOT_GUESTID);
 	return message;
 }
+
+//void ChatBot::inject(
+//	AudioMix& audioMixer, BanList& ban, Dice& dice, DX11& dx11, GamepadClient& gamepadClient,
+//	GuestList& guests, Parsec* parsec, ParsecHostConfig& hostConfig,
+//	ParsecSession parsecSession, bool& hostingLoopController
+//)
+//{
+//	_audioMixer = audioMixer;
+//	_ban = ban;
+//	_dice = dice;
+//	_dx11 = dx11;
+//	_gamepadClient = gamepadClient;
+//	_guests = guests;
+//	_parsec = parsec;
+//	_hostConfig = hostConfig;
+//	_parsecSession = parsecSession;
+//	_hostingLoopController = hostingLoopController;
+//}
 
 bool ChatBot::msgStartsWith(const char* msg, const char * pattern)
 {
 	return Stringer::startsWithPattern(msg, pattern);
 }
 
+bool ChatBot::msgStartsWith(const char* msg, vector<const char*> patterns)
+{
+	vector<const char*>::iterator pi = patterns.begin();
+	for (; pi != patterns.end(); ++pi)
+	{
+		if (Stringer::startsWithPattern(msg, *pi))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool ChatBot::msgIsEqual(const char * msg, const char * pattern)
 {
 	return (strcmp(msg, pattern) == 0);
+}
+
+bool ChatBot::msgIsEqual(const char* msg, vector<const char*> patterns)
+{
+	vector<const char*>::iterator pi = patterns.begin();
+	for (; pi != patterns.end(); ++pi)
+	{
+		if ((strcmp(msg, *pi) == 0))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void ChatBot::setLastUserId(uint32_t lastId)

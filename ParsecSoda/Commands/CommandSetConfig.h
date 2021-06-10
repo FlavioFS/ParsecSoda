@@ -7,12 +7,26 @@
 class CommandSetConfig : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::SETCONFIG; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::SETCONFIG; }
 
-	void run(Parsec * ps, ParsecHostConfig * config, const char * sessionId)
+	CommandSetConfig(Parsec* parsec, ParsecHostConfig* config, const char* sessionId)
+		: _parsec(parsec), _config(config), _sessionId(sessionId)
+	{}
+
+	bool run() override
 	{
 		_replyMessage = "[ChatBot] | Room settings applied.\0";
-		ParsecHostSetConfig(ps, config, sessionId);
+		ParsecHostSetConfig(_parsec, _config, _sessionId);
+		return true;
 	}
-};
 
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!setconfig" };
+	}
+
+protected:
+	Parsec* _parsec;
+	ParsecHostConfig* _config;
+	const char* _sessionId;
+};

@@ -5,16 +5,25 @@
 class CommandQuit : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::QUIT; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::QUIT; }
 
-	CommandQuit()
+	CommandQuit(bool & hostingLoopController)
+		: _hostingLoopController(hostingLoopController)
+	{}
+
+	bool run() override
 	{
 		_replyMessage = "[ChatBot] | Closing stream...\0";
+		_hostingLoopController = false;
+		return true;
 	}
 
-	void run(bool * mainLoopController)
+	static vector<const char*> prefixes()
 	{
-		*mainLoopController = false;
+		return vector<const char*> { "!q" };
 	}
+
+protected:
+	bool& _hostingLoopController;
 };
 

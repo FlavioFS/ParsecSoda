@@ -3,11 +3,16 @@
 #include <regex>
 #include "ACommand.h"
 #include "parsec.h"
+#include "../Guest.h"
 
 class CommandIpFilter : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::IP; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::IP; }
+
+	CommandIpFilter(const char* msg, Guest& sender, Parsec* parsec, BanList &ban)
+		: _msg(msg), _sender(sender), _parsec(parsec), _ban(ban)
+	{}
 
 	static bool containsIp(const char* msg)
 	{
@@ -18,11 +23,17 @@ public:
 		return std::regex_search(message, match, ipRegex);
 	}
 
-	void run(Parsec* ps, ParsecGuest sender, BanList* banList)
+	bool run() override
 	{
-		banList->ban(GuestData(sender.name, sender.userID));
-		ParsecHostKickGuest(ps, sender.id);
-		_replyMessage = std::string() + "! [ChatBot] | " + sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
+		_ban.ban(GuestData(_sender.name, _sender.userID));
+		ParsecHostKickGuest(_parsec, _sender.id);
+		_replyMessage = std::string() + "! [ChatBot] | " + _sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
+		return true;
 	}
-};
 
+protected:
+	string _msg;
+	Parsec* _parsec;
+	Guest& _sender;
+	BanList& _ban;
+};

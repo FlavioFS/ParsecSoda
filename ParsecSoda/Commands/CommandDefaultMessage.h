@@ -3,26 +3,37 @@
 #include <iostream>
 #include <sstream>
 #include "ACommand.h"
-#include "../GuestData.h"
+#include "../Guest.h"
 
 class CommandDefaultMessage : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::DEFAULT_MESSAGE; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::DEFAULT_MESSAGE; }
 
-	void run(std::string msg, ParsecGuest sender, uint32_t lastUserId, bool isAdmin = false)
+	CommandDefaultMessage(const char* msg, Guest &sender, uint32_t lastUserID, bool isAdmin = false)
+		: _msg(msg), _sender(sender), _lastUserID(lastUserID), _isAdmin(isAdmin)
+	{}
+
+	bool run() override
 	{
 		std::ostringstream reply;
-		if (sender.userID != lastUserId)
+		if (_sender.userID != _lastUserID)
 		{
-			reply << (isAdmin ? "$  " : ">  ") << sender.name << " \t (#" << sender.userID << "):\n";
+			reply << (_isAdmin ? "$  " : ">  ") << _sender.name << " \t (#" << _sender.userID << "):\n";
 		}
 
-		reply << "\t\t " << msg << "\0";
+		reply << "\t\t " << _msg << "\0";
 
 		_replyMessage = reply.str();
 		reply.clear();
 		reply.flush();
-	}
-};
 
+		return true;
+	}
+
+protected:
+	string _msg;
+	Guest &_sender;
+	uint32_t _lastUserID;
+	bool _isAdmin;
+};

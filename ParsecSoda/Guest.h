@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "parsec.h"
 
 using namespace std;
 
@@ -24,14 +25,17 @@ public:
 	 * @param userId Unique user ID.
 	 * @param id Internal id for specific methods.
 	 */
-	Guest(string name, uint32_t userId, uint32_t id);
+	Guest(string name, uint32_t userID, uint32_t id);
+	
+	/**
+	 * Compatibility constructor.
+	 * @param guest ParsecGuest object.
+	 */
+	Guest(ParsecGuest guest);
 
-	const string getName();
-	const int64_t getUserID();
-	const int64_t getID();
+	const bool isValid();
 
-private:
 	string name;
-	int64_t userId;
+	int64_t userID;
 	int64_t id;
 };

@@ -3,52 +3,59 @@
 #include "ACommandPrefix.h"
 #include "parsec.h"
 #include "../Stringer.h"
-#include "../Utils.h"
-
+#include "../GuestList.h"
 
 class ACommandSearchUserIntArg : public ACommandPrefix
 {
 public:
-	bool run(const char * msg, const char* prefix, ParsecGuest* guests, int guestCount, ParsecGuest * targetUser, int * intArg)
+	ACommandSearchUserIntArg(const char* msg, vector<const char*> prefixes, GuestList& guests)
+		: ACommandPrefix(msg, prefixes), _guests(guests), _searchResult(SEARCH_USER_RESULT::FAILED)
+	{}
+
+	bool run()
 	{
-		if (!ACommandPrefix::run(msg, prefix))
+		if (!ACommandPrefix::run())
 		{
+			_searchResult = SEARCH_USER_RESULT::FAILED;
 			return false;
 		}
 
 		try
 		{
-			std::string str = msg;
+			std::string str = _msg;
 
 			std::string argNumber = std::string() + str.back();
-			*intArg = std::stoi(argNumber);
+			_intArg = std::stoi(argNumber);
 
-			std::string args = str.substr(strlen(prefix));
+			std::string args = str.substr(strlen(_prefix));
 			std::string targetUsername = args.substr(0, args.size() - 2);
 
 
 			bool found = false;
 			try
 			{
-				found = Utils::findUser(stoul(targetUsername), guests, guestCount, targetUser);
+				found = _guests.find(stoul(targetUsername), &_targetGuest);
 			}
 			catch (const std::exception&) {}
 
 			if (!found)
 			{
-				found = Utils::findUser(targetUsername, guests, guestCount, targetUser);
-			}
-			
-			if (!found)
-			{
-				return false;
+				found = _guests.find(targetUsername, &_targetGuest);
 			}
 
+			_searchResult = found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;
 			return true;
 		}
 		catch (const std::exception&)
 		{
+			_searchResult = SEARCH_USER_RESULT::FAILED;
 			return false;
 		}
 	}
+
+protected:
+	SEARCH_USER_RESULT _searchResult;
+	GuestList& _guests;
+	Guest _targetGuest;
+	int _intArg;
 };

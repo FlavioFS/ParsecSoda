@@ -164,7 +164,7 @@
     <ClInclude Include="GuestData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Commands\CommandListCommands.h">
+    <ClInclude Include="Commands\CommandHelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandVideoFix.h">

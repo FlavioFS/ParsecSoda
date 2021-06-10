@@ -8,18 +8,22 @@
 class CommandPads : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::PADS; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::PADS; }
 
-	void run(GamepadClient * padClient)
+	CommandPads(GamepadClient &gamepadClient)
+		: _gamepadClient(gamepadClient)
+	{}
+
+	bool run() override
 	{
-		std::vector<GamepadStatus> owners = padClient->getGamepadStatus();
+		_owners = _gamepadClient.getGamepadStatus();
 		
 		std::ostringstream reply;
 		reply << "[ChatBot] | Gamepad Holders:\n";
 
-		std::vector<GamepadStatus>::iterator it = owners.begin();
+		std::vector<GamepadStatus>::iterator it = _owners.begin();
 		uint16_t i = 1;
-		for (; it != owners.end(); ++it)
+		for (; it != _owners.end(); ++it)
 		{
 			reply << "\t\t"
 				<< ((*it).isConnected ? "ON  " : "OFF") << "\t"
@@ -38,6 +42,21 @@ public:
 		reply << "\0";
 
 		_replyMessage = reply.str();
+		return true;
 	}
+
+	const vector<GamepadStatus> owners()
+	{
+		return _owners;
+	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!pads", "!pad " };
+	}
+
+protected:
+	GamepadClient& _gamepadClient;
+	vector<GamepadStatus> _owners;
 };
 

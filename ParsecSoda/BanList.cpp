@@ -15,6 +15,20 @@ void BanList::ban(GuestData user)
 	_bannedUsers.push_back(user);
 }
 
+bool BanList::find(const uint32_t userID, GuestData *result)
+{
+	std::vector<GuestData>::iterator i;
+	for (i = _bannedUsers.begin(); i != _bannedUsers.end(); ++i)
+	{
+		if ((*i).userId == userID)
+		{
+			*result = *i;
+			return true;
+		}
+	}
+	return false;
+}
+
 const bool BanList::unban(const char * guestName, GuestData* unbannedGuest)
 {
 	std::vector<GuestData>::iterator it;
@@ -57,14 +71,6 @@ const bool BanList::unban(uint32_t guestId, GuestData* unbannedGuest)
 
 const bool BanList::isBanned(const uint32_t userId)
 {
-	std::vector<GuestData>::iterator it;
-	for (it = _bannedUsers.begin(); it != _bannedUsers.end(); ++it)
-	{
-		if ((*it).userId == userId)
-		{
-			return true;
-		}
-	}
-
-	return false;
+	GuestData guest;
+	return find(userId, &guest);
 }

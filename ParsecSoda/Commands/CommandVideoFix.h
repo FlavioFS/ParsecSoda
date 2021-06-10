@@ -7,12 +7,24 @@
 class CommandVideoFix : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::VIDEOFIX; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::VIDEOFIX; }
 
-	void run(DX11 *dx11)
+	CommandVideoFix(DX11 &dx11)
+		: _dx11(dx11)
+	{}
+
+	bool run() override
 	{
 		_replyMessage = "[ChatBot] | Refreshing Directx11...\0";
-		dx11->recover();
+		_dx11.recover();
+		return true;
 	}
-};
 
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!videofix" };
+	}
+
+protected:
+	DX11& _dx11;
+};

@@ -5,38 +5,62 @@
 #include "parsec.h"
 #include "../BanList.h"
 
+
 class CommandBan : public ACommandSearchUser
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::BAN; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::BAN; }
 
-	void run(const char* msg, Parsec *ps, ParsecGuest sender, ParsecGuest* guests, int guestCount, BanList * banList)
+	CommandBan(const char* msg, Guest& sender, Parsec* parsec, GuestList &guests, BanList &banList)
+		: ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec), _ban(banList)
 	{
-		ParsecGuest targetUser;
-		SEARCH_USER_RESULT search = ACommandSearchUser::run(msg, "/ban ", guests, guestCount, &targetUser);
+	}
+
+	bool run() override
+	{
+		ACommandSearchUser::run();
 		
-		switch (search)
+		bool rv = false;
+
+		switch (_searchResult)
 		{
 		case SEARCH_USER_RESULT::NOT_FOUND:
-			_replyMessage = std::string() + "[ChatBot] | " + sender.name + ", I cannot find the user you want to ban.\0";
+			_replyMessage = std::string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to ban.\0";
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
-			if (sender.userID == targetUser.userID)
-				_replyMessage = std::string() + "[ChatBot] | Thou shall not ban thyself, " + sender.name + " ...\0";
+			if (_sender.userID == _targetGuest.userID)
+				_replyMessage = std::string() + "[ChatBot] | Thou shall not ban thyself, " + _sender.name + " ...\0";
 			else
 			{
-				_replyMessage = std::string() + "[ChatBot] | " + targetUser.name + " was banned by " + sender.name + "!\0";
-				banList->ban( GuestData(targetUser.name, targetUser.userID) );
-				ParsecHostKickGuest(ps, targetUser.id);
+				_replyMessage = std::string() + "[ChatBot] | " + _targetGuest.name + " was banned by " + _sender.name + "!\0";
+				_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
+				ParsecHostKickGuest(_parsec, _targetGuest.id);
+				rv = true;
 			}
 			break;
 		
 		case SEARCH_USER_RESULT::FAILED:
 		default:
-			_replyMessage = "[ChatBot] | Usage: /ban <username>\nExample: /ban melon\0";
+			_replyMessage = "[ChatBot] | Usage: !ban <username>\nExample: !ban melon\0";
 			break;
 		}
-	}
-};
 
+		return rv;
+	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!ban" };
+	}
+
+private:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!ban " };
+	}
+
+	Parsec* _parsec;
+	Guest& _sender;
+	BanList _ban;
+};

@@ -6,30 +6,46 @@
 class CommandName : public ACommandStringArg
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::NAME; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::NAME; }
+	
+	CommandName(const char* msg, ParsecHostConfig &config)
+		: ACommandStringArg(msg, internalPrefixes()), _config(config)
+	{}
 
-	void run(const char * msg, ParsecHostConfig* config)
+	bool run() override
 	{
-		std::string roomName;
-		if ( !ACommandStringArg::run(msg, "/name ", &roomName) )
+		if ( !ACommandStringArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: /name <roomname>\nExample: /name Let's Play Gauntlet!\0";
-			return;
+			_replyMessage = "[ChatBot] | Usage: !name <roomname>\nExample: !name Let's Play Gauntlet!\0";
+			return false;
 		}
 
 		// Replaces \ + n with \n
 		size_t index = 0;
 		while (true)
 		{
-			index = roomName.find("\\n", index);
+			index = _stringArg.find("\\n", index);
 			if (index == std::string::npos) break;
 
-			roomName.replace(index, 2, "\n");
+			_stringArg.replace(index, 2, "\n");
 			index++;
 		}
 
-		strcpy_s(config->name, roomName.c_str());
+		strcpy_s(_config.name, _stringArg.c_str());
 
-		_replyMessage = std::string() + "[ChatBot] | Room name changed:\n" + roomName + "\0";
+		_replyMessage = std::string() + "[ChatBot] | Room name changed:\n" + _stringArg + "\0";
+		return true;
 	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!name" };
+	}
+
+protected:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!name " };
+	}
+	ParsecHostConfig& _config;
 };

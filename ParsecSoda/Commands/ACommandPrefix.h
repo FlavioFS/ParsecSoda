@@ -2,17 +2,32 @@
 
 #include "ACommand.h"
 #include "../Stringer.h"
+#include <vector>
 
 class ACommandPrefix : public ACommand
 {
 public:
-	bool run(const char * msg, const char * prefix)
+	ACommandPrefix(const char* msg, vector<const char*> prefixes)
+		: _msg(msg), _prefixes(prefixes), _prefix("")
+	{}
+
+	bool run() override
 	{
-		if (!Stringer::startsWithPattern(msg, prefix))
+		vector<const char*>::iterator prefix = _prefixes.begin();
+		for (; prefix != _prefixes.end(); ++prefix)
 		{
-			return false;
+			if (Stringer::startsWithPattern(_msg, *prefix))
+			{
+				_prefix = *prefix;
+				return true;
+			}
 		}
 
-		return true;
+		return false;
 	}
+
+protected:
+	const char* _msg;
+	const char* _prefix;
+	vector<const char*> _prefixes;
 };

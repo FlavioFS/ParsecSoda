@@ -68,7 +68,7 @@ private:
 
 	AdminList _adminList;
 	BanList _banList;
-	ChatBot _chatBot;
+	ChatBot *_chatBot;
 	Dice _dice;
 	GamepadClient _gamepadClient;
 	GuestList _guestList;

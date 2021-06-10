@@ -7,20 +7,38 @@
 class CommandGuests : public ACommandIntegerArg
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::GUESTS; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::GUESTS; }
 
-	void run(const char * msg, ParsecHostConfig* config)
+	CommandGuests(const char* msg, ParsecHostConfig &config)
+		: ACommandIntegerArg(msg, internalPrefixes()), _config(config)
+	{}
+
+	bool run() override
 	{
-		int guestCount = -1;
-		if ( !ACommandIntegerArg::run(msg, "/guests ", &guestCount) )
+		if ( !ACommandIntegerArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: /guests <number>\nExample: /guests 7\0";
-			return;
+			_replyMessage = "[ChatBot] | Usage: !guests <number>\nExample: !guests 7\0";
+			return false;
 		}
 
-		config->maxGuests = guestCount;
+		_config.maxGuests = _intArg;
 		std::ostringstream reply;
-		reply << "[ChatBot] | Max guests set to " << guestCount << "\0";
+		reply << "[ChatBot] | Max guests set to " << _intArg << "\0";
 		_replyMessage = reply.str();
+
+		return true;
 	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!guests" };
+	}
+
+protected:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!guests " };
+	}
+
+	ParsecHostConfig& _config;
 };

@@ -3,7 +3,7 @@
 #include "ACommandPrefix.h"
 #include "parsec.h"
 #include "../Stringer.h"
-#include "../Utils.h"
+#include "../GuestList.h"
 
 enum class SEARCH_USER_RESULT
 {
@@ -15,37 +15,50 @@ enum class SEARCH_USER_RESULT
 class ACommandSearchUser : public ACommandPrefix
 {
 public:
-	SEARCH_USER_RESULT run(const char * msg, const char* prefix, ParsecGuest* guests, int guestCount, ParsecGuest * targetUser)
+	ACommandSearchUser(const char* msg, vector<const char*> prefixes, GuestList &guests)
+		: ACommandPrefix(msg, prefixes), _guests(guests),
+		_searchResult(SEARCH_USER_RESULT::FAILED), _targetGuest(Guest())
+	{}
+
+	bool run() override
 	{
-		if (!ACommandPrefix::run(msg, prefix))
+		if (!ACommandPrefix::run())
 		{
-			return SEARCH_USER_RESULT::FAILED;
+			_searchResult = SEARCH_USER_RESULT::FAILED;
+			return false;
 		}
 
 		try
 		{
-			std::string str = msg;
-			size_t cmdSize = strlen(prefix);
+			std::string str = _msg;
+			size_t cmdSize = strlen(_prefix);
 			std::string targetUsername = str.substr(cmdSize);
 
 			bool found = false;
 			try
 			{
-				found = Utils::findUser(stoul(targetUsername), guests, guestCount, targetUser);
+				found = _guests.find(stoul(targetUsername), &_targetGuest);
 			}
 			catch (const std::exception&) {}
 
 			if (!found)
 			{
-				found = Utils::findUser(targetUsername, guests, guestCount, targetUser);
+				found = _guests.find(targetUsername, &_targetGuest);
 			}
 			
-			return found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;
+			_searchResult = found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;
+			return found;
 		}
 		catch (const std::exception&)
 		{
-			return SEARCH_USER_RESULT::FAILED;
+			_searchResult = SEARCH_USER_RESULT::FAILED;
+			return false;
 		}
 	}
+
+protected:
+	SEARCH_USER_RESULT _searchResult;
+	GuestList& _guests;
+	Guest _targetGuest;
 };
 

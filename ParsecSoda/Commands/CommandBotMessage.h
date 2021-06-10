@@ -7,11 +7,19 @@
 class CommandBotMessage : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::BOT_MESSAGE; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::BOT_MESSAGE; }
 
-	void run(const char * msg)
+	CommandBotMessage(const char* msg)
+		: _msg(msg)
+	{}
+
+	bool run() override
 	{
-		_replyMessage = std::string() + "[ChatBot] | " + msg + "\0";
+		_replyMessage = std::string() + "[ChatBot] | " + _msg + "\0";
+		return true;
 	}
+
+protected:
+	string _msg;
 };
 

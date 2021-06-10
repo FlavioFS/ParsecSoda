@@ -7,22 +7,38 @@
 class CommandLimit : public ACommandSearchUserIntArg
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::LIMIT; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::LIMIT; }
 
-	void run(const char * msg, ParsecGuest * guests, int guestCount, GamepadClient * padClient)
+	CommandLimit(const char* msg, GuestList &guests, GamepadClient &gamepadClient)
+		: ACommandSearchUserIntArg(msg, internalPrefixes(), guests), _gamepadClient(gamepadClient)
+	{}
+
+	bool run() override
 	{
-		ParsecGuest targetUser;
-		int padLimit = XUSER_MAX_COUNT;
-		if ( !ACommandSearchUserIntArg::run(msg, "/limit ", guests, guestCount, &targetUser, &padLimit) )
+		if ( !ACommandSearchUserIntArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: /limit <username> <number>\nExample: /limit melon 2\0";
-			return;
+			_replyMessage = "[ChatBot] | Usage: !limit <username> <number>\nExample: !limit melon 2\0";
+			return false;
 		}
 
-		padClient->setLimit(targetUser.userID, padLimit);
+		_gamepadClient.setLimit(_targetGuest.userID, _intArg);
 
 		std::ostringstream reply;
-		reply << "[ChatBot] | " << targetUser.name << " gamepad limit set to " << padLimit << "\0";
+		reply << "[ChatBot] | " << _targetGuest.name << " gamepad limit set to " << _intArg << "\0";
 		_replyMessage = reply.str();
+		return true;
 	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!limit" };
+	}
+
+protected:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!limit " };
+	}
+
+	GamepadClient& _gamepadClient;
 };

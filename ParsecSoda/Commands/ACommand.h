@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 enum class COMMAND_TYPE
 {
@@ -10,11 +11,11 @@ enum class COMMAND_TYPE
 	AFK,
 	BAN,
 	BONK,
-	COMMANDS,
 	DC,
 	FF,
 	GAMEID,
 	GUESTS,
+	HELP,
 	IP,
 	JOIN,
 	KICK,
@@ -42,9 +43,9 @@ enum class COMMAND_TYPE
 class ACommand
 {
 public:
-	virtual const COMMAND_TYPE type() const { return COMMAND_TYPE::INVALID; }
-	const std::string replyMessage() const { return _replyMessage; }
+	virtual const COMMAND_TYPE type() { return COMMAND_TYPE::INVALID; }
 	virtual bool run() = 0;
+	const std::string replyMessage() const { return _replyMessage; }
 
 protected:
 	std::string _replyMessage = "";

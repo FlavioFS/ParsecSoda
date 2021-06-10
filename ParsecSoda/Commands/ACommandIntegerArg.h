@@ -5,18 +5,22 @@
 class ACommandIntegerArg : public ACommandPrefix
 {
 public:
-	bool run(const char * msg, const char * prefix, int * result)
+	ACommandIntegerArg(const char* msg, vector<const char*> prefixes)
+		: ACommandPrefix(msg, prefixes), _intArg(0)
+	{}
+
+	bool run() override
 	{
-		if (!ACommandPrefix::run(msg, prefix))
+		if (!ACommandPrefix::run())
 		{
 			return false;
 		}
 
 		try
 		{
-			std::string str = msg;
-			size_t cmdSize = strlen(prefix);
-			*result = std::stoi(str.substr(cmdSize));
+			std::string str = _msg;
+			size_t cmdSize = strlen(_prefix);
+			_intArg = std::stoi(str.substr(cmdSize));
 
 			return true;
 		}
@@ -25,4 +29,7 @@ public:
 			return false;
 		}
 	}
+
+protected:
+	int _intArg;
 };

@@ -1,39 +1,56 @@
 #pragma once
 
-#include "ACommand.h"
 #include <iostream>
-#include "../GamepadClient.h"
 #include <sstream>
+#include "ACommand.h"
+#include "../GamepadClient.h"
+#include "../Guest.h"
 
 class CommandFF : public ACommand
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::FF; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::FF; }
 
-	void run(ParsecGuest guest, GamepadClient * padClient, int *droppedPads = nullptr)
+	CommandFF(Guest &sender, GamepadClient &gamepadClient)
+		: _sender(sender), _gamepadClient(gamepadClient), _droppedPadCount(0)
+	{}
+
+	bool run() override
 	{
-		int count = padClient->onRageQuit(guest);
-		if (droppedPads != nullptr)
-		{
-			*droppedPads = count;
-		}
+		_droppedPadCount = _gamepadClient.onRageQuit(_sender);
 
 		std::ostringstream reply;
-		if (count > 1)
+		if (_droppedPadCount > 1)
 		{
-			reply << "[ChatBot] | " << guest.name << " has dropped " << count << " gamepads!\0";
+			reply << "[ChatBot] | " << _sender.name << " has dropped " << _droppedPadCount << " gamepads!\0";
 		}
-		else if (count > 0)
+		else if (_droppedPadCount > 0)
 		{
-			reply << "[ChatBot] | " << guest.name << " has dropped " << count << " gamepad!\0";
+			reply << "[ChatBot] | " << _sender.name << " has dropped " << _droppedPadCount << " gamepad!\0";
 		}
 		else
 		{
-			reply <<  "[ChatBot] | " << guest.name << " has no gamepads to drop.\0";
+			reply <<  "[ChatBot] | " << _sender.name << " has no gamepads to drop.\0";
 		}
 
 		_replyMessage = reply.str();
 		reply.clear();
-	}
-};
 
+		return true;
+	}
+
+	int droppedPadCount()
+	{
+		return _droppedPadCount;
+	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!ff", "!drop", "!quit" };
+	}
+
+protected:
+	Guest& _sender;
+	GamepadClient &_gamepadClient;
+	int _droppedPadCount;
+};

@@ -7,21 +7,38 @@
 class CommandMic : public ACommandIntegerArg
 {
 public:
-	const COMMAND_TYPE type() const { return COMMAND_TYPE::MIC; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::MIC; }
 
-	void run(const char * msg, AudioMix * mixer)
+	CommandMic(const char* msg, AudioMix &mixer)
+		: ACommandIntegerArg(msg, internalPrefixes()), _mixer(mixer)
+	{}
+
+	bool run() override
 	{
-		int volume = 0;
-		if ( !ACommandIntegerArg::run(msg, "/mic ", &volume) )
+		if ( !ACommandIntegerArg::run() )
 		{
-			_replyMessage = std::string() + "[ChatBot] | Usage: /mic <integer in range [0, 100]>\nExample: /mic 42\0";
-			return;
+			_replyMessage = std::string() + "[ChatBot] | Usage: !mic <integer in range [0, 100]>\nExample: !mic 42\0";
+			return false;
 		}
 
-		mixer->setVolume1(volume / 100.0f);
+		_mixer.setVolume1(_intArg / 100.0f);
 
 		std::ostringstream reply;
-		reply << "[ChatBot] | Microphone volume set to " << volume << "%\0";
+		reply << "[ChatBot] | Microphone volume set to " << _intArg << "%\0";
 		_replyMessage = reply.str();
+		return true;
 	}
+
+	static vector<const char*> prefixes()
+	{
+		return vector<const char*> { "!mic" };
+	}
+
+protected:
+	static vector<const char*> internalPrefixes()
+	{
+		return vector<const char*> { "!mic " };
+	}
+
+	AudioMix& _mixer;
 };

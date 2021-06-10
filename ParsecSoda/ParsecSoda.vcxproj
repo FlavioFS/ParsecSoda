@@ -225,7 +225,7 @@
     <ClInclude Include="Commands\CommandQuit.h" />
     <ClInclude Include="Commands\ACommand.h" />
     <ClInclude Include="Commands\CommandDefaultMessage.h" />
-    <ClInclude Include="Commands\CommandListCommands.h" />
+    <ClInclude Include="Commands\CommandHelp.h" />
     <ClInclude Include="Commands\CommandVideoFix.h" />
     <ClInclude Include="Commands\CommandPrivate.h" />
     <ClInclude Include="Guest.h" />

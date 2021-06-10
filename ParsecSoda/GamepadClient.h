@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "GuestData.h"
 #include "KeyboardMaps.h"
+#include "GuestList.h"
 
 #define GAMEPAD_LIMIT_NOT_FOUND -1
 #define GAMEPAD_PICK_TIMEOUT_MS 1000
@@ -45,15 +46,15 @@ public:
 	Gamepad connectNextGamepad();
 	void release();
 	Gamepad getGamepad(int index);
-	int clearAFK(ParsecGuest * guests, int guestCount);
+	int clearAFK(GuestList &guests);
 
 	// MUTEX required (called externally)
 	bool disconnect(int gamepadIndex);
 	bool sendMessage(ParsecGuest guest, ParsecMessage message);
-	int onRageQuit(ParsecGuest guest);
+	int onRageQuit(Guest &guest);
 	void setLimit(uint32_t guestUserId, uint8_t padLimit);
 	bool toggleMirror(uint32_t guestUserId);
-	const GAMEPAD_PICK_REQUEST pick(ParsecGuest guest, int gamepadIndex);
+	const GAMEPAD_PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	const std::vector<GamepadStatus> getGamepadStatus();
 
 private:
