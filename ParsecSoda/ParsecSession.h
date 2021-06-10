@@ -30,28 +30,26 @@
 	/*publicGame        */ true,                                                     \
 }
 
-namespace ParsecSoda {
-	class ParsecSession
-	{
-	public:
-		std::string hostPeerId;
-		std::string sessionId;
-		MTY_JSON *arcadeRooms;
+class ParsecSession
+{
+public:
+	std::string hostPeerId;
+	std::string sessionId;
+	MTY_JSON *arcadeRooms;
 
-		/**
-		 *	Remove this in final version
-		 */ 
-		void mockSession(const char * sessionID, const char * hostPeerId);
+	/**
+		*	Remove this in final version
+		*/ 
+	void mockSession(const char * sessionID, const char * hostPeerId);
 		
-		/**
-		 *	Remove this in final version
-		 */
-		void mockSession(bool isTestAccount = true);
+	/**
+		*	Remove this in final version
+		*/
+	void mockSession(bool isTestAccount = true);
 		
 		
-		const bool fetchSession(const char* email, const char* password, const char* tfa = "");
-		const bool fetchArcadeRoomList();
-		static bool compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other);
-	};
-}
+	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
+	const bool fetchArcadeRoomList();
+	static bool compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other);
+};
 

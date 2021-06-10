@@ -62,6 +62,15 @@ void GamepadClient::connectAllGamepads()
 	}
 }
 
+void GamepadClient::disconnectAllGamepads()
+{
+	std::vector<Gamepad>::iterator it;
+	for (it = _gamepads.begin(); it != _gamepads.end(); ++it)
+	{
+		(*it).disconnect();
+	}
+}
+
 void GamepadClient::sortGamepads()
 {
 	std::vector<Gamepad> sorted = _gamepads;

@@ -4,20 +4,14 @@
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #include <iostream>
-#include <wrl/client.h>
-#include <atlbase.h>
+//#include <atlbase.h>
 #include <atlcomcli.h>
-#include <mutex>
 #include "parsec.h"
+
 
 class DX11
 {
 public:
-	//HRESULT init();
-	//HRESULT screenCapture();
-	ID3D11Device* getDevice();
-	ID3D11DeviceContext* getDeviceContext();
-	
 	void clear();
 	bool recover();
 	bool init();
@@ -41,8 +35,5 @@ private:
 	IDXGIOutput *dxOutput = NULL;
 	DXGI_OUTPUT_DESC dxOutDesc;
 	DXGI_SWAP_CHAIN_DESC dxSwapDesc;
-
-	// Lock prevention
-	std::mutex _mutex;
 };
 

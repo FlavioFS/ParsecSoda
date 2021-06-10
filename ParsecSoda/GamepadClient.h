@@ -6,7 +6,6 @@
 #include "ViGEm/Client.h"
 #include <vector>
 #include <iostream>
-#include <mutex>
 #include <algorithm>
 #include "GuestData.h"
 #include "KeyboardMaps.h"
@@ -41,6 +40,7 @@ public:
 	Gamepad createGamepad();
 	void createMaximumGamepads();
 	void connectAllGamepads();
+	void disconnectAllGamepads();
 	void sortGamepads();
 	Gamepad connectNextGamepad();
 	void release();
@@ -69,7 +69,4 @@ private:
 	PVIGEM_CLIENT _client;
 	std::vector<Gamepad> _gamepads;
 	std::vector<ParsecGuestPrefs> _guestPrefs;
-
-	std::mutex _mutex;
 };
-

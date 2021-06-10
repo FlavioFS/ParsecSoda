@@ -8,6 +8,8 @@
 #define STRINGER_DISTANCE_CHARS(N) ((uint64_t)1 << (STRINGER_MAX_WEIGHT - N))
 #define STRINGER_DEFAULT_MATCH (uint64_t)3
 
+using namespace std;
+
 /**
 * A pack of utility functions for string handling.
 */
@@ -26,7 +28,7 @@ public:
 	* @param str1 First string to compare.
 	* @param str2 Second string to compare.
 	*/
-	static const uint64_t fuzzyDistance(std::string str1, std::string str2);
+	static const uint64_t fuzzyDistance(string str1, string str2);
 	
 	/**
 	* Returns true if the two strings match all characters (of the shortest one).
@@ -49,5 +51,7 @@ public:
 	* @param str2 Second string to compare.
 	* @param matches The amount of chars to match.
 	*/
-	static const bool isCloseEnough(const std::string str1, const std::string str2, uint8_t matches = STRINGER_DEFAULT_MATCH);
+	static const bool isCloseEnough(const string str1, const string str2, uint8_t matches = STRINGER_DEFAULT_MATCH);
+
+	static void replacePattern(string& source, string oldPattern, string newPattern);
 };

@@ -1,6 +1,5 @@
 #include "DX11.h"
 
-using namespace Microsoft::WRL;
 
 D3D_FEATURE_LEVEL gFeatureLevels[] = {
 	D3D_FEATURE_LEVEL_11_0,
@@ -11,105 +10,88 @@ D3D_FEATURE_LEVEL gFeatureLevels[] = {
 	D3D_FEATURE_LEVEL_9_1,
 };
 UINT gNumFeatureLevels = 6;
-ComPtr<ID3D11Device> _lDevice;
+ID3D11Device *_lDevice;
 ID3D11DeviceContext *_lImmediateContext;
-ComPtr<IDXGIOutputDuplication> _lDeskDupl;
+IDXGIOutputDuplication *_lDeskDupl;
 DXGI_OUTPUT_DESC _lOutputDesc;
 DXGI_OUTDUPL_DESC _lOutputDuplDesc;
-ComPtr<ID3D11Texture2D> _lAcquiredDesktopImage;
+ID3D11Texture2D *_lAcquiredDesktopImage;
 D3D11_MAPPED_SUBRESOURCE _resource;
 
 
-ID3D11Device * DX11::getDevice()
-{
-	return _lDevice.Get();
-}
-
-ID3D11DeviceContext * DX11::getDeviceContext()
-{
-	return _lImmediateContext;
-}
-
 void DX11::clear()
 {
-	if (_lDevice) _lDevice.ReleaseAndGetAddressOf();
+	if (_lDevice) _lDevice->Release();
 	if (d3Device) d3Device->Release();
 	if (d3DeviceContext) d3DeviceContext->Release();
-	if (_lDeskDupl) _lDeskDupl.ReleaseAndGetAddressOf();
-	if (_lAcquiredDesktopImage) _lAcquiredDesktopImage.ReleaseAndGetAddressOf();
+	if (_lDeskDupl) _lDeskDupl->Release();
+	if (_lAcquiredDesktopImage) _lAcquiredDesktopImage->Release();
 }
 
 bool DX11::recover()
 {
-	// _mutex.lock();
 	HRESULT hr;
 
 	// Get DXGI device
-	ComPtr<IDXGIDevice> lDxgiDevice;
-	hr = _lDevice.As(&lDxgiDevice);
+	IDXGIDevice *lDxgiDevice = 0;
+	hr = _lDevice->QueryInterface(__uuidof(IDXGIDevice), (void**) & lDxgiDevice);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
 	// Get DXGI adapter
-	ComPtr<IDXGIAdapter> lDxgiAdapter;
-	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), &lDxgiAdapter);
+	IDXGIAdapter * lDxgiAdapter;
+	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&lDxgiAdapter);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
-	lDxgiDevice.Reset();
+	lDxgiDevice->Release();
 
 	UINT Output = 0;
 
 	// Get output
-	ComPtr<IDXGIOutput> lDxgiOutput;
+	IDXGIOutput *lDxgiOutput;
 	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
-	lDxgiAdapter.Reset();
+	lDxgiAdapter->Release();
 
 	hr = lDxgiOutput->GetDesc(&_lOutputDesc);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
 	// QI for Output 1
-	ComPtr<IDXGIOutput1> lDxgiOutput1;
-	hr = lDxgiOutput.As(&lDxgiOutput1);
+	IDXGIOutput1 *lDxgiOutput1;
+	hr = lDxgiOutput->QueryInterface(__uuidof(IDXGIOutput1), (void**)&lDxgiOutput1);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
-	lDxgiOutput.Reset();
+	lDxgiOutput->Release();
 
 	// Create desktop duplication
-	hr = lDxgiOutput1->DuplicateOutput(_lDevice.Get(), &_lDeskDupl);
+	hr = lDxgiOutput1->DuplicateOutput(_lDevice, &_lDeskDupl);
 
 	if (FAILED(hr))
 	{
-		// _mutex.unlock();
 		return false;
 	}
 
-	lDxgiOutput1.Reset();
+	lDxgiOutput1->Release();
 
 	// Create GUI drawing texture
 	_lDeskDupl->GetDesc(&_lOutputDuplDesc);
@@ -128,7 +110,6 @@ bool DX11::recover()
 	_desc.CPUAccessFlags = D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_READ;
 	_desc.Usage = D3D11_USAGE::D3D11_USAGE_STAGING;
 
-	// _mutex.unlock();
 	return true;
 }
 
@@ -158,31 +139,31 @@ bool DX11::init()
 		return false;
 
 	// Get DXGI device
-	ComPtr<IDXGIDevice> lDxgiDevice;
-	hr = _lDevice.As(&lDxgiDevice);
+	IDXGIDevice *lDxgiDevice;
+	hr = _lDevice->QueryInterface(__uuidof(IDXGIAdapter), (void**)&lDxgiDevice);
 
 	if (FAILED(hr))
 		return false;
 
 	// Get DXGI adapter
-	ComPtr<IDXGIAdapter> lDxgiAdapter;
-	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), &lDxgiAdapter);
+	IDXGIAdapter *lDxgiAdapter;
+	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&lDxgiAdapter);
 
 	if (FAILED(hr))
 		return false;
 
-	lDxgiDevice.Reset();
+	lDxgiDevice->Release();
 
 	UINT Output = 0;
 
 	// Get output
-	ComPtr<IDXGIOutput> lDxgiOutput;
+	IDXGIOutput *lDxgiOutput;
 	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
 
 	if (FAILED(hr))
 		return false;
 
-	lDxgiAdapter.Reset();
+	lDxgiAdapter->Release();
 
 	hr = lDxgiOutput->GetDesc(&_lOutputDesc);
 
@@ -190,21 +171,21 @@ bool DX11::init()
 		return false;
 
 	// QI for Output 1
-	ComPtr<IDXGIOutput1> lDxgiOutput1;
-	hr = lDxgiOutput.As(&lDxgiOutput1);
+	IDXGIOutput1 *lDxgiOutput1;
+	hr = lDxgiOutput->QueryInterface(__uuidof(IDXGIOutput1), (void**)&lDxgiOutput1);
 
 	if (FAILED(hr))
 		return false;
 
-	lDxgiOutput.Reset();
+	lDxgiOutput->Release();
 
 	// Create desktop duplication
-	hr = lDxgiOutput1->DuplicateOutput(_lDevice.Get(), &_lDeskDupl);
+	hr = lDxgiOutput1->DuplicateOutput(_lDevice, &_lDeskDupl);
 
 	if (FAILED(hr))
 		return false;
 
-	lDxgiOutput1.Reset();
+	lDxgiOutput1->Release();
 
 	// Create GUI drawing texture
 	_lDeskDupl->GetDesc(&_lOutputDuplDesc);
@@ -226,6 +207,7 @@ bool DX11::init()
 	return true;
 }
 
+
 bool DX11::captureScreen(Parsec *ps)
 {
 	if (!_lDeskDupl)
@@ -236,9 +218,8 @@ bool DX11::captureScreen(Parsec *ps)
 		}
 	}
 	
-	// _mutex.lock();
 	HRESULT hr(E_FAIL), hr0(E_FAIL);
-	ComPtr<IDXGIResource> lDesktopResource = nullptr;
+	IDXGIResource *lDesktopResource = nullptr;
 	DXGI_OUTDUPL_FRAME_INFO lFrameInfo;
 	ID3D11Texture2D* currTexture = NULL;
 
@@ -251,22 +232,20 @@ bool DX11::captureScreen(Parsec *ps)
 			recover();
 		}
 
-		// _mutex.unlock();
 		return false;
 	}
 
 	// QI for ID3D11Texture2D
-	hr = lDesktopResource.As(&_lAcquiredDesktopImage);
+	hr = lDesktopResource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&_lAcquiredDesktopImage);
 
 	//////////////////////////////////////// 
 	// LEL
 	//////////////////////////////////////// 
-	ParsecHostD3D11SubmitFrame(ps, 0, getDevice(), getDeviceContext(), _lAcquiredDesktopImage.Get());
+	ParsecHostD3D11SubmitFrame(ps, 0, _lDevice, _lImmediateContext, _lAcquiredDesktopImage);
 	
 	
 	_lDeskDupl->ReleaseFrame();
 	
 
-	// _mutex.unlock();
 	return true;
 }

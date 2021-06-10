@@ -1,5 +1,9 @@
 #include "AdminList.h"
 
+AdminList::AdminList()
+{
+}
+
 AdminList::AdminList(const std::vector<int> admins)
 {
 	_admins = admins;

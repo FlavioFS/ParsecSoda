@@ -1,7 +1,5 @@
 #include "ParsecSession.h"
 
-using namespace ParsecSoda;
-
 void ParsecSession::mockSession(const char * sessionId, const char * hostPeerId)
 {
 	this->sessionId = sessionId;
@@ -124,7 +122,7 @@ const bool ParsecSession::fetchArcadeRoomList()
 	return false;
 }
 
-bool ParsecSoda::ParsecSession::compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other)
+bool ParsecSession::compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other)
 {
 	return (
 		cfg.gamepadType == other.gamepadType &&

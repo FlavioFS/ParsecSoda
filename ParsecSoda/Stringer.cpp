@@ -47,3 +47,16 @@ const bool Stringer::isCloseEnough(const std::string str1, const std::string str
 {
 	return Stringer::isCloseEnough(str1.c_str(), str2.c_str(), matches);
 }
+
+void Stringer::replacePattern(string& source, string oldPattern, string newPattern)
+{
+	size_t index = 0;
+	while (true)
+	{
+		index = source.find(oldPattern, index);
+		if (index == std::string::npos) break;
+
+		source.replace(index, oldPattern.size(), newPattern);
+		index++;
+	}
+}

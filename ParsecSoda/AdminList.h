@@ -5,6 +5,7 @@
 class AdminList
 {
 public:
+	AdminList();
 	AdminList(const std::vector<int> admins);
 	bool isAdmin(int guestID);
 

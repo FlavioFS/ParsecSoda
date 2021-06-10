@@ -24,7 +24,7 @@ typedef struct GamepadStatus
 	uint32_t ownerUserId = OWNER_ID_NONE;
 	std::string ownerName = "";
 	bool isConnected = false;
-};
+} GamepadStatus;
 
 class Gamepad
 {

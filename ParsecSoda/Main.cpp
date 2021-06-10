@@ -1,558 +1,301 @@
-#include "matoya.h"
+// Dear ImGui: standalone example application for DirectX 11
+// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
+// Read online: https://github.com/ocornut/imgui/tree/master/docs
 
-#define D3D_DEBUG_INFO
-
-#include <iostream>
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_win32.h"
+#include "imgui/imgui_impl_dx11.h"
+#include "imgui/imgui_colors.h"
 #include <d3d11.h>
-#include <dxgi.h>
-#include <dxgi1_2.h>
-#include <thread>
-#include <chrono>
-#include "ParsecSession.h"
-#include "DX11.h"
-#include "AdminList.h"
-#include "ChatBot.h"
-#include "Stringer.h"
-#include "StressTest.h"
-#include "Mock.h"
-#include "AudioIn.h"
-#include "AudioOut.h"
-#include "AudioMix.h"
-#include "GamepadClient.h"
-#include "BanList.h"
-#include "Dice.h"
+#include <tchar.h>
+#include <Windows.h>
+#include <iostream>
+#include <string>
+#include "Widgets/HostSettingsWidget.h"
+#include "resource.h"
+#include "Hosting.h"
+#include "Texture.h"
+#include "AppIcons.h"
 
-#define PARSEC_APP_CHAT_MSG 0
+using namespace std;
 
-#define ROOM_NAME "Coding my own Parsec\nGamepad streaming\0"
-#define ROOM_SECRET "melonsod"
+// Data
+static ID3D11Device*            g_pd3dDevice = NULL;
+static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
+static IDXGISwapChain*          g_pSwapChain = NULL;
+static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
 
-const std::vector<int> admins { 3888558 , 6711547 };
-const std::vector<GuestData> banned {};
-std::vector<COMMAND_TYPE> filteredCommands { COMMAND_TYPE::IP };
+// Forward declarations of helper functions
+bool CreateDeviceD3D(HWND hWnd);
+void CleanupDeviceD3D();
+void CreateRenderTarget();
+void CleanupRenderTarget();
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// ============================================================
-//
-//  Enter the THREAD zone
-//
-// ============================================================
-Dice dice;
-GamepadClient padClient;
-bool isRunning = true;
-ParsecGuest* guests = NULL;
-ParsecSoda::ParsecSession parsecSession;
-AdminList adminList(admins);
-BanList banList(banned);
-ChatBot chatBot;
-Parsec* ps;
-DX11 dx11;
-AudioOut audioOut;
-AudioIn audioIn;
-AudioMix audioMix(0.8, 0.3);
-ParsecHostConfig hostConfig;
-
-// ============================================================
-
-
-using namespace ParsecSoda;
-
-struct context {
-	MTY_App *app;
-	void *image;
-	uint32_t image_w;
-	uint32_t image_h;
-	bool quit;
-};
-
-static void event_func(const MTY_Event *evt, void *opaque)
+// Main code
+int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
 {
-	struct context *ctx = (context*)opaque;
+    // Create application window
+    //ImGui_ImplWin32_EnableDpiAwareness();
 
-	MTY_PrintEvent(evt);
+    WNDCLASSEX wc;
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_CLASSDC;
+    wc.lpfnWndProc = WndProc;
+    wc.cbClsExtra = 0L;
+    wc.cbWndExtra = 0L;
+    wc.hInstance = hInstance;
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    wc.hCursor = NULL;
+    wc.hbrBackground = NULL;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = _T("Parsec Soda");
+    wc.hIconSm = NULL;
+    ::RegisterClassEx(&wc);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
-	if (evt->type == MTY_EVENT_CLOSE)
-		ctx->quit = true;
+    // Initialize Direct3D
+    if (!CreateDeviceD3D(hwnd))
+    {
+        CleanupDeviceD3D();
+        ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+        return 1;
+    }
+
+    // Show the window
+    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
+    ::UpdateWindow(hwnd);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+
+    // Load Fonts
+    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+    // - Read 'docs/FONTS.md' for more instructions and details.
+    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+    //io.Fonts->AddFontDefault();
+    io.Fonts->AddFontFromFileTTF("fonts/Montserrat-SemiBold.ttf", 20.0f);
+    io.Fonts->AddFontFromFileTTF("fonts/Montserrat-Regular.ttf", 20.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+    //IM_ASSERT(font != NULL);
+
+    // Our state
+    bool show_demo_window = false;
+    bool show_another_window = false;
+    
+
+
+
+    // =====================================================================
+    // 
+    //  Initialize modules
+    // 
+    // =====================================================================
+    ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.03f, 1.00f);
+    ImGui::loadStyle();
+
+    Hosting g_hosting;
+    g_hosting.init();
+    bool showHostingWindow = true;
+
+    AppIcons g_icons (g_pd3dDevice);
+    HostSettingsWidget hostSettingsWindow(&g_icons, &g_hosting);
+
+
+    // =====================================================================
+
+    // Main loop
+    bool done = false;
+    while (!done)
+    {
+        // Poll and handle messages (inputs, window resize, etc.)
+        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+        MSG msg;
+        while (::PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+                done = true;
+        }
+        if (done)
+            break;
+
+        // Start the Dear ImGui frame
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        if (showHostingWindow)
+        {
+            ImGui::ShowDemoWindow();
+
+            hostSettingsWindow.render();
+        }
+
+
+        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+        if (false)
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("Another Window", &show_another_window);
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+
+        // 3. Show another simple window.
+        if (show_another_window)
+        {
+            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Text("Hello from another window!");
+            if (ImGui::Button("Close Me"))
+                show_another_window = false;
+            ImGui::End();
+        }
+
+        // Rendering
+        ImGui::Render();
+        const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
+        g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        g_pSwapChain->Present(1, 0); // Present with vsync
+        //g_pSwapChain->Present(0, 0); // Present without vsync
+    }
+
+    // Cleanup
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+
+    CleanupDeviceD3D();
+    ::DestroyWindow(hwnd);
+    ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+
+    return 0;
 }
 
-static bool app_func(void *opaque)
+// Helper functions
+
+bool CreateDeviceD3D(HWND hWnd)
 {
-	struct context *ctx = (context*)opaque;
+    // Setup swap chain
+    DXGI_SWAP_CHAIN_DESC sd;
+    ZeroMemory(&sd, sizeof(sd));
+    sd.BufferCount = 2;
+    sd.BufferDesc.Width = 0;
+    sd.BufferDesc.Height = 0;
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Denominator = 1;
+    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.OutputWindow = hWnd;
+    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Quality = 0;
+    sd.Windowed = TRUE;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	// Set up a render description for the PNG
-	MTY_RenderDesc desc {};
-	desc.format = MTY_COLOR_FORMAT_BGRA;
-	desc.effect = MTY_EFFECT_SCANLINES;
-	desc.imageWidth = ctx->image_w;
-	desc.imageHeight = ctx->image_h;
-	desc.cropWidth = ctx->image_w;
-	desc.cropHeight = ctx->image_h;
-	desc.aspectRatio = (float)ctx->image_w / (float)ctx->image_h;
+    UINT createDeviceFlags = 0;
+    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    D3D_FEATURE_LEVEL featureLevel;
+    const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
+        return false;
 
-	// Draw the quad
-	MTY_WindowDrawQuad(ctx->app, 0, ctx->image, &desc);
-	MTY_WindowPresent(ctx->app, 0, 1);
-
-	return !ctx->quit;
+    CreateRenderTarget();
+    return true;
 }
 
-static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
+void CleanupDeviceD3D()
 {
-	opaque;
-	if (level != LOG_DEBUG)
-	{
-		std::cout << "[I] " << msg << std::endl;
-	}
-	//printf("[%s] %s\n", level == LOG_DEBUG ? "D" : "I", msg);
+    CleanupRenderTarget();
+    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = NULL; }
+    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = NULL; }
+    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = NULL; }
 }
 
-Parsec* ParsecArcadeStart(ParsecSession *parsecSession, ParsecHostConfig hostConfig)
+void CreateRenderTarget()
 {
-	Parsec *ps = nullptr;
-	ParsecStatus status = ParsecInit(PARSEC_VER, NULL, NULL, &ps);
-	if (status == PARSEC_OK) {
-		ParsecSetLogCallback(logCallback, NULL);
-		ParsecHostStart(ps, HOST_GAME, &hostConfig, parsecSession->sessionId.c_str());
-		return ps;
-	}
-
-	return NULL;
+    ID3D11Texture2D* pBackBuffer;
+    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_mainRenderTargetView);
+    pBackBuffer->Release();
 }
 
-void clearGuests(Parsec *ps, int *guestCount)
+void CleanupRenderTarget()
 {
-	if (*guestCount > 0)
-	{
-		ParsecFree(ps);
-		*guestCount = 0;
-	}
+    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = NULL; }
 }
 
-void logDataMessage(const char* msg, ParsecHostEvent event)
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+// Win32 message handler
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	std::string msgStr = msg;
-	std::cout
-		<< std::endl
-		<< "DATA"
-		<< " | userid: " << event.userData.guest.userID
-		<< " | guestid: " << event.userData.guest.id
-		<< " | msgid: " << event.userData.id
-		<< " | key: " << event.userData.key
-		<< " | msg: " << msg;
-}
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+        return true;
 
-void broadcastChatMessage(Parsec *ps, ParsecGuest *guests, int guestCount, std::string message)
-{
-	ParsecGuest it;
-	for (int i = 0; i < guestCount; i++)
-	{
-		it = guests[i];
-		ParsecHostSendUserData(ps, it.id, PARSEC_APP_CHAT_MSG, message.c_str());
-	}
-}
-
-void displayInputMessage(ParsecMessage inputGuestMsg)
-{
-	switch (inputGuestMsg.type)
-	{
-	case MESSAGE_GAMEPAD_BUTTON:
-		std::cout
-			<< "===============================\n"
-			<< " Button\n"
-			<< "===============================\n";
-		ParsecGamepadButtonMessage btnMsg = inputGuestMsg.gamepadButton;
-		std::cout
-			<< "pad id: " << btnMsg.id << "\n"
-			<< "pressed: " << (btnMsg.pressed ? "true" : "false") << "\n"
-			<< "button: " << btnMsg.button << "\n\n";
-		break;
-
-	case MESSAGE_GAMEPAD_AXIS:
-		std::cout
-			<< "===============================\n"
-			<< " Axis\n"
-			<< "===============================\n";
-		ParsecGamepadAxisMessage axisMsg = inputGuestMsg.gamepadAxis;
-		std::cout
-			<< "pad id: " << axisMsg.id << "\n"
-			<< "axis: " << axisMsg.axis << "\n"
-			<< "value: " << axisMsg.value << "\n\n";
-		break;
-
-	case MESSAGE_GAMEPAD_STATE:
-		std::cout
-			<< "===============================\n"
-			<< " State\n"
-			<< "===============================\n";
-		ParsecGamepadStateMessage stateMsg = inputGuestMsg.gamepadState;
-		std::cout
-			<< "pad id: " << stateMsg.id << "\n"
-			<< "buttons: " << stateMsg.buttons << "\n"
-			<< "L2: " << (int)stateMsg.leftTrigger << "\n"
-			<< "R2: " << (int)stateMsg.rightTrigger << "\n"
-			<< "LX: " << stateMsg.thumbLX << "\n"
-			<< "LY: " << stateMsg.thumbLY << "\n"
-			<< "RX: " << stateMsg.thumbRX << "\n"
-			<< "RY: " << stateMsg.thumbRY << "\n\n";
-
-		break;
-
-	case MESSAGE_GAMEPAD_UNPLUG:
-		std::cout
-			<< "===============================\n"
-			<< " Unplug\n"
-			<< "===============================\n";
-		ParsecGamepadUnplugMessage unplugMsg = inputGuestMsg.gamepadUnplug;
-		std::cout << "pad id: " << unplugMsg.id << "\n\n";
-		break;
-
-	case MESSAGE_RELEASE:
-		std::cout
-			<< "===============================\n"
-			<< " Release\n"
-			<< "===============================\n\n";
-
-	default:
-		break;
-	}
-}
-
-bool isFilteredCommand(ACommand *command)
-{
-	COMMAND_TYPE type;
-	for (std::vector<COMMAND_TYPE>::iterator it = filteredCommands.begin(); it != filteredCommands.end(); ++it)
-	{
-		type = command->type();
-		if (command->type() == *it)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-void initAllModules()
-{
-	dice.init();
-
-	// Instance all gamepads at once
-	padClient.init();
-	padClient.createMaximumGamepads();
-	padClient.connectAllGamepads();
-	padClient.sortGamepads();
-	padClient.setLimit(3888558, 0);		// Remove myself
-	padClient.setLimit(6711547, 1);
-
-	// Data is mocked for now - arguments don't matter
-	parsecSession.mockSession();	// Replace with fetchSession in final version
-	//parsecSession.fetchSession(EMAIL, PASSWORD);
-
-	hostConfig = EMPTY_HOST_CONFIG;
-	strcpy_s(hostConfig.name, ROOM_NAME);
-	strcpy_s(hostConfig.secret, ROOM_SECRET);
-	hostConfig.maxGuests = 19;
-	hostConfig.publicGame = false;
-
-	ps = ParsecArcadeStart(&parsecSession, hostConfig);
-
-	dx11.init();
-
-	audioOut.fetchDevices();
-	audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
-	std::vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
-	audioOut.captureAudio();
-
-	std::vector<AudioInDevice> devices = audioIn.listInputDevices();
-	AudioInDevice device = audioIn.selectInputDevice("cable out");
-	audioIn.init(device);
-}
-
-void liveStreamMedia()
-{
-	using clock = std::chrono::system_clock;
-	using milli = std::chrono::duration<double, std::milli>;
-	const double FPS = 250.0;
-	const double MS_PER_FRAME = 1000.0 / FPS;
-
-	while (isRunning)
-	{
-		const auto before = clock::now();
-		dx11.captureScreen(ps);
-
-		audioIn.captureAudio();
-		audioOut.captureAudio();
-		if (audioIn.isReady() && audioOut.isReady())
-		{
-			std::vector<int16_t> inBuffer = audioIn.popBuffer();
-			std::vector<int16_t> outBuffer = audioOut.popBuffer();
-			std::vector<int16_t> mixBuffer = audioMix.mix(&inBuffer, &outBuffer);
-			ParsecHostSubmitAudio(ps, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size() / 2);
-		}
-
-		const milli duration = clock::now() - before;
-		
-		if (duration.count() < MS_PER_FRAME)
-		{
-			Sleep( MS_PER_FRAME - duration.count() );
-		}
-	}
-}
-
-void pollInputs()
-{
-	ParsecGuest inputGuest;
-	ParsecMessage inputGuestMsg;
-
-	while (isRunning)
-	{
-		if (ParsecHostPollInput(ps, 4, &inputGuest, &inputGuestMsg))
-		{
-			padClient.sendMessage(inputGuest, inputGuestMsg);
-		}
-	}
-}
-
-void pollEvents ()
-{
-	ParsecGuest dataGuest;
-	std::string guestMsg;
-	std::string chatBotReply;
-	bool isAdmin = false;
-	int guestCount = 0;
-
-	ParsecHostEvent event;
-
-	while (isRunning)
-	{
-		if (ParsecHostPollEvents(ps, 30, &event)) {
-			ParsecGuest guest = event.guestStateChange.guest;
-
-			switch (event.type)
-			{
-			case HOST_EVENT_GUEST_STATE_CHANGE:
-				if ((guest.state == GUEST_CONNECTED || guest.state == GUEST_CONNECTING) && banList.isBanned(guest.userID))
-				{
-					ParsecHostKickGuest(ps, guest.id);
-					broadcastChatMessage(ps, guests, guestCount, chatBot.formatBannedGuestMessage(guest));
-				}
-				else if (guest.state == GUEST_CONNECTED || guest.state == GUEST_DISCONNECTED)
-				{
-					guestCount = ParsecHostGetGuests(ps, GUEST_CONNECTED, &guests);
-					guestMsg.clear();
-					guestMsg = std::string(event.guestStateChange.guest.name);
-
-					isAdmin = adminList.isAdmin(event.userData.guest.userID);
-					broadcastChatMessage(
-						ps, guests, guestCount,
-						chatBot.formatGuestConnection(event.guestStateChange.guest, isAdmin)
-					);
-
-					if (guest.state == GUEST_CONNECTED)
-					{
-						printf("%s (#%d)    >> joined\n", guest.name, guest.userID);
-					}
-					else
-					{
-						printf("%s (#%d)    quit >>\n", guest.name, guest.userID);
-						int droppedPads = 0;
-						CommandFF command;
-						command.run(guest, &padClient, &droppedPads);
-						if (droppedPads > 0)
-						{
-							broadcastChatMessage(ps, guests, guestCount, command.replyMessage());
-						}
-					}
-				}
-				break;
-
-			case HOST_EVENT_USER_DATA:
-				char* msg = (char*)ParsecGetBuffer(ps, event.userData.key);
-				std::cout << msg << "\n";
-				if (event.userData.id == PARSEC_APP_CHAT_MSG)
-				{
-					dataGuest = event.userData.guest;
-					guestCount = ParsecHostGetGuests(ps, GUEST_CONNECTED, &guests);
-					isAdmin = adminList.isAdmin(dataGuest.userID);
-					ACommand* command = chatBot.identifyUserDataMessage(msg);
-					COMMAND_TYPE type = command->type();
-
-
-					// =================================
-					//  Pleb commands
-					// =================================
-					if (!isAdmin)
-					{
-						switch (command->type())
-						{
-						case COMMAND_TYPE::AFK:
-							((CommandAFK*)command)->run(guests, guestCount, &padClient);
-							break;
-						case COMMAND_TYPE::BONK:
-							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &dice);
-							break;
-						case COMMAND_TYPE::COMMANDS:
-							((CommandListCommands*)command)->run(isAdmin);
-							break;
-						case COMMAND_TYPE::FF:
-							((CommandFF*)command)->run(dataGuest, &padClient);
-							break;
-						case COMMAND_TYPE::IP:
-							((CommandIpFilter*)command)->run(ps, dataGuest, &banList);
-							break;
-						case COMMAND_TYPE::MIRROR:
-							((CommandMirror*)command)->run(dataGuest, &padClient);
-							break;
-						case COMMAND_TYPE::PADS:
-							((CommandPads*)command)->run(&padClient);
-							break;
-						case COMMAND_TYPE::SWAP:
-							((CommandSwap*)command)->run(msg, dataGuest, &padClient);
-							break;
-						default:
-							break;
-						}
-					}
-
-					// =================================
-					//  Admin commands
-					// =================================
-					else
-					{
-						switch (command->type())
-						{
-						case COMMAND_TYPE::AFK:
-							((CommandAFK*)command)->run(guests, guestCount, &padClient);
-							break;
-						case COMMAND_TYPE::BAN:
-							((CommandBan*)command)->run(msg, ps, dataGuest, guests, guestCount, &banList);
-							break;
-						case COMMAND_TYPE::BONK:
-							((CommandBonk*)command)->run(msg, dataGuest, guests, guestCount, &dice);
-							break;
-						case COMMAND_TYPE::COMMANDS:
-							((CommandListCommands*)command)->run(isAdmin);
-							break;
-						case COMMAND_TYPE::DC:
-							((CommandDC*)command)->run(msg, &padClient);
-							break;
-						case COMMAND_TYPE::FF:
-							((CommandFF*)command)->run(dataGuest, &padClient);
-							break;
-						case COMMAND_TYPE::GAMEID:
-							((CommandGameId*)command)->run(msg, &hostConfig);
-							break;
-						case COMMAND_TYPE::GUESTS:
-							((CommandGuests*)command)->run(msg, &hostConfig);
-							break;
-						case COMMAND_TYPE::IP:
-							((CommandIpFilter*)command)->run(ps, dataGuest, &banList);
-							break;
-						case COMMAND_TYPE::KICK:
-							((CommandKick*)command)->run(msg, ps, dataGuest, guests, guestCount);
-							break;
-						case COMMAND_TYPE::LIMIT:
-							((CommandLimit*)command)->run(msg, guests, guestCount, &padClient);
-							break;
-						case COMMAND_TYPE::MIC:
-							((CommandMic*)command)->run(msg, &audioMix);
-							break;
-						case COMMAND_TYPE::MIRROR:
-							((CommandMirror*)command)->run(dataGuest, &padClient);
-							break;
-						case COMMAND_TYPE::NAME:
-							((CommandName*)command)->run(msg, &hostConfig);
-							break;
-						case COMMAND_TYPE::PADS:
-							((CommandPads*)command)->run(&padClient);
-							break;
-						case COMMAND_TYPE::PRIVATE:
-							((CommandPrivate*)command)->run(&hostConfig);
-							break;
-						case COMMAND_TYPE::PUBLIC:
-							((CommandPublic*)command)->run(&hostConfig);
-							break;
-						case COMMAND_TYPE::SWAP:
-							((CommandSwap*)command)->run(msg, dataGuest, &padClient);
-							break;
-						case COMMAND_TYPE::QUIT:
-							((CommandQuit*)command)->run(&isRunning);
-							break;
-						case COMMAND_TYPE::SETCONFIG:
-							((CommandSetConfig*)command)->run(ps, &hostConfig, parsecSession.sessionId.c_str());
-							break;
-						case COMMAND_TYPE::SPEAKERS:
-							((CommandSpeakers*)command)->run(msg, &audioMix);
-							break;
-						case COMMAND_TYPE::UNBAN:
-							((CommandUnban*)command)->run(msg, dataGuest, &banList);
-							break;
-						case COMMAND_TYPE::VIDEOFIX:
-							((CommandVideoFix*)command)->run(&dx11);
-							break;
-							//case COMMAND_TYPE::GIVE:
-							//	break;
-							//case COMMAND_TYPE::TAKE:
-							//	break;
-						default:
-							break;
-						}
-					}
-
-					// Blocked messages
-					if (!isFilteredCommand(command))
-					{
-						CommandDefaultMessage defaultMessage;
-						defaultMessage.run(msg, dataGuest, chatBot.getLastUserId(), isAdmin);
-						chatBot.setLastUserId(dataGuest.userID);
-
-						if (!defaultMessage.replyMessage().empty())
-						{
-							broadcastChatMessage(ps, guests, guestCount, defaultMessage.replyMessage());
-							std::cout << std::endl << defaultMessage.replyMessage();
-						}
-					}
-
-					if (!command->replyMessage().empty())
-					{
-						broadcastChatMessage(ps, guests, guestCount, command->replyMessage());
-						std::cout << std::endl << command->replyMessage();
-						chatBot.setLastUserId();
-					}
-
-					delete command;
-				}
-
-				ParsecFree(msg);
-				break;
-			}
-		}
-	}
-}
-
-void guiLoop()
-{
-	//MTY_App *app = MTY_AppCreate();
-}
-
-int main(int argc, char** argv)
-{
-	initAllModules();
-
-	if (ps != NULL)
-	{
-		std::thread mediaThread (liveStreamMedia);
-		std::thread inputThread (pollInputs);
-		std::thread eventsThread (pollEvents);
-
-		inputThread.join();
-		eventsThread.join();
-		mediaThread.join();
-
-		padClient.release();
-		ParsecHostStop(ps);
-		ParsecDestroy(ps);
-	}
-
-	return 0;
+    switch (msg)
+    {
+    case WM_SIZE:
+        if (g_pd3dDevice != NULL && wParam != SIZE_MINIMIZED)
+        {
+            CleanupRenderTarget();
+            g_pSwapChain->ResizeBuffers(0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN, 0);
+            CreateRenderTarget();
+        }
+        return 0;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            return 0;
+        break;
+    case WM_DESTROY:
+        ::PostQuitMessage(0);
+        return 0;
+    }
+    return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }

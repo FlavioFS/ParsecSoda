@@ -44,6 +44,7 @@ class ACommand
 public:
 	virtual const COMMAND_TYPE type() const { return COMMAND_TYPE::INVALID; }
 	const std::string replyMessage() const { return _replyMessage; }
+	virtual bool run() = 0;
 
 protected:
 	std::string _replyMessage = "";

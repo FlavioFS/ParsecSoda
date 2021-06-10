@@ -3,13 +3,19 @@
 #include <sstream>
 #include "ACommandIntegerArg.h"
 #include "../GamepadClient.h"
+#include "../GuestList.h"
 
 class CommandAFK : public ACommandIntegerArg
 {
 public:
 	const COMMAND_TYPE type() const { return COMMAND_TYPE::AFK; }
 
-	void run(ParsecGuest *guests, int guestcount, GamepadClient *padClient)
+	CommandAFK(GuestList guests, GamepadClient* padClient)
+	{
+
+	}
+
+	bool run()
 	{
 		int clearCount = padClient->clearAFK(guests, guestcount);
 
