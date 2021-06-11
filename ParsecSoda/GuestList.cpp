@@ -27,7 +27,7 @@ const bool GuestList::find(uint32_t targetGuestID, Guest* result)
 	vector<Guest>::iterator i;
 	for (i = _guests.begin(); i != _guests.end(); ++i)
 	{
-		if ((*i).userID() == targetGuestID)
+		if ((*i).userID == targetGuestID)
 		{
 			*result = *i;
 			return true;
@@ -57,14 +57,14 @@ const bool GuestList::find(string targetName, Guest* result)
 	vector<Guest>::iterator gi;
 	for (gi = _guests.begin(); gi != _guests.end(); ++gi)
 	{
-		distance = Stringer::fuzzyDistance((*gi).name(), targetName);
+		distance = Stringer::fuzzyDistance((*gi).name, targetName);
 		if (distance <= closestDistance && distance <= STRINGER_DISTANCE_CHARS(MINIMUM_MATCH))
 		{
 			// If this is a draw, choose one based on following criteria...
 			if (distance == closestDistance)
 			{
-				std::string candidateName = (*gi).name();
-				std::string currentName = result->name();
+				std::string candidateName = (*gi).name;
+				std::string currentName = result->name;
 
 				// If search tag is shorter than both
 				if (targetName.length() < candidateName.length() && targetName.length() < currentName.length())

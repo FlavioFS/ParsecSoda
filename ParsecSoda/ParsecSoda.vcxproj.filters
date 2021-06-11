@@ -108,6 +108,21 @@
     <ClCompile Include="AppIcons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\ChatWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppFonts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppColors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AppStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\TooltipWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminList.h">
@@ -312,6 +327,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppIcons.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\ChatWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppFonts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppColors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\TooltipWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

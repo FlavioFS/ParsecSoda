@@ -48,7 +48,6 @@ public:
 	Gamepad getGamepad(int index);
 	int clearAFK(GuestList &guests);
 
-	// MUTEX required (called externally)
 	bool disconnect(int gamepadIndex);
 	bool sendMessage(ParsecGuest guest, ParsecMessage message);
 	int onRageQuit(Guest &guest);
@@ -66,6 +65,9 @@ private:
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
+	bool find(uint32_t userID, uint32_t padID, Gamepad *gamepad);
+	bool findFirst(uint32_t userID, Gamepad *gamepad);
+	bool findAll(uint32_t userID, vector<Gamepad*> &gamepads);
 	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
 	PVIGEM_CLIENT _client;
 	std::vector<Gamepad> _gamepads;

@@ -79,7 +79,7 @@ void Hosting::broadcastChatMessage(string message)
 
 	for (gi = guests.begin(); gi != guests.end(); ++gi)
 	{
-		ParsecHostSendUserData(_parsec, (*gi).userID, HOSTING_CHAT_MSG_ID, message.c_str());
+		ParsecHostSendUserData(_parsec, (*gi).id, HOSTING_CHAT_MSG_ID, message.c_str());
 	}
 }
 
@@ -173,18 +173,10 @@ void Hosting::startHosting()
 		{
 			if (_parsec != nullptr)
 			{
-				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
 				_mediaThread = thread ([this]() {liveStreamMedia(); });
 				_inputThread = thread ([this]() {pollInputs(); });
 				_eventThread = thread ([this]() {pollEvents(); });
-
-				//inputThread.join();
-				//eventsThread.join();
-				//mediaThread.join();
-
-				//_gamepadClient.release();
-				//ParsecHostStop(_parsec);
-				//ParsecDestroy(_parsec);
+				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
 			}
 		}
 		catch (const exception&)
@@ -235,6 +227,7 @@ void Hosting::initAllModules()
 
 void Hosting::liveStreamMedia()
 {
+	_mediaMutex.lock();
 	_isMediaThreadRunning = true;
 
 	using clock = chrono::system_clock;
@@ -266,34 +259,37 @@ void Hosting::liveStreamMedia()
 	}
 
 	_isMediaThreadRunning = false;
+	_mediaMutex.unlock();
+	_mediaThread.detach();
 }
 
 void Hosting::mainLoopControl()
 {
-	_isRunning = true;
-	while (_isRunning)
+	do
 	{
-		Sleep(100);
-	}
+		Sleep(50);
+	} while (!_isRunning);
 
-	while (_isMediaThreadRunning || _isInputThreadRunning || _isEventThreadRunning)
-	{
-		Sleep(100);
-	}
+	_isRunning = true;
+
+	_mediaMutex.lock();
+	_inputMutex.lock();
+	_eventMutex.lock();
 
 	ParsecHostStop(_parsec);
-
-	_mediaThread.detach();
-	_inputThread.detach();
-	_eventThread.detach();
+	_gamepadClient.disconnectAllGamepads();
 	_isRunning = false;
 
-	_gamepadClient.disconnectAllGamepads();
+	_mediaMutex.unlock();
+	_inputMutex.unlock();
+	_eventMutex.unlock();
+
 	_mainLoopControlThread.detach();
 }
 
 void Hosting::pollEvents()
 {
+	_eventMutex.lock();
 	_isEventThreadRunning = true;
 
 	ParsecGuest dataGuest;
@@ -310,7 +306,7 @@ void Hosting::pollEvents()
 	{
 		if (ParsecHostPollEvents(_parsec, 30, &event)) {
 			ParsecGuest parsecGuest = event.guestStateChange.guest;
-			ParsecGuestState state;
+			ParsecGuestState state = parsecGuest.state;
 			Guest guest = Guest(parsecGuest.name, parsecGuest.userID, parsecGuest.id);
 			isAdmin = _adminList.isAdmin(guest.userID);
 			guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
@@ -360,7 +356,7 @@ void Hosting::pollEvents()
 					ACommand* command = _chatBot->identifyUserDataMessage(msg, guest, isAdmin);
 					command->run();
 
-					// Blocked messages
+					// Non-blocked default message
 					if (!isFilteredCommand(command))
 					{
 						CommandDefaultMessage defaultMessage (msg, guest, _chatBot->getLastUserId(), isAdmin);
@@ -374,7 +370,8 @@ void Hosting::pollEvents()
 						}
 					}
 
-					if (!command->replyMessage().empty())
+					// Chatbot's command reply
+					if (!command->replyMessage().empty() && command->type() != COMMAND_TYPE::DEFAULT_MESSAGE)
 					{
 						broadcastChatMessage(command->replyMessage());
 						cout << endl << command->replyMessage();
@@ -392,10 +389,13 @@ void Hosting::pollEvents()
 
 	ParsecFree(guests);
 	_isEventThreadRunning = false;
+	_eventMutex.unlock();
+	_eventThread.detach();
 }
 
 void Hosting::pollInputs()
 {
+	_inputMutex.lock();
 	_isInputThreadRunning = true;
 
 	ParsecGuest inputGuest;
@@ -410,6 +410,8 @@ void Hosting::pollInputs()
 	}
 
 	_isInputThreadRunning = false;
+	_inputMutex.unlock();
+	_inputThread.detach();
 }
 
 bool Hosting::parsecArcadeStart()
@@ -421,48 +423,3 @@ bool Hosting::parsecArcadeStart()
 	}
 	return false;
 }
-
-
-
-
-
-//void broadcastChatMessage(Parsec *ps, ParsecGuest *guests, int guestCount, string message)
-//{
-//	ParsecGuest it;
-//	for (int i = 0; i < guestCount; i++)
-//	{
-//		it = guests[i];
-//		ParsecHostSendUserData(ps, it.id, PARSEC_APP_CHAT_MSG, message.c_str());
-//	}
-//}
-
-//void clearGuests(Parsec *ps, int *guestCount)
-//{
-//	if (*guestCount > 0)
-//	{
-//		ParsecFree(ps);
-//		*guestCount = 0;
-//	}
-//}
-
-// ============================================================
-//
-//  Enter the THREAD zone
-//
-// ============================================================
-//Dice dice;
-//GamepadClient padClient;
-//bool isRunning = true;
-//ParsecGuest* guests = NULL;
-//ParsecSession parsecSession;
-//AdminList adminList(admins);
-//BanList banList(banned);
-//ChatBot chatBot;
-//Parsec* ps;
-//DX11 dx11;
-//AudioOut audioOut;
-//AudioIn audioIn;
-//AudioMix audioMix(0.8, 0.3);
-//ParsecHostConfig hostConfig;
-
-// ============================================================

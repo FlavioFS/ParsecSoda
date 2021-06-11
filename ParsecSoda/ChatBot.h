@@ -79,5 +79,5 @@ private:
 	GuestList& _guests;
 	ParsecHostConfig &_hostConfig;
 	ParsecSession &_parsecSession;
-	bool _hostingLoopController;
+	bool &_hostingLoopController;
 };

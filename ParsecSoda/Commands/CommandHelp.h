@@ -43,7 +43,7 @@ public:
 			+ "\n  " + "!setconfig\t |\tApply config changes."
 			+ "\n  " + "!speakers\t  |\tSet speakers volume."
 			+ "\n  " + "!unban\t\t   |\tUnban a guest."
-			+ "\n  " + "!videofix\t    |\tRefresh DirectX context."
+			//+ "\n  " + "!videofix\t    |\tRefresh DirectX context."	// Broken (massive memory leaks)
 			;
 
 		_replyMessage =

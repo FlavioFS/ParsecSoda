@@ -156,7 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdminList.cpp" />
+    <ClCompile Include="AppColors.cpp" />
     <ClCompile Include="AppIcons.cpp" />
+    <ClCompile Include="AppStyle.cpp" />
     <ClCompile Include="AudioIn.cpp" />
     <ClCompile Include="AudioMix.cpp" />
     <ClCompile Include="AudioOut.cpp" />
@@ -165,6 +167,9 @@
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="DX11.cpp" />
+    <ClCompile Include="AppFonts.cpp" />
+    <ClCompile Include="Widgets\TooltipWidget.cpp" />
+    <ClCompile Include="Widgets\ChatWidget.cpp" />
     <ClCompile Include="Gamepad.cpp" />
     <ClCompile Include="GamepadClient.cpp" />
     <ClCompile Include="Guest.cpp" />
@@ -188,7 +193,9 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AppColors.h" />
     <ClInclude Include="AppIcons.h" />
+    <ClInclude Include="AppStyle.h" />
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="Commands\CommandJoin.h" />
     <ClInclude Include="Commands\CommandAFK.h" />
@@ -228,6 +235,9 @@
     <ClInclude Include="Commands\CommandHelp.h" />
     <ClInclude Include="Commands\CommandVideoFix.h" />
     <ClInclude Include="Commands\CommandPrivate.h" />
+    <ClInclude Include="AppFonts.h" />
+    <ClInclude Include="Widgets\TooltipWidget.h" />
+    <ClInclude Include="Widgets\ChatWidget.h" />
     <ClInclude Include="Guest.h" />
     <ClInclude Include="GuestList.h" />
     <ClInclude Include="Hosting.h" />

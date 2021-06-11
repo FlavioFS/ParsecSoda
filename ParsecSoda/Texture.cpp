@@ -5,10 +5,10 @@
 
 bool Texture::loadFromFile(ID3D11Device* g_pd3dDevice, const char* filename)
 {
-    _success = false;
-    _width = 0;
-    _height = 0;
-    _texture = nullptr;
+    success = false;
+    width = 0;
+    height = 0;
+    texture = nullptr;
 
     // Load from disk into a raw RGBA buffer
     int image_width = 0;
@@ -44,13 +44,13 @@ bool Texture::loadFromFile(ID3D11Device* g_pd3dDevice, const char* filename)
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = desc.MipLevels;
     srvDesc.Texture2D.MostDetailedMip = 0;
-    g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &_texture);
+    g_pd3dDevice->CreateShaderResourceView(pTexture, &srvDesc, &texture);
     pTexture->Release();
 
-    _width = image_width;
-    _height = image_height;
+    width = image_width;
+    height = image_height;
     stbi_image_free(image_data);
 
-    _success = true;
+    success = true;
     return true;
 }

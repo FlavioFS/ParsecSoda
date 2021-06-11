@@ -1,9 +1,9 @@
 #include "HostSettingsWidget.h"
 
-HostSettingsWidget::HostSettingsWidget(AppIcons* icons, Hosting * hosting)
+HostSettingsWidget::HostSettingsWidget(AppIcons& icons, Hosting& hosting)
     : _icons(icons), _hosting(hosting)
 {
-    ParsecHostConfig cfg = hosting->getHostConfig();
+    ParsecHostConfig cfg = hosting.getHostConfig();
     try
     {
         strcpy_s(_roomName, cfg.name);
@@ -22,33 +22,42 @@ HostSettingsWidget::HostSettingsWidget(AppIcons* icons, Hosting * hosting)
     _publicGame = cfg.publicGame;
     _maxGuests = cfg.maxGuests;
 
-    _publicRoomBtn = ToggleTexButtonWidget (icons->yes().img(), icons->no().img(), false);
-    _playBtn = ToggleTexButtonWidget(icons->stop().img(), icons->play().img(), false, ImVec2(120, 120));
+    _publicRoomBtn = ToggleTexButtonWidget (icons.yes, icons.no, false);
+    _playBtn = ToggleTexButtonWidget(icons.stop, icons.play, false, ImVec2(120, 120));
 }
 
-bool HostSettingsWidget::render()
+bool HostSettingsWidget::render(AppStyle& style)
 {
+    style.pushTitle();
+
     ImGui::SetNextWindowSizeConstraints(ImVec2(300, 700), ImVec2(600, 900));
     ImGui::Begin("Host Settings", (bool*)0);
+    style.pushLabel();
 
     float width = ImGui::GetContentRegionAvail().x;
 
     ImGui::Text("Room name");
+    style.pushInput();
     ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(width, 50));
+    style.pop();
 
     ImGui::Spacing();
     ImGui::Spacing();
 
     ImGui::Text("Game ID");
     ImGui::SetNextItemWidth(width);
+    style.pushInput();
     ImGui::InputText("  ", _gameID, GAME_ID_LEN);
+    style.pop();
 
     ImGui::Spacing();
     ImGui::Spacing();
 
     ImGui::Text("Room link");
     ImGui::SetNextItemWidth(width);
+    style.pushInput();
     ImGui::InputText("   ", _secret, LINK_COMPATIBLE_SECRET_SIZE);
+    style.pop();
 
     ImGui::Spacing();
     ImGui::Spacing();
@@ -56,7 +65,9 @@ bool HostSettingsWidget::render()
     ImGui::SetNextItemWidth(width);
     ImGui::Text("Guest slots");
     ImGui::SetNextItemWidth(width);
+    style.pushInput();
     ImGui::SliderInt("    ", &_maxGuests, 0, 64, "Max guests: %d/64");
+    style.pop();
 
     ImGui::Spacing();
     ImGui::Spacing();
@@ -64,20 +75,20 @@ bool HostSettingsWidget::render()
     ImGui::SetNextItemWidth(width);
     ImGui::Text("Public room");
     ImGui::SetNextItemWidth(width);
-    ImGui::Indent(25.0f);
+    ImGui::Indent(17.0f);
     _publicRoomBtn.render(_publicGame);
-    if (_hosting->isRunning() && isDirty())
+    if (_hosting.isRunning() && isDirty())
     {
-        ImGui::SameLine(0.0f, width - 150.0f);
+        ImGui::SameLine(0.0f, width - 130.0f);
 
-        if (ImGui::ImageButton(_icons->refresh().img(), DEFAULT_BUTTON_SIZE))
+        if (ImGui::ImageButton(_icons.refresh, DEFAULT_BUTTON_SIZE))
         {
-            _hosting->setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
-            _hosting->applyHostConfig();
+            _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
+            _hosting.applyHostConfig();
         }
         if (ImGui::IsItemHovered())
         {
-            ImGui::SetTooltip("Update room settings");
+            TooltipWidget::render("Update room settings", style);
         }
     }
 
@@ -86,23 +97,23 @@ bool HostSettingsWidget::render()
     ImGui::Spacing();
     ImGui::Spacing();
 
-    ImGui::Indent((width - 180.0) / 2);
-    _playBtn.setOn(_hosting->isRunning());
+    ImGui::Indent((width - 165.0) / 2);
+    _playBtn.setOn(_hosting.isRunning());
     if (_playBtn.render())
     {
         // Was clicked and is already running (must stop)
-        if (_hosting->isRunning())
+        if (_hosting.isRunning())
         {
-            _hosting->stopHosting();
+            _hosting.stopHosting();
             _playBtn.setOn(false);
         }
 
         // Was clicked and is not running (must start)
         else
         {
-            _hosting->setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
-            _hosting->applyHostConfig();
-            _hosting->startHosting();
+            _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
+            _hosting.applyHostConfig();
+            _hosting.startHosting();
             _playBtn.setOn(true);
         }
     }
@@ -110,17 +121,22 @@ bool HostSettingsWidget::render()
     // Does not matter if clicked or not
     if (ImGui::IsItemHovered())
     {
-        ImGui::SetTooltip(_hosting->isRunning() ? "Stop Hosting" : "Start hosting");
+        TooltipWidget::render(
+            _hosting.isRunning() ? "Stop Hosting" : "Start hosting",
+            style
+        );
     }
 
+    style.pop();
     ImGui::End();
+    style.pop();
 
     return true;
 }
 
 bool HostSettingsWidget::isDirty()
 {
-    ParsecHostConfig cfg = _hosting->getHostConfig();
+    ParsecHostConfig cfg = _hosting.getHostConfig();
 
     if ( 
         _publicGame != cfg.publicGame ||

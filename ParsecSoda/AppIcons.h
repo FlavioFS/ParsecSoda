@@ -7,29 +7,31 @@ class AppIcons
 public:
 	AppIcons(ID3D11Device* pd3dDevice);
 
-	const Texture play() { return _iconPlay; }
-	const Texture stop() { return _iconStop; }
-	const Texture yes() { return _iconYes; }
-	const Texture no() { return _iconNo; }
-	const Texture lock() { return _iconLock; }
-	const Texture unlock() { return _iconUnlock; }
-	const Texture send() { return _iconSend; }
-	const Texture refresh() { return _iconRefresh; }
-	const Texture mic() { return _iconMic; }
-	const Texture speakers() { return _iconSpeakers; }
-	const Texture empty() { return _iconEmpty; }
+	ID3D11ShaderResourceView* empty;
+	ID3D11ShaderResourceView* lock;
+	ID3D11ShaderResourceView* mic;
+	ID3D11ShaderResourceView* no;
+	ID3D11ShaderResourceView* play;
+	ID3D11ShaderResourceView* refresh;
+	ID3D11ShaderResourceView* send;
+	ID3D11ShaderResourceView* send_off;
+	ID3D11ShaderResourceView* speakers;
+	ID3D11ShaderResourceView* stop;
+	ID3D11ShaderResourceView* unlock;
+	ID3D11ShaderResourceView* yes;
 
 private:
-	Texture _iconPlay;
-	Texture _iconStop;
-	Texture _iconYes;
-	Texture _iconNo;
-	Texture _iconLock;
-	Texture _iconUnlock;
-	Texture _iconSend;
-	Texture _iconRefresh;
-	Texture _iconMic;
-	Texture _iconSpeakers;
-	Texture _iconEmpty;
+	Texture _empty;
+	Texture _lock;
+	Texture _mic;
+	Texture _no;
+	Texture _play;
+	Texture _refresh;
+	Texture _send;
+	Texture _send_off;
+	Texture _speakers;
+	Texture _stop;
+	Texture _unlock;
+	Texture _yes;
 };
 

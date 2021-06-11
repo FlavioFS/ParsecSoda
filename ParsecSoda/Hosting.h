@@ -8,6 +8,7 @@
 #include <dxgi1_2.h>
 #include <thread>
 #include <chrono>
+#include <mutex>
 #include "ParsecSession.h"
 #include "DX11.h"
 #include "matoya.h"
@@ -58,7 +59,6 @@ private:
 	void pollEvents();
 	void pollInputs();
 	bool parsecArcadeStart();
-	//void clearGuests();		// Needs a deepr look into
 
 	// Attributes
 	AudioIn _audioIn;
@@ -87,4 +87,8 @@ private:
 	thread _mediaThread;
 	thread _inputThread;
 	thread _eventThread;
+
+	mutex _mediaMutex;
+	mutex _inputMutex;
+	mutex _eventMutex;
 };
