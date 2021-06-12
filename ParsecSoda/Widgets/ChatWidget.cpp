@@ -1,7 +1,7 @@
 #include "ChatWidget.h"
 
 ChatWidget::ChatWidget(AppIcons& icons, Hosting& hosting)
-    : _icons(icons), _hosting(hosting)
+    : _icons(icons), _hosting(hosting), _chatLog(hosting.getMessageLog())
 {
     _sendBtn = ToggleTexButtonWidget (icons.send, icons.send_off, false);
     setSendBuffer("\0");
@@ -14,11 +14,16 @@ bool ChatWidget::render(AppStyle& style)
     ImGui::Begin("Chat", (bool*)0);
     style.pushInput();
     
-
     ImVec2 size = ImGui::GetContentRegionAvail();
 
+    static vector<string>::iterator it;
+    it = _chatLog.begin();
     ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 160));
-    ImGui::TextWrapped(_logBuffer.c_str());
+    for (; it != _chatLog.end(); ++it)
+    {
+        ImGui::TextWrapped((*it).c_str());
+    }
+    //ImGui::TextWrapped(_logBuffer.c_str());
     ImGui::EndChild();
 
     ImGui::Separator();
@@ -66,7 +71,11 @@ bool ChatWidget::isDirty()
 
 void ChatWidget::sendMessage()
 {
-    _logBuffer = _logBuffer + _sendBuffer + "\n";
+    if (_hosting.isRunning())
+    {
+        _hosting.sendHostMessage(_sendBuffer);
+    }
+
     setSendBuffer("\0");
 }
 

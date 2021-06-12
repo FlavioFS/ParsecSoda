@@ -25,17 +25,18 @@ public:
 	 * @param userId Unique user ID.
 	 * @param id Internal id for specific methods.
 	 */
-	Guest(string name, uint32_t userID, uint32_t id);
+	Guest(string name, uint32_t userID, uint32_t id, bool isHost = false);
 	
 	/**
 	 * Compatibility constructor.
 	 * @param guest ParsecGuest object.
 	 */
-	Guest(ParsecGuest guest);
+	Guest(ParsecGuest guest, bool isHost = false);
 
 	const bool isValid();
 
 	string name;
 	int64_t userID;
 	int64_t id;
+	bool isHost;
 };

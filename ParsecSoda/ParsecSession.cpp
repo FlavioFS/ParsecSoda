@@ -33,12 +33,12 @@ const bool ParsecSession::fetchSession(const char* email, const char* password, 
 		return true;
 	}
 	// Body
-	std::ostringstream ss;
+	ostringstream ss;
 	ss << "{"
 		<< "\"" << "email" << "\":\"" << email << "\","
 		<< "\"" << "password" << "\":\"" << password << "\","
 		<< "\"" << "tfa" << "\":\"" << tfa << "\"}";
-	const std::string bodyString = ss.str();
+	const string bodyString = ss.str();
 	const char* body = bodyString.c_str();
 	size_t bodySize = sizeof(char) * bodyString.length();
 
@@ -75,23 +75,77 @@ const bool ParsecSession::fetchSession(const char* email, const char* password, 
 
 const bool ParsecSession::fetchArcadeRoomList()
 {
-
 	if (sessionId.empty()) {
 		return false;
 	}
 
 	// Body
-	std::ostringstream ss;
+	ostringstream ss;
 	ss << PARSEC_API_V2_HOSTS << "?mode=game&public=true";
-	const std::string pathString = ss.str();
+	const string pathString = ss.str();
 	const char *path = pathString.c_str();
 
 	ss.str("");
 	ss.clear();
 	const char *session = ParsecSession::sessionId.c_str();
 	ss << HEADER_AUTH_BEARER << ParsecSession::sessionId.c_str();
-	const std::string headerString = ss.str();
+	const string headerString = ss.str();
 	const char *header = headerString.c_str();
+
+	// Other Params
+	const bool isHttps = true;
+
+	// Response
+	void* response = nullptr;
+	size_t responseSize = 0;
+	uint16_t status = 0;
+
+	try
+	{
+		const bool rekt = MTY_HttpRequest(
+			PARSEC_API_HOST, HTTP_AUTO_PORT, isHttps, "GET", path, header,
+			NULL, 0,
+			HTTP_TIMEOUT_MS,
+			&response, &responseSize, &status
+		);
+
+		if (responseSize > 0 && status == 200)
+		{
+			string responseStr = (const char*)response;
+			const MTY_JSON* json = MTY_JSONParse(responseStr.c_str());
+
+			return true;
+		}
+	}
+	catch (const std::exception&)
+	{
+		bool debug = true;
+	}
+
+	//Soda::ParsecSession::hostPeerId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "host_peer_id"));
+	//Soda::ParsecSession::sessionId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "session_id"));
+
+	return false;
+}
+
+const bool ParsecSession::fetchAccountData(Guest& user)
+{
+	if (sessionId.empty()) {
+		return false;
+	}
+
+	// Body
+	ostringstream ss;
+	ss << PARSEC_API_ME;
+	const string pathString = ss.str();
+	const char* path = pathString.c_str();
+
+	ss.str("");
+	ss.clear();
+	const char* session = ParsecSession::sessionId.c_str();
+	ss << HEADER_AUTH_BEARER << ParsecSession::sessionId.c_str();
+	const string headerString = ss.str();
+	const char* header = headerString.c_str();
 
 	// Other Params
 	const bool isHttps = true;
@@ -110,29 +164,25 @@ const bool ParsecSession::fetchArcadeRoomList()
 
 	if (responseSize > 0 && status == 200)
 	{
-		std::string responseStr = (const char*)response;
-		const MTY_JSON* json = MTY_JSONParse(responseStr.c_str());
+		static bool result = false;
+		result = false;
+		MTY_JSON* json;
 
-		return true;
+		try
+		{
+			string responseStr = (const char*)response;
+			json = MTY_JSONParse(responseStr.c_str());
+
+			user.name = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "name"));
+			user.userID = stoi(MTY_JSONSerialize(MTY_JSONObjGetItem(json, "id")));
+
+			result = true;
+		}
+		catch (const std::exception&) {}
+
+		MTY_JSONDestroy(&json);
+		return result;
 	}
 
-	//Soda::ParsecSession::hostPeerId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "host_peer_id"));
-	//Soda::ParsecSession::sessionId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "session_id"));
-
 	return false;
-}
-
-bool ParsecSession::compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other)
-{
-	return (
-		cfg.gamepadType == other.gamepadType &&
-		cfg.adminMute == other.adminMute &&
-		cfg.exclusiveInput == other.exclusiveInput &&
-		cfg.maxGuests == other.maxGuests &&
-		(strcmp(cfg.name, other.name) == 0) &&
-		(strcmp(cfg.desc, other.desc) == 0) &&
-		(strcmp(cfg.gameID, other.gameID) == 0) &&
-		(strcmp(cfg.secret, other.secret) == 0) &&
-		cfg.publicGame == other.publicGame
-	);
 }

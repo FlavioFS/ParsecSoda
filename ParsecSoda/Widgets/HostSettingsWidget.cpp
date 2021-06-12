@@ -34,18 +34,21 @@ bool HostSettingsWidget::render(AppStyle& style)
     ImGui::Begin("Host Settings", (bool*)0);
     style.pushLabel();
 
-    float width = ImGui::GetContentRegionAvail().x;
+    static ImVec2 size;
+    static ImVec2 pos;
+    size = ImGui::GetContentRegionAvail();
+    pos = ImGui::GetWindowPos();
 
     ImGui::Text("Room name");
     style.pushInput();
-    ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(width, 50));
+    ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
     style.pop();
 
     ImGui::Spacing();
     ImGui::Spacing();
 
     ImGui::Text("Game ID");
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     style.pushInput();
     ImGui::InputText("  ", _gameID, GAME_ID_LEN);
     style.pop();
@@ -54,7 +57,7 @@ bool HostSettingsWidget::render(AppStyle& style)
     ImGui::Spacing();
 
     ImGui::Text("Room link");
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     style.pushInput();
     ImGui::InputText("   ", _secret, LINK_COMPATIBLE_SECRET_SIZE);
     style.pop();
@@ -62,9 +65,9 @@ bool HostSettingsWidget::render(AppStyle& style)
     ImGui::Spacing();
     ImGui::Spacing();
 
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     ImGui::Text("Guest slots");
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     style.pushInput();
     ImGui::SliderInt("    ", &_maxGuests, 0, 64, "Max guests: %d/64");
     style.pop();
@@ -72,14 +75,14 @@ bool HostSettingsWidget::render(AppStyle& style)
     ImGui::Spacing();
     ImGui::Spacing();
 
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     ImGui::Text("Public room");
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(size.x);
     ImGui::Indent(17.0f);
     _publicRoomBtn.render(_publicGame);
     if (_hosting.isRunning() && isDirty())
     {
-        ImGui::SameLine(0.0f, width - 130.0f);
+        ImGui::SameLine(0.0f, size.x - 130.0f);
 
         if (ImGui::ImageButton(_icons.refresh, DEFAULT_BUTTON_SIZE))
         {
@@ -97,9 +100,32 @@ bool HostSettingsWidget::render(AppStyle& style)
     ImGui::Spacing();
     ImGui::Spacing();
 
-    ImGui::Indent((width - 165.0) / 2);
+    ImGui::Indent((size.x - 165.0) / 2);
     _playBtn.setOn(_hosting.isRunning());
+    static bool showPopup = false;
+    static ImVec2 popupPos = pos;
+    static string popupTitle = "";
+    popupTitle = (_hosting.isRunning() ? "Stop hosting?" : "Start hosting?");
+
     if (_playBtn.render())
+    {
+        showPopup = true;
+        ImGui::OpenPopup(popupTitle.c_str());
+        popupPos.x = ImGui::GetMousePos().x - 150;
+        popupPos.y = ImGui::GetMousePos().y - 100;
+    }
+
+    if (ImGui::IsItemHovered())
+    {
+        TooltipWidget::render(popupTitle.c_str(), style);
+    }
+
+    // ================================================================================
+    
+    ImVec2 windowPos = ImGui::GetWindowPos();
+    ImGui::SetNextWindowPos(popupPos);
+    
+    if(ConfirmPopupWidget::render(popupTitle.c_str(), showPopup, _icons, style))
     {
         // Was clicked and is already running (must stop)
         if (_hosting.isRunning())
@@ -118,14 +144,18 @@ bool HostSettingsWidget::render(AppStyle& style)
         }
     }
 
-    // Does not matter if clicked or not
-    if (ImGui::IsItemHovered())
-    {
-        TooltipWidget::render(
-            _hosting.isRunning() ? "Stop Hosting" : "Start hosting",
-            style
-        );
-    }
+    // ================================================================================
+
+
+
+
+
+
+
+
+
+
+
 
     style.pop();
     ImGui::End();

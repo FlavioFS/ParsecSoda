@@ -1,8 +1,19 @@
 #include "GuestList.h"
 
+void GuestList::setHost(Guest* host)
+{
+	_host = host;
+}
+
 void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 {
 	_guests.clear();
+
+	if (_host != nullptr)
+	{
+		_guests.push_back(*_host);
+	}
+
 	for (size_t i = 0; i < guestCount; i++)
 	{
 		_guests.push_back

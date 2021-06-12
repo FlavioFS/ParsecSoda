@@ -2,16 +2,17 @@
 
 //#pragma comment(lib, "parsec.dll")
 
-#include "parsec.h"
 #include "matoya.h"
 #include <string>
 #include <sstream>
 #include "Utils.h"
 #include "Mock.h"
+#include "Guest.h"
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
 #define PARSEC_API_V2_HOSTS "/v2/hosts/"
+#define PARSEC_API_ME "/me/"
 #define HTTP_AUTO_PORT 0
 #define HTTP_TIMEOUT_MS 5000
 #define HEADER_JSON "Content-Type: application/json"
@@ -30,11 +31,13 @@
 	/*publicGame        */ true,                                                     \
 }
 
+using namespace std;
+
 class ParsecSession
 {
 public:
-	std::string hostPeerId;
-	std::string sessionId;
+	string hostPeerId;
+	string sessionId;
 	MTY_JSON *arcadeRooms;
 
 	/**
@@ -50,6 +53,6 @@ public:
 		
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
 	const bool fetchArcadeRoomList();
-	static bool compareHostConfigs(ParsecHostConfig cfg, ParsecHostConfig other);
+	const bool fetchAccountData(Guest& user);
 };
 

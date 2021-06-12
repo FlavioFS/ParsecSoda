@@ -27,7 +27,11 @@ public:
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
-			if (_sender.userID == _targetGuest.userID)
+			if (_targetGuest.isHost)
+			{
+				_replyMessage = string() + "[ChatBot] | Host is not in the room. Host IS the room.\0";
+			}
+			else if (_sender.userID == _targetGuest.userID)
 			{
 				_replyMessage = std::string() + "[ChatBot] | Thou shall not kick thyself, " + _sender.name + " ...\0";
 			}

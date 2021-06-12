@@ -165,6 +165,8 @@
     <ClCompile Include="BanList.cpp" />
     <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
+    <ClCompile Include="ChatLog.cpp" />
+    <ClCompile Include="Widgets\ConfirmPopupWidget.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="DX11.cpp" />
     <ClCompile Include="AppFonts.cpp" />
@@ -197,6 +199,7 @@
     <ClInclude Include="AppIcons.h" />
     <ClInclude Include="AppStyle.h" />
     <ClInclude Include="Bitwise.h" />
+    <ClInclude Include="ChatLog.h" />
     <ClInclude Include="Commands\CommandJoin.h" />
     <ClInclude Include="Commands\CommandAFK.h" />
     <ClInclude Include="Commands\CommandDC.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="Commands\CommandVideoFix.h" />
     <ClInclude Include="Commands\CommandPrivate.h" />
     <ClInclude Include="AppFonts.h" />
+    <ClInclude Include="Widgets\ConfirmPopupWidget.h" />
     <ClInclude Include="Widgets\TooltipWidget.h" />
     <ClInclude Include="Widgets\ChatWidget.h" />
     <ClInclude Include="Guest.h" />

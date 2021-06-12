@@ -2,56 +2,11 @@
 
 using namespace std;
 
-const vector<int> admins { 3888558 , 6711547 };
-const vector<GuestData> banned {};
-vector<COMMAND_TYPE> filteredCommands { COMMAND_TYPE::IP };
-
-
-void logDataMessage(const char* msg, ParsecHostEvent event)
-{
-	string msgStr = msg;
-	cout
-		<< endl
-		<< "DATA"
-		<< " | userid: " << event.userData.guest.userID
-		<< " | guestid: " << event.userData.guest.id
-		<< " | msgid: " << event.userData.id
-		<< " | key: " << event.userData.key
-		<< " | msg: " << msg;
-}
-
-bool isFilteredCommand(ACommand* command)
-{
-	COMMAND_TYPE type;
-	for (vector<COMMAND_TYPE>::iterator it = filteredCommands.begin(); it != filteredCommands.end(); ++it)
-	{
-		type = command->type();
-		if (command->type() == *it)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-
 // ============================================================
 // 
 //  PUBLIC
 // 
 // ============================================================
-
-static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
-{
-	opaque;
-	if (level != LOG_DEBUG)
-	{
-		cout << "[I] " << msg << endl;
-	}
-	//printf("[%s] %s\n", level == LOG_DEBUG ? "D" : "I", msg);
-}
 
 Hosting::Hosting()
 {
@@ -60,6 +15,9 @@ Hosting::Hosting()
 
 	const vector<int> admins{ 3888558 , 6711547 };
 	_adminList = AdminList(admins);
+
+	const vector<GuestData> banned{};
+	_banList = BanList(banned);
 	
 	_parsec = nullptr;
 }
@@ -91,6 +49,32 @@ void Hosting::init()
 	_gamepadClient.createMaximumGamepads();
 
 	_chatBot = new ChatBot(_audioMix, _banList, _dice, _dx11, _gamepadClient, _guestList, _parsec, _hostConfig, _parsecSession, _isRunning);
+
+	// Data is mocked for now - arguments don't matter
+	//_parsecSession.fetchSession(EMAIL, PASSWORD);
+	_parsecSession.mockSession();	// Replace with fetchSession in final version
+	_parsecSession.fetchArcadeRoomList();
+
+	_host.isHost = true;
+	_host.name = "Host";
+	if (isReady())
+	{
+		_parsecSession.fetchAccountData(_host);
+	}
+
+	_guestList.setHost(&_host);
+}
+
+void Hosting::release()
+{
+	stopHosting();
+	while (_isRunning)
+	{
+		Sleep(5);
+	}
+	_dx11.clear();
+	_gamepadClient.release();
+	ParsecFree(_parsec);
 }
 
 bool Hosting::isReady()
@@ -103,9 +87,19 @@ bool Hosting::isRunning()
 	return _isRunning;
 }
 
-ParsecHostConfig Hosting::getHostConfig()
+ParsecHostConfig& Hosting::getHostConfig()
 {
 	return _hostConfig;
+}
+
+vector<string>& Hosting::getMessageLog()
+{
+	return _chatLog.getMessageLog();
+}
+
+vector<string>& Hosting::getCommandLog()
+{
+	return _chatLog.getCommandLog();
 }
 
 void Hosting::setGameID(string gameID)
@@ -173,7 +167,7 @@ void Hosting::startHosting()
 		{
 			if (_parsec != nullptr)
 			{
-				_mediaThread = thread ([this]() {liveStreamMedia(); });
+				_mediaThread = thread ( [this]() {liveStreamMedia(); } );
 				_inputThread = thread ([this]() {pollInputs(); });
 				_eventThread = thread ([this]() {pollEvents(); });
 				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
@@ -189,6 +183,44 @@ void Hosting::startHosting()
 void Hosting::stopHosting()
 {
 	_isRunning = false;
+}
+
+void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin)
+{
+	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isAdmin);
+	command->run();
+
+	// Non-blocked default message
+	if (!isFilteredCommand(command))
+	{
+		CommandDefaultMessage defaultMessage(message, guest, _chatBot->getLastUserId(), isAdmin);
+		defaultMessage.run();
+		_chatBot->setLastUserId(guest.userID);
+
+		if (!defaultMessage.replyMessage().empty())
+		{
+			_chatLog.logMessage(defaultMessage.replyMessage());
+			broadcastChatMessage(defaultMessage.replyMessage());
+			cout << endl << defaultMessage.replyMessage();
+		}
+	}
+
+	// Chatbot's command reply
+	if (!command->replyMessage().empty() && command->type() != COMMAND_TYPE::DEFAULT_MESSAGE)
+	{
+		_chatLog.logCommand(command->replyMessage());
+		broadcastChatMessage(command->replyMessage());
+		cout << endl << command->replyMessage();
+		_chatBot->setLastUserId();
+	}
+
+	delete command;
+}
+
+void Hosting::sendHostMessage(const char* message)
+{
+	static bool isAdmin = true;
+	handleMessage(message, _host, isAdmin);
 }
 
 
@@ -208,10 +240,6 @@ void Hosting::initAllModules()
 	_gamepadClient.sortGamepads();
 	_gamepadClient.setLimit(3888558, 0);		// Remove myself
 	_gamepadClient.setLimit(6711547, 0);
-
-	// Data is mocked for now - arguments don't matter
-	_parsecSession.mockSession();	// Replace with fetchSession in final version
-	//parsecSession.fetchSession(EMAIL, PASSWORD);
 
 	_audioOut.fetchDevices();
 	_audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
@@ -293,7 +321,6 @@ void Hosting::pollEvents()
 	_isEventThreadRunning = true;
 
 	ParsecGuest dataGuest;
-	string guestMsg;
 	string chatBotReply;
 	bool isAdmin = false;
 
@@ -315,70 +342,15 @@ void Hosting::pollEvents()
 			switch (event.type)
 			{
 			case HOST_EVENT_GUEST_STATE_CHANGE:
-				if ((state == GUEST_CONNECTED || state == GUEST_CONNECTING) && _banList.isBanned(guest.userID))
-				{
-					ParsecHostKickGuest(_parsec, guest.id);
-					broadcastChatMessage(_chatBot->formatBannedGuestMessage(guest));
-				}
-				else if (state == GUEST_CONNECTED || state == GUEST_DISCONNECTED)
-				{
-					guestMsg.clear();
-					guestMsg = string(event.guestStateChange.guest.name);
-					
-					broadcastChatMessage(_chatBot->formatGuestConnection(guest, state, isAdmin));
-
-					if (state == GUEST_CONNECTED)
-					{
-						printf("%s (#%d)    >> joined\n", guest.name, guest.userID);
-					}
-					else
-					{
-						printf("%s (#%d)    quit >>\n", guest.name, guest.userID);
-						int droppedPads = 0;
-						CommandFF command(guest, _gamepadClient);
-						command.run();
-						if (droppedPads > 0)
-						{
-							broadcastChatMessage(command.replyMessage());
-						}
-					}
-				}
+				onGuestStateChange(state, guest);
 				break;
 
 			case HOST_EVENT_USER_DATA:
 				char* msg = (char*)ParsecGetBuffer(_parsec, event.userData.key);
-				cout << msg << "\n";
 
 				if (event.userData.id == PARSEC_APP_CHAT_MSG)
 				{
-					guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
-					isAdmin = _adminList.isAdmin(guest.userID);
-					ACommand* command = _chatBot->identifyUserDataMessage(msg, guest, isAdmin);
-					command->run();
-
-					// Non-blocked default message
-					if (!isFilteredCommand(command))
-					{
-						CommandDefaultMessage defaultMessage (msg, guest, _chatBot->getLastUserId(), isAdmin);
-						defaultMessage.run();
-						_chatBot->setLastUserId(guest.userID);
-
-						if (!defaultMessage.replyMessage().empty())
-						{
-							broadcastChatMessage(defaultMessage.replyMessage());
-							cout << endl << defaultMessage.replyMessage();
-						}
-					}
-
-					// Chatbot's command reply
-					if (!command->replyMessage().empty() && command->type() != COMMAND_TYPE::DEFAULT_MESSAGE)
-					{
-						broadcastChatMessage(command->replyMessage());
-						cout << endl << command->replyMessage();
-						_chatBot->setLastUserId();
-					}
-
-					delete command;
+					handleMessage(msg, guest, isAdmin);
 				}
 
 				ParsecFree(msg);
@@ -417,9 +389,92 @@ void Hosting::pollInputs()
 bool Hosting::parsecArcadeStart()
 {
 	if (isReady()) {
-		ParsecSetLogCallback(logCallback, NULL);
+		//ParsecSetLogCallback(logCallback, NULL);
 		ParsecStatus status = ParsecHostStart(_parsec, HOST_GAME, &_hostConfig, _parsecSession.sessionId.c_str());
 		return status == PARSEC_OK;
 	}
 	return false;
 }
+
+bool Hosting::isFilteredCommand(ACommand* command)
+{
+	static vector<COMMAND_TYPE> filteredCommands{ COMMAND_TYPE::IP };
+
+	COMMAND_TYPE type;
+	for (vector<COMMAND_TYPE>::iterator it = filteredCommands.begin(); it != filteredCommands.end(); ++it)
+	{
+		type = command->type();
+		if (command->type() == *it)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
+{
+	static string logMessage;
+
+	if ((state == GUEST_CONNECTED || state == GUEST_CONNECTING) && _banList.isBanned(guest.userID))
+	{
+		ParsecHostKickGuest(_parsec, guest.id);
+		logMessage = _chatBot->formatBannedGuestMessage(guest);
+		broadcastChatMessage(logMessage);
+	}
+	else if (state == GUEST_CONNECTED || state == GUEST_DISCONNECTED)
+	{
+		static string guestMsg;
+		guestMsg.clear();
+		guestMsg = string(guest.name);
+
+		logMessage = _chatBot->formatGuestConnection(guest, state);
+		broadcastChatMessage(logMessage);
+		_chatLog.logCommand(logMessage);
+
+		if (state != GUEST_CONNECTED)
+		{
+			int droppedPads = 0;
+			CommandFF command(guest, _gamepadClient);
+			command.run();
+			if (droppedPads > 0)
+			{
+				logMessage = command.replyMessage();
+				broadcastChatMessage(logMessage);
+				_chatLog.logCommand(logMessage);
+			}
+		}
+	}
+}
+
+
+
+// ============================================================
+// 
+//  Delete queue
+// 
+// ============================================================
+
+//void logDataMessage(const char* msg, ParsecHostEvent event)
+//{
+//	string msgStr = msg;
+//	cout
+//		<< endl
+//		<< "DATA"
+//		<< " | userid: " << event.userData.guest.userID
+//		<< " | guestid: " << event.userData.guest.id
+//		<< " | msgid: " << event.userData.id
+//		<< " | key: " << event.userData.key
+//		<< " | msg: " << msg;
+//}
+
+//static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
+//{
+//	opaque;
+//	if (level != LOG_DEBUG)
+//	{
+//		cout << "[I] " << msg << endl;
+//	}
+//	printf("[%s] %s\n", level == LOG_DEBUG ? "D" : "I", msg);
+//}

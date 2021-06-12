@@ -25,8 +25,11 @@ public:
 
 	bool run() override
 	{
+		if (!_sender.isHost)
+		{
+			ParsecHostKickGuest(_parsec, _sender.id);
+		}
 		_ban.ban(GuestData(_sender.name, _sender.userID));
-		ParsecHostKickGuest(_parsec, _sender.id);
 		_replyMessage = std::string() + "! [ChatBot] | " + _sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
 		return true;
 	}

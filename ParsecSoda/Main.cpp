@@ -21,6 +21,8 @@
 #include "Widgets/HostSettingsWidget.h"
 #include "Widgets/ChatWidget.h"
 
+#include "matoya.h"
+
 using namespace std;
 
 // Data
@@ -28,6 +30,7 @@ static ID3D11Device*            g_pd3dDevice = NULL;
 static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
 static IDXGISwapChain*          g_pSwapChain = NULL;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
+Hosting g_hosting;
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -109,6 +112,25 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool show_another_window = false;
     
 
+    void* png = NULL;
+    size_t png_size = 0;
+    uint16_t code = 0;
+    try
+    {
+        if (MTY_HttpRequest("user-images.githubusercontent.com", 0, true, "GET",
+            "/328897/112402607-36d00780-8ce3-11eb-9707-d11bc6c73c59.png",
+            NULL, NULL, 0, 5000, &png, &png_size, &code))
+        {
+            // On success, decompress it into RGBA
+
+            MTY_Free(png);
+        }
+    }
+    catch (const std::exception&)
+    {
+        bool debug = true;
+    }
+
 
 
     // =====================================================================
@@ -120,7 +142,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AppFonts g_fonts (io);
     AppColors g_colors;
     AppStyle g_style(g_fonts, g_colors);
-    Hosting g_hosting;
     g_hosting.init();
 
     HostSettingsWidget hostSettingsWindow(g_icons, g_hosting);
@@ -258,8 +279,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-        return true;
-
+        return true;    
     switch (msg)
     {
     case WM_SIZE:
@@ -274,7 +294,10 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
             return 0;
         break;
+    case WM_QUIT:
     case WM_DESTROY:
+        g_hosting.release();
+        Sleep(500);
         ::PostQuitMessage(0);
         return 0;
     }

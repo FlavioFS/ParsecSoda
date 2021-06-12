@@ -10,6 +10,7 @@ using namespace std;
 class GuestList
 {
 public:
+	void setHost(Guest* host);
 	void setGuests(ParsecGuest* guests, int guestCount);
 	const vector<Guest> &getGuests() const;
 	const bool find(uint32_t targetGuestID, Guest *result);
@@ -18,5 +19,6 @@ public:
 
 private:
 	vector<Guest> _guests;
+	Guest* _host;
 };
 

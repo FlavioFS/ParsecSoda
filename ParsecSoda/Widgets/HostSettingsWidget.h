@@ -9,6 +9,7 @@
 #include "../AppColors.h"
 #include "../AppStyle.h"
 #include "TooltipWidget.h"
+#include "ConfirmPopupWidget.h"
 
 class HostSettingsWidget
 {

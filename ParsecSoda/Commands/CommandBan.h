@@ -5,6 +5,7 @@
 #include "parsec.h"
 #include "../BanList.h"
 
+using namespace std;
 
 class CommandBan : public ACommandSearchUser
 {
@@ -25,17 +26,22 @@ public:
 		switch (_searchResult)
 		{
 		case SEARCH_USER_RESULT::NOT_FOUND:
-			_replyMessage = std::string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to ban.\0";
+			_replyMessage = string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to ban.\0";
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
 			if (_sender.userID == _targetGuest.userID)
-				_replyMessage = std::string() + "[ChatBot] | Thou shall not ban thyself, " + _sender.name + " ...\0";
+				_replyMessage = string() + "[ChatBot] | Thou shall not ban thyself, " + _sender.name + " ...\0";
 			else
 			{
-				_replyMessage = std::string() + "[ChatBot] | " + _targetGuest.name + " was banned by " + _sender.name + "!\0";
-				_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
-				ParsecHostKickGuest(_parsec, _targetGuest.id);
+				_replyMessage = string() + "[ChatBot] | " + _targetGuest.name + " was banned by " + _sender.name + "!\0";
+				
+				if (!_targetGuest.isHost)
+				{
+					_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
+					ParsecHostKickGuest(_parsec, _targetGuest.id);
+				}
+				
 				rv = true;
 			}
 			break;

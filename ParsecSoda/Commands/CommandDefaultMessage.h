@@ -19,7 +19,19 @@ public:
 		std::ostringstream reply;
 		if (_sender.userID != _lastUserID)
 		{
-			reply << (_isAdmin ? "$  " : ">  ") << _sender.name << " \t (#" << _sender.userID << "):\n";
+			static string role = "";
+			if (_sender.isHost) role = "#  ";
+			else if (_isAdmin) role = "$  ";
+			else role = ">  ";
+			
+
+			reply << role << _sender.name;
+			if (!_sender.isHost)
+			{
+				reply << " \t (#" << _sender.userID << ")";
+			}
+
+			reply << ":\n";
 		}
 
 		reply << "\t\t " << _msg << "\0";

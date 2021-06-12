@@ -14,6 +14,7 @@
 #include "matoya.h"
 #include "AdminList.h"
 #include "ChatBot.h"
+#include "ChatLog.h"
 #include "Stringer.h"
 #include "Mock.h"
 #include "AudioIn.h"
@@ -39,9 +40,12 @@ public:
 	void applyHostConfig();
 	void broadcastChatMessage(string message);
 	void init();
+	void release();
 	bool isReady();
 	bool isRunning();
-	ParsecHostConfig getHostConfig();
+	ParsecHostConfig& getHostConfig();
+	vector<string>& getMessageLog();
+	vector<string>& getCommandLog();
 	void setGameID(string gameID);
 	void setMaxGuests(uint8_t maxGuests);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom);
@@ -52,6 +56,9 @@ public:
 	void startHosting();
 	void stopHosting();
 
+	void handleMessage(const char* message, Guest& guest, bool& isAdmin);
+	void sendHostMessage(const char* message);
+
 private:
 	void initAllModules();
 	void liveStreamMedia();
@@ -59,16 +66,18 @@ private:
 	void pollEvents();
 	void pollInputs();
 	bool parsecArcadeStart();
+	bool isFilteredCommand(ACommand* command);
+	void onGuestStateChange(ParsecGuestState& state, Guest& guest);
 
 	// Attributes
 	AudioIn _audioIn;
 	AudioOut _audioOut;
 	AudioMix _audioMix;
 	DX11 _dx11;
-
 	AdminList _adminList;
 	BanList _banList;
 	ChatBot *_chatBot;
+	ChatLog _chatLog;
 	Dice _dice;
 	GamepadClient _gamepadClient;
 	GuestList _guestList;
@@ -77,6 +86,7 @@ private:
 	ParsecHostConfig _hostConfig;
 	ParsecSession _parsecSession;
 	ParsecStatus _parsecStatus;
+	Guest _host;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;

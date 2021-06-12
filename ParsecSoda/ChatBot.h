@@ -40,9 +40,11 @@
 
 #define BOT_GUESTID 0
 
+
 class ChatBot
 {
 public:
+
 	ChatBot(
 		AudioMix& audioMixer, BanList& ban, Dice& dice, DX11 &dx11,
 		GamepadClient& gamepadClient, GuestList &guests, Parsec* parsec, ParsecHostConfig &hostConfig,
@@ -57,7 +59,8 @@ public:
 
 	const uint32_t getLastUserId() const;
 	void setLastUserId(const uint32_t lastId = BOT_GUESTID);
-	const std::string formatGuestConnection(Guest guest, ParsecGuestState state, bool isAdmin = false);
+
+	const std::string formatGuestConnection(Guest guest, ParsecGuestState state);
 	const std::string formatBannedGuestMessage(Guest guest);
 	CommandBotMessage sendBotMessage(const char * msg);
 

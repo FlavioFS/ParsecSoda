@@ -35,7 +35,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 		else if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
 		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioMixer);
 		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban);
-		//else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11); // Broken (massive memory leaks)
+		//else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11); // Broken (massive memory leaks) & obsolete
 	}
 
 	this->setLastUserId(previous);
@@ -47,7 +47,7 @@ const uint32_t ChatBot::getLastUserId() const
 	return this->_lastUserId;
 }
 
-const std::string ChatBot::formatGuestConnection(Guest guest, ParsecGuestState state, bool isAdmin)
+const std::string ChatBot::formatGuestConnection(Guest guest, ParsecGuestState state)
 {
 	setLastUserId(BOT_GUESTID);
 
@@ -82,24 +82,6 @@ CommandBotMessage ChatBot::sendBotMessage(const char* msg)
 	setLastUserId(BOT_GUESTID);
 	return message;
 }
-
-//void ChatBot::inject(
-//	AudioMix& audioMixer, BanList& ban, Dice& dice, DX11& dx11, GamepadClient& gamepadClient,
-//	GuestList& guests, Parsec* parsec, ParsecHostConfig& hostConfig,
-//	ParsecSession parsecSession, bool& hostingLoopController
-//)
-//{
-//	_audioMixer = audioMixer;
-//	_ban = ban;
-//	_dice = dice;
-//	_dx11 = dx11;
-//	_gamepadClient = gamepadClient;
-//	_guests = guests;
-//	_parsec = parsec;
-//	_hostConfig = hostConfig;
-//	_parsecSession = parsecSession;
-//	_hostingLoopController = hostingLoopController;
-//}
 
 bool ChatBot::msgStartsWith(const char* msg, const char * pattern)
 {

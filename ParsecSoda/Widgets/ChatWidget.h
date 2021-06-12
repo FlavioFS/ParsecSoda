@@ -33,5 +33,6 @@ private:
 	// Attributes
 	string _logBuffer;
 	char _sendBuffer[SEND_BUFFER_LEN];
+	vector<string>& _chatLog;
 };
 
