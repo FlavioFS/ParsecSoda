@@ -1,9 +1,9 @@
 #include "TooltipWidget.h"
 
-bool TooltipWidget::render(const char* text, AppStyle& style)
+bool TooltipWidget::render(const char* text)
 {
-	style.pushInput();
+	AppStyle::pushInput();
 	ImGui::SetTooltip(text);
-	style.pop();
+	AppStyle::pop();
 	return true;
 }

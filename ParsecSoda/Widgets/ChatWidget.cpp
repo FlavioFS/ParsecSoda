@@ -1,20 +1,20 @@
 #include "ChatWidget.h"
 
-ChatWidget::ChatWidget(AppIcons& icons, Hosting& hosting)
-    : _icons(icons), _hosting(hosting), _chatLog(hosting.getMessageLog())
+ChatWidget::ChatWidget(Hosting& hosting)
+    : _hosting(hosting), _chatLog(hosting.getMessageLog()), _messageCount(0)
 {
-    _sendBtn = ToggleTexButtonWidget (icons.send, icons.send_off, false);
     setSendBuffer("\0");
 }
 
-bool ChatWidget::render(AppStyle& style)
+bool ChatWidget::render()
 {
-    style.pushTitle();
+    AppStyle::pushTitle();
     ImGui::SetNextWindowSizeConstraints(ImVec2(300, 400), ImVec2(800, 900));
     ImGui::Begin("Chat", (bool*)0);
-    style.pushInput();
-    
-    ImVec2 size = ImGui::GetContentRegionAvail();
+    AppStyle::pushInput();
+
+    static ImVec2 size;
+    size = ImGui::GetContentRegionAvail();
 
     static vector<string>::iterator it;
     it = _chatLog.begin();
@@ -23,7 +23,14 @@ bool ChatWidget::render(AppStyle& style)
     {
         ImGui::TextWrapped((*it).c_str());
     }
-    //ImGui::TextWrapped(_logBuffer.c_str());
+    if (_messageCount != _chatLog.size())
+    {
+        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
+        {
+            ImGui::SetScrollHereY(1.0f);
+        }
+        _messageCount = _chatLog.size();
+    }
     ImGui::EndChild();
 
     ImGui::Separator();
@@ -31,7 +38,7 @@ bool ChatWidget::render(AppStyle& style)
     ImGui::BeginChild("Message Preview", ImVec2(size.x, 60));
     ImGui::TextWrapped(_sendBuffer);
     ImGui::EndChild();
-    
+
     if (ImGui::IsWindowFocused() && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
         ImGui::SetKeyboardFocusHere(0);
     ImGui::SetNextItemWidth(size.x);
@@ -41,15 +48,18 @@ bool ChatWidget::render(AppStyle& style)
     }
 
     ImGui::Indent(size.x - 50);
-    _sendBtn.setOn(isDirty());
-    if (_sendBtn.render())
+    
+    if (ToggleIconButtonWidget::render(
+        AppIcons::send, AppIcons::send, isDirty(),
+        AppColors::alert, AppColors::alpha(AppColors::alert, 0.25f)
+    ))
     {
         sendMessage();
     }
 
-    style.pop();
+    AppStyle::pop();
     ImGui::End();
-    style.pop();
+    AppStyle::pop();
 
     return true;
 }
@@ -71,7 +81,7 @@ bool ChatWidget::isDirty()
 
 void ChatWidget::sendMessage()
 {
-    if (_hosting.isRunning())
+    if (_hosting.isRunning() && strlen(_sendBuffer) > 0)
     {
         _hosting.sendHostMessage(_sendBuffer);
     }

@@ -2,7 +2,7 @@
 
 #include "ACommandSearchUser.h"
 #include <iostream>
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "../BanList.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ class CommandBan : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::BAN; }
 
-	CommandBan(const char* msg, Guest& sender, Parsec* parsec, GuestList &guests, BanList &banList)
+	CommandBan(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests, BanList &banList)
 		: ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec), _ban(banList)
 	{
 	}
@@ -66,7 +66,7 @@ private:
 		return vector<const char*> { "!ban " };
 	}
 
-	Parsec* _parsec;
+	ParsecDSO* _parsec;
 	Guest& _sender;
 	BanList _ban;
 };

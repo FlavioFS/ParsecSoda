@@ -156,9 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdminList.cpp" />
-    <ClCompile Include="AppColors.cpp" />
-    <ClCompile Include="AppIcons.cpp" />
-    <ClCompile Include="AppStyle.cpp" />
+    <ClCompile Include="globals\AppColors.cpp" />
+    <ClCompile Include="globals\AppIcons.cpp" />
+    <ClCompile Include="globals\AppStyle.cpp" />
     <ClCompile Include="AudioIn.cpp" />
     <ClCompile Include="AudioMix.cpp" />
     <ClCompile Include="AudioOut.cpp" />
@@ -166,10 +166,15 @@
     <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="ChatLog.cpp" />
+    <ClCompile Include="Widgets\StylePickerWidget.cpp" />
+    <ClCompile Include="Widgets\IconButton.cpp" />
+    <ClCompile Include="Widgets\GamepadsWidget.cpp" />
+    <ClCompile Include="Widgets\GuestListWidget.cpp" />
+    <ClCompile Include="Widgets\LogWidget.cpp" />
     <ClCompile Include="Widgets\ConfirmPopupWidget.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="DX11.cpp" />
-    <ClCompile Include="AppFonts.cpp" />
+    <ClCompile Include="globals\AppFonts.cpp" />
     <ClCompile Include="Widgets\TooltipWidget.cpp" />
     <ClCompile Include="Widgets\ChatWidget.cpp" />
     <ClCompile Include="Gamepad.cpp" />
@@ -191,15 +196,21 @@
     <ClCompile Include="ParsecSession.cpp" />
     <ClCompile Include="StressTest.cpp" />
     <ClCompile Include="Stringer.cpp" />
-    <ClCompile Include="Widgets\ToggleTexButtonWidget.cpp" />
+    <ClCompile Include="Widgets\ToggleIconButtonWidget.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppColors.h" />
-    <ClInclude Include="AppIcons.h" />
-    <ClInclude Include="AppStyle.h" />
+    <ClInclude Include="globals\AppColors.h" />
+    <ClInclude Include="globals\AppIcons.h" />
+    <ClInclude Include="globals\AppStyle.h" />
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="ChatLog.h" />
+    <ClInclude Include="Commands\CommandStrip.h" />
+    <ClInclude Include="Widgets\StylePickerWidget.h" />
+    <ClInclude Include="Widgets\IconButton.h" />
+    <ClInclude Include="Widgets\GamepadsWidget.h" />
+    <ClInclude Include="Widgets\GuestListWidget.h" />
+    <ClInclude Include="Widgets\LogWidget.h" />
     <ClInclude Include="Commands\CommandJoin.h" />
     <ClInclude Include="Commands\CommandAFK.h" />
     <ClInclude Include="Commands\CommandDC.h" />
@@ -238,7 +249,7 @@
     <ClInclude Include="Commands\CommandHelp.h" />
     <ClInclude Include="Commands\CommandVideoFix.h" />
     <ClInclude Include="Commands\CommandPrivate.h" />
-    <ClInclude Include="AppFonts.h" />
+    <ClInclude Include="globals\AppFonts.h" />
     <ClInclude Include="Widgets\ConfirmPopupWidget.h" />
     <ClInclude Include="Widgets\TooltipWidget.h" />
     <ClInclude Include="Widgets\ChatWidget.h" />
@@ -268,7 +279,7 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="StressTest.h" />
     <ClInclude Include="Stringer.h" />
-    <ClInclude Include="Widgets\ToggleTexButtonWidget.h" />
+    <ClInclude Include="Widgets\ToggleIconButtonWidget.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

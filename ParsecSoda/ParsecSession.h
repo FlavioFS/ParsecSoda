@@ -1,13 +1,12 @@
 #pragma once
 
-//#pragma comment(lib, "parsec.dll")
-
 #include "matoya.h"
 #include <string>
 #include <sstream>
+#include <thread>
 #include "Utils.h"
 #include "Mock.h"
-#include "Guest.h"
+#include "GuestList.h"
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
@@ -36,9 +35,6 @@ using namespace std;
 class ParsecSession
 {
 public:
-	string hostPeerId;
-	string sessionId;
-	MTY_JSON *arcadeRooms;
 
 	/**
 		*	Remove this in final version
@@ -50,9 +46,14 @@ public:
 		*/
 	void mockSession(bool isTestAccount = true);
 		
-		
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
 	const bool fetchArcadeRoomList();
-	const bool fetchAccountData(Guest& user);
-};
+	const bool fetchAccountData(Guest* user);
+		
+	string hostPeerId;
+	string sessionId;
+	MTY_JSON *arcadeRooms;
 
+private:
+	thread _accountDataThread;
+};

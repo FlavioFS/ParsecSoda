@@ -3,7 +3,7 @@
 #include "ACommandStringArg.h"
 #include <iostream>
 #include <sstream>
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "../BanList.h"
 #include "../Guest.h"
 

@@ -11,6 +11,8 @@
 #include "KeyboardMaps.h"
 #include "GuestList.h"
 
+using namespace std;
+
 #define GAMEPAD_LIMIT_NOT_FOUND -1
 #define GAMEPAD_PICK_TIMEOUT_MS 1000
 
@@ -27,6 +29,7 @@ enum class GAMEPAD_PICK_REQUEST
 
 class GamepadClient
 {
+public:
 	typedef struct ParsecGuestPrefs
 	{
 		uint32_t userId = OWNER_ID_NONE;
@@ -35,7 +38,6 @@ class GamepadClient
 		bool mirror = false;
 	} ParsecGuestPrefs;
 
-public:
 	~GamepadClient();
 	bool init();
 	Gamepad createGamepad();
@@ -49,12 +51,18 @@ public:
 	int clearAFK(GuestList &guests);
 
 	bool disconnect(int gamepadIndex);
+	bool clearOwner(int gamepadIndex);
 	bool sendMessage(ParsecGuest guest, ParsecMessage message);
 	int onRageQuit(Guest &guest);
 	void setLimit(uint32_t guestUserId, uint8_t padLimit);
 	bool toggleMirror(uint32_t guestUserId);
 	const GAMEPAD_PICK_REQUEST pick(Guest guest, int gamepadIndex);
-	const std::vector<GamepadStatus> getGamepadStatus();
+	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
+	
+	vector<GamepadStatus> getGamepadStatus();
+	vector<Gamepad>& getGamepads();
+
+	bool lock = false;
 
 private:
 	void releaseGamepads();
@@ -68,8 +76,7 @@ private:
 	bool find(uint32_t userID, uint32_t padID, Gamepad *gamepad);
 	bool findFirst(uint32_t userID, Gamepad *gamepad);
 	bool findAll(uint32_t userID, vector<Gamepad*> &gamepads);
-	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
 	PVIGEM_CLIENT _client;
-	std::vector<Gamepad> _gamepads;
-	std::vector<ParsecGuestPrefs> _guestPrefs;
+	vector<Gamepad> _gamepads;
+	vector<ParsecGuestPrefs> _guestPrefs;
 };

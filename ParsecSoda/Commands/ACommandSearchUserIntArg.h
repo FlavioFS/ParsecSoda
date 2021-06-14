@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ACommandPrefix.h"
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "../Stringer.h"
 #include "../GuestList.h"
 

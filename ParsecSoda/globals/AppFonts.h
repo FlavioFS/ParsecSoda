@@ -1,8 +1,8 @@
 #pragma once
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_win32.h"
-#include "imgui/imgui_impl_dx11.h"
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_win32.h"
+#include "../imgui/imgui_impl_dx11.h"
 
 #define APPFONTS_EXTRA_LIGHT	"fonts/Montserrat-ExtraLight.ttf"
 #define APPFONTS_LIGHT			"fonts/Montserrat-Light.ttf"
@@ -16,15 +16,15 @@ class AppFonts
 {
 
 public:
-	AppFonts(ImGuiIO& io);
+	static void init(ImGuiIO& io);
 
-	void pushLabel();
-	void pushTitle();
-	void pushInput();
-	void pop();
+	static void pushLabel();
+	static void pushTitle();
+	static void pushInput();
+	static void pop();
 
-	ImFont* label;
-	ImFont* title;
-	ImFont* input;
+	static ImFont* label;
+	static ImFont* title;
+	static ImFont* input;
 };
 

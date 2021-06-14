@@ -30,14 +30,12 @@ enum class COMMAND_TYPE
 	SETCONFIG,
 	SPEAKERS,
 	SWAP,
+	TAKE,
 	UNBAN,
 	VIDEOFIX,
 	
 	// Search + number
 	GIVE,		// new
-
-	// Search
-	TAKE		// new
 };
 
 class ACommand

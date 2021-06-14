@@ -1,6 +1,6 @@
 #pragma once
 
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "ACommand.h"
 #include <iostream>
 
@@ -9,7 +9,7 @@ class CommandSetConfig : public ACommand
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::SETCONFIG; }
 
-	CommandSetConfig(Parsec* parsec, ParsecHostConfig* config, const char* sessionId)
+	CommandSetConfig(ParsecDSO* parsec, ParsecHostConfig* config, const char* sessionId)
 		: _parsec(parsec), _config(config), _sessionId(sessionId)
 	{}
 
@@ -26,7 +26,7 @@ public:
 	}
 
 protected:
-	Parsec* _parsec;
+	ParsecDSO* _parsec;
 	ParsecHostConfig* _config;
 	const char* _sessionId;
 };

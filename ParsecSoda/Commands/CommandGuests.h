@@ -1,7 +1,7 @@
 #pragma once
 
 #include <sstream>
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "ACommandIntegerArg.h"
 
 class CommandGuests : public ACommandIntegerArg

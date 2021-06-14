@@ -2,6 +2,17 @@
 
 using namespace std;
 
+#if defined(_WIN32)
+	#if !defined(BITS)
+		#define BITS 64
+	#endif
+	#if (BITS == 64)
+		#define SDK_PATH "./parsec.dll"
+	#else
+		#define SDK_PATH "./parsec32.dll"
+	#endif
+#endif
+
 // ============================================================
 // 
 //  PUBLIC
@@ -16,7 +27,10 @@ Hosting::Hosting()
 	const vector<int> admins{ 3888558 , 6711547 };
 	_adminList = AdminList(admins);
 
-	const vector<GuestData> banned{};
+	const vector<GuestData> banned
+	{
+		GuestData("Miamiheatfan34", 1227313)
+	};
 	_banList = BanList(banned);
 	
 	_parsec = nullptr;
@@ -43,7 +57,7 @@ void Hosting::broadcastChatMessage(string message)
 
 void Hosting::init()
 {
-	_parsecStatus = ParsecInit(PARSEC_VER, NULL, NULL, &_parsec);
+	_parsecStatus = ParsecInit(NULL, NULL, (char *)SDK_PATH, &_parsec);
 	_dx11.init();
 	_gamepadClient.init();
 	_gamepadClient.createMaximumGamepads();
@@ -53,16 +67,14 @@ void Hosting::init()
 	// Data is mocked for now - arguments don't matter
 	//_parsecSession.fetchSession(EMAIL, PASSWORD);
 	_parsecSession.mockSession();	// Replace with fetchSession in final version
-	_parsecSession.fetchArcadeRoomList();
+	//_parsecSession.fetchArcadeRoomList();
 
 	_host.isHost = true;
 	_host.name = "Host";
 	if (isReady())
 	{
-		_parsecSession.fetchAccountData(_host);
+		//_parsecSession.fetchAccountData(&_host);
 	}
-
-	_guestList.setHost(&_host);
 }
 
 void Hosting::release()
@@ -74,7 +86,7 @@ void Hosting::release()
 	}
 	_dx11.clear();
 	_gamepadClient.release();
-	ParsecFree(_parsec);
+	//ParsecFree(_parsec);
 }
 
 bool Hosting::isReady()
@@ -85,6 +97,16 @@ bool Hosting::isReady()
 bool Hosting::isRunning()
 {
 	return _isRunning;
+}
+
+bool& Hosting::isGamepadLock()
+{
+	return _gamepadClient.lock;
+}
+
+Guest& Hosting::getHost()
+{
+	return _host;
 }
 
 ParsecHostConfig& Hosting::getHostConfig()
@@ -100,6 +122,26 @@ vector<string>& Hosting::getMessageLog()
 vector<string>& Hosting::getCommandLog()
 {
 	return _chatLog.getCommandLog();
+}
+
+vector<Guest>& Hosting::getGuestList()
+{
+	return _guestList.getGuests();
+}
+
+vector<Gamepad>& Hosting::getGamepads()
+{
+	return _gamepadClient.getGamepads();
+}
+
+const char** Hosting::getGuestNames()
+{
+	return _guestList.guestNames;
+}
+
+void Hosting::toggleGamepadLock()
+{
+	_gamepadClient.lock = !_gamepadClient.lock;
 }
 
 void Hosting::setGameID(string gameID)
@@ -183,6 +225,24 @@ void Hosting::startHosting()
 void Hosting::stopHosting()
 {
 	_isRunning = false;
+}
+
+void Hosting::stripGamepad(int index)
+{
+	_gamepadClient.clearOwner(index);
+}
+
+void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
+{
+	GamepadClient::ParsecGuestPrefs *prefs = _gamepadClient.getPrefs(newOwner.userID);
+	if (prefs != nullptr)
+	{
+		gamepad.setOwner(newOwner, padId, prefs->mirror);
+	}
+	else
+	{
+		gamepad.setOwner(newOwner, padId, false);
+	}
 }
 
 void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin)
@@ -320,7 +380,6 @@ void Hosting::pollEvents()
 	_eventMutex.lock();
 	_isEventThreadRunning = true;
 
-	ParsecGuest dataGuest;
 	string chatBotReply;
 	bool isAdmin = false;
 
@@ -353,13 +412,13 @@ void Hosting::pollEvents()
 					handleMessage(msg, guest, isAdmin);
 				}
 
-				ParsecFree(msg);
+				ParsecFree(_parsec, msg);
 				break;
 			}
 		}
 	}
 
-	ParsecFree(guests);
+	ParsecFree(_parsec, guests);
 	_isEventThreadRunning = false;
 	_eventMutex.unlock();
 	_eventThread.detach();
@@ -377,7 +436,10 @@ void Hosting::pollInputs()
 	{
 		if (ParsecHostPollInput(_parsec, 4, &inputGuest, &inputGuestMsg))
 		{
-			_gamepadClient.sendMessage(inputGuest, inputGuestMsg);
+			if (!_gamepadClient.lock)
+			{
+				_gamepadClient.sendMessage(inputGuest, inputGuestMsg);
+			}
 		}
 	}
 

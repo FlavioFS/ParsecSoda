@@ -32,24 +32,24 @@ public:
 		case GAMEPAD_PICK_REQUEST::OK:
 			reply
 				<< "[ChatBot] | Gamepad " << _intArg << " was given to " << _sender.name << "\t(#" << _sender.userID << ")\n"
-				<< "\t\tType /pads to see the gamepad list.\0";
+				<< "\t\tType !pads to see the gamepad list.\0";
 			rv = true;
 			break;
 		case GAMEPAD_PICK_REQUEST::SAME_USER:
 			reply
 				<< "[ChatBot] | " << _sender.name << ", you have that gamepad already.\n"
-				<< "\t\tType /pads to see the gamepad list.\0";
+				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GAMEPAD_PICK_REQUEST::TAKEN:
 			reply
 				<< "[ChatBot] | " << _sender.name << ", the gamepad you tried to pick is already taken.\n"
-				<< "\t\tType /pads to see the gamepad list.\0";
+				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GAMEPAD_PICK_REQUEST::EMPTY_HANDS:
 			reply
 				<< "[ChatBot] | " << _sender.name << ", you must be holding a gamepad to use !swap command.\n"
 				<< "\t\tPress any face button (A, B, X, Y) to receive a random gamepad (if available).\n"
-				<< "\t\tType /pads to see the gamepad list.\0";
+				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GAMEPAD_PICK_REQUEST::LIMIT_BLOCK:
 			reply
@@ -58,7 +58,7 @@ public:
 		case GAMEPAD_PICK_REQUEST::OUT_OF_RANGE:
 			reply
 				<< "[ChatBot] | " << _sender.name << ", your gamepad index is wrong (valid range is [1, 4]).\n"
-				<< "\t\tType /pads to see the gamepad list.\0";
+				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		default:
 			break;

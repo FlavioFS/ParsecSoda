@@ -1,6 +1,5 @@
 #include "Gamepad.h"
 
-
 Gamepad::Gamepad()
 {
 	_client = nullptr;
@@ -355,7 +354,7 @@ bool Gamepad::setState(ParsecGamepadAxisMessage axis)
 {
 	if (_isAlive && _isConnected && _client != nullptr)
 	{
-		std::cout << "Axis: " << axis.axis << " | " << axis.value;
+		cout << "Axis: " << axis.axis << " | " << axis.value;
 
 		bool isOk = true;
 		XINPUT_STATE xState = getState();
@@ -406,14 +405,25 @@ bool Gamepad::setState(ParsecGamepadAxisMessage axis)
 	return false;
 }
 
+void Gamepad::setPadId(uint32_t padId)
+{
+	_ownerPadId = padId;
+}
+
+void Gamepad::setOwner(Guest& owner, bool mirror)
+{
+	_owner = owner;
+	setMirror(mirror);
+}
+
 void Gamepad::setOwnerGuest(ParsecGuest guest, uint32_t padId, bool mirror)
 {
-	setOwnerGuest(guest.userID, guest.name, padId, mirror);
+	setOwnerGuest(guest.userID, guest.id, guest.name, padId, mirror);
 }
 
 void Gamepad::copyOwner(Gamepad pad)
 {
-	setOwnerGuest(pad._ownerUserId, pad._ownerName.c_str(), pad._ownerPadId, pad._mirror);
+	setOwner(pad._owner, pad._ownerPadId, pad._mirror);
 }
 
 void Gamepad::clearOwner()
@@ -424,22 +434,22 @@ void Gamepad::clearOwner()
 
 const bool Gamepad::isOwned()
 {
-	return _ownerUserId != OWNER_ID_NONE;
+	return _owner.userID != OWNER_ID_NONE;
 }
 
-std::string Gamepad::getOwnerGuestName()
+Guest& Gamepad::getOwner()
 {
-	return _ownerName;
+	return _owner;
 }
 
-uint32_t Gamepad::getOwnerGuestUserId()
-{
-	return _ownerUserId;
-}
-
-uint32_t Gamepad::getOwnerPadId()
+uint32_t& Gamepad::getOwnerPadId()
 {
 	return _ownerPadId;
+}
+
+bool& Gamepad::isConnected()
+{
+	return _isConnected;
 }
 
 void Gamepad::onRageQuit()
@@ -454,13 +464,21 @@ void Gamepad::setMirror(bool mirror)
 
 GamepadStatus Gamepad::getStatus()
 {
-	return { _ownerUserId, _ownerName, _isConnected };
+	return { _owner, _ownerPadId, _isConnected };
 }
 
-void Gamepad::setOwnerGuest(uint32_t ownerId, const char* ownerName, uint32_t padId, bool mirror)
+void Gamepad::setOwner(Guest owner, uint32_t padId, bool mirror)
 {
-	_ownerUserId = ownerId;
-	_ownerName = ownerName;
+	_owner = owner;
+	_ownerPadId = padId;
+	setMirror(mirror);
+}
+
+void Gamepad::setOwnerGuest(uint32_t ownerUserId, uint32_t ownerIndex, const char* ownerName, uint32_t padId, bool mirror)
+{
+	_owner.userID = ownerUserId;
+	_owner.id = ownerIndex;
+	_owner.name = ownerName;
 	_ownerPadId = padId;
 	setMirror(mirror);
 }

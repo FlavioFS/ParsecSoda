@@ -33,6 +33,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 		else if (msgIsEqual(msg, CommandPublic::prefixes()))		return new CommandPublic(_hostConfig);
 		else if	(msgIsEqual(msg, CommandQuit::prefixes()))			return new CommandQuit(_hostingLoopController);
 		else if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
+		else if (msgStartsWith(msg, CommandStrip::prefixes()))		return new CommandStrip(msg, sender, _gamepadClient);
 		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioMixer);
 		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban);
 		//else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11); // Broken (massive memory leaks) & obsolete

@@ -39,4 +39,5 @@ public:
 	int64_t userID;
 	int64_t id;
 	bool isHost;
+	int index;
 };

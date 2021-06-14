@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 #include <regex>
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "ParsecSession.h"
 #include "Stringer.h"
 #include "GamepadClient.h"
@@ -34,6 +34,7 @@
 #include "Commands/CommandQuit.h"
 #include "Commands/CommandSetConfig.h"
 #include "Commands/CommandSpeakers.h"
+#include "Commands/CommandStrip.h"
 #include "Commands/CommandSwap.h"
 #include "Commands/CommandUnban.h"
 #include "Commands/CommandVideoFix.h"
@@ -47,8 +48,8 @@ public:
 
 	ChatBot(
 		AudioMix& audioMixer, BanList& ban, Dice& dice, DX11 &dx11,
-		GamepadClient& gamepadClient, GuestList &guests, Parsec* parsec, ParsecHostConfig &hostConfig,
-		ParsecSession parsecSession, bool &hostingLoopController
+		GamepadClient& gamepadClient, GuestList &guests, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
+		ParsecSession& parsecSession, bool &hostingLoopController
 	)
 		: _audioMixer(audioMixer), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
 		_guests(guests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
@@ -73,7 +74,7 @@ private:
 	uint32_t _lastUserId = 0;
 
 	// Dependency Injection
-	Parsec* _parsec;
+	ParsecDSO* _parsec;
 	AudioMix& _audioMixer;
 	BanList &_ban;
 	Dice &_dice;

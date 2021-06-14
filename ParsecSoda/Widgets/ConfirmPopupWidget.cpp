@@ -1,20 +1,20 @@
 #include "ConfirmPopupWidget.h"
 
-bool ConfirmPopupWidget::render(const char * title, bool &showPopup, AppIcons& icons, AppStyle& style)
+bool ConfirmPopupWidget::render(const char * title, bool &showPopup)
 {
     static bool result;
     result = false;
     static ImVec2 BUTTON_SIZE = ImVec2(64, 64);
 
     ImGui::SetNextWindowSize(ImVec2(300, 200));
-    style.pushTitle();
+    AppStyle::pushTitle();
     if (ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
         ImGui::BeginChild(title, ImVec2(10, 40));
         ImGui::EndChild();
 
         ImGui::Indent(10);
-        if (ImGui::ImageButton(icons.no, BUTTON_SIZE))
+        if (IconButton::render(AppIcons::no, AppColors::error, BUTTON_SIZE))
         {
             showPopup = false;
             ImGui::CloseCurrentPopup();
@@ -23,7 +23,7 @@ bool ConfirmPopupWidget::render(const char * title, bool &showPopup, AppIcons& i
         ImGui::SameLine();
 
         ImGui::Indent(165);
-        if (ImGui::ImageButton(icons.yes, BUTTON_SIZE))
+        if (IconButton::render(AppIcons::yes, AppColors::alert, BUTTON_SIZE))
         {
             result = true;
             showPopup = false;
@@ -32,7 +32,7 @@ bool ConfirmPopupWidget::render(const char * title, bool &showPopup, AppIcons& i
 
         ImGui::EndPopup();
     }
-    style.pop();
+    AppStyle::pop();
 
     return result;
 }

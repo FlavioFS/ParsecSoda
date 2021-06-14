@@ -1,17 +1,16 @@
 #pragma once
 
-#include "IWidget.h"
-#include "ToggleTexButtonWidget.h"
+#include "ToggleIconButtonWidget.h"
 #include "../imgui/imgui.h"
+#include "../globals/AppIcons.h"
+#include "../globals/AppStyle.h"
 #include "../Hosting.h"
-#include "../AppIcons.h"
-#include "../AppStyle.h"
 
 class ChatWidget
 {
 public:
-	ChatWidget(AppIcons& icons, Hosting& hosting);
-	bool render(AppStyle& style);
+	ChatWidget(Hosting& hosting);
+	bool render();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
 
@@ -24,15 +23,12 @@ private:
 	bool setSendBuffer(const char* value);
 
 	// Dependency injection
-	AppIcons& _icons;
 	Hosting& _hosting;
 
-	// Imported widgets
-	ToggleTexButtonWidget _sendBtn;
-	
 	// Attributes
 	string _logBuffer;
 	char _sendBuffer[SEND_BUFFER_LEN];
 	vector<string>& _chatLog;
+	size_t _messageCount;
 };
 

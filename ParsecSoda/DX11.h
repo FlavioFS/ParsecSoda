@@ -6,7 +6,7 @@
 #include <iostream>
 //#include <atlbase.h>
 #include <atlcomcli.h>
-#include "parsec.h"
+#include "parsec-dso.h"
 
 
 class DX11
@@ -15,7 +15,7 @@ public:
 	void clear();
 	bool recover();
 	bool init();
-	bool captureScreen(Parsec *ps);
+	bool captureScreen(ParsecDSO *ps);
 
 private:
 	// Windows

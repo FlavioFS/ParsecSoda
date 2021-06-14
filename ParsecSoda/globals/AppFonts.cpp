@@ -1,6 +1,10 @@
 #include "AppFonts.h"
 
-AppFonts::AppFonts(ImGuiIO& io)
+ImFont* AppFonts::label;
+ImFont* AppFonts::title;
+ImFont* AppFonts::input;
+
+void AppFonts::init(ImGuiIO& io)
 {
 	// Default
 	label = io.Fonts->AddFontFromFileTTF(APPFONTS_REGULAR, 16.0f);

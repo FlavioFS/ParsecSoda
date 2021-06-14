@@ -1,21 +1,21 @@
 #pragma once
 
-#include "IWidget.h"
-#include "ToggleTexButtonWidget.h"
 #include "../imgui/imgui.h"
 #include "../Hosting.h"
-#include "../AppIcons.h"
-#include "../AppFonts.h"
-#include "../AppColors.h"
-#include "../AppStyle.h"
+#include "../globals/AppIcons.h"
+#include "../globals/AppFonts.h"
+#include "../globals/AppColors.h"
+#include "../globals/AppStyle.h"
+#include "ToggleIconButtonWidget.h"
 #include "TooltipWidget.h"
 #include "ConfirmPopupWidget.h"
+#include "IconButton.h"
 
 class HostSettingsWidget
 {
 public:
-	HostSettingsWidget(AppIcons& icons, Hosting& hosting);
-	bool render(AppStyle& style);
+	HostSettingsWidget(Hosting& hosting);
+	bool render();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
 	const uint8_t LINK_COMPATIBLE_SECRET_SIZE = 9;
@@ -25,10 +25,9 @@ private:
 
 	// Dependency injection
 	Hosting& _hosting;
-	AppIcons& _icons;
 
 	// Imported Widgets
-	ToggleTexButtonWidget _publicRoomBtn, _playBtn;
+	ToggleIconButtonWidget _publicRoomBtn, _playBtn;
 
 	// Attributes
 	char _roomName[HOST_NAME_LEN];

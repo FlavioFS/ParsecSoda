@@ -208,7 +208,7 @@ bool DX11::init()
 }
 
 
-bool DX11::captureScreen(Parsec *ps)
+bool DX11::captureScreen(ParsecDSO *ps)
 {
 	if (!_lDeskDupl)
 	{

@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include "parsec-dso.h"
 #include "ParsecSession.h"
 #include "DX11.h"
 #include "matoya.h"
@@ -43,9 +44,15 @@ public:
 	void release();
 	bool isReady();
 	bool isRunning();
+	bool& isGamepadLock();
+	Guest& getHost();
 	ParsecHostConfig& getHostConfig();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
+	vector<Guest>& getGuestList();
+	vector<Gamepad>& getGamepads();
+	const char** getGuestNames();
+	void toggleGamepadLock();
 	void setGameID(string gameID);
 	void setMaxGuests(uint8_t maxGuests);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom);
@@ -55,6 +62,8 @@ public:
 	void setRoomSecret(string secret);
 	void startHosting();
 	void stopHosting();
+	void stripGamepad(int index);
+	void setOwner(Gamepad& gamepad, Guest newOwner, int padId);
 
 	void handleMessage(const char* message, Guest& guest, bool& isAdmin);
 	void sendHostMessage(const char* message);
@@ -82,7 +91,7 @@ private:
 	GamepadClient _gamepadClient;
 	GuestList _guestList;
 	
-	Parsec* _parsec;
+	ParsecDSO* _parsec;
 	ParsecHostConfig _hostConfig;
 	ParsecSession _parsecSession;
 	ParsecStatus _parsecStatus;

@@ -2,7 +2,7 @@
 
 #include "ACommandSearchUser.h"
 #include <iostream>
-#include "parsec.h"
+#include "parsec-dso.h"
 
 
 class CommandKick : public ACommandSearchUser
@@ -10,7 +10,7 @@ class CommandKick : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::KICK; }
 
-	CommandKick(const char* msg, Guest& sender, Parsec* parsec, GuestList &guests)
+	CommandKick(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests)
 		:ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec)
 	{}
 
@@ -64,6 +64,6 @@ protected:
 	}
 
 	Guest& _sender;
-	Parsec* _parsec;
+	ParsecDSO* _parsec;
 };
 

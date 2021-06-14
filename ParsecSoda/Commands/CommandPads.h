@@ -29,13 +29,13 @@ public:
 				<< ((*it).isConnected ? "ON  " : "OFF") << "\t"
 				<< "[" << i << "] \t";
 
-			if ((*it).ownerUserId == OWNER_ID_NONE)
+			if ((*it).owner.userID == OWNER_ID_NONE)
 			{
 				reply << "\n";
 			}
 			else
 			{
-				reply << "(" << (*it).ownerUserId << ")\t" << (*it).ownerName << "\n";
+				reply << "(" << (*it).owner.userID << ")\t" << (*it).owner.name << "\n";
 			}
 			++i;
 		}

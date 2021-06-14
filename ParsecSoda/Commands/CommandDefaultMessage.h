@@ -24,11 +24,17 @@ public:
 			else if (_isAdmin) role = "$  ";
 			else role = ">  ";
 			
-
-			reply << role << _sender.name;
-			if (!_sender.isHost)
+			if (_sender.isValid())
 			{
-				reply << " \t (#" << _sender.userID << ")";
+				reply << role << _sender.name << " \t (#" << _sender.userID << ")";
+			}
+			else if(_sender.isHost)
+			{
+				reply << role << "Host";
+			}
+			else
+			{
+				reply << role << "Unkown Guest";
 			}
 
 			reply << ":\n";

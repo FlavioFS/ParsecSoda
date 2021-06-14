@@ -1,18 +1,9 @@
 #include "GuestList.h"
 
-void GuestList::setHost(Guest* host)
-{
-	_host = host;
-}
-
 void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 {
+	stringstream comboStringStream;
 	_guests.clear();
-
-	if (_host != nullptr)
-	{
-		_guests.push_back(*_host);
-	}
 
 	for (size_t i = 0; i < guestCount; i++)
 	{
@@ -25,10 +16,15 @@ void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 				guests[i].id
 			)
 		);
+
+		if (i < GUESTLIST_MAX_GUESTS)
+		{
+			guestNames[i] = guests[i].name;
+		}
 	}
 }
 
-const vector<Guest>& GuestList::getGuests() const
+vector<Guest>& GuestList::getGuests()
 {
     return _guests;
 }

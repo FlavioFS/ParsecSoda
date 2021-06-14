@@ -14,13 +14,17 @@
 #include "resource.h"
 #include "Hosting.h"
 #include "Texture.h"
-#include "AppIcons.h"
-#include "AppFonts.h"
-#include "AppColors.h"
-#include "AppStyle.h"
+#include "globals/AppIcons.h"
+#include "globals/AppFonts.h"
+#include "globals/AppColors.h"
 #include "Widgets/HostSettingsWidget.h"
 #include "Widgets/ChatWidget.h"
+#include "Widgets/LogWidget.h"
+#include "Widgets/GuestListWidget.h"
+#include "Widgets/GamepadsWidget.h"
+#include "Widgets/StylePickerWidget.h"
 
+#include <ShlObj.h>
 #include "matoya.h"
 
 using namespace std;
@@ -59,7 +63,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     wc.lpszClassName = _T("Parsec Soda");
     wc.hIconSm = NULL;
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 100, 100, 1600, 1000, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -88,70 +92,31 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Read 'docs/FONTS.md' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("fonts/Montserrat-SemiBold.ttf", 20.0f);
-    //io.Fonts->AddFontFromFileTTF("fonts/Montserrat-Regular.ttf", 20.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != NULL);
-
-
-
-    // Our state
-    bool show_demo_window = false;
-    bool show_another_window = false;
-    
-
-    void* png = NULL;
-    size_t png_size = 0;
-    uint16_t code = 0;
-    try
-    {
-        if (MTY_HttpRequest("user-images.githubusercontent.com", 0, true, "GET",
-            "/328897/112402607-36d00780-8ce3-11eb-9707-d11bc6c73c59.png",
-            NULL, NULL, 0, 5000, &png, &png_size, &code))
-        {
-            // On success, decompress it into RGBA
-
-            MTY_Free(png);
-        }
-    }
-    catch (const std::exception&)
-    {
-        bool debug = true;
-    }
-
-
-
     // =====================================================================
     // 
     //  Initialize modules
     // 
     // =====================================================================
-    AppIcons g_icons (g_pd3dDevice);
-    AppFonts g_fonts (io);
-    AppColors g_colors;
-    AppStyle g_style(g_fonts, g_colors);
+    AppIcons::init(g_pd3dDevice);
+    AppFonts::init(io);
+    AppColors::init();
     g_hosting.init();
 
-    HostSettingsWidget hostSettingsWindow(g_icons, g_hosting);
-    ChatWidget chatWindow(g_icons, g_hosting);
+    HostSettingsWidget hostSettingsWindow(g_hosting);
+    ChatWidget chatWindow(g_hosting);
+    LogWidget logWindow(g_hosting);
+    GuestListWidget guestsWindow(g_hosting);
+    GamepadsWidget gamepadsWindow(g_hosting);
 
-    ImVec4 clear_color = ImVec4(0.04f, 0.04f, 0.08f, 1.00f);
+    ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
 
     bool showHostSettings = true;
     bool showChat = true;
+    bool showLog = true;
+    bool showGuests = true;
+    bool showGamepads = true;
+    bool showStyles = true;
 
     // =====================================================================
 
@@ -180,21 +145,23 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        if (showHostSettings)
-        {
-            hostSettingsWindow.render(g_style);
-        }
 
-        if (showChat)
-        {
-            chatWindow.render(g_style);
-        }
+        // =====================================================================
+        // 
+        //  Window rendering
+        // 
+        // =====================================================================
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        if (showHostSettings)   hostSettingsWindow.render();
+        if (showChat)           chatWindow.render();
+        if (showLog)            logWindow.render();
+        if (showGuests)         guestsWindow.render();
+        if (showGamepads)       gamepadsWindow.render();
+        //if (showStyles)         StylePickerWidget::render();
 
-     
+        //ImGui::ShowDemoWindow();
+
+        // =====================================================================
 
         // Rendering
         ImGui::Render();
@@ -297,7 +264,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_QUIT:
     case WM_DESTROY:
         g_hosting.release();
-        Sleep(500);
+        Sleep(1000);
         ::PostQuitMessage(0);
         return 0;
     }

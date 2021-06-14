@@ -128,61 +128,79 @@ const bool ParsecSession::fetchArcadeRoomList()
 	return false;
 }
 
-const bool ParsecSession::fetchAccountData(Guest& user)
+const bool ParsecSession::fetchAccountData(Guest *user)
 {
 	if (sessionId.empty()) {
 		return false;
 	}
 
-	// Body
-	ostringstream ss;
-	ss << PARSEC_API_ME;
-	const string pathString = ss.str();
-	const char* path = pathString.c_str();
+	_accountDataThread = thread ([user, this]() {
+		// Body
+		ostringstream ss;
+		ss << PARSEC_API_ME;
+		const string pathString = ss.str();
+		const char* path = pathString.c_str();
 
-	ss.str("");
-	ss.clear();
-	const char* session = ParsecSession::sessionId.c_str();
-	ss << HEADER_AUTH_BEARER << ParsecSession::sessionId.c_str();
-	const string headerString = ss.str();
-	const char* header = headerString.c_str();
+		ss.str("");
+		ss.clear();
+		const char* session = ParsecSession::sessionId.c_str();
+		ss << HEADER_AUTH_BEARER << ParsecSession::sessionId.c_str();
+		const string headerString = ss.str();
+		const char* header = headerString.c_str();
+		
+		// Other Params
+		const bool isHttps = true;
 
-	// Other Params
-	const bool isHttps = true;
+		// Response
+		void* response;
+		size_t responseSize = 0;
+		uint16_t status = 0;
 
-	// Response
-	void* response;
-	size_t responseSize;
-	uint16_t status;
+		MTY_HttpRequest(
+			PARSEC_API_HOST, HTTP_AUTO_PORT, isHttps, "GET", path, header,
+			NULL, 0,
+			HTTP_TIMEOUT_MS,
+			&response, &responseSize, &status
+		);
 
-	const bool rekt = MTY_HttpRequest(
-		PARSEC_API_HOST, HTTP_AUTO_PORT, isHttps, "GET", path, header,
-		NULL, 0,
-		HTTP_TIMEOUT_MS,
-		&response, &responseSize, &status
-	);
-
-	if (responseSize > 0 && status == 200)
-	{
-		static bool result = false;
-		result = false;
-		MTY_JSON* json;
-
-		try
+		if (responseSize > 0 && status == 200)
 		{
-			string responseStr = (const char*)response;
-			json = MTY_JSONParse(responseStr.c_str());
+			static bool result = false;
+			result = false;
+			MTY_JSON* json;
+			const MTY_JSON* data;
 
-			user.name = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "name"));
-			user.userID = stoi(MTY_JSONSerialize(MTY_JSONObjGetItem(json, "id")));
+			try
+			{
+				string responseStr = (const char*)response;
+				json = MTY_JSONParse(responseStr.c_str());
+				data = MTY_JSONObjGetItem(json, "data");
 
-			result = true;
+				char name[GUEST_NAME_LEN];
+				if (MTY_JSONObjGetString(data, "name", name, GUEST_NAME_LEN))
+				{
+					user->name = name;
+				}
+
+				uint32_t userID = (uint32_t)GUEST_ID_ERRORS::NONE;
+				if (MTY_JSONObjGetUInt(data, "id", &userID))
+				{
+					user->userID = userID;
+				}
+
+				result = true;
+			}
+			catch (const std::exception&) {}
+
+			MTY_JSONDestroy(&json);
 		}
-		catch (const std::exception&) {}
+		else
+		{
+			user->name = "Host";
+			user->userID = -1;
+		}
 
-		MTY_JSONDestroy(&json);
-		return result;
-	}
-
-	return false;
+		user->isHost = true;
+		_accountDataThread.detach();
+	});
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "parsec.h"
+#include "parsec-dso.h"
 #include "ACommandStringArg.h"
 
 class CommandGameId : public ACommandStringArg
