@@ -45,8 +45,6 @@ bool GuestListWidget::render()
     // Guests
     for (; it != _guests.end(); ++it)
     {
-        
-
         cursor = ImGui::GetCursorPos();
         ImGui::BeginGroup();
         AppStyle::pushLabel();
@@ -64,9 +62,12 @@ bool GuestListWidget::render()
         {
             ImGui::SetDragDropPayload("Guest", &guestId, sizeof(int));
 
-            AppStyle::pushAlert();
+            AppFonts::pushInput();
+            AppColors::pushPrimary();
             ImGui::Text("%s", (*it).name.c_str());
-            AppStyle::pop();
+            AppColors::pop();
+            AppFonts::pop();
+
             AppStyle::pushLabel();
             ImGui::Text("Drop into a Gamepad to assign.");
             AppStyle::pop();

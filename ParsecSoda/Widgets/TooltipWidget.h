@@ -6,6 +6,6 @@
 class TooltipWidget
 {
 public:
-	static bool render(const char* text);
+	static bool render(const char* text, bool forceShow = false);
 };
 

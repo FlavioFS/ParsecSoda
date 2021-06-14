@@ -51,7 +51,7 @@ bool ChatWidget::render()
     
     if (ToggleIconButtonWidget::render(
         AppIcons::send, AppIcons::send, isDirty(),
-        AppColors::alert, AppColors::alpha(AppColors::alert, 0.25f)
+        AppColors::primary, AppColors::alpha(AppColors::primary, 0.25f)
     ))
     {
         sendMessage();

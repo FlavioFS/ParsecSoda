@@ -26,6 +26,7 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
 bool HostSettingsWidget::render()
 {
     static float indentSize = 0;
+    static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
 
     AppStyle::pushTitle();
 
@@ -41,38 +42,38 @@ bool HostSettingsWidget::render()
     ImGui::Text("Room name");
     AppStyle::pushInput();
     ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
+    TooltipWidget::render("A title to display in Arcade list.");
     AppStyle::pop();
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    ImGui::Dummy(dummySize);
 
     ImGui::Text("Game ID");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
     ImGui::InputText("  ", _gameID, GAME_ID_LEN);
+    TooltipWidget::render("The thumbnail to display in Arcade list.\nYou need to know beforehand the specific value for your game.");
     AppStyle::pop();
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    ImGui::Dummy(dummySize);
 
     ImGui::Text("Room link");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
     ImGui::InputText("   ", _secret, LINK_COMPATIBLE_SECRET_SIZE);
+    TooltipWidget::render("A Secret generates a link that lets people to join a private room.");
     AppStyle::pop();
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    ImGui::Dummy(dummySize);
 
     ImGui::SetNextItemWidth(size.x);
     ImGui::Text("Guest slots");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
     ImGui::SliderInt("    ", &_maxGuests, 0, 64, "Max guests: %d/64");
+    TooltipWidget::render("How many guests do you want in this room?");
     AppStyle::pop();
 
-    ImGui::Spacing();
-    ImGui::Spacing();
+    ImGui::Dummy(dummySize);
 
     ImGui::SetNextItemWidth(size.x);
     ImGui::Text("Public room");
@@ -83,7 +84,9 @@ bool HostSettingsWidget::render()
     {
         _publicGame = !_publicGame;
     }
+    TooltipWidget::render(_publicGame ? "Anyone can enter this room." : "All guests must use the secret link to enter this room.");
     ImGui::Unindent(indentSize);
+
     if (_hosting.isRunning() && isDirty())
     {
         ImGui::SameLine(0.0f, size.x - 130.0f);
@@ -93,13 +96,10 @@ bool HostSettingsWidget::render()
             _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
             _hosting.applyHostConfig();
         }
-        if (ImGui::IsItemHovered())
-        {
-            TooltipWidget::render("Update room settings");
-        }
+        TooltipWidget::render("Update room settings");
     }
 
-    ImGui::Dummy(ImVec2(0.0f, 5.0f));
+    ImGui::Dummy(dummySize);
 
     static bool showPopup = false;
     static ImVec2 popupPos = pos;
@@ -120,10 +120,7 @@ bool HostSettingsWidget::render()
     }
     ImGui::Unindent(indentSize);
 
-    if (ImGui::IsItemHovered())
-    {
-        TooltipWidget::render(popupTitle.c_str());
-    }
+    TooltipWidget::render(popupTitle.c_str());
 
     // ================================================================================
 

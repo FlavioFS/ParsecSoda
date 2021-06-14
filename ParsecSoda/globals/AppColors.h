@@ -12,12 +12,17 @@ public:
 
 	static ImVec4 alpha(ImVec4& color, float w);
 
+	static void pushColor(ImVec4& color);
+	static void pop();
+
+	static void pushPrimary();
+	static void pushSecondary();
+
 	static void pushTitle();
 	static void pushLabel();
 	static void pushInput();
 	static void pushAlert();
 	static void pushError();
-	static void pop();
 
 	static ImVec4 title;
 	static ImVec4 label;
@@ -28,4 +33,7 @@ public:
 	static ImVec4 white;
 	static ImVec4 black;
 	static ImVec4 invisible;
+
+	static ImVec4 primary;
+	static ImVec4 secondary;
 };

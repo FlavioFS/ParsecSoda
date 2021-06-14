@@ -110,7 +110,7 @@ bool GamepadClient::disconnect(int gamepadIndex)
 
 bool GamepadClient::clearOwner(int gamepadIndex)
 {
-	if (gamepadIndex < 0 || gamepadIndex > _gamepads.size())
+	if (gamepadIndex >= 0 || gamepadIndex < _gamepads.size())
 	{
 		_gamepads[gamepadIndex].clearOwner();
 		return true;

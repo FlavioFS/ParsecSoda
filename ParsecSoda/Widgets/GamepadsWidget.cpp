@@ -8,7 +8,7 @@ GamepadsWidget::GamepadsWidget(Hosting& hosting)
 bool GamepadsWidget::render()
 {
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(500, 400), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 400), ImVec2(800, 900));
     ImGui::Begin("Gamepads", (bool*)0);
     AppStyle::pushInput();
     
@@ -36,14 +36,11 @@ bool GamepadsWidget::render()
         static ImVec2 cursor;
         cursor = ImGui::GetCursorPos();
         
-        if (IconButton::render(AppIcons::back, AppColors::alpha(AppColors::white, 0.5f)))
+        if (IconButton::render(AppIcons::back, AppColors::primary))
         {
             (*gi).clearOwner();
         }
-        if (ImGui::IsItemHovered())
-        {
-            TooltipWidget::render("Strip gamepad");
-        }
+        TooltipWidget::render("Strip gamepad");
 
         ImGui::SameLine();
 
@@ -54,27 +51,26 @@ bool GamepadsWidget::render()
             else
                 (*gi).connect();
         }
-        if (ImGui::IsItemHovered())
-        {
-            TooltipWidget::render("Disconnect gamepad");
-        }
+        TooltipWidget::render("Disconnect gamepad");
 
         ImGui::SameLine();
         
         
         ImGui::BeginGroup();
         AppStyle::pushLabel();
-        if (userID != (uint32_t)GUEST_ID_ERRORS::NONE)
-            ImGui::TextWrapped("(# %d)\t", (*gi).getOwner().userID);
-        else
-            ImGui::TextWrapped("    ");
+        if (userID != (uint32_t)GUEST_ID_ERRORS::NONE)  ImGui::TextWrapped("(# %d)\t", (*gi).getOwner().userID);
+        else                                            ImGui::TextWrapped("    ");
         AppStyle::pop();
 
         ImGui::BeginChild(
             (string("##name ") + to_string(index)).c_str(),
-            ImVec2(0.65f * size.x, 20.0f)
+            ImVec2(size.x - 160.0f, 20.0f)
         );
+        AppFonts::pushInput();
+        AppColors::pushPrimary();
         ImGui::TextWrapped((*gi).getOwner().name.c_str());
+        AppColors::pop();
+        AppFonts::pop();
         ImGui::EndChild();
         ImGui::EndGroup();
 
@@ -85,6 +81,8 @@ bool GamepadsWidget::render()
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::PushID(100 * (index + 1));
         ImGui::SetNextItemWidth(50);
+        padIndices[index] = (*gi).getOwnerPadId();
+
         if (ImGui::Combo("", &padIndices[index], " 1 \0 2 \0 3 \0 4 \0 5 \0 6 \0 7 \0 8 \0\0", 8))
         {
             if (padIndices[index] >= 0 && padIndices[index] < 8)
@@ -93,10 +91,7 @@ bool GamepadsWidget::render()
             }
         }
         ImGui::PopID();
-        if (ImGui::IsItemHovered())
-        {
-            TooltipWidget::render("An user may have multiple gamepads\nin the same machine.");
-        }
+        TooltipWidget::render("A guest may have multiple gamepads\nin the same machine.");
         ImGui::EndGroup();
 
         ImGui::SameLine();
@@ -118,69 +113,10 @@ bool GamepadsWidget::render()
                     {
                         (*gi).setOwner(_hosting.getGuestList()[guestIndex]);
                     }
-                    
                 }
             }
             ImGui::EndDragDropTarget();
         }
-
-        /*
-        static vector<int> guestIndices;
-        if (guestIndices.size() < _hosting.getGuestList().size())
-        {
-            size_t diff = _hosting.getGuestList().size() - guestIndices.size();
-            for (size_t j = 0; j < diff; j++)
-            {
-                guestIndices.push_back(0);
-            }
-        }
-        guestIndices[index] = (*gi).getOwner().index;
-        const char ** guestNames = _hosting.getGuestNames();
-
-        static bool isDirty = false;
-        isDirty = false;
-
-        if (guestNames != nullptr)
-        {
-            ImGui::PushID(index+1);
-            if (ImGui::Combo("", &guestIndex, guestNames, _hosting.getGuestList().size()))
-            {
-                isDirty = true;
-            }
-            ImGui::PopID();
-        }
-        else
-        {
-            ImGui::Combo("##guestname", &guestIndex, "\0\0", 1);
-        }
-
-        ImGui::SameLine();
-        */
-        //static bool isDirty = false;
-        //isDirty = false;
-
-        
-
-        //if (isDirty)
-        //{
-        //    if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
-        //    {
-        //        try
-        //        {
-        //            Guest newOwner = _hosting.getGuestList()[guestIndex];
-        //            _hosting.setOwner((*gi), newOwner, 0);
-        //        }
-        //        catch (const std::exception&) {}
-        //    }
-
-        //    isDirty = false;
-        //}
-
-        //ImGui::popup
-
-        
-
-        
 
         ImGui::EndChild();
 
