@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include "GuestData.h"
 #include "KeyboardMaps.h"
 #include "GuestList.h"
@@ -17,26 +18,34 @@ using namespace std;
 #define GAMEPAD_PICK_TIMEOUT_MS 1000
 
 
-enum class GAMEPAD_PICK_REQUEST
-{
-	OK,
-	SAME_USER,
-	TAKEN,
-	EMPTY_HANDS,
-	LIMIT_BLOCK,
-	OUT_OF_RANGE
-};
 
 class GamepadClient
 {
 public:
-	typedef struct ParsecGuestPrefs
+	enum class PICK_REQUEST
 	{
-		uint32_t userId = OWNER_ID_NONE;
-		uint8_t padLimit = XUSER_MAX_COUNT;
-		uint8_t slots = 0;
+		OK,
+		SAME_USER,
+		TAKEN,
+		EMPTY_HANDS,
+		LIMIT_BLOCK,
+		OUT_OF_RANGE
+	};
+
+	class GuestPreferences
+	{
+	public:
+		GuestPreferences()
+			: userID(0), padLimit(1), mirror(false)
+		{}
+		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false)
+			: userID(userID), padLimit(padLimit), mirror(mirror)
+		{}
+
+		uint32_t userID = 0;
+		int padLimit = 1;
 		bool mirror = false;
-	} ParsecGuestPrefs;
+	};
 
 	~GamepadClient();
 	bool init();
@@ -52,31 +61,35 @@ public:
 
 	bool disconnect(int gamepadIndex);
 	bool clearOwner(int gamepadIndex);
-	bool sendMessage(ParsecGuest guest, ParsecMessage message);
-	int onRageQuit(Guest &guest);
+
+	bool sendMessage(Guest guest, ParsecMessage message);
+	int onQuit(Guest &guest);
 	void setLimit(uint32_t guestUserId, uint8_t padLimit);
 	bool toggleMirror(uint32_t guestUserId);
-	const GAMEPAD_PICK_REQUEST pick(Guest guest, int gamepadIndex);
-	ParsecGuestPrefs * getPrefs(uint32_t guestUserId);
+	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
+	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
 	
-	vector<GamepadStatus> getGamepadStatus();
-	vector<Gamepad>& getGamepads();
+	vector<Gamepad> gamepads;
+	vector<GuestPreferences> guestPreferences;
 
 	bool lock = false;
 
+
 private:
+	bool sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int& slots);
+	bool sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots);
+	bool sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots);
+	bool sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots);
+
 	void releaseGamepads();
 	void setMirror(uint32_t guestUserId, bool mirror);
-	bool tryAssignGamepad(ParsecGuest guest, uint32_t padId);
-	void refreshSlots(ParsecGuestPrefs *prefs);
-	void freeSlots(uint32_t userId);
+	bool tryAssignGamepad(Guest guest, uint32_t padId, int currentSlots, bool isKeyboard);
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
-	bool find(uint32_t userID, uint32_t padID, Gamepad *gamepad);
-	bool findFirst(uint32_t userID, Gamepad *gamepad);
-	bool findAll(uint32_t userID, vector<Gamepad*> &gamepads);
+
+	void reduce(function<void(Gamepad&)> func);
+	bool reduceUntilFirst(function<bool(Gamepad&)> func);
+
 	PVIGEM_CLIENT _client;
-	vector<Gamepad> _gamepads;
-	vector<ParsecGuestPrefs> _guestPrefs;
 };

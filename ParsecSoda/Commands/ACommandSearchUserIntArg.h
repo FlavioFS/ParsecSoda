@@ -9,7 +9,7 @@ class ACommandSearchUserIntArg : public ACommandPrefix
 {
 public:
 	ACommandSearchUserIntArg(const char* msg, vector<const char*> prefixes, GuestList& guests)
-		: ACommandPrefix(msg, prefixes), _guests(guests), _searchResult(SEARCH_USER_RESULT::FAILED)
+		: ACommandPrefix(msg, prefixes), _guests(guests), _searchResult(SEARCH_USER_RESULT::FAILED), _intArg(0)
 	{}
 
 	bool run()

@@ -144,6 +144,18 @@
     <ClCompile Include="Widgets\StylePickerWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GuestDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\TitleTooltipWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\IntRangeWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\BoolButtonWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminList.h">
@@ -387,6 +399,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandStrip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GuestDevice.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\TitleTooltipWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\IntRangeWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\BoolButtonWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -21,10 +21,12 @@ public:
 	static void pushLabel();
 	static void pushTitle();
 	static void pushInput();
+	static void pushSugoiDekai();
 	static void pop();
 
 	static ImFont* label;
 	static ImFont* title;
 	static ImFont* input;
+	static ImFont* sugoidekai;
 };
 

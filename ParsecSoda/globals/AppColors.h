@@ -6,7 +6,6 @@
 
 class AppColors
 {
-
 public:
 	static void init();
 

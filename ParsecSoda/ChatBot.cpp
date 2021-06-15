@@ -1,7 +1,7 @@
 #include "ChatBot.h"
 
 
-ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool &isAdmin)
+ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool &isAdmin, bool isHost)
 {
 	const uint32_t previous = this->_lastUserId;
 
@@ -12,7 +12,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	else if	(msgStartsWith(msg, CommandBonk::prefixes()))		return new CommandBonk(msg, sender, _guests, _dice);
 	else if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
 	else if	(msgIsEqual(msg, CommandHelp::prefixes()))			return new CommandHelp(isAdmin);
-	else if (CommandIpFilter::containsIp(msg))					return new CommandIpFilter(msg, sender, _parsec, _ban);
+	else if (CommandIpFilter::containsIp(msg))					return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
 	else if (msgIsEqual(msg, CommandJoin::prefixes()))			return new CommandJoin();
 	else if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
 	else if (msgIsEqual(msg, CommandPads::prefixes()))			return new CommandPads(_gamepadClient);
@@ -25,7 +25,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 		else if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
 		else if	(msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
 		else if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
-		else if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests);
+		else if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests, isHost);
 		else if (msgStartsWith(msg, CommandLimit::prefixes()))		return new CommandLimit(msg, _guests, _gamepadClient);
 		else if (msgStartsWith(msg, CommandMic::prefixes()))		return new CommandMic(msg, _audioMixer);
 		else if (msgStartsWith(msg, CommandName::prefixes()))		return new CommandName(msg, _hostConfig);
@@ -40,7 +40,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	}
 
 	this->setLastUserId(previous);
-	return new CommandDefaultMessage(msg, sender, _lastUserId, isAdmin);
+	return new CommandDefaultMessage(msg, sender, _lastUserId, isAdmin, isHost);
 }
 
 const uint32_t ChatBot::getLastUserId() const

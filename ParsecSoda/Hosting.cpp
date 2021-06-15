@@ -69,8 +69,8 @@ void Hosting::init()
 	_parsecSession.mockSession();	// Replace with fetchSession in final version
 	//_parsecSession.fetchArcadeRoomList();
 
-	_host.isHost = true;
 	_host.name = "Host";
+	_host.status = Guest::Status::INVALID;
 	if (isReady())
 	{
 		//_parsecSession.fetchAccountData(&_host);
@@ -131,7 +131,7 @@ vector<Guest>& Hosting::getGuestList()
 
 vector<Gamepad>& Hosting::getGamepads()
 {
-	return _gamepadClient.getGamepads();
+	return _gamepadClient.gamepads;
 }
 
 const char** Hosting::getGuestNames()
@@ -234,20 +234,19 @@ void Hosting::stripGamepad(int index)
 
 void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
 {
-	GamepadClient::ParsecGuestPrefs *prefs = _gamepadClient.getPrefs(newOwner.userID);
-	if (prefs != nullptr)
-	{
-		gamepad.setOwner(newOwner, padId, prefs->mirror);
-	}
-	else
+	bool found = _gamepadClient.findPreferences(newOwner.userID, [&](GamepadClient::GuestPreferences& prefs) {
+		gamepad.setOwner(newOwner, padId, prefs.mirror);
+	});
+
+	if (!found)
 	{
 		gamepad.setOwner(newOwner, padId, false);
 	}
 }
 
-void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin)
+void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin, bool isHost)
 {
-	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isAdmin);
+	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isAdmin, isHost);
 	command->run();
 
 	// Non-blocked default message
@@ -280,7 +279,7 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin)
 void Hosting::sendHostMessage(const char* message)
 {
 	static bool isAdmin = true;
-	handleMessage(message, _host, isAdmin);
+	handleMessage(message, _host, isAdmin, true);
 }
 
 

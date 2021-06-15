@@ -5,7 +5,7 @@
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
 #include "ToggleIconButtonWidget.h"
-#include "TooltipWidget.h"
+#include "TitleTooltipWidget.h"
 
 class GamepadsWidget
 {

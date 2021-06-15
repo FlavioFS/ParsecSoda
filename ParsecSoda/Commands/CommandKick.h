@@ -10,8 +10,8 @@ class CommandKick : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::KICK; }
 
-	CommandKick(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests)
-		:ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec)
+	CommandKick(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests, bool isHost = false)
+		:ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec), _isHost(isHost)
 	{}
 
 	bool run() override
@@ -27,7 +27,7 @@ public:
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
-			if (_targetGuest.isHost)
+			if (_isHost)
 			{
 				_replyMessage = string() + "[ChatBot] | Host is not in the room. Host IS the room.\0";
 			}
@@ -65,5 +65,6 @@ protected:
 
 	Guest& _sender;
 	ParsecDSO* _parsec;
+	bool _isHost;
 };
 

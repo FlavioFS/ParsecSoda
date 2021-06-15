@@ -17,7 +17,7 @@ public:
 
 	bool run() override
 	{
-		_droppedPadCount = _gamepadClient.onRageQuit(_sender);
+		_droppedPadCount = _gamepadClient.onQuit(_sender);
 
 		std::ostringstream reply;
 		if (_droppedPadCount > 1)

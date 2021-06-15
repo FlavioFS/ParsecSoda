@@ -25,7 +25,7 @@ bool GamepadsWidget::render()
     for (; gi != _gamepads.end(); ++gi)
     {
         static uint32_t userID;
-        userID = (*gi).getOwner().userID;
+        userID = (*gi).owner.guest.userID;
         
 
         ImGui::BeginChild(
@@ -40,7 +40,7 @@ bool GamepadsWidget::render()
         {
             (*gi).clearOwner();
         }
-        TooltipWidget::render("Strip gamepad");
+        TitleTooltipWidget::render("Strip gamepad", "Unlink current user from this gamepad.");
 
         ImGui::SameLine();
 
@@ -51,15 +51,15 @@ bool GamepadsWidget::render()
             else
                 (*gi).connect();
         }
-        TooltipWidget::render("Disconnect gamepad");
+        TitleTooltipWidget::render("Disconnect gamepad", "\"Physically\" disconnect gamepad from PC (at O.S. level).");
 
         ImGui::SameLine();
         
         
         ImGui::BeginGroup();
         AppStyle::pushLabel();
-        if (userID != (uint32_t)GUEST_ID_ERRORS::NONE)  ImGui::TextWrapped("(# %d)\t", (*gi).getOwner().userID);
-        else                                            ImGui::TextWrapped("    ");
+        if ((*gi).owner.guest.isValid())  ImGui::TextWrapped("(# %d)\t", (*gi).owner.guest.userID);
+        else                              ImGui::TextWrapped("    ");
         AppStyle::pop();
 
         ImGui::BeginChild(
@@ -68,7 +68,7 @@ bool GamepadsWidget::render()
         );
         AppFonts::pushInput();
         AppColors::pushPrimary();
-        ImGui::TextWrapped((*gi).getOwner().name.c_str());
+        ImGui::TextWrapped((*gi).owner.guest.name.c_str());
         AppColors::pop();
         AppFonts::pop();
         ImGui::EndChild();
@@ -81,17 +81,17 @@ bool GamepadsWidget::render()
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::PushID(100 * (index + 1));
         ImGui::SetNextItemWidth(50);
-        padIndices[index] = (*gi).getOwnerPadId();
+        padIndices[index] = (*gi).owner.deviceID;
 
         if (ImGui::Combo("", &padIndices[index], " 1 \0 2 \0 3 \0 4 \0 5 \0 6 \0 7 \0 8 \0\0", 8))
         {
             if (padIndices[index] >= 0 && padIndices[index] < 8)
             {
-                (*gi).setPadId(padIndices[index]);
+                (*gi).owner.deviceID = padIndices[index];
             }
         }
         ImGui::PopID();
-        TooltipWidget::render("A guest may have multiple gamepads\nin the same machine.");
+        TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
         ImGui::EndGroup();
 
         ImGui::SameLine();
@@ -111,7 +111,7 @@ bool GamepadsWidget::render()
                     int guestIndex = *(const int*)payload->Data;
                     if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
                     {
-                        (*gi).setOwner(_hosting.getGuestList()[guestIndex]);
+                        (*gi).owner.guest.copy(_hosting.getGuestList()[guestIndex]);
                     }
                 }
             }
@@ -134,10 +134,8 @@ bool GamepadsWidget::render()
     {
         _hosting.toggleGamepadLock();
     }
-    if (ImGui::IsItemHovered())
-    {
-        TooltipWidget::render(_hosting.isGamepadLock() ? "Unlock guest inputs" : "Lock guest inputs");
-    }
+    if (_hosting.isGamepadLock())   TitleTooltipWidget::render("Unlock guest inputs", "Guests will be able to control gamepads again.");
+    else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
     ImGui::Unindent(indentDistance);
 
 

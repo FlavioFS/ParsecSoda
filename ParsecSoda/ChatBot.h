@@ -56,7 +56,7 @@ public:
 		_hostingLoopController(hostingLoopController)
 	{}
 
-	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool& isAdmin);
+	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool& isAdmin, bool isHost = false);
 
 	const uint32_t getLastUserId() const;
 	void setLastUserId(const uint32_t lastId = BOT_GUESTID);

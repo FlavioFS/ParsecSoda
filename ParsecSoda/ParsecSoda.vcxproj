@@ -166,6 +166,10 @@
     <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="ChatLog.cpp" />
+    <ClCompile Include="GuestDevice.cpp" />
+    <ClCompile Include="Widgets\BoolButtonWidget.cpp" />
+    <ClCompile Include="Widgets\IntRangeWidget.cpp" />
+    <ClCompile Include="Widgets\TitleTooltipWidget.cpp" />
     <ClCompile Include="Widgets\StylePickerWidget.cpp" />
     <ClCompile Include="Widgets\IconButton.cpp" />
     <ClCompile Include="Widgets\GamepadsWidget.cpp" />
@@ -206,6 +210,10 @@
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="ChatLog.h" />
     <ClInclude Include="Commands\CommandStrip.h" />
+    <ClInclude Include="GuestDevice.h" />
+    <ClInclude Include="Widgets\BoolButtonWidget.h" />
+    <ClInclude Include="Widgets\IntRangeWidget.h" />
+    <ClInclude Include="Widgets\TitleTooltipWidget.h" />
     <ClInclude Include="Widgets\StylePickerWidget.h" />
     <ClInclude Include="Widgets\IconButton.h" />
     <ClInclude Include="Widgets\GamepadsWidget.h" />

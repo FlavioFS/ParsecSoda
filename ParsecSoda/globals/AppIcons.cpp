@@ -21,6 +21,7 @@ ID3D11ShaderResourceView* AppIcons::mic;
 ID3D11ShaderResourceView* AppIcons::speakers;
 
 ID3D11ShaderResourceView* AppIcons::refresh;
+ID3D11ShaderResourceView* AppIcons::submit;
 
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
@@ -42,6 +43,7 @@ Texture AppIcons::_mic;
 Texture AppIcons::_speakers;
 
 Texture AppIcons::_refresh;
+Texture AppIcons::_submit;
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
 {
@@ -65,6 +67,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _speakers.loadFromFile(pd3dDevice, "./icons/speakers.png");
 
     _refresh.loadFromFile(pd3dDevice, "./icons/refresh.png");
+    _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
 
     play = _play.texture;
     stop = _stop.texture;
@@ -86,4 +89,5 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     speakers = _speakers.texture;
     
     refresh = _refresh.texture;
+    submit = _submit.texture;
 }

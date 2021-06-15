@@ -10,8 +10,8 @@ class CommandIpFilter : public ACommand
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::IP; }
 
-	CommandIpFilter(const char* msg, Guest& sender, ParsecDSO* parsec, BanList &ban)
-		: _msg(msg), _sender(sender), _parsec(parsec), _ban(ban)
+	CommandIpFilter(const char* msg, Guest& sender, ParsecDSO* parsec, BanList &ban, bool isHost = false)
+		: _msg(msg), _sender(sender), _parsec(parsec), _ban(ban), _isHost(isHost)
 	{}
 
 	static bool containsIp(const char* msg)
@@ -25,7 +25,7 @@ public:
 
 	bool run() override
 	{
-		if (!_sender.isHost)
+		if (!_isHost)
 		{
 			ParsecHostKickGuest(_parsec, _sender.id);
 		}
@@ -39,4 +39,5 @@ protected:
 	ParsecDSO* _parsec;
 	Guest& _sender;
 	BanList& _ban;
+	bool _isHost;
 };

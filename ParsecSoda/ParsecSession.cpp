@@ -182,12 +182,13 @@ const bool ParsecSession::fetchAccountData(Guest *user)
 					user->name = name;
 				}
 
-				uint32_t userID = (uint32_t)GUEST_ID_ERRORS::NONE;
+				uint32_t userID = 0;
 				if (MTY_JSONObjGetUInt(data, "id", &userID))
 				{
 					user->userID = userID;
 				}
 
+				user->status = Guest::Status::OK;
 				result = true;
 			}
 			catch (const std::exception&) {}
@@ -197,10 +198,10 @@ const bool ParsecSession::fetchAccountData(Guest *user)
 		else
 		{
 			user->name = "Host";
-			user->userID = -1;
+			user->userID = 0;
+			user->status = Guest::Status::INVALID;
 		}
 
-		user->isHost = true;
 		_accountDataThread.detach();
 	});
 }

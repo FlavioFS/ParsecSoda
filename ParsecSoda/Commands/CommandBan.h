@@ -36,11 +36,8 @@ public:
 			{
 				_replyMessage = string() + "[ChatBot] | " + _targetGuest.name + " was banned by " + _sender.name + "!\0";
 				
-				if (!_targetGuest.isHost)
-				{
-					_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
-					ParsecHostKickGuest(_parsec, _targetGuest.id);
-				}
+				_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
+				ParsecHostKickGuest(_parsec, _targetGuest.id);
 				
 				rv = true;
 			}

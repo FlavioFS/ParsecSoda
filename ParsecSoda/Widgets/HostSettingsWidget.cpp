@@ -27,6 +27,7 @@ bool HostSettingsWidget::render()
 {
     static float indentSize = 0;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
+    static ImVec2 cursor;
 
     AppStyle::pushTitle();
 
@@ -39,11 +40,29 @@ bool HostSettingsWidget::render()
     size = ImGui::GetContentRegionAvail();
     pos = ImGui::GetWindowPos();
 
+    
+    ImGui::Dummy(ImVec2(0, 10.0f));
+
     ImGui::Text("Room name");
     AppStyle::pushInput();
     ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
-    TooltipWidget::render("A title to display in Arcade list.");
+    TitleTooltipWidget::render("Room Title", "The text displayed below thumbnails in Arcade list.");
     AppStyle::pop();
+
+    if (!_hosting.isRunning() && isDirty())
+    {
+        cursor = ImGui::GetCursorPos();
+        ImGui::SetCursorPos(ImVec2(size.x - 30.0f, 35.0f));
+
+        if (IconButton::render(AppIcons::submit, AppColors::primary))
+        {
+            _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
+            _hosting.applyHostConfig();
+        }
+        TitleTooltipWidget::render("Update Room Settings", "The room will be instantly updated with your new settings.");
+        
+        ImGui::SetCursorPos(cursor);
+    }
 
     ImGui::Dummy(dummySize);
 
@@ -51,7 +70,7 @@ bool HostSettingsWidget::render()
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
     ImGui::InputText("  ", _gameID, GAME_ID_LEN);
-    TooltipWidget::render("The thumbnail to display in Arcade list.\nYou need to know beforehand the specific value for your game.");
+    TitleTooltipWidget::render("Thumbnail ID", "Sets thumbnail, but you need to know beforehand\nthe specific hash value for your game.");
     AppStyle::pop();
 
     ImGui::Dummy(dummySize);
@@ -60,44 +79,28 @@ bool HostSettingsWidget::render()
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
     ImGui::InputText("   ", _secret, LINK_COMPATIBLE_SECRET_SIZE);
-    TooltipWidget::render("A Secret generates a link that lets people to join a private room.");
+    TitleTooltipWidget::render("Room Secret", "Generates the share link that lets people\njoin your room anytime.");
     AppStyle::pop();
 
     ImGui::Dummy(dummySize);
 
-    ImGui::SetNextItemWidth(size.x);
+    cursor = ImGui::GetCursorPos();
+
+    ImGui::BeginChild("##Public room child", ImVec2(120.0f, 75.0f));
     ImGui::Text("Guest slots");
-    ImGui::SetNextItemWidth(size.x);
-    AppStyle::pushInput();
-    ImGui::SliderInt("    ", &_maxGuests, 0, 64, "Max guests: %d/64");
-    TooltipWidget::render("How many guests do you want in this room?");
-    AppStyle::pop();
-
-    ImGui::Dummy(dummySize);
-
-    ImGui::SetNextItemWidth(size.x);
-    ImGui::Text("Public room");
-    ImGui::SetNextItemWidth(size.x);
-    indentSize = 17.0f;
-    ImGui::Indent(indentSize);
-    if (ToggleIconButtonWidget::render(AppIcons::yes, AppIcons::no, _publicGame))
+    if (IntRangeWidget::render("guest count", _maxGuests, 0, 64, 0.05f))
     {
-        _publicGame = !_publicGame;
+        TitleTooltipWidget::render("Room Slots", "How many guests do you want in this room?");
     }
-    TooltipWidget::render(_publicGame ? "Anyone can enter this room." : "All guests must use the secret link to enter this room.");
-    ImGui::Unindent(indentSize);
+    ImGui::EndChild();
 
-    if (_hosting.isRunning() && isDirty())
-    {
-        ImGui::SameLine(0.0f, size.x - 130.0f);
+    ImGui::SameLine();
 
-        if (IconButton::render(AppIcons::refresh))
-        {
-            _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
-            _hosting.applyHostConfig();
-        }
-        TooltipWidget::render("Update room settings");
-    }
+    ImGui::SetCursorPos(ImVec2(cursor.x + size.x - 90.0f, cursor.y));
+    BoolButtonWidget::render("Public room", _publicGame);
+
+    if (_publicGame)    TitleTooltipWidget::render("Public Game", "Anyone can enter this room.");
+    else                TitleTooltipWidget::render("Private Game", "All guests must use the secret link to enter this room.");
 
     ImGui::Dummy(dummySize);
 

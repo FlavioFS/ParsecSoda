@@ -16,26 +16,24 @@ public:
 
 	bool run() override
 	{
-		_owners = _gamepadClient.getGamepadStatus();
-		
 		std::ostringstream reply;
 		reply << "[ChatBot] | Gamepad Holders:\n";
 
-		std::vector<GamepadStatus>::iterator it = _owners.begin();
+		std::vector<Gamepad>::iterator gi = _gamepadClient.gamepads.begin();
 		uint16_t i = 1;
-		for (; it != _owners.end(); ++it)
+		for (; gi != _gamepadClient.gamepads.end(); ++gi)
 		{
 			reply << "\t\t"
-				<< ((*it).isConnected ? "ON  " : "OFF") << "\t"
+				<< ((*gi).isConnected() ? "ON  " : "OFF") << "\t"
 				<< "[" << i << "] \t";
 
-			if ((*it).owner.userID == OWNER_ID_NONE)
+			if (!(*gi).owner.guest.isValid())
 			{
 				reply << "\n";
 			}
 			else
 			{
-				reply << "(" << (*it).owner.userID << ")\t" << (*it).owner.name << "\n";
+				reply << "(" << (*gi).owner.guest.userID << ")\t" << (*gi).owner.guest.name << "\n";
 			}
 			++i;
 		}
@@ -45,11 +43,6 @@ public:
 		return true;
 	}
 
-	const vector<GamepadStatus> owners()
-	{
-		return _owners;
-	}
-
 	static vector<const char*> prefixes()
 	{
 		return vector<const char*> { "!pads", "!pad " };
@@ -57,6 +50,5 @@ public:
 
 protected:
 	GamepadClient& _gamepadClient;
-	vector<GamepadStatus> _owners;
 };
 

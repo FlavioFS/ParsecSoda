@@ -65,7 +65,7 @@ public:
 	void stripGamepad(int index);
 	void setOwner(Gamepad& gamepad, Guest newOwner, int padId);
 
-	void handleMessage(const char* message, Guest& guest, bool& isAdmin);
+	void handleMessage(const char* message, Guest& guest, bool& isAdmin, bool isHost = false);
 	void sendHostMessage(const char* message);
 
 private:

@@ -10,8 +10,8 @@ class CommandDefaultMessage : public ACommand
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::DEFAULT_MESSAGE; }
 
-	CommandDefaultMessage(const char* msg, Guest &sender, uint32_t lastUserID, bool isAdmin = false)
-		: _msg(msg), _sender(sender), _lastUserID(lastUserID), _isAdmin(isAdmin)
+	CommandDefaultMessage(const char* msg, Guest &sender, uint32_t lastUserID, bool isAdmin = false, bool isHost = false)
+		: _msg(msg), _sender(sender), _lastUserID(lastUserID), _isAdmin(isAdmin), _isHost(isHost)
 	{}
 
 	bool run() override
@@ -20,7 +20,7 @@ public:
 		if (_sender.userID != _lastUserID)
 		{
 			static string role = "";
-			if (_sender.isHost) role = "#  ";
+			if (_isHost) role = "#  ";
 			else if (_isAdmin) role = "$  ";
 			else role = ">  ";
 			
@@ -28,7 +28,7 @@ public:
 			{
 				reply << role << _sender.name << " \t (#" << _sender.userID << ")";
 			}
-			else if(_sender.isHost)
+			else if(_isHost)
 			{
 				reply << role << "Host";
 			}
@@ -54,4 +54,5 @@ protected:
 	Guest &_sender;
 	uint32_t _lastUserID;
 	bool _isAdmin;
+	bool _isHost;
 };

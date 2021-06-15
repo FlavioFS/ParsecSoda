@@ -1,19 +1,27 @@
 #include "Guest.h"
 
 Guest::Guest()
-	: name(""), userID((uint64_t)GUEST_ID_ERRORS::NONE), id((uint64_t)GUEST_ID_ERRORS::NONE), isHost(false), index(-1)
+	: name(""), userID(0), id(0), status(Status::INVALID)
 {}
 
-
-Guest::Guest(string name, uint32_t userID, uint32_t id, bool isHost)
-	: name(name), userID(userID), id(id), isHost(false), index(-1)
+Guest::Guest(string name, uint32_t userID, uint32_t id, Status status)
+	: name(name), userID(userID), id(id), status(status)
 {}
 
-Guest::Guest(ParsecGuest guest, bool isHost)
-	: name(guest.name), userID(guest.userID), id(guest.id), isHost(false), index(-1)
+Guest::Guest(ParsecGuest guest)
+	: name(guest.name), userID(guest.userID), id(guest.id), status(Status::OK)
 {}
 
 const bool Guest::isValid()
 {
-	return userID != (uint64_t)GUEST_ID_ERRORS::NONE;
+	return status == Status::OK;
+}
+
+Guest Guest::copy(const Guest& guest)
+{
+	name = guest.name;
+	userID = guest.userID;
+	id = guest.id;
+	status = guest.status;
+	return *this;
 }

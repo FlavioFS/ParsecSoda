@@ -5,15 +5,15 @@
 
 using namespace std;
 
-enum class GUEST_ID_ERRORS
-{
-	NONE = -1,
-	WEB = 0
-};
-
 class Guest
 {
 public:
+	enum class Status
+	{
+		OK = 0,
+		INVALID = 1
+	};
+
 	/**
 	 *  Empty constructor.
 	 */
@@ -25,19 +25,21 @@ public:
 	 * @param userId Unique user ID.
 	 * @param id Internal id for specific methods.
 	 */
-	Guest(string name, uint32_t userID, uint32_t id, bool isHost = false);
+	Guest(string name, uint32_t userID, uint32_t id, Status status = Status::OK);
 	
 	/**
 	 * Compatibility constructor.
 	 * @param guest ParsecGuest object.
 	 */
-	Guest(ParsecGuest guest, bool isHost = false);
+	Guest(ParsecGuest guest);
 
 	const bool isValid();
 
+	Guest copy(const Guest& guest);
+
+
 	string name;
-	int64_t userID;
-	int64_t id;
-	bool isHost;
-	int index;
+	uint32_t userID;
+	uint32_t id;
+	Status status;
 };

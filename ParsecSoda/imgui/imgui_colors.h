@@ -32,7 +32,7 @@ namespace ImGui
 		colors[ImGuiCol_TextDisabled] = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
 		colors[ImGuiCol_WindowBg] = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
 		colors[ImGuiCol_ChildBg] = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
-		colors[ImGuiCol_PopupBg] = ImVec4(0.11f, 0.11f, 0.11f, 1.00f);
+		colors[ImGuiCol_PopupBg] = ImVec4(0.11f, 0.11f, 0.11f, 0.90f);
 		colors[ImGuiCol_Border] = ImVec4(0.18f, 0.17f, 0.16f, 1.00f);
 		colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		colors[ImGuiCol_FrameBg] = ImVec4(0.08f, 0.07f, 0.07f, 1.00f);
@@ -75,7 +75,7 @@ namespace ImGui
 		colors[ImGuiCol_TableBorderLight] = ImVec4(0.26f, 0.26f, 0.28f, 1.00f);
 		colors[ImGuiCol_TableRowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 		colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.07f);
-		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.00f, 0.48f, 0.80f, 1.00f);
+		colors[ImGuiCol_TextSelectedBg] = AppColors::secondary;
 		colors[ImGuiCol_DragDropTarget] = AppColors::primary;
 		colors[ImGuiCol_NavHighlight] = ImVec4(0.45f, 0.45f, 0.90f, 0.80f);
 		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);

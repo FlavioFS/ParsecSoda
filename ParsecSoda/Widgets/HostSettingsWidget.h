@@ -7,9 +7,12 @@
 #include "../globals/AppColors.h"
 #include "../globals/AppStyle.h"
 #include "ToggleIconButtonWidget.h"
+#include "TitleTooltipWidget.h"
 #include "TooltipWidget.h"
 #include "ConfirmPopupWidget.h"
 #include "IconButton.h"
+#include "IntRangeWidget.h"
+#include "BoolButtonWidget.h"
 
 class HostSettingsWidget
 {

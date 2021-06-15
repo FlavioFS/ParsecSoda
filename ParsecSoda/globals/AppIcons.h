@@ -29,6 +29,7 @@ public:
 	static ID3D11ShaderResourceView* speakers;
 
 	static ID3D11ShaderResourceView* refresh;
+	static ID3D11ShaderResourceView* submit;
 
 private:
 	static Texture _play;
@@ -51,5 +52,6 @@ private:
 	static Texture _speakers;
 	
 	static Texture _refresh;
+	static Texture _submit;
 };
 
