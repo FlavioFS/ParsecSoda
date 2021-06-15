@@ -31,7 +31,7 @@ bool HostSettingsWidget::render()
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 520), ImVec2(600, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 600), ImVec2(600, 900));
     ImGui::Begin("Host Settings", (bool*)0);
     AppStyle::pushLabel();
 
@@ -40,16 +40,7 @@ bool HostSettingsWidget::render()
     size = ImGui::GetContentRegionAvail();
     pos = ImGui::GetWindowPos();
 
-    
-    ImGui::Dummy(ImVec2(0, 10.0f));
-
-    ImGui::Text("Room name");
-    AppStyle::pushInput();
-    ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
-    TitleTooltipWidget::render("Room Title", "The text displayed below thumbnails in Arcade list.");
-    AppStyle::pop();
-
-    if (!_hosting.isRunning() && isDirty())
+    if (_hosting.isRunning() && isDirty())
     {
         cursor = ImGui::GetCursorPos();
         ImGui::SetCursorPos(ImVec2(size.x - 30.0f, 35.0f));
@@ -60,9 +51,17 @@ bool HostSettingsWidget::render()
             _hosting.applyHostConfig();
         }
         TitleTooltipWidget::render("Update Room Settings", "The room will be instantly updated with your new settings.");
-        
+
         ImGui::SetCursorPos(cursor);
     }
+    
+    ImGui::Dummy(ImVec2(0, 10.0f));
+
+    ImGui::Text("Room name");
+    AppStyle::pushInput();
+    ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
+    TitleTooltipWidget::render("Room Title", "The text displayed below thumbnails in Arcade list.");
+    AppStyle::pop();
 
     ImGui::Dummy(dummySize);
 
@@ -88,7 +87,7 @@ bool HostSettingsWidget::render()
 
     ImGui::BeginChild("##Public room child", ImVec2(120.0f, 75.0f));
     ImGui::Text("Guest slots");
-    if (IntRangeWidget::render("guest count", _maxGuests, 0, 64, 0.05f))
+    if (IntRangeWidget::render("guest count", _maxGuests, 0, 64, 0.025f))
     {
         TitleTooltipWidget::render("Room Slots", "How many guests do you want in this room?");
     }
@@ -123,7 +122,8 @@ bool HostSettingsWidget::render()
     }
     ImGui::Unindent(indentSize);
 
-    TooltipWidget::render(popupTitle.c_str());
+    if (_hosting.isRunning())   TitleTooltipWidget::render("Stop hosting", "Close current room.");
+    else                        TitleTooltipWidget::render("Start hosting", "Open a new room using these settings.");
 
     // ================================================================================
 
@@ -149,7 +149,23 @@ bool HostSettingsWidget::render()
 
     // ================================================================================
 
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    ImGui::Dummy(ImVec2(0.0f, size.y - 518.0f));
+
+    static int micVolume = 60;
+    static bool isMuteMic = true;
+    static float micPreview = 0.0f;
+    if (AudioControlWidget::render("Microphone", &micVolume, isMuteMic, micPreview, AppIcons::micOn, AppIcons::micOff))
+    {
+        isMuteMic = !isMuteMic;
+    }
+
+    static int speakersVolume = 40;
+    static bool isMuteSpeakers = true;
+    static float speakersPreview = 0.0f;
+    if (AudioControlWidget::render("Speakers", &speakersVolume, isMuteSpeakers, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
+    {
+        isMuteSpeakers = !isMuteSpeakers;
+    }
 
     AppStyle::pop();
     ImGui::End();
@@ -162,7 +178,7 @@ bool HostSettingsWidget::isDirty()
 {
     ParsecHostConfig cfg = _hosting.getHostConfig();
 
-    if ( 
+    if (
         _publicGame != cfg.publicGame ||
         _maxGuests != cfg.maxGuests ||
         (strcmp(_roomName, cfg.name) != 0) ||

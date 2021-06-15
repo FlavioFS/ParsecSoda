@@ -21,12 +21,14 @@ public:
 	static ID3D11ShaderResourceView* lock;
 	static ID3D11ShaderResourceView* unlock;
 
-	static ID3D11ShaderResourceView* padon;
-	static ID3D11ShaderResourceView* padoff;
+	static ID3D11ShaderResourceView* padOn;
+	static ID3D11ShaderResourceView* padOff;
 	static ID3D11ShaderResourceView* plug;
 
-	static ID3D11ShaderResourceView* mic;
-	static ID3D11ShaderResourceView* speakers;
+	static ID3D11ShaderResourceView* micOn;
+	static ID3D11ShaderResourceView* micOff;
+	static ID3D11ShaderResourceView* speakersOn;
+	static ID3D11ShaderResourceView* speakersOff;
 
 	static ID3D11ShaderResourceView* refresh;
 	static ID3D11ShaderResourceView* submit;
@@ -41,15 +43,17 @@ private:
 	static Texture _send;
 	static Texture _back;
 
-	static Texture _padon;
-	static Texture _padoff;
+	static Texture _padOn;
+	static Texture _padOff;
 	static Texture _plug;
 
 	static Texture _lock;
 	static Texture _unlock;
 	
-	static Texture _mic;
-	static Texture _speakers;
+	static Texture _micOn;
+	static Texture _micOff;
+	static Texture _speakersOn;
+	static Texture _speakersOff;
 	
 	static Texture _refresh;
 	static Texture _submit;

@@ -17,8 +17,6 @@ using namespace std;
 #define GAMEPAD_LIMIT_NOT_FOUND -1
 #define GAMEPAD_PICK_TIMEOUT_MS 1000
 
-
-
 class GamepadClient
 {
 public:

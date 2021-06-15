@@ -13,6 +13,7 @@
 #include "IconButton.h"
 #include "IntRangeWidget.h"
 #include "BoolButtonWidget.h"
+#include "AudioControlWidget.h"
 
 class HostSettingsWidget
 {

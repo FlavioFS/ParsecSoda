@@ -7,8 +7,10 @@ GamepadsWidget::GamepadsWidget(Hosting& hosting)
 
 bool GamepadsWidget::render()
 {
+    static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
+
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 400), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 375), ImVec2(800, 900));
     ImGui::Begin("Gamepads", (bool*)0);
     AppStyle::pushInput();
     
@@ -44,7 +46,7 @@ bool GamepadsWidget::render()
 
         ImGui::SameLine();
 
-        if (ToggleIconButtonWidget::render(AppIcons::padon, AppIcons::padoff, (*gi).isConnected()))
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, (*gi).isConnected()))
         {
             if ((*gi).isConnected())
                 (*gi).disconnect();
@@ -78,7 +80,7 @@ bool GamepadsWidget::render()
         
         static int padIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        //ImGui::Dummy(dummySize);
         ImGui::PushID(100 * (index + 1));
         ImGui::SetNextItemWidth(50);
         padIndices[index] = (*gi).owner.deviceID;
@@ -123,7 +125,7 @@ bool GamepadsWidget::render()
         index++;
     }
 
-    ImGui::Dummy(ImVec2(0.0f, 10.0f));
+    //ImGui::Dummy(dummySize);
 
     indentDistance = 0.5f * size.x - 40.0f;
     ImGui::Indent(indentDistance);

@@ -8,6 +8,5 @@
 class BoolButtonWidget
 {
 public:
-	static bool render(const char* label, bool& value, float iconIndent = 15.0f);
+	static bool render(const char* label, bool& value);
 };
-

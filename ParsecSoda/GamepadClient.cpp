@@ -152,7 +152,7 @@ int GamepadClient::clearAFK(GuestList &guests)
 		if (pad.isOwned())
 		{
 			Guest guest;
-			if (guests.find(pad.owner.guest.userID, &guest))
+			if (!guests.find(pad.owner.guest.userID, &guest))
 			{
 				pad.clearOwner();
 				clearCount++;

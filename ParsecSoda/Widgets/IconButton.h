@@ -5,7 +5,7 @@
 #include "../globals/AppIcons.h"
 #include "../globals/AppColors.h"
 
-#define ICONBUTTON_SIZE ImVec2(40,40)
+#define ICONBUTTON_SIZE ImVec2(40.0f, 40.0f)
 
 class IconButton
 {

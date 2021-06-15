@@ -63,7 +63,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     wc.lpszClassName = _T("Parsec Soda");
     wc.hIconSm = NULL;
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 0, 0, 1600, 1000, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 1925, 0, 1600, 1000, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
