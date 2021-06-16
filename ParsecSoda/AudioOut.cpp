@@ -171,7 +171,7 @@ void AudioOut::captureAudio()
 				{
 					sampleF = *(float*)p;
 					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
-					_outBuffers[_activeBuffer].push_back(sampleI);
+					_outBuffers[_activeBuffer].push_back( isEnabled ? (sampleI * volume) : 0 );
 				}
 
 				swapBuffers();
@@ -183,7 +183,7 @@ void AudioOut::captureAudio()
 				{
 					sampleF = *(float*)p;
 					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
-					_outBuffers[_activeBuffer].push_back(sampleI);
+					_outBuffers[_activeBuffer].push_back( isEnabled ? (sampleI * volume) : 0 );
 				}
 			}
 			else
@@ -196,7 +196,7 @@ void AudioOut::captureAudio()
 				{
 					sampleF = *(float*)p;
 					sampleI = max(min(sampleF, 1), -1) * 32767.0f;
-					_outBuffers[_activeBuffer].push_back(sampleI);
+					_outBuffers[_activeBuffer].push_back( isEnabled ? (sampleI * volume) : 0 );
 				}
 			}
 		}
@@ -225,6 +225,23 @@ const std::vector<int16_t> AudioOut::popBuffer()
 	
 	_isReady = false;
 	return std::vector<int16_t>(_outBuffers[1-_activeBuffer]);
+}
+
+const int AudioOut::popPreviewDecibel()
+{
+	static int inactiveBuffer;
+	inactiveBuffer = 1 - _activeBuffer;
+
+	if (_previewIndex >= 0 && _previewIndex < _outBuffers[inactiveBuffer].size())
+	{
+		static int decibelValue;
+		decibelValue = AudioTools::previewDecibel(_outBuffers[inactiveBuffer][_previewIndex]);
+		_previewIndex++;
+		
+		return decibelValue;
+	}
+
+	return AUDIOTOOLS_PREVIEW_MIN_DB;
 }
 
 const uint32_t AudioOut::getFrequency() const
@@ -303,6 +320,7 @@ void AudioOut::fetchDevices()
 void AudioOut::swapBuffers()
 {
 	_activeBuffer = 1 - _activeBuffer;
+	_previewIndex = 0;
 }
 
 bool AudioOut::releaseDevices(HRESULT hr)

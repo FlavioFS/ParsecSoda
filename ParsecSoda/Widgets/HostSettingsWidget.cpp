@@ -1,7 +1,7 @@
 #include "HostSettingsWidget.h"
 
 HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
-    : _hosting(hosting)
+    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut)
 {
     ParsecHostConfig cfg = hosting.getHostConfig();
     try
@@ -151,21 +151,33 @@ bool HostSettingsWidget::render()
 
     ImGui::Dummy(ImVec2(0.0f, size.y - 518.0f));
 
-    static int micVolume = 60;
-    static bool isMuteMic = true;
-    static float micPreview = 0.0f;
-    if (AudioControlWidget::render("Microphone", &micVolume, isMuteMic, micPreview, AppIcons::micOn, AppIcons::micOff))
+    if (!_hosting.isRunning() && _hosting.isReady())
     {
-        isMuteMic = !isMuteMic;
+        _audioIn.captureAudio();
+        _audioOut.captureAudio();
     }
 
-    static int speakersVolume = 40;
-    static bool isMuteSpeakers = true;
-    static float speakersPreview = 0.0f;
-    if (AudioControlWidget::render("Speakers", &speakersVolume, isMuteSpeakers, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
+    static int micVolume;
+    static float micPreview, targetPreview;
+    micVolume = (int)(100.0f * _audioIn.volume);
+    targetPreview = AudioTools::decibelToFloat(_audioIn.popPreviewDecibel());
+    micPreview = lerp(micPreview, targetPreview, easing(targetPreview - micPreview));
+    if (AudioControlWidget::render("Microphone", &micVolume, _audioIn.isEnabled, micPreview, AppIcons::micOn, AppIcons::micOff))
     {
-        isMuteSpeakers = !isMuteSpeakers;
+        _audioIn.isEnabled = !_audioIn.isEnabled;
     }
+    _audioIn.volume = (float)micVolume / 100.0f;
+
+    static int speakersVolume;
+    static float speakersPreview;
+    speakersVolume = (int)(100.0f *_audioOut.volume);
+    targetPreview = AudioTools::decibelToFloat(_audioOut.popPreviewDecibel());
+    speakersPreview = lerp(speakersPreview, targetPreview, easing(targetPreview - speakersPreview));
+    if (AudioControlWidget::render("Speakers", &speakersVolume, _audioOut.isEnabled, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
+    {
+        _audioOut.isEnabled = !_audioOut.isEnabled;
+    }
+    _audioOut.volume = (float)speakersVolume / 100.0f;
 
     AppStyle::pop();
     ImGui::End();
@@ -187,4 +199,14 @@ bool HostSettingsWidget::isDirty()
     ) return true;
 
     return false;
+}
+
+float HostSettingsWidget::lerp(float val1, float val2, float t)
+{
+    return (1-t) * val1 + t * val2;
+}
+
+float HostSettingsWidget::easing(float t)
+{
+    return 0.2f * max(abs(t), 0.4f);
 }

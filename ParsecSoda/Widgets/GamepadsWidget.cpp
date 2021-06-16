@@ -80,19 +80,24 @@ bool GamepadsWidget::render()
         
         static int padIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
-        //ImGui::Dummy(dummySize);
-        ImGui::PushID(100 * (index + 1));
+        ImGui::Dummy(dummySize);
+        //ImGui::PushID(100 * (index + 1));
         ImGui::SetNextItemWidth(50);
         padIndices[index] = (*gi).owner.deviceID;
 
-        if (ImGui::Combo("", &padIndices[index], " 1 \0 2 \0 3 \0 4 \0 5 \0 6 \0 7 \0 8 \0\0", 8))
+        //if (ImGui::Combo("", &padIndices[index], " 1 \0 2 \0 3 \0 4 \0 5 \0 6 \0 7 \0 8 \0\0", 8))
+        //{
+        //}
+        AppFonts::pushTitle();
+        if (ImGui::DragInt(
+            (string("##DeviceIndex") + to_string(index)).c_str(),
+            &padIndices[index], 0.01f, -100, 65536
+        ))
         {
-            if (padIndices[index] >= 0 && padIndices[index] < 8)
-            {
-                (*gi).owner.deviceID = padIndices[index];
-            }
+            (*gi).owner.deviceID = padIndices[index];
         }
-        ImGui::PopID();
+        AppFonts::pop();
+        //ImGui::PopID();
         TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
         ImGui::EndGroup();
 

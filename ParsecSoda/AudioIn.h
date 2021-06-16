@@ -9,6 +9,7 @@
 #include <functiondiscoverykeys.h>
 #include <initguid.h>
 #include "Stringer.h"
+#include "AudioTools.h"
 
 typedef struct AudioInDevice
 {
@@ -24,8 +25,12 @@ public:
 	void captureAudio();
 	const bool isReady() const;
 	const std::vector<int16_t> popBuffer();
+	const int popPreviewDecibel();
 	const std::vector<AudioInDevice> listInputDevices() const;
 	AudioInDevice selectInputDevice(const char * name);
+
+	float volume = 1.0f;
+	bool isEnabled = true;
 
 private:
 	IMMDeviceEnumerator *pEnumerator = NULL;
@@ -35,5 +40,6 @@ private:
 
 	bool _isReady = false;
 	int _activeBuffer = 0;
+	int _previewIndex = 0;
 };
 

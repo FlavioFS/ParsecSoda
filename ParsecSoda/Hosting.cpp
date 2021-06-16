@@ -62,18 +62,29 @@ void Hosting::init()
 	_gamepadClient.init();
 	_gamepadClient.createMaximumGamepads();
 
-	_chatBot = new ChatBot(_audioMix, _banList, _dice, _dx11, _gamepadClient, _guestList, _parsec, _hostConfig, _parsecSession, _isRunning);
+	audioOut.fetchDevices();
+	audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
+	vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
+	audioOut.captureAudio();
+	audioOut.volume = 0.3f;
+
+	vector<AudioInDevice> devices = audioIn.listInputDevices();
+	AudioInDevice device = audioIn.selectInputDevice("cable out");
+	audioIn.init(device);
+	audioIn.volume = 0.8f;
+
+	_chatBot = new ChatBot(audioIn, audioOut, _banList, _dice, _dx11, _gamepadClient, _guestList, _parsec, _hostConfig, _parsecSession, _isRunning);
 
 	// Data is mocked for now - arguments don't matter
 	//_parsecSession.fetchSession(EMAIL, PASSWORD);
-	_parsecSession.mockSession();	// Replace with fetchSession in final version
+	_parsecSession.mockSession(false);	// Replace with fetchSession in final version
 	//_parsecSession.fetchArcadeRoomList();
 
 	_host.name = "Host";
 	_host.status = Guest::Status::INVALID;
 	if (isReady())
 	{
-		//_parsecSession.fetchAccountData(&_host);
+		_parsecSession.fetchAccountData(&_host);
 	}
 }
 
@@ -300,15 +311,6 @@ void Hosting::initAllModules()
 	_gamepadClient.setLimit(3888558, 0);		// Remove myself
 	_gamepadClient.setLimit(6711547, 0);
 
-	_audioOut.fetchDevices();
-	_audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
-	vector<AudioOutDevice> audioOutDevices = _audioOut.getDevices();
-	_audioOut.captureAudio();
-
-	vector<AudioInDevice> devices = _audioIn.listInputDevices();
-	AudioInDevice device = _audioIn.selectInputDevice("cable out");
-	_audioIn.init(device);
-
 	parsecArcadeStart();
 }
 
@@ -327,14 +329,12 @@ void Hosting::liveStreamMedia()
 		const auto before = clock::now();
 		_dx11.captureScreen(_parsec);
 
-		_audioIn.captureAudio();
-		_audioOut.captureAudio();
-		if (_audioIn.isReady() && _audioOut.isReady())
+		audioIn.captureAudio();
+		audioOut.captureAudio();
+		if (audioIn.isReady() && audioOut.isReady())
 		{
-			vector<int16_t> inBuffer = _audioIn.popBuffer();
-			vector<int16_t> outBuffer = _audioOut.popBuffer();
-			vector<int16_t> mixBuffer = _audioMix.mix(&inBuffer, &outBuffer);
-			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, _audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size() / 2);
+			vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
+			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size() / 2);
 		}
 
 		const milli duration = clock::now() - before;

@@ -2,15 +2,15 @@
 
 #include <sstream>
 #include "ACommandIntegerArg.h"
-#include "../AudioMix.h"
+#include "../AudioIn.h"
 
 class CommandMic : public ACommandIntegerArg
 {
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::MIC; }
 
-	CommandMic(const char* msg, AudioMix &mixer)
-		: ACommandIntegerArg(msg, internalPrefixes()), _mixer(mixer)
+	CommandMic(const char* msg, AudioIn &audioIn)
+		: ACommandIntegerArg(msg, internalPrefixes()), _audionIn(audioIn)
 	{}
 
 	bool run() override
@@ -21,7 +21,7 @@ public:
 			return false;
 		}
 
-		_mixer.setVolume1(_intArg / 100.0f);
+		_audionIn.volume = (float)_intArg / 100.0f;
 
 		std::ostringstream reply;
 		reply << "[ChatBot] | Microphone volume set to " << _intArg << "%\0";
@@ -40,5 +40,5 @@ protected:
 		return vector<const char*> { "!mic " };
 	}
 
-	AudioMix& _mixer;
+	AudioIn& _audionIn;
 };

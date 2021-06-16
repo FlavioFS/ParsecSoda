@@ -27,14 +27,14 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 		else if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
 		else if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests, isHost);
 		else if (msgStartsWith(msg, CommandLimit::prefixes()))		return new CommandLimit(msg, _guests, _gamepadClient);
-		else if (msgStartsWith(msg, CommandMic::prefixes()))		return new CommandMic(msg, _audioMixer);
+		else if (msgStartsWith(msg, CommandMic::prefixes()))		return new CommandMic(msg, _audioIn);
 		else if (msgStartsWith(msg, CommandName::prefixes()))		return new CommandName(msg, _hostConfig);
 		else if (msgIsEqual(msg, CommandPrivate::prefixes()))		return new CommandPrivate(_hostConfig);
 		else if (msgIsEqual(msg, CommandPublic::prefixes()))		return new CommandPublic(_hostConfig);
 		else if	(msgIsEqual(msg, CommandQuit::prefixes()))			return new CommandQuit(_hostingLoopController);
 		else if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
 		else if (msgStartsWith(msg, CommandStrip::prefixes()))		return new CommandStrip(msg, sender, _gamepadClient);
-		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioMixer);
+		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioOut);
 		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban);
 		//else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11); // Broken (massive memory leaks) & obsolete
 	}

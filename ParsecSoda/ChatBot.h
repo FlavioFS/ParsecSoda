@@ -47,11 +47,11 @@ class ChatBot
 public:
 
 	ChatBot(
-		AudioMix& audioMixer, BanList& ban, Dice& dice, DX11 &dx11,
+		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11 &dx11,
 		GamepadClient& gamepadClient, GuestList &guests, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
 		ParsecSession& parsecSession, bool &hostingLoopController
 	)
-		: _audioMixer(audioMixer), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
+		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
 		_guests(guests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
 		_hostingLoopController(hostingLoopController)
 	{}
@@ -75,7 +75,8 @@ private:
 
 	// Dependency Injection
 	ParsecDSO* _parsec;
-	AudioMix& _audioMixer;
+	AudioIn& _audioIn;
+	AudioOut& _audioOut;
 	BanList &_ban;
 	Dice &_dice;
 	DX11 &_dx11;

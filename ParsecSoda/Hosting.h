@@ -68,6 +68,9 @@ public:
 	void handleMessage(const char* message, Guest& guest, bool& isAdmin, bool isHost = false);
 	void sendHostMessage(const char* message);
 
+	AudioIn audioIn;
+	AudioOut audioOut;
+
 private:
 	void initAllModules();
 	void liveStreamMedia();
@@ -79,8 +82,6 @@ private:
 	void onGuestStateChange(ParsecGuestState& state, Guest& guest);
 
 	// Attributes
-	AudioIn _audioIn;
-	AudioOut _audioOut;
 	AudioMix _audioMix;
 	DX11 _dx11;
 	AdminList _adminList;

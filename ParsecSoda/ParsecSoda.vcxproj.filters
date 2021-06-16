@@ -419,6 +419,9 @@
     <ClInclude Include="Widgets\AudioControlWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AudioTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">

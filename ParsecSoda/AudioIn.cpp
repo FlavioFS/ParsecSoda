@@ -78,11 +78,14 @@ void AudioIn::captureAudio()
 				byte *pe = p + AUDIO_IN_BUFFER_SIZE;
 				for (; p < pe; p+=2)
 				{
-					_inBuffer.push_back(*(int16_t*)p);
+					_inBuffer.push_back(
+						isEnabled ? (*(int16_t*)p * volume) : 0
+					);
 				}
 
 				_isReady = true;
 				_activeBuffer = i;
+				_previewIndex = 0;
 
 				_headers[i].dwFlags = 0;
 				_headers[i].dwBytesRecorded = 0;
@@ -113,6 +116,20 @@ const std::vector<int16_t> AudioIn::popBuffer()
 	}
 
 	return std::vector<int16_t>();
+}
+
+const int AudioIn::popPreviewDecibel()
+{
+	if (_previewIndex >= 0 && _previewIndex < _inBuffer.size())
+	{
+		static int decibelValue;
+		decibelValue = AudioTools::previewDecibel(_inBuffer[_previewIndex]);
+		_previewIndex++;
+		
+		return decibelValue;
+	}
+
+	return AUDIOTOOLS_PREVIEW_MIN_DB;
 }
 
 const std::vector<AudioInDevice> AudioIn::listInputDevices() const

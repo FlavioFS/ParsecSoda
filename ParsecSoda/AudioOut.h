@@ -9,8 +9,12 @@
 #include <functiondiscoverykeys.h>
 #include <Audioclient.h>
 #include <initguid.h>
+#include "AudioTools.h"
 
 #define AUDIO_OUT_FORCE_RELEASE -1
+#define AUDIOOUT_PREVIEW_MIN_DB -60
+#define AUDIOOUT_PREVIEW_MAX_AMP 32768
+#define AUDIOOUT_PREVIEW_MIN_AMP 0.001f
 
 typedef struct AudioOutDevice
 {
@@ -31,7 +35,11 @@ public:
 	const std::vector<AudioOutDevice> getDevices();
 	void captureAudio();
 	const std::vector<int16_t> popBuffer();
+	const int popPreviewDecibel();
 	const uint32_t getFrequency() const;
+
+	float volume = 1.0f;
+	bool isEnabled = true;
 
 private:
 	bool releaseDevices(HRESULT hr = AUDIO_OUT_FORCE_RELEASE);
@@ -42,6 +50,7 @@ private:
 	std::vector<int16_t> _outBuffers[2];
 	int _activeBuffer = 0;
 	int _isReady = false;
+	int _previewIndex = 0;
 
 	size_t maxOutBufferSize = 0;
 

@@ -28,13 +28,15 @@ bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, flo
 	ImGui::SetNextItemWidth(width - 64.0f);
 	ImGui::SliderInt(
 		(string("###AudioControlSlider") + string(id)).c_str(),
-		volume, 0.0f, 100.0f, "%d%%"
+		volume, 0, 100, "%d%%"
 	);
 	
 	// Preview bar
-	AppColors::pushPrimary();
+	if (preview > 0.65f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::error);
+	else if (preview > 0.45f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::primary);
+	else ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::alert);
 	ImGui::ProgressBar(preview, ImVec2(width - 64.0f, 10.0f), "");
-	AppColors::pop();
+	ImGui::PopStyleColor();
 
 	AppFonts::pop();
 	ImGui::EndGroup();

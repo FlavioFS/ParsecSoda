@@ -205,6 +205,7 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioTools.h" />
     <ClInclude Include="globals\AppColors.h" />
     <ClInclude Include="globals\AppIcons.h" />
     <ClInclude Include="globals\AppStyle.h" />

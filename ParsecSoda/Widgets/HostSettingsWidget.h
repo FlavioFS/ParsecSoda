@@ -2,6 +2,7 @@
 
 #include "../imgui/imgui.h"
 #include "../Hosting.h"
+#include "../AudioTools.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppFonts.h"
 #include "../globals/AppColors.h"
@@ -26,9 +27,13 @@ public:
 
 private:
 	bool isDirty();
+	float lerp(float val1, float val2, float t = 0.11f);
+	float easing(float t);
 
 	// Dependency injection
 	Hosting& _hosting;
+	AudioIn& _audioIn;
+	AudioOut& _audioOut;
 
 	// Imported Widgets
 	ToggleIconButtonWidget _publicRoomBtn, _playBtn;
