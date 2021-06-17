@@ -57,58 +57,52 @@ bool GamepadsWidget::render()
 
         ImGui::SameLine();
         
+        static float gamepadLabelWidth;
+        gamepadLabelWidth = size.x - 160.0f;
         
-        ImGui::BeginGroup();
+        ImGui::BeginChild(
+            (string("##name ") + to_string(index)).c_str(),
+            ImVec2(gamepadLabelWidth, 50.0f)
+        );
+        cursor = ImGui::GetCursorPos();
+
         AppStyle::pushLabel();
         if ((*gi).owner.guest.isValid())  ImGui::TextWrapped("(# %d)\t", (*gi).owner.guest.userID);
         else                              ImGui::TextWrapped("    ");
         AppStyle::pop();
 
-        ImGui::BeginChild(
-            (string("##name ") + to_string(index)).c_str(),
-            ImVec2(size.x - 160.0f, 20.0f)
-        );
         AppFonts::pushInput();
         AppColors::pushPrimary();
-        ImGui::TextWrapped((*gi).owner.guest.name.c_str());
+        ImGui::SetNextItemWidth(gamepadLabelWidth);
+        ImGui::Text((*gi).owner.guest.name.c_str());
         AppColors::pop();
         AppFonts::pop();
-        ImGui::EndChild();
-        ImGui::EndGroup();
 
-        ImGui::SameLine();
-        
-        static int padIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-        ImGui::BeginGroup();
-        ImGui::Dummy(dummySize);
-        //ImGui::PushID(100 * (index + 1));
-        ImGui::SetNextItemWidth(50);
-        padIndices[index] = (*gi).owner.deviceID;
-
-        //if (ImGui::Combo("", &padIndices[index], " 1 \0 2 \0 3 \0 4 \0 5 \0 6 \0 7 \0 8 \0\0", 8))
-        //{
-        //}
-        AppFonts::pushTitle();
-        if (ImGui::DragInt(
-            (string("##DeviceIndex") + to_string(index)).c_str(),
-            &padIndices[index], 0.01f, -100, 65536
-        ))
-        {
-            (*gi).owner.deviceID = padIndices[index];
-        }
-        AppFonts::pop();
-        //ImGui::PopID();
-        TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
+        static ImVec2 backupCursor;
+        backupCursor = ImGui::GetCursorPos();
 
         ImGui::SetCursorPos(cursor);
-
-        ImGui::InvisibleButton(
-            (string("##guest button ") + to_string(index)).c_str(),
-            ImVec2(size.x, 50.0f)
+        ImGui::Button(
+            (string("##gamepad button") + to_string(index + 1)).c_str(),
+            ImVec2(gamepadLabelWidth, 50.0f)
         );
+
+        if (ImGui::BeginDragDropSource())
+        {
+            ImGui::SetDragDropPayload("Gamepad", &index, sizeof(int));
+
+            AppFonts::pushInput();
+            AppColors::pushPrimary();
+            ImGui::Text("%s", ((*gi).owner.guest.isValid() ? (*gi).owner.guest.name.c_str() : "Empty gamepad"));
+            AppColors::pop();
+            AppFonts::pop();
+
+            AppStyle::pushLabel();
+            ImGui::Text("Drop into another Gamepad to swap.");
+            AppStyle::pop();
+
+            ImGui::EndDragDropSource();
+        }
         if (ImGui::BeginDragDropTarget())
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Guest"))
@@ -122,8 +116,59 @@ bool GamepadsWidget::render()
                     }
                 }
             }
+            else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Gamepad"))
+            {
+                if (payload->DataSize == sizeof(int))
+                {
+                    int sourceIndex = *(const int*)payload->Data;
+                    if (sourceIndex >= 0 && sourceIndex < _gamepads.size())
+                    {
+                        static GuestDevice backupOwner;
+                        backupOwner.copy(_gamepads[index].owner);
+
+                        _gamepads[index].copyOwner(_gamepads[sourceIndex]);
+                        _gamepads[sourceIndex].owner.copy(backupOwner);
+                    }
+                }
+            }
+
             ImGui::EndDragDropTarget();
         }
+
+        ImGui::SetCursorPos(backupCursor);
+
+        ImGui::EndChild();
+        
+        ImGui::SameLine();
+        
+        static int padIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        ImGui::BeginGroup();
+        ImGui::Dummy(dummySize);
+        ImGui::SetNextItemWidth(50);
+        padIndices[index] = (*gi).owner.deviceID;
+
+        AppFonts::pushTitle();
+        if (ImGui::DragInt(
+            (string("##DeviceIndex") + to_string(index)).c_str(),
+            &padIndices[index], 0.1f, 0, 65536
+        ))
+        {
+            (*gi).owner.deviceID = padIndices[index];
+        }
+        AppFonts::pop();
+        TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
+        ImGui::EndGroup();
+
+        ImGui::SameLine();
+
+        //////////////////////////
+
+        ////////////////////////////////////////
+
+        //ImGui::InvisibleButton(
+        //    (string("##guest button ") + to_string(index)).c_str(),
+        //    ImVec2(size.x, 50.0f)
+        //);
 
         ImGui::EndChild();
 

@@ -77,14 +77,14 @@ void Hosting::init()
 
 	// Data is mocked for now - arguments don't matter
 	//_parsecSession.fetchSession(EMAIL, PASSWORD);
-	_parsecSession.mockSession(false);	// Replace with fetchSession in final version
+	_parsecSession.mockSession();	// Replace with fetchSession in final version
 	//_parsecSession.fetchArcadeRoomList();
 
 	_host.name = "Host";
 	_host.status = Guest::Status::INVALID;
 	if (isReady())
 	{
-		_parsecSession.fetchAccountData(&_host);
+		//_parsecSession.fetchAccountData(&_host);
 	}
 }
 
@@ -97,7 +97,6 @@ void Hosting::release()
 	}
 	_dx11.clear();
 	_gamepadClient.release();
-	//ParsecFree(_parsec);
 }
 
 bool Hosting::isReady()
