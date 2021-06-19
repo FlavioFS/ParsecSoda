@@ -32,18 +32,18 @@ public:
 		{
 			std::string str = _msg;
 			size_t cmdSize = strlen(_prefix);
-			std::string targetUsername = str.substr(cmdSize);
+			_targetUsername = str.substr(cmdSize);
 
 			bool found = false;
 			try
 			{
-				found = _guests.find(stoul(targetUsername), &_targetGuest);
+				found = _guests.find(stoul(_targetUsername), &_targetGuest);
 			}
 			catch (const std::exception&) {}
 
 			if (!found)
 			{
-				found = _guests.find(targetUsername, &_targetGuest);
+				found = _guests.find(_targetUsername, &_targetGuest);
 			}
 			
 			_searchResult = found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;
@@ -60,5 +60,6 @@ protected:
 	SEARCH_USER_RESULT _searchResult;
 	GuestList& _guests;
 	Guest _targetGuest;
+	string _targetUsername;
 };
 

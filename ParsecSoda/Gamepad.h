@@ -25,11 +25,13 @@ class Gamepad
 public:
 	Gamepad();
 	Gamepad(PVIGEM_CLIENT client);
+	bool alloc();
+	bool realloc();
 	bool connect();
 	bool disconnect();
 	void release();
 	bool isAttached();
-	bool refreshIndex();
+	void setIndex(ULONG index);
 	ULONG getIndex() const;
 	XINPUT_STATE getState();
 	void clearState();
@@ -45,11 +47,11 @@ public:
 	void clearOwner();
 	const bool isOwned();
 	bool isConnected() const;
-
 	GuestDevice owner = GuestDevice();
 	bool mirror = false;
 
 private:
+	bool refreshIndex();
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;
 	ULONG _index = -1;

@@ -18,10 +18,11 @@ public:
 			+ "\n  " + "---- Normal Commands ----"
 			+ "\n  " + "!afk\t\t\t\t\t|\tRemoves gamepads from players who left the room."
 			+ "\n  " + "!bonk\t\t\t\t |\tBonk another user."
-			+ "\n  " + "!help\t\t\t\t |\tShow command list."
+			+ "\n  " + "!help\t\t\t\t  |\tShow command list."
 			+ "\n  " + "!ff\t\t\t\t\t\t |\tDrop your gamepads."
 			+ "\n  " + "!mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
 			+ "\n  " + "!pads\t\t\t\t  |\tShow who's holding each gamepad."
+			+ "\n  " + "!sfx\t\t\t\t\t  |\tPlay sound effect."
 			+ "\n  " + "!swap\t\t\t\t |\tReplace your gamepad with another one."
 			;
 

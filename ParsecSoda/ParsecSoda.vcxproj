@@ -166,6 +166,7 @@
     <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="ChatLog.cpp" />
+    <ClCompile Include="SFXList.cpp" />
     <ClCompile Include="Widgets\AudioControlWidget.cpp" />
     <ClCompile Include="GuestDevice.cpp" />
     <ClCompile Include="Widgets\BoolButtonWidget.cpp" />
@@ -206,12 +207,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioTools.h" />
+    <ClInclude Include="Commands\CommandSFX.h" />
     <ClInclude Include="globals\AppColors.h" />
     <ClInclude Include="globals\AppIcons.h" />
     <ClInclude Include="globals\AppStyle.h" />
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="ChatLog.h" />
     <ClInclude Include="Commands\CommandStrip.h" />
+    <ClInclude Include="SFXList.h" />
     <ClInclude Include="Widgets\AudioControlWidget.h" />
     <ClInclude Include="GuestDevice.h" />
     <ClInclude Include="Widgets\BoolButtonWidget.h" />

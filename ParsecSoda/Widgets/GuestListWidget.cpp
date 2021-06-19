@@ -8,7 +8,7 @@ GuestListWidget::GuestListWidget(Hosting& hosting)
 bool GuestListWidget::render()
 {
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 400), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(800, 900));
     ImGui::Begin("Guests", (bool*)0);
     AppStyle::pushInput();
 

@@ -159,6 +159,9 @@
     <ClCompile Include="Widgets\AudioControlWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SFXList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminList.h">
@@ -420,6 +423,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioTools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SFXList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands\CommandSFX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

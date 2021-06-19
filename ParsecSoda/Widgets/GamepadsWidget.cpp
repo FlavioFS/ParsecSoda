@@ -38,6 +38,23 @@ bool GamepadsWidget::render()
         static ImVec2 cursor;
         cursor = ImGui::GetCursorPos();
         
+        static int padIndex = 0;
+        padIndex = (*gi).getIndex() + 1;
+        
+        ImGui::BeginGroup();
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        ImGui::SetNextItemWidth(40.0f);
+        AppFonts::pushTitle();
+        if (ImGui::DragInt(
+            (string("##GamepadIndex") + to_string(index)).c_str(),
+            &padIndex, 0.1f, 0, 8
+        ));
+        AppFonts::pop();
+        ImGui::EndGroup();
+        (*gi).setIndex(padIndex - 1);
+
+        ImGui::SameLine();
+
         if (IconButton::render(AppIcons::back, AppColors::primary))
         {
             (*gi).clearOwner();
@@ -53,12 +70,13 @@ bool GamepadsWidget::render()
             else
                 (*gi).connect();
         }
-        TitleTooltipWidget::render("Disconnect gamepad", "\"Physically\" disconnect gamepad from PC (at O.S. level).");
+        if ((*gi).isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
+        else                     TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
 
         ImGui::SameLine();
         
         static float gamepadLabelWidth;
-        gamepadLabelWidth = size.x - 160.0f;
+        gamepadLabelWidth = size.x - 210.0f;
         
         ImGui::BeginChild(
             (string("##name ") + to_string(index)).c_str(),

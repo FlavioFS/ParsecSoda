@@ -24,12 +24,15 @@ Hosting::Hosting()
 	_hostConfig = EMPTY_HOST_CONFIG;
 	setHostConfig("Let's have fun!", "", 2, false, "melonsod");
 
+	_sfxList.init("./sfx/custom/_sfx.json");
+
 	const vector<int> admins{ 3888558 , 6711547 };
 	_adminList = AdminList(admins);
 
 	const vector<GuestData> banned
 	{
-		GuestData("Miamiheatfan34", 1227313)
+		GuestData("Miamiheatfan34", 1227313),
+		GuestData("chapiusk", 6949214)
 	};
 	_banList = BanList(banned);
 	
@@ -73,8 +76,6 @@ void Hosting::init()
 	audioIn.init(device);
 	audioIn.volume = 0.8f;
 
-	_chatBot = new ChatBot(audioIn, audioOut, _banList, _dice, _dx11, _gamepadClient, _guestList, _parsec, _hostConfig, _parsecSession, _isRunning);
-
 	// Data is mocked for now - arguments don't matter
 	//_parsecSession.fetchSession(EMAIL, PASSWORD);
 	_parsecSession.mockSession();	// Replace with fetchSession in final version
@@ -86,6 +87,12 @@ void Hosting::init()
 	{
 		//_parsecSession.fetchAccountData(&_host);
 	}
+
+	_chatBot = new ChatBot(
+		audioIn, audioOut, _banList, _dice, _dx11,
+		_gamepadClient, _guestList, _parsec,
+		_hostConfig, _parsecSession, _sfxList, _isRunning, _host
+	);
 }
 
 void Hosting::release()
@@ -293,8 +300,6 @@ void Hosting::sendHostMessage(const char* message)
 }
 
 
-
-
 // ============================================================
 // 
 //  PRIVATE
@@ -307,8 +312,8 @@ void Hosting::initAllModules()
 	// Instance all gamepads at once
 	_gamepadClient.connectAllGamepads();
 	_gamepadClient.sortGamepads();
-	_gamepadClient.setLimit(3888558, 0);		// Remove myself
-	_gamepadClient.setLimit(6711547, 0);
+	//_gamepadClient.setLimit(3888558, 0);		// Remove myself
+	//_gamepadClient.setLimit(6711547, 0);
 
 	parsecArcadeStart();
 }

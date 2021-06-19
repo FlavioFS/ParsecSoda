@@ -33,11 +33,11 @@ bool GamepadClient::init()
 	return true;
 }
 
-Gamepad GamepadClient::createGamepad()
+Gamepad GamepadClient::createGamepad(uint16_t index)
 {
 	if (_client == nullptr || gamepads.size() > XUSER_MAX_COUNT)
 	{
-		return nullptr;
+		return Gamepad();
 	}
 
 	Gamepad gamepad(_client);
@@ -49,7 +49,7 @@ void GamepadClient::createMaximumGamepads()
 {
 	for (size_t i = 0; i < XUSER_MAX_COUNT; i++)
 	{
-		createGamepad();
+		createGamepad(i);
 	}
 }
 
@@ -388,15 +388,7 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 	}
 	
 	return reduceUntilFirst([&](Gamepad& gamepad) {
-		if (!gamepad.isAttached())
-		{
-			if (gamepad.connect())
-			{
-				gamepad.setOwner(guest, deviceID, isKeyboard);
-				return true;
-			}
-		}
-		else if (!gamepad.owner.guest.isValid())
+		if (gamepad.isAttached() && !gamepad.owner.guest.isValid())
 		{
 			gamepad.setOwner(guest, deviceID, isKeyboard);
 			return true;

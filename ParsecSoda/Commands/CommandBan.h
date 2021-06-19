@@ -2,6 +2,8 @@
 
 #include "ACommandSearchUser.h"
 #include <iostream>
+#include <Windows.h>
+#include <mmsystem.h>
 #include "parsec-dso.h"
 #include "../BanList.h"
 
@@ -39,6 +41,12 @@ public:
 				_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
 				ParsecHostKickGuest(_parsec, _targetGuest.id);
 				
+				try
+				{
+					PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+				}
+				catch (const std::exception&) {}
+
 				rv = true;
 			}
 			break;
@@ -54,16 +62,16 @@ public:
 
 	static vector<const char*> prefixes()
 	{
-		return vector<const char*> { "!ban" };
+		return vector<const char*> { "!ban", "!block" };
 	}
 
 private:
 	static vector<const char*> internalPrefixes()
 	{
-		return vector<const char*> { "!ban " };
+		return vector<const char*> { "!ban ", "!block " };
 	}
 
 	ParsecDSO* _parsec;
 	Guest& _sender;
-	BanList _ban;
+	BanList& _ban;
 };

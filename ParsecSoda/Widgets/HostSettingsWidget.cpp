@@ -208,5 +208,5 @@ float HostSettingsWidget::lerp(float val1, float val2, float t)
 
 float HostSettingsWidget::easing(float t)
 {
-    return 0.2f * max(abs(t), 0.4f);
+    return 0.3f * max(abs(t), 0.4f);
 }

@@ -9,13 +9,14 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 
 	// Pleb commands
 	if		(msgIsEqual(msg, CommandAFK::prefixes()))			return new CommandAFK(_guests, _gamepadClient);
-	else if	(msgStartsWith(msg, CommandBonk::prefixes()))		return new CommandBonk(msg, sender, _guests, _dice);
+	else if	(msgStartsWith(msg, CommandBonk::prefixes()))		return new CommandBonk(msg, sender, _guests, _dice, _host);
 	else if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
 	else if	(msgIsEqual(msg, CommandHelp::prefixes()))			return new CommandHelp(isAdmin);
 	else if (CommandIpFilter::containsIp(msg))					return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
 	else if (msgIsEqual(msg, CommandJoin::prefixes()))			return new CommandJoin();
 	else if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
 	else if (msgIsEqual(msg, CommandPads::prefixes()))			return new CommandPads(_gamepadClient);
+	else if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);
 	else if (msgStartsWith(msg, CommandSwap::prefixes()))		return new CommandSwap(msg, sender, _gamepadClient);
 
 	// Admin commands

@@ -13,9 +13,14 @@ Gamepad::Gamepad(PVIGEM_CLIENT client)
 {
 	_client = client;
 	clearOwner();
-	_index = GAMEPAD_INDEX_ERROR;
+	refreshIndex();
 	_isConnected = false;
 
+	alloc();
+}
+
+bool Gamepad::alloc()
+{
 	if (_client != nullptr)
 	{
 		pad = vigem_target_x360_alloc();
@@ -25,6 +30,14 @@ Gamepad::Gamepad(PVIGEM_CLIENT client)
 	{
 		_isAlive = false;
 	}
+
+	return _isAlive;
+}
+
+bool Gamepad::realloc()
+{
+	release();
+	return alloc();
 }
 
 bool Gamepad::connect()
@@ -32,10 +45,11 @@ bool Gamepad::connect()
 	if (!_isAlive || _client == nullptr) { return false; }
 
 	VIGEM_ERROR err = vigem_target_add(_client, pad);
+
 	if (VIGEM_SUCCESS(err))
 	{
-		refreshIndex();
 		clearOwner();
+		refreshIndex();
 		_isConnected = true;
 		return true;
 	}
@@ -58,7 +72,6 @@ bool Gamepad::disconnect()
 		return false;
 	}
 
-	_index = GAMEPAD_INDEX_ERROR;
 	_isConnected = false;
 	clearOwner();
 	return true;
@@ -71,7 +84,6 @@ void Gamepad::release()
 		disconnect();
 		vigem_target_free(pad);
 		clearOwner();
-		_index = GAMEPAD_INDEX_ERROR;
 		_isAlive = false;
 		_isConnected = false;
 	}
@@ -101,6 +113,11 @@ bool Gamepad::refreshIndex()
 	return _index;
 }
 
+void Gamepad::setIndex(ULONG index)
+{
+	_index = index;
+}
+
 ULONG Gamepad::getIndex() const
 {
 	return _index;
@@ -109,6 +126,7 @@ ULONG Gamepad::getIndex() const
 XINPUT_STATE Gamepad::getState()
 {
 	XINPUT_STATE state = {};
+
 	if (_isAlive && _index >= 0)
 	{
 		XInputGetState(_index, &state);

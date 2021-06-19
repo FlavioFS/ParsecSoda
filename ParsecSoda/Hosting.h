@@ -25,6 +25,7 @@
 #include "BanList.h"
 #include "Dice.h"
 #include "GuestList.h"
+#include "SFXList.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -97,6 +98,7 @@ private:
 	ParsecSession _parsecSession;
 	ParsecStatus _parsecStatus;
 	Guest _host;
+	SFXList _sfxList;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;

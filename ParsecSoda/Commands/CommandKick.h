@@ -2,6 +2,8 @@
 
 #include "ACommandSearchUser.h"
 #include <iostream>
+#include <Windows.h>
+#include <mmsystem.h>
 #include "parsec-dso.h"
 
 
@@ -27,11 +29,7 @@ public:
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
-			if (_isHost)
-			{
-				_replyMessage = string() + "[ChatBot] | Host is not in the room. Host IS the room.\0";
-			}
-			else if (_sender.userID == _targetGuest.userID)
+			if (_sender.userID == _targetGuest.userID)
 			{
 				_replyMessage = std::string() + "[ChatBot] | Thou shall not kick thyself, " + _sender.name + " ...\0";
 			}
@@ -39,6 +37,13 @@ public:
 			{
 				_replyMessage = std::string() + "[ChatBot] | " + _targetGuest.name+ " was kicked by " + _sender.name + "!\0";
 				ParsecHostKickGuest(_parsec, _targetGuest.id);
+				
+				try
+				{
+					PlaySound(TEXT("./sfx/kick.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+				}
+				catch (const std::exception&) {}
+
 				return true;
 			}
 			break;

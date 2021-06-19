@@ -47,7 +47,7 @@ public:
 
 	~GamepadClient();
 	bool init();
-	Gamepad createGamepad();
+	Gamepad createGamepad(uint16_t index);
 	void createMaximumGamepads();
 	void connectAllGamepads();
 	void disconnectAllGamepads();

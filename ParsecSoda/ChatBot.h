@@ -33,6 +33,7 @@
 #include "Commands/CommandPublic.h"
 #include "Commands/CommandQuit.h"
 #include "Commands/CommandSetConfig.h"
+#include "Commands/CommandSFX.h"
 #include "Commands/CommandSpeakers.h"
 #include "Commands/CommandStrip.h"
 #include "Commands/CommandSwap.h"
@@ -49,11 +50,11 @@ public:
 	ChatBot(
 		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11 &dx11,
 		GamepadClient& gamepadClient, GuestList &guests, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
-		ParsecSession& parsecSession, bool &hostingLoopController
+		ParsecSession& parsecSession, SFXList& sfxList, bool &hostingLoopController, Guest& host
 	)
 		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
-		_guests(guests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
-		_hostingLoopController(hostingLoopController)
+		_guests(guests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession), _sfxList(sfxList),
+		_hostingLoopController(hostingLoopController), _host(host)
 	{}
 
 	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool& isAdmin, bool isHost = false);
@@ -84,5 +85,7 @@ private:
 	GuestList& _guests;
 	ParsecHostConfig &_hostConfig;
 	ParsecSession &_parsecSession;
+	SFXList _sfxList;
 	bool &_hostingLoopController;
+	Guest& _host;
 };
