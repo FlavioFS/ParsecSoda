@@ -63,7 +63,12 @@ void Hosting::init()
 	_parsecStatus = ParsecInit(NULL, NULL, (char *)SDK_PATH, &_parsec);
 	_dx11.init();
 	_gamepadClient.init();
-	_gamepadClient.createMaximumGamepads();
+
+	_createGamepadsThread = thread([&]() {
+		_gamepadClient.createMaximumGamepads();
+		_createGamepadsThread.detach();
+	});
+
 
 	audioOut.fetchDevices();
 	audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
@@ -149,6 +154,11 @@ vector<Guest>& Hosting::getGuestList()
 vector<Gamepad>& Hosting::getGamepads()
 {
 	return _gamepadClient.gamepads;
+}
+
+GamepadClient& Hosting::getGamepadClient()
+{
+	return _gamepadClient;
 }
 
 const char** Hosting::getGuestNames()
@@ -310,8 +320,11 @@ void Hosting::initAllModules()
 	_dice.init();
 
 	// Instance all gamepads at once
-	_gamepadClient.connectAllGamepads();
-	_gamepadClient.sortGamepads();
+	_connectGamepadsThread = thread([&]() {
+		_gamepadClient.connectAllGamepads();
+		_gamepadClient.sortGamepads();
+		_connectGamepadsThread.detach();
+	});
 	//_gamepadClient.setLimit(3888558, 0);		// Remove myself
 	//_gamepadClient.setLimit(6711547, 0);
 

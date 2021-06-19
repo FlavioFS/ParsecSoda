@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <thread>
 #include "GuestData.h"
 #include "KeyboardMaps.h"
 #include "GuestList.h"
@@ -52,6 +53,7 @@ public:
 	void connectAllGamepads();
 	void disconnectAllGamepads();
 	void sortGamepads();
+	void resetAll();
 	Gamepad connectNextGamepad();
 	void release();
 	Gamepad getGamepad(int index);
@@ -90,4 +92,6 @@ private:
 	bool reduceUntilFirst(function<bool(Gamepad&)> func);
 
 	PVIGEM_CLIENT _client;
+
+	thread _resetAllThread;
 };

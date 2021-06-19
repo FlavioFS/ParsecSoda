@@ -21,13 +21,13 @@ bool LogWidget::render()
     {
         if ((*it)[0] == '@')
         {
-            AppStyle::pushAlert();
+            AppStyle::pushPositive();
             ImGui::TextWrapped((*it).c_str());
             AppStyle::pop();
         }
         else if ((*it)[0] == '!')
         {
-            AppStyle::pushError();
+            AppStyle::pushNegative();
             ImGui::TextWrapped((*it).c_str());
             AppStyle::pop();
         }

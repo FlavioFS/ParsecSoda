@@ -20,14 +20,16 @@ public:
 	static void pushTitle();
 	static void pushLabel();
 	static void pushInput();
-	static void pushAlert();
-	static void pushError();
+	static void pushPositive();
+	static void pushNegative();
+	static void pushWarning();
 
 	static ImVec4 title;
 	static ImVec4 label;
 	static ImVec4 input;
-	static ImVec4 alert;
-	static ImVec4 error;
+	static ImVec4 positive;
+	static ImVec4 negative;
+	static ImVec4 warning;
 
 	static ImVec4 white;
 	static ImVec4 black;

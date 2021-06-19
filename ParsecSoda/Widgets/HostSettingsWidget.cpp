@@ -112,7 +112,7 @@ bool HostSettingsWidget::render()
     ImGui::Indent(indentSize);
     if (ToggleIconButtonWidget::render(
         AppIcons::stop, AppIcons::play, _hosting.isRunning(),
-        AppColors::error, AppColors::alert, ImVec2(90, 90)
+        AppColors::negative, AppColors::positive, ImVec2(90, 90)
     ))
     {
         showPopup = true;

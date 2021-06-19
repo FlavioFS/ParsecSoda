@@ -52,6 +52,7 @@ public:
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
 	vector<Gamepad>& getGamepads();
+	GamepadClient& getGamepadClient();
 	const char** getGuestNames();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
@@ -109,6 +110,8 @@ private:
 	thread _mediaThread;
 	thread _inputThread;
 	thread _eventThread;
+	thread _createGamepadsThread;
+	thread _connectGamepadsThread;
 
 	mutex _mediaMutex;
 	mutex _inputMutex;

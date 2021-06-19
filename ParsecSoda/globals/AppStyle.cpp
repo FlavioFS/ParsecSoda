@@ -18,16 +18,16 @@ void AppStyle::pushInput()
 	AppColors::pushInput();
 }
 
-void AppStyle::pushAlert()
+void AppStyle::pushPositive()
 {
 	AppFonts::pushInput();
-	AppColors::pushAlert();
+	AppColors::pushPositive();
 }
 
-void AppStyle::pushError()
+void AppStyle::pushNegative()
 {
 	AppFonts::pushInput();
-	AppColors::pushError();
+	AppColors::pushNegative();
 }
 
 void AppStyle::pop()

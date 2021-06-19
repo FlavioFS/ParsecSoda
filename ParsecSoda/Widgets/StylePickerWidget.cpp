@@ -6,9 +6,14 @@ void updateSource(char * source)
     {
         sprintf_s(
             source, 1024,
-            "alert = ImVec4(%1.2ff, %1.2ff, %1.2ff, %1.2ff);\nerror = ImVec4(%1.2ff, %1.2ff, %1.2ff,%1.2ff);",
-            AppColors::alert.x, AppColors::alert.y, AppColors::alert.z, AppColors::alert.w,
-            AppColors::error.x, AppColors::error.y, AppColors::error.z, AppColors::error.w
+            (
+                string("positive = ImVec4(%1.2ff, %1.2ff, %1.2ff, %1.2ff);\n") +
+                string("negative = ImVec4(%1.2ff, %1.2ff, %1.2ff, %1.2ff);\n") +
+                string("warning  = ImVec4(%1.2ff, %1.2ff, %1.2ff, %1.2ff);")
+            ).c_str(),
+            AppColors::positive.x, AppColors::positive.y, AppColors::positive.z, AppColors::positive.w,
+            AppColors::negative.x, AppColors::negative.y, AppColors::negative.z, AppColors::negative.w,
+            AppColors::warning.x, AppColors::warning.y, AppColors::warning.z, AppColors::warning.w
         );
     }
     catch (const std::exception&) {}
@@ -25,27 +30,35 @@ bool StylePickerWidget::render()
     size = ImGui::GetContentRegionAvail();
     static char source[1024] = "\0";
 
-    static float alert[4] = { AppColors::alert.x, AppColors::alert.y, AppColors::alert.z, AppColors::alert.w };
-    static float err[4] = { AppColors::error.x, AppColors::error.y, AppColors::error.z, AppColors::error.w };
-    static float refalert[4] = { AppColors::alert.x, AppColors::alert.y, AppColors::alert.z, AppColors::alert.w };
-    static float referr[4] = { AppColors::error.x, AppColors::error.y, AppColors::error.z, AppColors::error.w };
+    static float positive[4] = { AppColors::positive.x, AppColors::positive.y, AppColors::positive.z, AppColors::positive.w };
+    static float refpositive[4] = { AppColors::positive.x, AppColors::positive.y, AppColors::positive.z, AppColors::positive.w };
+    static float negative[4] = { AppColors::negative.x, AppColors::negative.y, AppColors::negative.z, AppColors::negative.w };
+    static float refnegative[4] = { AppColors::negative.x, AppColors::negative.y, AppColors::negative.z, AppColors::negative.w };
+    static float warning[4] = { AppColors::warning.x, AppColors::warning.y, AppColors::warning.z, AppColors::warning.w };
+    static float refwarning[4] = { AppColors::warning.x, AppColors::warning.y, AppColors::warning.z, AppColors::warning.w };
     
-    static bool showAlert = false, showError = false;
+    static bool showPositive = false, showNegative = false, showWarning = false;
 
-    if (ImGui::ColorButton("Alert button", AppColors::alert))
-        showAlert = !showAlert;
-    if (ImGui::ColorButton("Error button", AppColors::error))
-        showError = !showError;
+    if (ImGui::ColorButton("Positive button", AppColors::positive))
+        showPositive = !showPositive;
+    if (ImGui::ColorButton("Negative button", AppColors::negative))
+        showNegative = !showNegative;
+    if (ImGui::ColorButton("Warning button", AppColors::warning))
+        showWarning = !showWarning;
 
-
-    if (showAlert && ImGui::ColorPicker4("PickAlert", alert, 0, refalert))
+    if (showPositive && ImGui::ColorPicker4("PickPositive", positive, 0, refpositive))
     {
-        AppColors::alert = ImVec4(alert[0], alert[1], alert[2], alert[3]);
+        AppColors::positive = ImVec4(positive[0], positive[1], positive[2], positive[3]);
         updateSource(source);
     }
-    if (showError && ImGui::ColorPicker4("PickError", err, 0, referr))
+    if (showNegative && ImGui::ColorPicker4("PickNegative", negative, 0, refnegative))
     {
-        AppColors::error = ImVec4(err[0], err[1], err[2], err[3]);
+        AppColors::negative = ImVec4(negative[0], negative[1], negative[2], negative[3]);
+        updateSource(source);
+    }
+    if (showWarning && ImGui::ColorPicker4("PickWarning", warning, 0, refwarning))
+    {
+        AppColors::warning = ImVec4(warning[0], warning[1], warning[2], warning[3]);
         updateSource(source);
     }
     

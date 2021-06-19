@@ -16,5 +16,5 @@ bool ToggleIconButtonWidget::render(Icon onIcon, Icon offIcon, bool isOn, ImVec4
 
 bool ToggleIconButtonWidget::render(Icon onIcon, Icon offIcon, bool isOn, ImVec2 size)
 {
-    return ToggleIconButtonWidget::render(onIcon, offIcon, isOn, AppColors::alert, AppColors::error, size);
+    return ToggleIconButtonWidget::render(onIcon, offIcon, isOn, AppColors::positive, AppColors::negative, size);
 }

@@ -14,7 +14,7 @@ bool ConfirmPopupWidget::render(const char * title, bool &showPopup)
         ImGui::EndChild();
 
         ImGui::Indent(10);
-        if (IconButton::render(AppIcons::no, AppColors::error, BUTTON_SIZE))
+        if (IconButton::render(AppIcons::no, AppColors::negative, BUTTON_SIZE))
         {
             showPopup = false;
             ImGui::CloseCurrentPopup();
@@ -23,7 +23,7 @@ bool ConfirmPopupWidget::render(const char * title, bool &showPopup)
         ImGui::SameLine();
 
         ImGui::Indent(165);
-        if (IconButton::render(AppIcons::yes, AppColors::alert, BUTTON_SIZE))
+        if (IconButton::render(AppIcons::yes, AppColors::positive, BUTTON_SIZE))
         {
             result = true;
             showPopup = false;

@@ -11,7 +11,7 @@ class ToggleIconButtonWidget
 public:
 	static bool render(
 		Icon onIcon, Icon offIcon, bool isOn,
-		ImVec4 tintOn = AppColors::alert, ImVec4 tintOff = AppColors::error,
+		ImVec4 tintOn = AppColors::positive, ImVec4 tintOff = AppColors::negative,
 		ImVec2 size = ICONBUTTON_SIZE
 	);
 

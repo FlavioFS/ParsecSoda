@@ -3,8 +3,9 @@
 ImVec4 AppColors::title;
 ImVec4 AppColors::label;
 ImVec4 AppColors::input;
-ImVec4 AppColors::alert;
-ImVec4 AppColors::error;
+ImVec4 AppColors::positive;
+ImVec4 AppColors::negative;
+ImVec4 AppColors::warning;
 
 ImVec4 AppColors::white;
 ImVec4 AppColors::black;
@@ -18,8 +19,9 @@ void AppColors::init()
 	title = ImVec4(0.05f, 0.03f, 0.07f, 1.0f);
 	label = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
 	input = ImVec4(0.70f, 0.70f, 0.70f, 1.0f);
-	alert = ImVec4(0.00f, 0.67f, 0.41f, 1.00f);
-	error = ImVec4(0.75f, 0.16f, 0.28f, 1.00f);
+	positive = ImVec4(0.00f, 0.67f, 0.41f, 1.00f);
+	negative = ImVec4(0.75f, 0.16f, 0.28f, 1.00f);
+	warning = ImVec4(0.83f, 0.35f, 0.03f, 1.00f);
 
 	white = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	black = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
@@ -69,12 +71,17 @@ void AppColors::pushInput()
 	pushColor(input);
 }
 
-void AppColors::pushAlert()
+void AppColors::pushPositive()
 {
-	pushColor(alert);
+	pushColor(positive);
 }
 
-void AppColors::pushError()
+void AppColors::pushNegative()
 {
-	pushColor(error);
+	pushColor(negative);
+}
+
+void AppColors::pushWarning()
+{
+	pushColor(warning);
 }

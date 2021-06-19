@@ -5,6 +5,8 @@
 #include "../globals/AppStyle.h"
 #include <iostream>
 
+using namespace std;
+
 class StylePickerWidget
 {
 public:

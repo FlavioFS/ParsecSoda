@@ -15,7 +15,7 @@ bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, flo
 	);
 	
 	// Mute button
-	if (ToggleIconButtonWidget::render(iconOn, iconOff, isEnabled, AppColors::alert, AppColors::error))
+	if (ToggleIconButtonWidget::render(iconOn, iconOff, isEnabled, AppColors::positive, AppColors::negative))
 	{
 		wasClicked = true;
 	}
@@ -32,9 +32,9 @@ bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, flo
 	);
 	
 	// Preview bar
-	if (preview > 0.65f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::error);
+	if (preview > 0.65f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::negative);
 	else if (preview > 0.45f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::primary);
-	else ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::alert);
+	else ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::positive);
 	ImGui::ProgressBar(preview, ImVec2(width - 64.0f, 10.0f), "");
 	ImGui::PopStyleColor();
 

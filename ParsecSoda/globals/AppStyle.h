@@ -9,8 +9,8 @@ public:
 	static void pushTitle();
 	static void pushLabel();
 	static void pushInput();
-	static void pushAlert();
-	static void pushError();
+	static void pushPositive();
+	static void pushNegative();
 	static void pop();
 };
 

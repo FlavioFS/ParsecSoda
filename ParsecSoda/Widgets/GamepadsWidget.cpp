@@ -10,7 +10,7 @@ bool GamepadsWidget::render()
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
 
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 375), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 380), ImVec2(800, 900));
     ImGui::Begin("Gamepads", (bool*)0);
     AppStyle::pushInput();
     
@@ -28,7 +28,6 @@ bool GamepadsWidget::render()
     {
         static uint32_t userID;
         userID = (*gi).owner.guest.userID;
-        
 
         ImGui::BeginChild(
             (string("##Gamepad " ) + to_string(index)).c_str(),
@@ -39,19 +38,45 @@ bool GamepadsWidget::render()
         cursor = ImGui::GetCursorPos();
         
         static int padIndex = 0;
-        padIndex = (*gi).getIndex() + 1;
-        
+        padIndex = (int)(*gi).getIndex() + 1;
+        static bool isIndexFailure = false;
+        isIndexFailure = padIndex <= 0 && (*gi).isConnected();
+
         ImGui::BeginGroup();
         ImGui::Dummy(ImVec2(0.0f, 5.0f));
         ImGui::SetNextItemWidth(40.0f);
+        if (isIndexFailure) AppColors::pushWarning();
+        else AppColors::pushInput();
         AppFonts::pushTitle();
         if (ImGui::DragInt(
             (string("##GamepadIndex") + to_string(index)).c_str(),
-            &padIndex, 0.1f, 0, 8
+            &padIndex, 0.1f, 0, 4
         ));
+        AppColors::pop();
         AppFonts::pop();
         ImGui::EndGroup();
-        (*gi).setIndex(padIndex - 1);
+        (*gi).setIndex((ULONG)(padIndex - 1));
+        if (isIndexFailure)
+        {
+            TitleTooltipWidget::render(
+                "XInput index",
+                (
+                    string("Windows failed to inform the correct index.\n") +
+                    string("You have to find it manually by trial and error.")
+                ).c_str()
+            );
+        }
+        else
+        {
+            TitleTooltipWidget::render(
+                "XInput index",
+                (
+                    string("Sometimes XInput fails to retrieve the index.\n") +
+                    string("It should be a number in range [1, 4].")
+                ).c_str()
+            );
+        }
+        
 
         ImGui::SameLine();
 
@@ -63,7 +88,9 @@ bool GamepadsWidget::render()
 
         ImGui::SameLine();
 
-        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, (*gi).isConnected()))
+        static ImVec4 colorOn;
+        colorOn = padIndex > 0 ? AppColors::positive : AppColors::warning;
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, (*gi).isConnected(), colorOn))
         {
             if ((*gi).isConnected())
                 (*gi).disconnect();
@@ -159,34 +186,25 @@ bool GamepadsWidget::render()
         
         ImGui::SameLine();
         
-        static int padIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
         ImGui::Dummy(dummySize);
-        ImGui::SetNextItemWidth(50);
-        padIndices[index] = (*gi).owner.deviceID;
+        ImGui::SetNextItemWidth(40);
+        deviceIndices[index] = (*gi).owner.deviceID;
 
         AppFonts::pushTitle();
         if (ImGui::DragInt(
             (string("##DeviceIndex") + to_string(index)).c_str(),
-            &padIndices[index], 0.1f, 0, 65536
+            &deviceIndices[index], 0.1f, -5, 65536
         ))
         {
-            (*gi).owner.deviceID = padIndices[index];
+            (*gi).owner.deviceID = deviceIndices[index];
         }
         AppFonts::pop();
         TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
         ImGui::EndGroup();
 
         ImGui::SameLine();
-
-        //////////////////////////
-
-        ////////////////////////////////////////
-
-        //ImGui::InvisibleButton(
-        //    (string("##guest button ") + to_string(index)).c_str(),
-        //    ImVec2(size.x, 50.0f)
-        //);
 
         ImGui::EndChild();
 
@@ -199,7 +217,7 @@ bool GamepadsWidget::render()
     ImGui::Indent(indentDistance);
     if (ToggleIconButtonWidget::render(
         AppIcons::lock, AppIcons::unlock, _hosting.isGamepadLock(),
-        AppColors::error, AppColors::alert, ImVec2(80, 80)
+        AppColors::negative, AppColors::positive, ImVec2(80, 80)
     ))
     {
         _hosting.toggleGamepadLock();
@@ -208,6 +226,16 @@ bool GamepadsWidget::render()
     else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
     ImGui::Unindent(indentDistance);
 
+
+    static ImVec2 cursor;
+    cursor = ImGui::GetCursorPos();
+    ImGui::SetCursorPos(ImVec2(10.0f, size.y));
+    if (IconButton::render(AppIcons::refresh, AppColors::primary))
+    {
+        _hosting.getGamepadClient().resetAll();
+    }
+    TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
+    ImGui::SetCursorPos(cursor);
 
     AppStyle::pop();
     ImGui::End();

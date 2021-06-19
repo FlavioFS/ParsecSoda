@@ -10,6 +10,6 @@
 class IconButton
 {
 public:
-	static bool render(Icon icon, ImVec4 tint = AppColors::alert, ImVec2 size = ICONBUTTON_SIZE);
+	static bool render(Icon icon, ImVec4 tint = AppColors::positive, ImVec2 size = ICONBUTTON_SIZE);
 };
 
