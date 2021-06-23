@@ -5,7 +5,7 @@
 #include <sstream>
 #include <regex>
 
-#define CHATLOG_COMMAND_LENGTH 50
+#define CHATLOG_COMMAND_LENGTH 200
 #define CHATLOG_MESSAGE_LENGTH 100
 
 using namespace std;

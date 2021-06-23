@@ -23,7 +23,12 @@ ID3D11ShaderResourceView* AppIcons::speakersOn;
 ID3D11ShaderResourceView* AppIcons::speakersOff;
 
 ID3D11ShaderResourceView* AppIcons::refresh;
+ID3D11ShaderResourceView* AppIcons::sort;
 ID3D11ShaderResourceView* AppIcons::submit;
+
+ID3D11ShaderResourceView* AppIcons::chat;
+ID3D11ShaderResourceView* AppIcons::users;
+ID3D11ShaderResourceView* AppIcons::log;
 
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
@@ -47,7 +52,13 @@ Texture AppIcons::_speakersOn;
 Texture AppIcons::_speakersOff;
 
 Texture AppIcons::_refresh;
+Texture AppIcons::_sort;
 Texture AppIcons::_submit;
+
+Texture AppIcons::_chat;
+Texture AppIcons::_users;
+Texture AppIcons::_log;
+
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
 {
@@ -73,7 +84,12 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _speakersOff.loadFromFile(pd3dDevice, "./icons/speakers-off.png");
 
     _refresh.loadFromFile(pd3dDevice, "./icons/refresh.png");
+    _sort.loadFromFile(pd3dDevice, "./icons/sort.png");
     _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
+
+    _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
+    _users.loadFromFile(pd3dDevice, "./icons/users.png");
+    _log.loadFromFile(pd3dDevice, "./icons/log.png");
 
     play = _play.texture;
     stop = _stop.texture;
@@ -97,5 +113,10 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     speakersOff = _speakersOff.texture;
     
     refresh = _refresh.texture;
+    sort = _sort.texture;
     submit = _submit.texture;
+
+    chat = _chat.texture;
+    users = _users.texture;
+    log = _log.texture;
 }

@@ -32,7 +32,10 @@ Hosting::Hosting()
 	const vector<GuestData> banned
 	{
 		GuestData("Miamiheatfan34", 1227313),
-		GuestData("chapiusk", 6949214)
+		GuestData("chapiusk", 6949214),
+		GuestData("oscar1511", 7044750),
+		GuestData("Gax07", 6725832),
+		GuestData("Vibes", 5824394)
 	};
 	_banList = BanList(banned);
 	
@@ -83,14 +86,14 @@ void Hosting::init()
 
 	// Data is mocked for now - arguments don't matter
 	//_parsecSession.fetchSession(EMAIL, PASSWORD);
-	_parsecSession.mockSession();	// Replace with fetchSession in final version
+	_parsecSession.mockSession(false);	// Replace with fetchSession in final version
 	//_parsecSession.fetchArcadeRoomList();
 
 	_host.name = "Host";
 	_host.status = Guest::Status::INVALID;
 	if (isReady())
 	{
-		//_parsecSession.fetchAccountData(&_host);
+		_parsecSession.fetchAccountData(&_host);
 	}
 
 	_chatBot = new ChatBot(

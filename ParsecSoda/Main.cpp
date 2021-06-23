@@ -17,6 +17,7 @@
 #include "globals/AppIcons.h"
 #include "globals/AppFonts.h"
 #include "globals/AppColors.h"
+#include "Widgets/NavBar.h"
 #include "Widgets/HostSettingsWidget.h"
 #include "Widgets/ChatWidget.h"
 #include "Widgets/LogWidget.h"
@@ -63,7 +64,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     wc.lpszClassName = _T("Parsec Soda");
     wc.hIconSm = NULL;
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 0, 0, 1200, 1000, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 0, 0, 1300, 1000, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -157,6 +158,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         if (showLog)            logWindow.render();
         if (showGuests)         guestsWindow.render();
         if (showGamepads)       gamepadsWindow.render();
+        NavBar::render(showHostSettings, showGamepads, showChat, showGuests, showLog);
         //if (showStyles)         StylePickerWidget::render();
 
         //ImGui::ShowDemoWindow();

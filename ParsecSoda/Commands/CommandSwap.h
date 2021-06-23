@@ -70,13 +70,13 @@ public:
 
 	static vector<const char*> prefixes()
 	{
-		return vector<const char*> { "!swap", "!pick" };
+		return vector<const char*> { "!swap", "!pick", "!slot" };
 	}
 
 protected:
 	static vector<const char*> internalPrefixes()
 	{
-		return vector<const char*> { "!swap ", "!pick " };
+		return vector<const char*> { "!swap ", "!pick ", "!slot " };
 	}
 	string _msg;
 	Guest& _sender;

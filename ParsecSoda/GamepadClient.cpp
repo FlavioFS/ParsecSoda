@@ -50,7 +50,7 @@ void GamepadClient::createMaximumGamepads()
 	for (size_t i = 0; i < XUSER_MAX_COUNT; i++)
 	{
 		this->createGamepad(i);
-		Sleep(100);
+		Sleep(200);
 	}
 }
 
@@ -58,7 +58,7 @@ void GamepadClient::connectAllGamepads()
 {
 	reduce([](Gamepad& pad) {
 		pad.connect();
-		Sleep(100);
+		Sleep(200);
 	});
 }
 

@@ -31,7 +31,12 @@ public:
 	static ID3D11ShaderResourceView* speakersOff;
 
 	static ID3D11ShaderResourceView* refresh;
+	static ID3D11ShaderResourceView* sort;
 	static ID3D11ShaderResourceView* submit;
+
+	static ID3D11ShaderResourceView* chat;
+	static ID3D11ShaderResourceView* users;
+	static ID3D11ShaderResourceView* log;
 
 private:
 	static Texture _play;
@@ -56,6 +61,11 @@ private:
 	static Texture _speakersOff;
 	
 	static Texture _refresh;
+	static Texture _sort;
 	static Texture _submit;
+
+	static Texture _chat;
+	static Texture _users;
+	static Texture _log;
 };
 

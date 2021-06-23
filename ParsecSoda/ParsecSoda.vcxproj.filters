@@ -162,6 +162,9 @@
     <ClCompile Include="SFXList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\NavBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminList.h">
@@ -429,6 +432,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandSFX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\NavBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

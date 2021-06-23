@@ -204,6 +204,7 @@
     <ClCompile Include="Stringer.cpp" />
     <ClCompile Include="Widgets\ToggleIconButtonWidget.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioTools.h" />
@@ -295,6 +296,7 @@
     <ClInclude Include="Stringer.h" />
     <ClInclude Include="Widgets\ToggleIconButtonWidget.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Widgets\NavBar.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

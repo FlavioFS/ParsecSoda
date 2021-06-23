@@ -14,6 +14,8 @@ bool GamepadsWidget::render()
     ImGui::Begin("Gamepads", (bool*)0);
     AppStyle::pushInput();
     
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
     static ImVec2 size;
     size = ImGui::GetContentRegionAvail();
 
@@ -43,7 +45,7 @@ bool GamepadsWidget::render()
         isIndexFailure = padIndex <= 0 && (*gi).isConnected();
 
         ImGui::BeginGroup();
-        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        ImGui::Dummy(ImVec2(0.0f, 12.0f));
         ImGui::SetNextItemWidth(40.0f);
         if (isIndexFailure) AppColors::pushWarning();
         else AppColors::pushInput();
@@ -103,7 +105,7 @@ bool GamepadsWidget::render()
         ImGui::SameLine();
         
         static float gamepadLabelWidth;
-        gamepadLabelWidth = size.x - 210.0f;
+        gamepadLabelWidth = size.x - 180.0f;
         
         ImGui::BeginChild(
             (string("##name ") + to_string(index)).c_str(),
@@ -188,14 +190,14 @@ bool GamepadsWidget::render()
         
         static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
-        ImGui::Dummy(dummySize);
+        ImGui::Dummy(ImVec2(0.0f, 12.0f));
         ImGui::SetNextItemWidth(40);
         deviceIndices[index] = (*gi).owner.deviceID;
 
         AppFonts::pushTitle();
         if (ImGui::DragInt(
             (string("##DeviceIndex") + to_string(index)).c_str(),
-            &deviceIndices[index], 0.1f, -5, 65536
+            &deviceIndices[index], 0.1f, -1, 65536
         ))
         {
             (*gi).owner.deviceID = deviceIndices[index];
@@ -211,7 +213,7 @@ bool GamepadsWidget::render()
         index++;
     }
 
-    //ImGui::Dummy(dummySize);
+    ImGui::Dummy(dummySize);
 
     indentDistance = 0.5f * size.x - 40.0f;
     ImGui::Indent(indentDistance);
@@ -229,13 +231,23 @@ bool GamepadsWidget::render()
 
     static ImVec2 cursor;
     cursor = ImGui::GetCursorPos();
-    ImGui::SetCursorPos(ImVec2(10.0f, size.y));
-    if (IconButton::render(AppIcons::refresh, AppColors::primary))
+    ImGui::SetCursorPos(ImVec2(15.0f, size.y + 10.0f));
+    ImGui::BeginGroup();
+    if (IconButton::render(AppIcons::refresh, AppColors::primary, ImVec2(30.0f, 30.0f)))
     {
         _hosting.getGamepadClient().resetAll();
     }
     TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
+    ImGui::SameLine();
+    if (IconButton::render(AppIcons::sort, AppColors::primary, ImVec2(30.0f, 30.0f)))
+    {
+        _hosting.getGamepadClient().sortGamepads();
+    }
+    TitleTooltipWidget::render("Sort gamepads", "Re-sort all gamepads by index.");
+    ImGui::EndGroup();
     ImGui::SetCursorPos(cursor);
+
+    ImGui::PopStyleVar();
 
     AppStyle::pop();
     ImGui::End();
