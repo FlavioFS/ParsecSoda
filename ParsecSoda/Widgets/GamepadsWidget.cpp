@@ -54,6 +54,7 @@ bool GamepadsWidget::render()
             (string("##GamepadIndex") + to_string(index)).c_str(),
             &padIndex, 0.1f, 0, 4
         ));
+        if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         AppColors::pop();
         AppFonts::pop();
         ImGui::EndGroup();
@@ -202,6 +203,7 @@ bool GamepadsWidget::render()
         {
             (*gi).owner.deviceID = deviceIndices[index];
         }
+        if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         AppFonts::pop();
         TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
         ImGui::EndGroup();

@@ -67,6 +67,8 @@ bool AudioIn::init(AudioInDevice device)
 
 void AudioIn::captureAudio()
 {
+	_mutex.lock();
+
 	try
 	{
 		for (size_t i = 0; i < AUDIO_IN_SWAP_BUFFERS; i++)
@@ -100,6 +102,8 @@ void AudioIn::captureAudio()
 		// Just in case
 		std::cerr << "AudioIn failed to capture!" << std::endl;
 	}
+
+	_mutex.unlock();
 }
 
 const bool AudioIn::isReady() const
@@ -143,36 +147,37 @@ const std::vector<AudioInDevice> AudioIn::listInputDevices() const
 	{
 		if (!waveInGetDevCaps(i, &wave, sizeof(WAVEINCAPS)))
 		{
-			devices.push_back({ wave, i });
+			AudioInDevice dev;
+			dev.isEmpty = false;
+			dev.wave = wave;
+			dev.id = i;
+
+			wstring wname = wave.szPname;
+			dev.name = string(wname.begin(), wname.end());
+			
+			devices.push_back(dev);
 		}
 	}
 
 	return devices;
 }
 
-AudioInDevice AudioIn::selectInputDevice(const char * name)
+AudioInDevice AudioIn::selectInputDevice(const int index)
 {
+	_mutex.lock();
+
 	std::vector<AudioInDevice>devices = listInputDevices();
 
-	if (devices.empty()) {
+	if (devices.empty() || index < 0 || index >= devices.size() ) {
+		_mutex.unlock();
 		return AudioInDevice();
 	}
 
-	AudioInDevice chosenOne = AudioInDevice();
-	uint64_t chosenDistance = STRINGER_MAX_DISTANCE;
+	currentDevice = devices[index];
+	currentDevice.isEmpty = false;
 
-	uint64_t di = STRINGER_MAX_DISTANCE;
-	for (size_t i = 0; i < devices.size(); i++)
-	{
-		di = Stringer::fuzzyDistance((char*)devices[i].wave.szPname, name);
+	init(currentDevice);
 
-		if (di < chosenDistance)
-		{
-			chosenOne = devices[i];
-			chosenDistance = di;
-			chosenOne.isEmpty = false;
-		}
-	}
-
-	return chosenOne;
+	_mutex.unlock();
+	return currentDevice;
 }

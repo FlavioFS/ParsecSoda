@@ -21,10 +21,12 @@ bool IntRangeWidget::render(const char* id, int& value, int minimum, int maximum
     {
         if (value < 64) value++;
     }
+    if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     if (ImGui::ArrowButton(idDown.c_str(), ImGuiDir_Down))
     {
         if (value > 0) value--;
     }
+    if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     ImGui::PopButtonRepeat();
     ImGui::PopStyleVar();
     ImGui::EndGroup();
@@ -34,7 +36,11 @@ bool IntRangeWidget::render(const char* id, int& value, int minimum, int maximum
     AppFonts::pushSugoiDekai();
     ImGui::SetNextItemWidth(75.0f);
     ImGui::DragInt(idDrag.c_str(), &value, 0.05f, minimum, maximum);
-    if (ImGui::IsItemHovered()) isDragHover = true;
+    if (ImGui::IsItemHovered())
+    {
+        isDragHover = true;
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    }
     AppFonts::pop();
 
 

@@ -17,6 +17,7 @@
 #include "globals/AppIcons.h"
 #include "globals/AppFonts.h"
 #include "globals/AppColors.h"
+#include "Widgets/LoginWidget.h"
 #include "Widgets/NavBar.h"
 #include "Widgets/HostSettingsWidget.h"
 #include "Widgets/ChatWidget.h"
@@ -24,9 +25,7 @@
 #include "Widgets/GuestListWidget.h"
 #include "Widgets/GamepadsWidget.h"
 #include "Widgets/StylePickerWidget.h"
-
-#include <ShlObj.h>
-#include "matoya.h"
+#include "Widgets/AudioSettingsWidget.h"
 
 using namespace std;
 
@@ -103,20 +102,24 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AppColors::init();
     g_hosting.init();
 
+    LoginWidget loginWindow(g_hosting);
     HostSettingsWidget hostSettingsWindow(g_hosting);
     ChatWidget chatWindow(g_hosting);
     LogWidget logWindow(g_hosting);
     GuestListWidget guestsWindow(g_hosting);
     GamepadsWidget gamepadsWindow(g_hosting);
+    AudioSettingsWidget audioSettingswidget(g_hosting);
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
 
+    bool& isValidSession = g_hosting.getSession().isValid();
     bool showHostSettings = true;
     bool showChat = true;
     bool showLog = true;
     bool showGuests = true;
     bool showGamepads = true;
+    bool showAudio = false;
     bool showStyles = true;
 
     // =====================================================================
@@ -152,13 +155,22 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         //  Window rendering
         // 
         // =====================================================================
+        ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
 
-        if (showHostSettings)   hostSettingsWindow.render();
-        if (showChat)           chatWindow.render();
-        if (showLog)            logWindow.render();
-        if (showGuests)         guestsWindow.render();
-        if (showGamepads)       gamepadsWindow.render();
-        NavBar::render(showHostSettings, showGamepads, showChat, showGuests, showLog);
+        if (isValidSession)
+        {
+            if (showHostSettings)   hostSettingsWindow.render();
+            if (showChat)           chatWindow.render();
+            if (showLog)            logWindow.render();
+            if (showGuests)         guestsWindow.render();
+            if (showGamepads)       gamepadsWindow.render();
+            if (showAudio)          audioSettingswidget.render();
+            NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio);
+        }
+        else
+        {
+            loginWindow.render(isValidSession);
+        }
         //if (showStyles)         StylePickerWidget::render();
 
         //ImGui::ShowDemoWindow();

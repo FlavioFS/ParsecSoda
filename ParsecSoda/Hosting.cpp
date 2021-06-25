@@ -22,23 +22,24 @@ using namespace std;
 Hosting::Hosting()
 {
 	_hostConfig = EMPTY_HOST_CONFIG;
-	setHostConfig("Let's have fun!", "", 2, false, "melonsod");
+	MetadataCache::loadPreferences();
+	setHostConfig(
+		MetadataCache::preferences.roomName,
+		MetadataCache::preferences.gameID,
+		MetadataCache::preferences.guestCount,
+		MetadataCache::preferences.publicRoom,
+		MetadataCache::preferences.secret
+	);
 
 	_sfxList.init("./sfx/custom/_sfx.json");
 
 	const vector<int> admins{ 3888558 , 6711547 };
 	_adminList = AdminList(admins);
 
-	const vector<GuestData> banned
-	{
-		GuestData("Miamiheatfan34", 1227313),
-		GuestData("chapiusk", 6949214),
-		GuestData("oscar1511", 7044750),
-		GuestData("Gax07", 6725832),
-		GuestData("Vibes", 5824394)
-	};
+	vector<GuestData> banned = MetadataCache::loadBannedUsers();
 	_banList = BanList(banned);
 	
+
 	_parsec = nullptr;
 }
 
@@ -71,23 +72,29 @@ void Hosting::init()
 		_gamepadClient.createMaximumGamepads();
 		_createGamepadsThread.detach();
 	});
-
+	
+	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
 
 	audioOut.fetchDevices();
-	audioOut.setOutputDevice();		// TODO Fix leak in setOutputDevice
 	vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
+	if (preferences.audioOutputDevice >= audioOutDevices.size()) {
+		preferences.audioOutputDevice = 0;
+	}
+	audioOut.setOutputDevice(preferences.audioOutputDevice);		// TODO Fix leak in setOutputDevice
 	audioOut.captureAudio();
 	audioOut.volume = 0.3f;
 
-	vector<AudioInDevice> devices = audioIn.listInputDevices();
-	AudioInDevice device = audioIn.selectInputDevice("cable out");
+	vector<AudioInDevice> audioInputDevices = audioIn.listInputDevices();
+	if (preferences.audioInputDevice >= audioInputDevices.size()) {
+		preferences.audioInputDevice = 0;
+	}
+	AudioInDevice device = audioIn.selectInputDevice(preferences.audioInputDevice);
 	audioIn.init(device);
 	audioIn.volume = 0.8f;
 
-	// Data is mocked for now - arguments don't matter
-	//_parsecSession.fetchSession(EMAIL, PASSWORD);
-	_parsecSession.mockSession(false);	// Replace with fetchSession in final version
-	//_parsecSession.fetchArcadeRoomList();
+	preferences.isValid = true;
+	MetadataCache::savePreferences(preferences);
+	_parsecSession.loadSessionCache();
 
 	_host.name = "Host";
 	_host.status = Guest::Status::INVALID;
@@ -134,6 +141,11 @@ Guest& Hosting::getHost()
 	return _host;
 }
 
+ParsecSession& Hosting::getSession()
+{
+	return _parsecSession;
+}
+
 ParsecHostConfig& Hosting::getHostConfig()
 {
 	return _hostConfig;
@@ -171,7 +183,7 @@ const char** Hosting::getGuestNames()
 
 void Hosting::toggleGamepadLock()
 {
-	_gamepadClient.lock = !_gamepadClient.lock;
+	_gamepadClient.toggleLock();
 }
 
 void Hosting::setGameID(string gameID)

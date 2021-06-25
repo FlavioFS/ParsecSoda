@@ -29,6 +29,9 @@ ID3D11ShaderResourceView* AppIcons::submit;
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
 ID3D11ShaderResourceView* AppIcons::log;
+ID3D11ShaderResourceView* AppIcons::logoff;
+
+ID3D11ShaderResourceView* AppIcons::logo;
 
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
@@ -58,6 +61,9 @@ Texture AppIcons::_submit;
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
 Texture AppIcons::_log;
+Texture AppIcons::_logoff;
+
+Texture AppIcons::_logo;
 
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
@@ -90,6 +96,9 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
     _log.loadFromFile(pd3dDevice, "./icons/log.png");
+    _logoff.loadFromFile(pd3dDevice, "./icons/logoff.png");
+
+    _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
 
     play = _play.texture;
     stop = _stop.texture;
@@ -119,4 +128,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     chat = _chat.texture;
     users = _users.texture;
     log = _log.texture;
+    logoff = _logoff.texture;
+
+    logo = _logo.texture;
 }

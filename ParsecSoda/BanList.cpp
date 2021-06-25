@@ -13,6 +13,7 @@ BanList::BanList(std::vector<GuestData> bannedUsers)
 void BanList::ban(GuestData user)
 {
 	_bannedUsers.push_back(user);
+	MetadataCache::saveBannedUsers(_bannedUsers);
 }
 
 bool BanList::find(const uint32_t userID, GuestData *result)
@@ -41,6 +42,7 @@ const bool BanList::unban(const char * guestName, GuestData* unbannedGuest)
 				*unbannedGuest = *it;
 			}
 			_bannedUsers.erase(it);
+			MetadataCache::saveBannedUsers(_bannedUsers);
 			return true;
 		}
 	}

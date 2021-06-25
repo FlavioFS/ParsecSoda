@@ -21,6 +21,7 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
     }
     _publicGame = cfg.publicGame;
     _maxGuests = cfg.maxGuests;
+    updateSecretLink();
 }
 
 bool HostSettingsWidget::render()
@@ -31,7 +32,7 @@ bool HostSettingsWidget::render()
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 600), ImVec2(600, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 620), ImVec2(600, 900));
     ImGui::Begin("Host Settings", (bool*)0);
     AppStyle::pushLabel();
 
@@ -49,6 +50,7 @@ bool HostSettingsWidget::render()
         {
             _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
             _hosting.applyHostConfig();
+            savePreferences();
         }
         TitleTooltipWidget::render("Update Room Settings", "The room will be instantly updated with your new settings.");
 
@@ -68,7 +70,7 @@ bool HostSettingsWidget::render()
     ImGui::Text("Game ID");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
-    ImGui::InputText("  ", _gameID, GAME_ID_LEN);
+    ImGui::InputText("##Game ID input", _gameID, GAME_ID_LEN);
     TitleTooltipWidget::render("Thumbnail ID", "Sets thumbnail, but you need to know beforehand\nthe specific hash value for your game.");
     AppStyle::pop();
 
@@ -77,9 +79,18 @@ bool HostSettingsWidget::render()
     ImGui::Text("Room link");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
-    ImGui::InputText("   ", _secret, LINK_COMPATIBLE_SECRET_SIZE);
+    if (strlen(_secret) < LINK_COMPATIBLE_SECRET_SIZE - 1) AppColors::pushNegative();
+    else AppColors::pushPositive();
+    if (ImGui::InputText("##Secret input", _secret, LINK_COMPATIBLE_SECRET_SIZE))
+    {
+        updateSecretLink();
+    }
+    AppColors::pop();
     TitleTooltipWidget::render("Room Secret", "Generates the share link that lets people\njoin your room anytime.");
     AppStyle::pop();
+    
+    ImGui::SetNextItemWidth(size.x);
+    ImGui::InputText("##Secret link", _secretLink, 128, ImGuiInputTextFlags_ReadOnly);
 
     ImGui::Dummy(dummySize);
 
@@ -119,6 +130,8 @@ bool HostSettingsWidget::render()
         ImGui::OpenPopup(popupTitle.c_str());
         popupPos.x = ImGui::GetMousePos().x - 150;
         popupPos.y = ImGui::GetMousePos().y - 100;
+        
+        savePreferences();
     }
     ImGui::Unindent(indentSize);
 
@@ -149,7 +162,7 @@ bool HostSettingsWidget::render()
 
     // ================================================================================
 
-    ImGui::Dummy(ImVec2(0.0f, size.y - 518.0f));
+    ImGui::Dummy(ImVec2(0.0f, size.y - 548.0f));
 
     if (!_hosting.isRunning() && _hosting.isReady())
     {
@@ -184,6 +197,29 @@ bool HostSettingsWidget::render()
     AppStyle::pop();
 
     return true;
+}
+
+void HostSettingsWidget::savePreferences()
+{
+    MetadataCache::preferences.roomName = _roomName;
+    MetadataCache::preferences.gameID = _gameID;
+    MetadataCache::preferences.guestCount = _maxGuests;
+    MetadataCache::preferences.publicRoom = _publicGame;
+    MetadataCache::preferences.secret = _secret;
+    MetadataCache::savePreferences();
+}
+
+void HostSettingsWidget::updateSecretLink()
+{
+    try
+    {
+        strcpy_s(
+            _secretLink,
+            128,
+            (string("https://parsec.gg/g/") + _hosting.getSession().hostPeerId + "/" + _secret + "/").c_str()
+        );
+    }
+    catch (const std::exception&) {}
 }
 
 bool HostSettingsWidget::isDirty()

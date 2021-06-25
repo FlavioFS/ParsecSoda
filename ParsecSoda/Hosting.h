@@ -26,6 +26,7 @@
 #include "Dice.h"
 #include "GuestList.h"
 #include "SFXList.h"
+#include "MetadataCache.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -47,6 +48,7 @@ public:
 	bool isRunning();
 	bool& isGamepadLock();
 	Guest& getHost();
+	ParsecSession& getSession();
 	ParsecHostConfig& getHostConfig();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();

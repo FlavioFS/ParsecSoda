@@ -95,6 +95,14 @@ void GamepadClient::resetAll()
 	});
 }
 
+void GamepadClient::toggleLock()
+{
+	lock = !lock;
+	reduce([&](Gamepad& pad) {
+		pad.clearState();
+	});
+}
+
 
 Gamepad GamepadClient::connectNextGamepad()
 {

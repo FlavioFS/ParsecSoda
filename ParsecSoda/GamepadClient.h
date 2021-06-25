@@ -54,6 +54,7 @@ public:
 	void disconnectAllGamepads();
 	void sortGamepads();
 	void resetAll();
+	void toggleLock();
 	Gamepad connectNextGamepad();
 	void release();
 	Gamepad getGamepad(int index);

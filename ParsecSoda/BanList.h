@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "GuestData.h"
+#include "MetadataCache.h"
 
 class BanList
 {

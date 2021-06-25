@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <mutex>
 #include "Stringer.h"
 #include <functiondiscoverykeys.h>
 #include <Audioclient.h>
@@ -41,6 +42,8 @@ public:
 	float volume = 1.0f;
 	bool isEnabled = true;
 
+	AudioOutDevice currentDevice;
+
 private:
 	bool releaseDevices(HRESULT hr = AUDIO_OUT_FORCE_RELEASE);
 	bool releaseDeviceCollection(HRESULT hr = AUDIO_OUT_FORCE_RELEASE);
@@ -58,5 +61,7 @@ private:
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 	const IID IID_IAudioClient = __uuidof(IAudioClient);
 	const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
+
+	mutex _mutex;
 };
 

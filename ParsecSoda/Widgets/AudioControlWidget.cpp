@@ -30,6 +30,7 @@ bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, flo
 		(string("###AudioControlSlider") + string(id)).c_str(),
 		volume, 0, 100, "%d%%"
 	);
+	if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 	
 	// Preview bar
 	if (preview > 0.65f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::negative);

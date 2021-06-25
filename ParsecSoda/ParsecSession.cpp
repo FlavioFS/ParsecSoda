@@ -26,12 +26,34 @@ void ParsecSession::mockSession(bool isTestAccount)
 	this->mockSession(session, hostpeerid);
 }
 
-const bool ParsecSession::fetchSession(const char* email, const char* password, const char* tfa)
+bool ParsecSession::loadSessionCache()
 {
-	if (!hostPeerId.empty() && !sessionId.empty())
+	MetadataCache::SessionCache cache = MetadataCache::loadSessionCache();
+	if (cache.isValid)
 	{
+		sessionId = cache.sessionID;
+		hostPeerId = cache.peerID;
+		_isValid = true;
 		return true;
 	}
+
+	return false;
+}
+
+bool ParsecSession::saveSessionCache()
+{
+	MetadataCache::SessionCache cache = MetadataCache::SessionCache();
+	cache.sessionID = sessionId;
+	cache.peerID = hostPeerId;
+	cache.isValid = true;
+
+	bool success = MetadataCache::saveSessionCache(cache);
+
+	return success;
+}
+
+const bool ParsecSession::fetchSession(const char* email, const char* password, const char* tfa)
+{
 	// Body
 	ostringstream ss;
 	ss << "{"
@@ -57,20 +79,39 @@ const bool ParsecSession::fetchSession(const char* email, const char* password, 
 		&response, &responseSize, &status
 	);
 
+	const char* responseStr = (const char*)response;
+	const MTY_JSON* json = MTY_JSONParse(responseStr);
+	bool success = false;
+
 	if (responseSize > 0 && status == 201)
 	{
-		const char* responseStr = (const char*)response;
-		const MTY_JSON* json = MTY_JSONParse(responseStr);
 		hostPeerId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "host_peer_id"));
 		sessionId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "session_id"));
 
 		Utils::removeCharFromString(&hostPeerId, '"');
 		Utils::removeCharFromString(&sessionId, '"');
+		_isValid = true;
+
+		MetadataCache::SessionCache cache;
+		cache.sessionID = sessionId;
+		cache.peerID = hostPeerId;
+		cache.isValid = true;
+		MetadataCache::saveSessionCache(cache);
 
 		return true;
 	}
+	else
+	{
+		_sessionStatus = status;
+		char error[256] = "";
+		if (MTY_JSONObjGetString(json, "error", error, 256))
+		{
+			_sessionError = error;
+		}
+	}
 
-	return false;
+	_isValid = false;
+	return success;
 }
 
 const bool ParsecSession::fetchArcadeRoomList()
@@ -130,7 +171,7 @@ const bool ParsecSession::fetchArcadeRoomList()
 
 const bool ParsecSession::fetchAccountData(Guest *user)
 {
-	if (sessionId.empty()) {
+	if (!_isValid || sessionId.empty()) {
 		return false;
 	}
 
@@ -204,4 +245,19 @@ const bool ParsecSession::fetchAccountData(Guest *user)
 
 		_accountDataThread.detach();
 	});
+}
+
+bool& ParsecSession::isValid()
+{
+	return _isValid;
+}
+
+const string ParsecSession::getSessionError()
+{
+	return _sessionError;
+}
+
+const int ParsecSession::getSessionStatus()
+{
+	return _sessionStatus;
 }

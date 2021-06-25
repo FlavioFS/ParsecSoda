@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <mutex>
 #include <functiondiscoverykeys.h>
 #include <initguid.h>
 #include "Stringer.h"
@@ -16,6 +17,7 @@ typedef struct AudioInDevice
 	WAVEINCAPS wave;
 	UINT id;
 	bool isEmpty = true;
+	string name;
 } AudioInDevice;
 
 class AudioIn
@@ -27,10 +29,12 @@ public:
 	const std::vector<int16_t> popBuffer();
 	const int popPreviewDecibel();
 	const std::vector<AudioInDevice> listInputDevices() const;
-	AudioInDevice selectInputDevice(const char * name);
+	AudioInDevice selectInputDevice(const int index = 0);
 
 	float volume = 1.0f;
 	bool isEnabled = true;
+
+	AudioInDevice currentDevice;
 
 private:
 	IMMDeviceEnumerator *pEnumerator = NULL;
@@ -41,5 +45,7 @@ private:
 	bool _isReady = false;
 	int _activeBuffer = 0;
 	int _previewIndex = 0;
+
+	mutex _mutex;
 };
 

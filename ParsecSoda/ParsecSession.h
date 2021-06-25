@@ -7,6 +7,7 @@
 #include "Utils.h"
 #include "Mock.h"
 #include "GuestList.h"
+#include "MetadataCache.h"
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
@@ -45,15 +46,24 @@ public:
 		*	Remove this in final version
 		*/
 	void mockSession(bool isTestAccount = true);
-		
+	
+
+	bool loadSessionCache();
+	bool saveSessionCache();
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
 	const bool fetchArcadeRoomList();
 	const bool fetchAccountData(Guest* user);
-		
+	bool& isValid();
+	const string getSessionError();
+	const int getSessionStatus();
+
 	string hostPeerId;
 	string sessionId;
 	MTY_JSON *arcadeRooms;
 
 private:
 	thread _accountDataThread;
+	bool _isValid = false;
+	int _sessionStatus = 0;
+	string _sessionError = "";
 };

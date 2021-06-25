@@ -166,6 +166,11 @@
     <ClCompile Include="Bitwise.cpp" />
     <ClCompile Include="ChatBot.cpp" />
     <ClCompile Include="ChatLog.cpp" />
+    <ClCompile Include="Widgets\AudioSettingsWidget.cpp" />
+    <ClCompile Include="Widgets\AlertWidget.cpp" />
+    <ClCompile Include="Widgets\LoadingRingWidget.cpp" />
+    <ClCompile Include="Widgets\LoginWidget.cpp" />
+    <ClCompile Include="MetadataCache.cpp" />
     <ClCompile Include="SFXList.cpp" />
     <ClCompile Include="Widgets\AudioControlWidget.cpp" />
     <ClCompile Include="GuestDevice.cpp" />
@@ -215,6 +220,11 @@
     <ClInclude Include="Bitwise.h" />
     <ClInclude Include="ChatLog.h" />
     <ClInclude Include="Commands\CommandStrip.h" />
+    <ClInclude Include="Widgets\AudioSettingsWidget.h" />
+    <ClInclude Include="Widgets\AlertWidget.h" />
+    <ClInclude Include="Widgets\LoadingRingWidget.h" />
+    <ClInclude Include="Widgets\LoginWidget.h" />
+    <ClInclude Include="MetadataCache.h" />
     <ClInclude Include="SFXList.h" />
     <ClInclude Include="Widgets\AudioControlWidget.h" />
     <ClInclude Include="GuestDevice.h" />

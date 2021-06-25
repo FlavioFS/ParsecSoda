@@ -15,20 +15,17 @@
 #include "IntRangeWidget.h"
 #include "BoolButtonWidget.h"
 #include "AudioControlWidget.h"
+#include "../MetadataCache.h"
 
-class HostSettingsWidget
+class AudioSettingsWidget
 {
 public:
-	HostSettingsWidget(Hosting& hosting);
+	AudioSettingsWidget(Hosting& hosting);
 	bool render();
-
+	
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
-	const uint8_t LINK_COMPATIBLE_SECRET_SIZE = 9;
 
 private:
-	void savePreferences();
-	void updateSecretLink();
-	bool isDirty();
 	float lerp(float val1, float val2, float t = 0.11f);
 	float easing(float t);
 
@@ -37,15 +34,6 @@ private:
 	AudioIn& _audioIn;
 	AudioOut& _audioOut;
 
-	// Imported Widgets
-	ToggleIconButtonWidget _publicRoomBtn, _playBtn;
-
-	// Attributes
-	char _roomName[HOST_NAME_LEN];
-	char _gameID[GAME_ID_LEN];
-	char _secret[HOST_SECRET_LEN];
-	char _secretLink[128];
-	int32_t _maxGuests;
-	bool _publicGame;
+	vector<AudioInDevice> _inputs;
+	vector<AudioOutDevice> _outputs;
 };
-

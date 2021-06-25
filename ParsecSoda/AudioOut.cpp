@@ -15,24 +15,29 @@
 // ==================================================
 //   Output Sources
 // ==================================================
-#define SAFE_RELEASE(dirty) if (dirty != NULL) { dirty->Release(); dirty = NULL; }
+#define SAFE_RELEASE(dirty) if (dirty != nullptr) { dirty->Release(); dirty = nullptr; }
 
-IMMDeviceEnumerator *pEnumerator = NULL;
-IMMDevice *pDevice = NULL;
-IAudioClient *pAudioClient = NULL;
-IAudioCaptureClient *pCaptureClient = NULL;
-WAVEFORMATEX *outWFX = NULL;
+IMMDeviceEnumerator *pEnumerator = nullptr;
+IMMDevice *pDevice = nullptr;
+IAudioClient *pAudioClient = nullptr;
+IAudioCaptureClient *pCaptureClient = nullptr;
+WAVEFORMATEX *outWFX = nullptr;
 
 // List devices
-IMMDeviceCollection *pCollection = NULL;
-IMMDevice *pEndpoint = NULL;
-IPropertyStore *pProps = NULL;
-LPWSTR pwszID = NULL;
+IMMDeviceCollection *pCollection = nullptr;
+IMMDevice *pEndpoint = nullptr;
+IPropertyStore *pProps = nullptr;
+LPWSTR pwszID = nullptr;
 
 
 bool AudioOut::setOutputDevice(int index)
 {
-	IPropertyStore *pProps = NULL;
+	_mutex.lock();
+
+	_outBuffers[0].clear();
+	_outBuffers[1].clear();
+
+	IPropertyStore *pProps = nullptr;
 
 	size_t REFTIMES_PER_SEC = 400000;
 
@@ -45,23 +50,25 @@ bool AudioOut::setOutputDevice(int index)
 	releaseDeviceCollection();
 
 	hr = CoCreateInstance(
-		CLSID_MMDeviceEnumerator, NULL, 
+		CLSID_MMDeviceEnumerator, nullptr, 
 		CLSCTX_ALL, IID_IMMDeviceEnumerator,
 		(void**)&pEnumerator);
-	if (releaseDevices(hr)) { return false; }
+	if (releaseDevices(hr)) { _mutex.unlock(); return false; }
 
 
 	hr = pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pCollection);
-	if (releaseDeviceCollection(hr)) { releaseDevices(); return false; }
+	if (releaseDeviceCollection(hr)) { releaseDevices(); _mutex.unlock(); return false;
+	}
 
 	UINT count;
 	hr = pCollection->GetCount(&count);
-	if (releaseDeviceCollection(hr)) { releaseDevices(); return false; }
+	if (releaseDeviceCollection(hr)) { releaseDevices(); _mutex.unlock(); return false; }
 
 	if (index >= count)
 	{
 		releaseDeviceCollection();
 		releaseDevices();
+		_mutex.unlock();
 		return false;
 	}
 
@@ -69,13 +76,14 @@ bool AudioOut::setOutputDevice(int index)
 	if (releaseDevices(hr))
 	{
 		hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
-		if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+		if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false;
+		}
 	}
-	
+
 	hr = pDevice->Activate(
 		IID_IAudioClient, CLSCTX_ALL,
 		NULL, (void**)&pAudioClient);
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
 	// Print name
 	hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
@@ -92,7 +100,7 @@ bool AudioOut::setOutputDevice(int index)
 	}
 
 	hr = pAudioClient->GetMixFormat(&outWFX);
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
 	hr = pAudioClient->Initialize(
 		AUDCLNT_SHAREMODE_SHARED,
@@ -101,25 +109,28 @@ bool AudioOut::setOutputDevice(int index)
 		0,
 		outWFX,
 		NULL);
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
 	// Get the size of the allocated buffer.
 	hr = pAudioClient->GetBufferSize(&bufferFrameCount);
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
 	hr = pAudioClient->GetService(
 		IID_IAudioCaptureClient,
 		(void**)&pCaptureClient);
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
 	// Calculate the actual duration of the allocated buffer.
 	hnsActualDuration = (double)REFTIMES_PER_SEC * bufferFrameCount / outWFX->nSamplesPerSec;
 
 	hr = pAudioClient->Start();  // Start recording.
-	if (releaseDevices(hr)) { releaseDeviceCollection(); return false; }
+	if (releaseDevices(hr)) { releaseDeviceCollection(); _mutex.unlock(); return false; }
 
-	maxOutBufferSize = AUDIO_OUT_SAMPLES_PER_BUFFER * outWFX->nChannels;
+	maxOutBufferSize = AUDIO_OUT_SAMPLES_PER_BUFFER * (size_t) outWFX->nChannels;
 
+	currentDevice = _devices[index];
+
+	_mutex.unlock();
 	return true;
 }
 
@@ -130,16 +141,22 @@ const std::vector<AudioOutDevice> AudioOut::getDevices()
 
 void AudioOut::captureAudio()
 {
+	_mutex.lock();
+
 	HRESULT hr;
 	BYTE *pData;
 	UINT32 numFramesInPacket = 0;
 	UINT32 numFramesAvailable;
 	DWORD flags;
 
-	if (pCaptureClient == NULL) { setOutputDevice(); return; }
+	if (pCaptureClient == NULL) {
+		_mutex.unlock();
+		setOutputDevice();
+		return;
+	}
 
 	hr = pCaptureClient->GetNextPacketSize(&numFramesInPacket);
-	if (releaseDevices(hr)) { return; }
+	if (releaseDevices(hr)) { _mutex.unlock(); return; }
 
 	while (numFramesInPacket != 0)
 	{
@@ -149,7 +166,7 @@ void AudioOut::captureAudio()
 			&numFramesAvailable,
 			&flags, NULL, NULL
 		);
-		if (releaseDevices(hr)) { return; }
+		if (releaseDevices(hr)) { _mutex.unlock(); return; }
 
 		if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
 		{
@@ -201,14 +218,17 @@ void AudioOut::captureAudio()
 			}
 		}
 
-		if (releaseDevices(hr)) { return; }
+		if (releaseDevices(hr)) { _mutex.unlock(); return; }
 
 		hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
-		if (releaseDevices(hr)) { return; }
+		if (releaseDevices(hr)) { _mutex.unlock(); return; }
 
 		hr = pCaptureClient->GetNextPacketSize(&numFramesInPacket);
-		if (releaseDevices(hr)) { return; }
+		if (releaseDevices(hr)) { _mutex.unlock(); return; }
+
 	}
+
+	_mutex.unlock();
 }
 
 bool AudioOut::isReady()
@@ -327,7 +347,7 @@ bool AudioOut::releaseDevices(HRESULT hr)
 {
 	if (FAILED(hr))
 	{
-		CoTaskMemFree(outWFX);
+		//CoTaskMemFree(outWFX);
 		SAFE_RELEASE(pEnumerator);
 		SAFE_RELEASE(pDevice);
 		SAFE_RELEASE(pAudioClient);
