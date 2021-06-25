@@ -21,11 +21,9 @@ D3D11_MAPPED_SUBRESOURCE _resource;
 
 void DX11::clear()
 {
-	if (_lDevice) _lDevice->Release();
-	if (d3Device) d3Device->Release();
-	if (d3DeviceContext) d3DeviceContext->Release();
-	if (_lDeskDupl) _lDeskDupl->Release();
-	if (_lAcquiredDesktopImage) _lAcquiredDesktopImage->Release();
+	if (_lDevice != nullptr) _lDevice->Release();
+	if (_lDeskDupl != nullptr) _lDeskDupl->Release();
+	if (_lAcquiredDesktopImage != nullptr) _lAcquiredDesktopImage->Release();
 }
 
 bool DX11::recover()
@@ -38,6 +36,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
+		if (lDxgiDevice != nullptr) lDxgiDevice->Release();
 		return false;
 	}
 
@@ -47,6 +46,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
+		if (lDxgiAdapter != nullptr) lDxgiAdapter->Release();
 		return false;
 	}
 
@@ -60,6 +60,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
+		if (lDxgiOutput != nullptr) lDxgiOutput->Release();
 		return false;
 	}
 
@@ -78,6 +79,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
+		if (lDxgiOutput1 != nullptr) lDxgiOutput1->Release();
 		return false;
 	}
 
@@ -88,6 +90,7 @@ bool DX11::recover()
 
 	if (FAILED(hr))
 	{
+		if (_lDeskDupl != nullptr) _lDeskDupl->Release();
 		return false;
 	}
 
@@ -143,14 +146,20 @@ bool DX11::init()
 	hr = _lDevice->QueryInterface(__uuidof(IDXGIAdapter), (void**)&lDxgiDevice);
 
 	if (FAILED(hr))
+	{
+		if (lDxgiDevice != nullptr) lDxgiDevice->Release();
 		return false;
+	}
 
 	// Get DXGI adapter
 	IDXGIAdapter *lDxgiAdapter;
 	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&lDxgiAdapter);
 
 	if (FAILED(hr))
+	{
+		if (lDxgiAdapter != nullptr) lDxgiAdapter->Release();
 		return false;
+	}
 
 	lDxgiDevice->Release();
 
@@ -161,7 +170,10 @@ bool DX11::init()
 	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
 
 	if (FAILED(hr))
+	{
+		if (lDxgiOutput != nullptr) lDxgiOutput->Release();
 		return false;
+	}
 
 	lDxgiAdapter->Release();
 
@@ -175,7 +187,10 @@ bool DX11::init()
 	hr = lDxgiOutput->QueryInterface(__uuidof(IDXGIOutput1), (void**)&lDxgiOutput1);
 
 	if (FAILED(hr))
+	{
+		if (lDxgiOutput1 != nullptr) lDxgiOutput1->Release();
 		return false;
+	}
 
 	lDxgiOutput->Release();
 
@@ -183,18 +198,18 @@ bool DX11::init()
 	hr = lDxgiOutput1->DuplicateOutput(_lDevice, &_lDeskDupl);
 
 	if (FAILED(hr))
+	{
+		if (_lDeskDupl != nullptr) _lDeskDupl->Release();
 		return false;
+	}
 
 	lDxgiOutput1->Release();
 
-	// Create GUI drawing texture
-	_lDeskDupl->GetDesc(&_lOutputDuplDesc);
 	// Create CPU access texture
+	_lDeskDupl->GetDesc(&_lOutputDuplDesc);
 	_desc.Width = _lOutputDuplDesc.ModeDesc.Width;
 	_desc.Height = _lOutputDuplDesc.ModeDesc.Height;
 	_desc.Format = _lOutputDuplDesc.ModeDesc.Format;
-	std::cout << _desc.Width << "x" << _desc.Height << "\n\n\n";
-
 	_desc.ArraySize = 1;
 	_desc.BindFlags = 0;
 	_desc.MiscFlags = 0;

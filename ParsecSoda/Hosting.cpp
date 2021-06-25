@@ -353,12 +353,14 @@ void Hosting::liveStreamMedia()
 
 	using clock = chrono::system_clock;
 	using milli = chrono::duration<double, milli>;
-	const double FPS = 250.0;
-	const double MS_PER_FRAME = 1000.0 / FPS;
+	static const float FPS = 250.0f;
+	static const float MS_PER_FRAME = 1000.0f / FPS;
+	static milli duration;
+	static clock::time_point before;
 
 	while (_isRunning)
 	{
-		const auto before = clock::now();
+		before = clock::now();
 		_dx11.captureScreen(_parsec);
 
 		audioIn.captureAudio();
@@ -369,8 +371,7 @@ void Hosting::liveStreamMedia()
 			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size() / 2);
 		}
 
-		const milli duration = clock::now() - before;
-
+		duration = clock::now() - before;
 		if (duration.count() < MS_PER_FRAME)
 		{
 			Sleep(MS_PER_FRAME - duration.count());
