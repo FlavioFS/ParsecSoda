@@ -23,6 +23,7 @@ enum class COMMAND_TYPE
 	MIC,
 	MIRROR,
 	NAME,
+	ONE,
 	PADS,
 	PRIVATE,
 	PUBLIC,

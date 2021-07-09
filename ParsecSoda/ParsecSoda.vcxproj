@@ -214,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="AudioTools.h" />
     <ClInclude Include="Commands\CommandSFX.h" />
+    <ClInclude Include="Commands\CommandOne.h" />
     <ClInclude Include="globals\AppColors.h" />
     <ClInclude Include="globals\AppIcons.h" />
     <ClInclude Include="globals\AppStyle.h" />

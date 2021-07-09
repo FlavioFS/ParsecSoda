@@ -1,6 +1,7 @@
 #include "Gamepad.h"
 
 Gamepad::Gamepad()
+	: parsec(nullptr)
 {
 	_client = nullptr;
 	_isAlive = false;
@@ -9,7 +10,8 @@ Gamepad::Gamepad()
 	clearOwner();
 }
 
-Gamepad::Gamepad(PVIGEM_CLIENT client)
+Gamepad::Gamepad(ParsecDSO* parsec, PVIGEM_CLIENT client)
+	: parsec(parsec)
 {
 	_client = client;
 	clearOwner();
@@ -24,6 +26,9 @@ bool Gamepad::alloc()
 	if (_client != nullptr)
 	{
 		pad = vigem_target_x360_alloc();
+
+		vigem_target_set_vid(pad, 0x045E);
+		vigem_target_set_pid(pad, 0x028E);
 		_isAlive = true;
 	}
 	else
@@ -51,11 +56,30 @@ bool Gamepad::connect()
 		clearOwner();
 		refreshIndex();
 		_isConnected = true;
+
+		const VIGEM_ERROR error = vigem_target_x360_register_notification(
+			_client, pad,
+			[](PVIGEM_CLIENT Client, PVIGEM_TARGET Target, UCHAR LargeMotor, UCHAR SmallMotor, UCHAR LedNumber, LPVOID UserData) {
+				Gamepad* gamepad = reinterpret_cast<Gamepad*>(UserData);
+				if (gamepad != nullptr)
+				{
+					if (gamepad->isConnected() && gamepad->isOwned() && gamepad->parsec != nullptr)
+					{
+						ParsecHostSubmitRumble(gamepad->parsec, gamepad->owner.guest.id, gamepad->owner.deviceID, LargeMotor, SmallMotor);
+					}
+				}
+			},
+			this
+		);
+
+		if (!VIGEM_SUCCESS(error))
+		{
+			bool stop = true;
+		}
+
 		return true;
 	}
 
-	//disconnect();
-	//_isConnected = false;
 	return false;
 }
 

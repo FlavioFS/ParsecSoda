@@ -16,6 +16,7 @@ public:
 	{
 		const std::string pleb_commands = std::string()
 			+ "\n  " + "---- Normal Commands ----"
+			+ "\n  " + "!afk\t\t\t\t\t|\tRemoves gamepads from players who left the room."
 			+ "\n  " + "!bonk\t\t\t\t |\tBonk another user."
 			+ "\n  " + "!help\t\t\t\t  |\tShow command list."
 			+ "\n  " + "!ff\t\t\t\t\t\t |\tDrop your gamepads."
@@ -44,6 +45,7 @@ public:
 			+ "\n  " + "!setconfig\t |\tApply config changes."
 			+ "\n  " + "!speakers\t  |\tSet speakers volume."
 			+ "\n  " + "!unban\t\t   |\tUnban a guest."
+			//+ "\n  " + "!videofix\t    |\tRefresh DirectX context."	// Broken (massive memory leaks)
 			;
 
 		_replyMessage =

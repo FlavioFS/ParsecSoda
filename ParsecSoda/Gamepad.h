@@ -5,7 +5,8 @@
 #include "ViGEm/Client.h"
 #include <vector>
 #include <iostream>
-#include "parsec.h"
+#include <functional>
+#include "parsec-dso.h"
 #include "Bitwise.h"
 #include "KeyboardMaps.h"
 #include "GuestDevice.h"
@@ -24,7 +25,7 @@ class Gamepad
 {
 public:
 	Gamepad();
-	Gamepad(PVIGEM_CLIENT client);
+	Gamepad(ParsecDSO * parsec, PVIGEM_CLIENT client);
 	bool alloc();
 	bool realloc();
 	bool connect();
@@ -50,6 +51,8 @@ public:
 	GuestDevice owner = GuestDevice();
 	bool mirror = false;
 
+	ParsecDSO * parsec;
+
 private:
 	bool refreshIndex();
 	PVIGEM_CLIENT _client;
@@ -57,4 +60,6 @@ private:
 	ULONG _index = -1;
 	bool _isAlive = false;
 	bool _isConnected = false;
+
+	VOID CALLBACK notification(PVIGEM_CLIENT Client,PVIGEM_TARGET Target,UCHAR LargeMotor,UCHAR SmallMotor,UCHAR LedNumber, LPVOID UserData);
 };

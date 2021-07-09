@@ -173,9 +173,11 @@ bool GamepadsWidget::render()
                     {
                         static GuestDevice backupOwner;
                         backupOwner.copy(_gamepads[index].owner);
-
+                        
                         _gamepads[index].copyOwner(_gamepads[sourceIndex]);
                         _gamepads[sourceIndex].owner.copy(backupOwner);
+                        _gamepads[index].clearState();
+                        _gamepads[sourceIndex].clearState();
                     }
                 }
             }

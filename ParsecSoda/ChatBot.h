@@ -28,6 +28,7 @@
 #include "Commands/CommandMirror.h"
 #include "Commands/CommandName.h"
 #include "Commands/CommandLimit.h"
+#include "Commands/CommandOne.h"
 #include "Commands/CommandPads.h"
 #include "Commands/CommandPrivate.h"
 #include "Commands/CommandPublic.h"

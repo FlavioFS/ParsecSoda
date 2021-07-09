@@ -5,10 +5,14 @@
 //  GAMEPAD ENGINE
 // 
 // =============================================================
-
 GamepadClient::~GamepadClient()
 {
 	release();
+}
+
+void GamepadClient::setParsec(ParsecDSO* parsec)
+{
+	this->_parsec = parsec;
 }
 
 bool GamepadClient::init()
@@ -40,7 +44,7 @@ Gamepad GamepadClient::createGamepad(uint16_t index)
 		return Gamepad();
 	}
 
-	Gamepad gamepad(_client);
+	Gamepad gamepad(_parsec, _client);
 	gamepads.push_back(gamepad);
 	return gamepad;
 }
@@ -234,12 +238,36 @@ bool GamepadClient::toggleMirror(uint32_t guestUserID)
 	return currentValue;
 }
 
+bool GamepadClient::toggleIgnoreDeviceID(uint32_t guestUserID)
+{
+	bool currentValue = true;
+
+	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
+		prefs.ignoreDeviceID = !prefs.ignoreDeviceID;
+		currentValue = prefs.ignoreDeviceID;
+	});
+
+	if (!found)
+	{
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, false);
+		guestPreferences.push_back(prefs);
+		currentValue = false;
+	}
+
+	return currentValue;
+}
+
 const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIndex)
 {
 
 	if (gamepadIndex < 0 || gamepadIndex >= gamepads.size())
 	{
 		return PICK_REQUEST::OUT_OF_RANGE;
+	}
+
+	if (!gamepads[gamepadIndex].isConnected())
+	{
+		return PICK_REQUEST::DISCONNECTED;
 	}
 
 	if (gamepads[gamepadIndex].owner.guest.userID == guest.userID)
@@ -266,7 +294,7 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 	bool success = reduceUntilFirst([&](Gamepad& gamepad) {
 		if (gamepad.owner.guest.userID == guest.userID)
 		{
-			gamepads[gamepadIndex].connect();
+			gamepads[gamepadIndex].clearState();
 			gamepads[gamepadIndex].copyOwner(gamepad);
 			gamepad.clearOwner();
 			return true;
@@ -296,30 +324,35 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 	uint32_t padId = GAMEPAD_INDEX_ERROR;
 	bool isGamepadRequest = false;
 	int slots = 0;
+	
+	GuestPreferences guestPrefs = GuestPreferences();
+	findPreferences(guest.userID, [&guestPrefs](GuestPreferences& prefs) {
+		guestPrefs = prefs;
+	});
 
 	switch (message.type)
 	{
 	case MESSAGE_GAMEPAD_STATE:
 		padId = message.gamepadState.id;
 		isGamepadRequest = isRequestState(message);
-		if (sendGamepadStateMessage(message.gamepadState, guest, slots)) { return true; }
+		if (sendGamepadStateMessage(message.gamepadState, guest, slots, guestPrefs)) { return true; }
 		break;
 
 	case MESSAGE_GAMEPAD_AXIS:
 		padId = message.gamepadAxis.id;
-		if (sendGamepadAxisMessage(message.gamepadAxis, guest, slots)) { return true; }
+		if (sendGamepadAxisMessage(message.gamepadAxis, guest, slots, guestPrefs)) { return true; }
 		break;
 
 	case MESSAGE_GAMEPAD_BUTTON:
 		padId = message.gamepadButton.id;
 		isGamepadRequest = isRequestButton(message);
-		if (sendGamepadButtonMessage(message.gamepadButton, guest, slots)) { return true; }
+		if (sendGamepadButtonMessage(message.gamepadButton, guest, slots, guestPrefs)) { return true; }
 		break;
 
 	case MESSAGE_KEYBOARD:
 		padId = 0;
 		isGamepadRequest = isRequestKeyboard(message);
-		if (sendKeyboardMessage(message.keyboard, guest, slots)) { return true; }
+		if (sendKeyboardMessage(message.keyboard, guest, slots, guestPrefs)) { return true; }
 		break;
 
 	default:
@@ -328,19 +361,19 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 
 	if (!success && isGamepadRequest)
 	{
-		success = tryAssignGamepad(guest, padId, slots, message.type == MESSAGE_KEYBOARD);
+		success = tryAssignGamepad(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
 	}
 
 	return success;
 }
 
-bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots)
+bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
 	if (guest.userID == pad.owner.guest.userID)
 	{
 		slots++;
-		if (gamepadState.id == pad.owner.deviceID)
+		if (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID)
 		{
 			pad.setState(gamepadState);
 			return true;
@@ -350,13 +383,13 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 	});
 }
 
-bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots)
+bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (gamepadAxis.id == pad.owner.deviceID)
+			if (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID)
 			{
 				pad.setState(gamepadAxis);
 				return true;
@@ -366,13 +399,13 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 	});
 }
 
-bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots)
+bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (gamepadButton.id == pad.owner.deviceID)
+			if (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID)
 			{
 				pad.setState(gamepadButton);
 				return true;
@@ -382,13 +415,13 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 	});
 }
 
-bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots)
+bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (pad.owner.isKeyboard)
+			if (prefs.ignoreDeviceID || pad.owner.isKeyboard)
 			{
 				pad.setState(keyboard);
 				return true;
@@ -398,14 +431,9 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 		});
 }
 
-bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int currentSlots, bool isKeyboard)
+bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int currentSlots, bool isKeyboard, GuestPreferences prefs)
 {
-	int limit = 1;
-	findPreferences(guest.userID, [&limit](GuestPreferences& prefs) {
-		limit = prefs.padLimit;
-	});
-
-	if (currentSlots >= limit)
+	if (currentSlots >= prefs.padLimit)
 	{
 		return false;
 	}
@@ -432,14 +460,26 @@ void GamepadClient::releaseGamepads()
 
 void GamepadClient::setMirror(uint32_t guestUserID, bool mirror)
 {
-	GuestPreferences prefs = GuestPreferences(guestUserID, 1, mirror);
-
 	bool found = findPreferences(guestUserID, [&mirror](GuestPreferences& prefs) {
 		prefs.mirror = mirror;
 	});
 
 	if (!found)
 	{
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, mirror);
+		guestPreferences.push_back(prefs);
+	}
+}
+
+void GamepadClient::setIgnoreDeviceID(uint32_t guestUserID, bool ignoreDeviceID)
+{
+	bool found = findPreferences(guestUserID, [&ignoreDeviceID](GuestPreferences& prefs) {
+		prefs.ignoreDeviceID = ignoreDeviceID;
+	});
+
+	if (!found)
+	{
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, ignoreDeviceID);
 		guestPreferences.push_back(prefs);
 	}
 }

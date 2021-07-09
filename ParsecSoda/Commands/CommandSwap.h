@@ -35,6 +35,11 @@ public:
 				<< "\t\tType !pads to see the gamepad list.\0";
 			rv = true;
 			break;
+		case GamepadClient::PICK_REQUEST::DISCONNECTED:
+			reply
+				<< "[ChatBot] | " << _sender.name << ", gamepad " << _intArg << " is offline.\n"
+				<< "\t\tType !pads to see the gamepad list.\0";
+			break;
 		case GamepadClient::PICK_REQUEST::SAME_USER:
 			reply
 				<< "[ChatBot] | " << _sender.name << ", you have that gamepad already.\n"
