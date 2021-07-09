@@ -53,6 +53,8 @@ public:
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
+	vector<GuestData>& getGuestHistory();
+	vector<GuestData>& getBannedGuests();
 	vector<Gamepad>& getGamepads();
 	GamepadClient& getGamepadClient();
 	const char** getGuestNames();
@@ -90,6 +92,7 @@ private:
 	DX11 _dx11;
 	AdminList _adminList;
 	BanList _banList;
+	GuestDataList _guestHistory;
 	ChatBot *_chatBot;
 	ChatLog _chatLog;
 	Dice _dice;

@@ -2,22 +2,19 @@
 
 #include <iostream>
 #include <vector>
+#include <functional>
 #include "GuestData.h"
+#include "GuestDataList.h"
 #include "MetadataCache.h"
 
-class BanList
+class BanList : GuestDataList
 {
 public:
 	BanList();
 	BanList(const std::vector<GuestData> bannedUsers);
-	void ban (const GuestData user);
-	bool find(const uint32_t userID, GuestData *result);
-	const bool unban(const char* guestName, GuestData * unbannedGuest = nullptr);
-	const bool unban(std::string guestName, GuestData* unbannedGuest = nullptr);
-	const bool unban(const uint32_t userId, GuestData * unbannedGuest = nullptr);
+	bool ban (const GuestData user);
+	const bool unban(string guestName, function<void(GuestData&)> callback);
 	const bool isBanned(const uint32_t userId);
-
-private:
-	std::vector<GuestData> _bannedUsers;
+	vector<GuestData>& getGuests();
 };
 

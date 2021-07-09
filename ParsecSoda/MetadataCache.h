@@ -32,6 +32,10 @@ public:
 		unsigned int guestCount = 1;
 		bool publicRoom = false;
 		bool isValid = false;
+		unsigned int windowX = 0;
+		unsigned int windowY = 0;
+		unsigned int windowW = 1280;
+		unsigned int windowH = 720;
 	};
 
 	static SessionCache loadSessionCache();

@@ -49,6 +49,8 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
 
+    MetadataCache::loadPreferences();
+
     WNDCLASSEX wc;
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_CLASSDC;
@@ -63,7 +65,12 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     wc.lpszClassName = _T("Parsec Soda");
     wc.hIconSm = NULL;
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW, 0, 0, 1300, 1000, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(
+        wc.lpszClassName, _T("Parsec Soda"), WS_OVERLAPPEDWINDOW,
+        MetadataCache::preferences.windowX, MetadataCache::preferences.windowY,
+        MetadataCache::preferences.windowW, MetadataCache::preferences.windowH,
+        NULL, NULL, wc.hInstance, NULL
+    );
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -278,6 +285,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_QUIT:
     case WM_DESTROY:
         g_hosting.release();
+        RECT windowRect;
+        if (GetWindowRect(hWnd, &windowRect))
+        {
+            MetadataCache::preferences.windowX = windowRect.left;
+            MetadataCache::preferences.windowY = windowRect.top;
+            MetadataCache::preferences.windowW = windowRect.right - windowRect.left;
+            MetadataCache::preferences.windowH = windowRect.bottom - windowRect.top;
+            MetadataCache::savePreferences();
+        }
         Sleep(1000);
         ::PostQuitMessage(0);
         return 0;

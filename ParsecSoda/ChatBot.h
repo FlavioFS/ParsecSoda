@@ -50,12 +50,12 @@ public:
 
 	ChatBot(
 		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11 &dx11,
-		GamepadClient& gamepadClient, GuestList &guests, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
+		GamepadClient& gamepadClient, GuestList &guests, GuestDataList &guestHistory, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
 		ParsecSession& parsecSession, SFXList& sfxList, bool &hostingLoopController, Guest& host
 	)
 		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
-		_guests(guests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession), _sfxList(sfxList),
-		_hostingLoopController(hostingLoopController), _host(host)
+		_guests(guests), _guestHistory(guestHistory), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
+		_sfxList(sfxList), _hostingLoopController(hostingLoopController), _host(host)
 	{}
 
 	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool& isAdmin, bool isHost = false);
@@ -84,6 +84,7 @@ private:
 	DX11 &_dx11;
 	GamepadClient& _gamepadClient;
 	GuestList& _guests;
+	GuestDataList& _guestHistory;
 	ParsecHostConfig &_hostConfig;
 	ParsecSession &_parsecSession;
 	SFXList _sfxList;

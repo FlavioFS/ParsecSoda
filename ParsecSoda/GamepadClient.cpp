@@ -51,7 +51,7 @@ Gamepad GamepadClient::createGamepad(uint16_t index)
 
 void GamepadClient::createMaximumGamepads()
 {
-	for (size_t i = 0; i < XUSER_MAX_COUNT; i++)
+	for (uint16_t i = 0; i < XUSER_MAX_COUNT; i++)
 	{
 		this->createGamepad(i);
 		Sleep(200);
@@ -232,7 +232,7 @@ bool GamepadClient::toggleMirror(uint32_t guestUserID)
 	{
 		GuestPreferences prefs = GuestPreferences(guestUserID, 1, true);
 		guestPreferences.push_back(prefs);
-		currentValue = true;
+		currentValue = prefs.mirror;
 	}
 
 	return currentValue;
@@ -240,7 +240,7 @@ bool GamepadClient::toggleMirror(uint32_t guestUserID)
 
 bool GamepadClient::toggleIgnoreDeviceID(uint32_t guestUserID)
 {
-	bool currentValue = true;
+	bool currentValue = false;
 
 	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
 		prefs.ignoreDeviceID = !prefs.ignoreDeviceID;
@@ -249,9 +249,9 @@ bool GamepadClient::toggleIgnoreDeviceID(uint32_t guestUserID)
 
 	if (!found)
 	{
-		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, false);
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, true);
 		guestPreferences.push_back(prefs);
-		currentValue = false;
+		currentValue = prefs.ignoreDeviceID;
 	}
 
 	return currentValue;

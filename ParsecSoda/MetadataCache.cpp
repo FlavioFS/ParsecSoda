@@ -126,6 +126,22 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetBool(json, "publicRoom", &preferences.publicRoom)) {
                 preferences.publicRoom = false;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "windowX", &preferences.windowX)) {
+                preferences.windowX = 0;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "windowY", &preferences.windowY)) {
+                preferences.windowY = 0;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW)) {
+                preferences.windowW = 1280;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH)) {
+                preferences.windowH = 720;
+            }
             
             preferences.isValid = true;
 
@@ -157,6 +173,10 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetString(json, "secret", preferences.secret.c_str());
         MTY_JSONObjSetUInt(json, "guestCount", preferences.guestCount);
         MTY_JSONObjSetBool(json, "publicRoom", preferences.publicRoom);
+        MTY_JSONObjSetUInt(json, "windowX", preferences.windowX);
+        MTY_JSONObjSetUInt(json, "windowY", preferences.windowY);
+        MTY_JSONObjSetUInt(json, "windowW", preferences.windowW);
+        MTY_JSONObjSetUInt(json, "windowH", preferences.windowH);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);
@@ -202,7 +222,7 @@ vector<GuestData> MetadataCache::loadBannedUsers()
             }
 
             std::sort(result.begin(), result.end(), [](const GuestData a, const GuestData b) {
-                return a.userId < b.userId;
+                return a.userID < b.userID;
             });
 
             MTY_JSONDestroy(&json);
@@ -228,7 +248,7 @@ bool MetadataCache::saveBannedUsers(vector<GuestData> guests)
             MTY_JSON* guest = MTY_JSONObjCreate();
 
             MTY_JSONObjSetString(guest, "name", (*gi).name.c_str());
-            MTY_JSONObjSetUInt(guest, "userID", (*gi).userId);
+            MTY_JSONObjSetUInt(guest, "userID", (*gi).userID);
             MTY_JSONArrayAppendItem(json, guest);
         }
 

@@ -114,6 +114,8 @@ bool GamepadsWidget::render()
         );
         cursor = ImGui::GetCursorPos();
 
+        ImGui::Dummy(ImVec2(0,8));
+
         AppStyle::pushLabel();
         if ((*gi).owner.guest.isValid())  ImGui::TextWrapped("(# %d)\t", (*gi).owner.guest.userID);
         else                              ImGui::TextWrapped("    ");

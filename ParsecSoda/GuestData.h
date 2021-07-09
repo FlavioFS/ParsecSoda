@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 /**
  *  A reduced data structure to hold basic guest data.
  */
@@ -14,20 +16,26 @@ public:
 	GuestData()
 	{
 		name = "";
-		userId = 0;
+		userID = 0;
 	}
 
 	/**
 	 * Full constructor.
 	 * @param name Guest username.
-	 * @param userId Unique user ID.
+	 * @param userID Unique user ID.
 	 */
-	GuestData(std::string name, uint32_t userId)
+	GuestData(string name, uint32_t userID)
+	{
+		set(name, userID);
+	}
+
+	void set(string name, uint32_t userID)
 	{
 		this->name = name;
-		this->userId = userId;
+		this->userID = userID;
 	}
+
 	std::string name;
-	uint32_t userId;
+	uint32_t userID;
 };
 

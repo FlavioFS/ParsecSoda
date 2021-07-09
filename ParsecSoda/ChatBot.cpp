@@ -23,7 +23,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	// Admin commands
 	if (isAdmin)
 	{
-		if		(msgStartsWith(msg, CommandBan::prefixes()))		return new CommandBan(msg, sender, _parsec, _guests, _ban);
+		if		(msgStartsWith(msg, CommandBan::prefixes()))		return new CommandBan(msg, sender, _parsec, _guests, _guestHistory, _ban);
 		else if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
 		else if	(msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
 		else if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
@@ -38,7 +38,6 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 		else if (msgStartsWith(msg, CommandStrip::prefixes()))		return new CommandStrip(msg, sender, _gamepadClient);
 		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioOut);
 		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban);
-		//else if	(msgIsEqual(msg, CommandVideoFix::prefixes()))		return new CommandVideoFix(_dx11); // Broken (massive memory leaks) & obsolete
 	}
 
 	this->setLastUserId(previous);

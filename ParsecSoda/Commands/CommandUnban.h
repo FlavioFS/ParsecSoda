@@ -25,12 +25,15 @@ public:
 		}
 		
 		GuestData unbannedGuest;
-		if (_ban.unban(_stringArg, &unbannedGuest))
+		bool found = _ban.unban(_stringArg, [&unbannedGuest](GuestData& guest) {
+			unbannedGuest = guest;
+		});
+		if (found)
 		{
 			std::ostringstream reply;
 			reply
 				<< "[ChatBot] | " << _sender.name << " has revoked a ban:\n"
-				<< "\t\t" << unbannedGuest.name << "\t(#" << unbannedGuest.userId << ")\0";
+				<< "\t\t" << unbannedGuest.name << "\t(#" << unbannedGuest.userID << ")\0";
 			_replyMessage = reply.str();
 			return true;
 		}

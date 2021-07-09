@@ -33,12 +33,14 @@ Hosting::Hosting()
 
 	_sfxList.init("./sfx/custom/_sfx.json");
 
-	const vector<int> admins{ 3888558 , 6711547 };
+	const vector<GuestData> admins{
+		GuestData("Melon Soda [BR]", 3888558),
+		GuestData("Melon soda Ice", 6711547)
+	};
 	_adminList = AdminList(admins);
 
 	vector<GuestData> banned = MetadataCache::loadBannedUsers();
 	_banList = BanList(banned);
-	
 
 	_parsec = nullptr;
 }
@@ -106,7 +108,7 @@ void Hosting::init()
 
 	_chatBot = new ChatBot(
 		audioIn, audioOut, _banList, _dice, _dx11,
-		_gamepadClient, _guestList, _parsec,
+		_gamepadClient, _guestList, _guestHistory, _parsec,
 		_hostConfig, _parsecSession, _sfxList, _isRunning, _host
 	);
 }
@@ -165,6 +167,16 @@ vector<string>& Hosting::getCommandLog()
 vector<Guest>& Hosting::getGuestList()
 {
 	return _guestList.getGuests();
+}
+
+vector<GuestData>& Hosting::getGuestHistory()
+{
+	return _guestHistory.getGuests();
+}
+
+vector<GuestData>& Hosting::getBannedGuests()
+{
+	return _banList.getGuests();
 }
 
 vector<Gamepad>& Hosting::getGamepads()
@@ -369,7 +381,7 @@ void Hosting::liveStreamMedia()
 		if (audioIn.isReady() && audioOut.isReady())
 		{
 			vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
-			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), mixBuffer.size() / 2);
+			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
 		}
 
 		duration = clock::now() - before;
@@ -528,7 +540,11 @@ void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
 		broadcastChatMessage(logMessage);
 		_chatLog.logCommand(logMessage);
 
-		if (state != GUEST_CONNECTED)
+		if (state == GUEST_CONNECTED)
+		{
+			_guestHistory.add( GuestData(guest.name, guest.userID) );
+		}
+		else
 		{
 			int droppedPads = 0;
 			CommandFF command(guest, _gamepadClient);
@@ -542,34 +558,3 @@ void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
 		}
 	}
 }
-
-
-
-// ============================================================
-// 
-//  Delete queue
-// 
-// ============================================================
-
-//void logDataMessage(const char* msg, ParsecHostEvent event)
-//{
-//	string msgStr = msg;
-//	cout
-//		<< endl
-//		<< "DATA"
-//		<< " | userid: " << event.userData.guest.userID
-//		<< " | guestid: " << event.userData.guest.id
-//		<< " | msgid: " << event.userData.id
-//		<< " | key: " << event.userData.key
-//		<< " | msg: " << msg;
-//}
-
-//static void logCallback(ParsecLogLevel level, const char *msg, void *opaque)
-//{
-//	opaque;
-//	if (level != LOG_DEBUG)
-//	{
-//		cout << "[I] " << msg << endl;
-//	}
-//	printf("[%s] %s\n", level == LOG_DEBUG ? "D" : "I", msg);
-//}

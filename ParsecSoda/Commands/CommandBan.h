@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ACommandSearchUser.h"
+#include "ACommandSearchUserHistory.h"
 #include <iostream>
 #include <Windows.h>
 #include <mmsystem.h>
@@ -9,49 +9,37 @@
 
 using namespace std;
 
-class CommandBan : public ACommandSearchUser
+class CommandBan : public ACommandSearchUserHistory
 {
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::BAN; }
 
-	CommandBan(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests, BanList &banList)
-		: ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec), _ban(banList)
+	CommandBan(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests, GuestDataList &guestHistory, BanList &banList)
+		: ACommandSearchUserHistory(msg, internalPrefixes(), guests, guestHistory), _sender(sender), _parsec(parsec), _ban(banList)
 	{
 	}
 
 	bool run() override
 	{
-		ACommandSearchUser::run();
+		ACommandSearchUserHistory::run();
 		
 		bool rv = false;
 
 		switch (_searchResult)
 		{
-		case SEARCH_USER_RESULT::NOT_FOUND:
+		case SEARCH_USER_HISTORY_RESULT::NOT_FOUND:
 			_replyMessage = string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to ban.\0";
 			break;
 
-		case SEARCH_USER_RESULT::FOUND:
-			if (_sender.userID == _targetGuest.userID)
-				_replyMessage = string() + "[ChatBot] | Thou shall not ban thyself, " + _sender.name + " ...\0";
-			else
-			{
-				_replyMessage = string() + "[ChatBot] | " + _targetGuest.name + " was banned by " + _sender.name + "!\0";
-				
-				_ban.ban(GuestData(_targetGuest.name, _targetGuest.userID));
-				ParsecHostKickGuest(_parsec, _targetGuest.id);
-				
-				try
-				{
-					PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
-				}
-				catch (const std::exception&) {}
-
-				rv = true;
-			}
+		case SEARCH_USER_HISTORY_RESULT::ONLINE:
+			handleGuest(GuestData(_onlineGuest.name, _onlineGuest.id), true, _onlineGuest.id);
 			break;
 		
-		case SEARCH_USER_RESULT::FAILED:
+		case SEARCH_USER_HISTORY_RESULT::OFFLINE:
+			handleGuest(_offlineGuest, false);
+			break;
+
+		case SEARCH_USER_HISTORY_RESULT::FAILED:
 		default:
 			_replyMessage = "[ChatBot] | Usage: !ban <username>\nExample: !ban melon\0";
 			break;
@@ -74,4 +62,34 @@ private:
 	ParsecDSO* _parsec;
 	Guest& _sender;
 	BanList& _ban;
+
+	bool handleGuest(GuestData target, bool isOnline, uint32_t guestID = -1)
+	{
+		bool result = false;
+
+		if (_sender.userID == target.userID)
+			_replyMessage = string() + "[ChatBot] | Thou shall not ban thyself, " + _sender.name + " ...\0";
+		else
+		{
+			_replyMessage = string() + "[ChatBot] | " + target.name + " was banned by " + _sender.name + "!\0";
+
+			if (_ban.ban(GuestData(target.name, target.userID)))
+			{
+				if (isOnline)
+				{
+					ParsecHostKickGuest(_parsec, guestID);
+				}
+
+				try
+				{
+					PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+				}
+				catch (const std::exception&) {}
+
+				result = true;
+			}
+		}
+
+		return result;
+	}
 };

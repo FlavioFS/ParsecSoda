@@ -1,15 +1,12 @@
 #pragma once
 
-#include <vector>
+#include "GuestDataList.h"
 
-class AdminList
+class AdminList : GuestDataList
 {
 public:
 	AdminList();
-	AdminList(const std::vector<int> admins);
-	bool isAdmin(int guestID);
-
-private:
-	std::vector<int> _admins;
+	AdminList(const vector<GuestData> admins);
+	bool isAdmin(uint32_t guestID);
 };
 

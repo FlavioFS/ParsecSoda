@@ -36,16 +36,16 @@ public:
 	{
 	public:
 		GuestPreferences()
-			: userID(0), padLimit(1), mirror(false), ignoreDeviceID(true)
+			: userID(0), padLimit(1), mirror(false), ignoreDeviceID(false)
 		{}
-		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false, bool ignoreDeviceID = true)
+		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false, bool ignoreDeviceID = false)
 			: userID(userID), padLimit(padLimit), mirror(mirror), ignoreDeviceID(ignoreDeviceID)
 		{}
 
 		uint32_t userID = 0;
 		int padLimit = 1;
 		bool mirror = false;
-		bool ignoreDeviceID = true;
+		bool ignoreDeviceID = false;
 	};
 
 	~GamepadClient();

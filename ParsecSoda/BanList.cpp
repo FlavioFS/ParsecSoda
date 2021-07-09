@@ -6,73 +6,36 @@ BanList::BanList()
 }
 
 BanList::BanList(std::vector<GuestData> bannedUsers)
+	: GuestDataList(bannedUsers)
 {
-	_bannedUsers = bannedUsers;
 }
 
-void BanList::ban(GuestData user)
+bool BanList::ban(GuestData user)
 {
-	_bannedUsers.push_back(user);
-	MetadataCache::saveBannedUsers(_bannedUsers);
-}
-
-bool BanList::find(const uint32_t userID, GuestData *result)
-{
-	std::vector<GuestData>::iterator i;
-	for (i = _bannedUsers.begin(); i != _bannedUsers.end(); ++i)
+	bool found = GuestDataList::add(user);
+	if (found)
 	{
-		if ((*i).userId == userID)
-		{
-			*result = *i;
-			return true;
-		}
+		MetadataCache::saveBannedUsers(_guests);
 	}
-	return false;
+	return found;
 }
 
-const bool BanList::unban(const char * guestName, GuestData* unbannedGuest)
+const bool BanList::unban(string guestName, function<void(GuestData&)> callback)
 {
-	std::vector<GuestData>::iterator it;
-	for (it = _bannedUsers.begin(); it != _bannedUsers.end(); ++it)
+	bool found = GuestDataList::pop(guestName, callback);
+	if (found)
 	{
-		if ( Stringer::isCloseEnough((*it).name.c_str(), guestName) )
-		{
-			if (unbannedGuest != nullptr)
-			{
-				*unbannedGuest = *it;
-			}
-			_bannedUsers.erase(it);
-			MetadataCache::saveBannedUsers(_bannedUsers);
-			return true;
-		}
+		MetadataCache::saveBannedUsers(_guests);
 	}
-
-	return false;
-}
-
-const bool BanList::unban(std::string guestName, GuestData* unbannedGuest)
-{
-	return unban(guestName.c_str(), unbannedGuest);
-}
-
-const bool BanList::unban(uint32_t guestId, GuestData* unbannedGuest)
-{
-	std::vector<GuestData>::iterator it;
-	for (it = _bannedUsers.begin(); it != _bannedUsers.end(); ++it)
-	{
-		if ((*it).userId == guestId)
-		{
-			*unbannedGuest = *it;
-			_bannedUsers.erase(it);
-			return true;
-		}
-	}
-
-	return false;
+	return found;
 }
 
 const bool BanList::isBanned(const uint32_t userId)
 {
-	GuestData guest;
-	return find(userId, &guest);
+	return find(userId);
+}
+
+vector<GuestData>& BanList::getGuests()
+{
+	return GuestDataList::getGuests();
 }
