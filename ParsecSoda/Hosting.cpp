@@ -174,9 +174,9 @@ vector<GuestData>& Hosting::getGuestHistory()
 	return _guestHistory.getGuests();
 }
 
-vector<GuestData>& Hosting::getBannedGuests()
+BanList& Hosting::getBanList()
 {
-	return _banList.getGuests();
+	return _banList;
 }
 
 vector<Gamepad>& Hosting::getGamepads()
@@ -542,7 +542,7 @@ void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
 
 		if (state == GUEST_CONNECTED)
 		{
-			_guestHistory.add( GuestData(guest.name, guest.userID) );
+			_guestHistory.add(GuestData(guest.name, guest.userID));
 		}
 		else
 		{

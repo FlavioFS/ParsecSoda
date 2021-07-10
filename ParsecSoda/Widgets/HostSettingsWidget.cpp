@@ -115,7 +115,6 @@ bool HostSettingsWidget::render()
     ImGui::Dummy(dummySize);
 
     static bool showPopup = false;
-    static ImVec2 popupPos = pos;
     static string popupTitle = "";
     popupTitle = (_hosting.isRunning() ? "Stop hosting?" : "Start hosting?");
 
@@ -128,8 +127,6 @@ bool HostSettingsWidget::render()
     {
         showPopup = true;
         ImGui::OpenPopup(popupTitle.c_str());
-        popupPos.x = ImGui::GetMousePos().x - 150;
-        popupPos.y = ImGui::GetMousePos().y - 100;
         
         savePreferences();
     }
@@ -139,9 +136,6 @@ bool HostSettingsWidget::render()
     else                        TitleTooltipWidget::render("Start hosting", "Open a new room using these settings.");
 
     // ================================================================================
-
-    ImVec2 windowPos = ImGui::GetWindowPos();
-    ImGui::SetNextWindowPos(popupPos);
 
     if (ConfirmPopupWidget::render(popupTitle.c_str(), showPopup))
     {

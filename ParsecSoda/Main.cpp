@@ -19,6 +19,7 @@
 #include "globals/AppColors.h"
 #include "Widgets/LoginWidget.h"
 #include "Widgets/NavBar.h"
+#include "Widgets/HostInfoWidget.h"
 #include "Widgets/HostSettingsWidget.h"
 #include "Widgets/ChatWidget.h"
 #include "Widgets/LogWidget.h"
@@ -116,6 +117,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     GuestListWidget guestsWindow(g_hosting);
     GamepadsWidget gamepadsWindow(g_hosting);
     AudioSettingsWidget audioSettingswidget(g_hosting);
+    HostInfoWidget hostInfoWidget(g_hosting);
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
@@ -173,6 +175,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showGamepads)       gamepadsWindow.render();
             if (showAudio)          audioSettingswidget.render();
             NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio);
+            hostInfoWidget.render();
         }
         else
         {

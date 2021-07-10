@@ -15,6 +15,7 @@ bool GuestDataList::add(GuestData guest)
 	if (!found)
 	{
 		_guests.push_back(guest);
+		return true;
 	}
 
 	return false;
@@ -67,7 +68,7 @@ bool GuestDataList::pop(string guestName, function<void(GuestData& guest)> callb
 		_guests.erase(gi);
 	});
 
-	return false;
+	return found;
 }
 
 vector<GuestData>& GuestDataList::getGuests()

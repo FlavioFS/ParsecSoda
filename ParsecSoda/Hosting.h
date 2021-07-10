@@ -17,7 +17,6 @@
 #include "ChatBot.h"
 #include "ChatLog.h"
 #include "Stringer.h"
-#include "Mock.h"
 #include "AudioIn.h"
 #include "AudioOut.h"
 #include "AudioMix.h"
@@ -54,7 +53,7 @@ public:
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
 	vector<GuestData>& getGuestHistory();
-	vector<GuestData>& getBannedGuests();
+	BanList& getBanList();
 	vector<Gamepad>& getGamepads();
 	GamepadClient& getGamepadClient();
 	const char** getGuestNames();

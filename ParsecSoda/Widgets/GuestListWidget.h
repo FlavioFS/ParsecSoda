@@ -4,6 +4,9 @@
 #include "../Hosting.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
+#include "IconButton.h"
+#include "TitleTooltipWidget.h"
+#include "ConfirmPopupWidget.h"
 
 class GuestListWidget
 {
@@ -12,11 +15,16 @@ public:
 	bool render();
 
 private:
+	void renderOnlineGuests();
+	void renderBannedGuests();
+	void renderAllowedGuests();
+
 	// Dependency injection
 	Hosting& _hosting;
+	BanList& _banList;
 	
 	// Attributes
 	string _logBuffer;
 	vector<Guest>& _guests;
+	vector<GuestData>& _guestHistory;
 };
-

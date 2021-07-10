@@ -12,7 +12,17 @@ BanList::BanList(std::vector<GuestData> bannedUsers)
 
 bool BanList::ban(GuestData user)
 {
-	bool found = GuestDataList::add(user);
+	bool added = GuestDataList::add(user);
+	if (added)
+	{
+		MetadataCache::saveBannedUsers(_guests);
+	}
+	return added;
+}
+
+const bool BanList::unban(const uint32_t userID, function<void(GuestData&)> callback)
+{
+	bool found = GuestDataList::pop(userID, callback);
 	if (found)
 	{
 		MetadataCache::saveBannedUsers(_guests);
@@ -30,9 +40,9 @@ const bool BanList::unban(string guestName, function<void(GuestData&)> callback)
 	return found;
 }
 
-const bool BanList::isBanned(const uint32_t userId)
+const bool BanList::isBanned(const uint32_t userID)
 {
-	return find(userId);
+	return find(userID);
 }
 
 vector<GuestData>& BanList::getGuests()

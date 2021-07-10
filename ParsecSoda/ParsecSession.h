@@ -5,7 +5,6 @@
 #include <sstream>
 #include <thread>
 #include "Utils.h"
-#include "Mock.h"
 #include "GuestList.h"
 #include "MetadataCache.h"
 
@@ -36,18 +35,6 @@ using namespace std;
 class ParsecSession
 {
 public:
-
-	/**
-		*	Remove this in final version
-		*/ 
-	void mockSession(const char * sessionID, const char * hostPeerId);
-		
-	/**
-		*	Remove this in final version
-		*/
-	void mockSession(bool isTestAccount = true);
-	
-
 	bool loadSessionCache();
 	bool saveSessionCache();
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");

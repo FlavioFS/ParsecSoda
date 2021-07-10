@@ -32,11 +32,13 @@ public:
 			break;
 
 		case SEARCH_USER_HISTORY_RESULT::ONLINE:
-			handleGuest(GuestData(_onlineGuest.name, _onlineGuest.id), true, _onlineGuest.id);
+			handleGuest(GuestData(_onlineGuest.name, _onlineGuest.userID), true, _onlineGuest.id);
+			_guestHistory.pop(_onlineGuest.userID);
 			break;
 		
 		case SEARCH_USER_HISTORY_RESULT::OFFLINE:
 			handleGuest(_offlineGuest, false);
+			_guestHistory.pop(_offlineGuest.userID);
 			break;
 
 		case SEARCH_USER_HISTORY_RESULT::FAILED:
@@ -73,7 +75,7 @@ private:
 		{
 			_replyMessage = string() + "[ChatBot] | " + target.name + " was banned by " + _sender.name + "!\0";
 
-			if (_ban.ban(GuestData(target.name, target.userID)))
+			if (_ban.ban(target))
 			{
 				if (isOnline)
 				{

@@ -12,8 +12,8 @@ class CommandUnban : public ACommandStringArg
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::UNBAN; }
 
-	CommandUnban(const char* msg, Guest &sender, BanList &banList)
-		: ACommandStringArg(msg, internalPrefixes()), _sender(sender), _ban(banList)
+	CommandUnban(const char* msg, Guest &sender, BanList &banList, GuestDataList& guestHistory)
+		: ACommandStringArg(msg, internalPrefixes()), _sender(sender), _ban(banList), _guestHistory(guestHistory)
 	{}
 
 	bool run() override
@@ -25,9 +25,23 @@ public:
 		}
 		
 		GuestData unbannedGuest;
-		bool found = _ban.unban(_stringArg, [&unbannedGuest](GuestData& guest) {
-			unbannedGuest = guest;
-		});
+		bool found = false;
+
+		try
+		{
+			found = _ban.unban(stoul(_stringArg), [&unbannedGuest](GuestData& guest) {
+				unbannedGuest = guest;
+			});
+		}
+		catch (const std::exception&) { found = false; }
+
+		if (!found)
+		{
+			found = _ban.unban(_stringArg, [&unbannedGuest](GuestData& guest) {
+				unbannedGuest = guest;
+			});
+		}
+
 		if (found)
 		{
 			std::ostringstream reply;
@@ -35,6 +49,7 @@ public:
 				<< "[ChatBot] | " << _sender.name << " has revoked a ban:\n"
 				<< "\t\t" << unbannedGuest.name << "\t(#" << unbannedGuest.userID << ")\0";
 			_replyMessage = reply.str();
+			_guestHistory.add(unbannedGuest);
 			return true;
 		}
 		else
@@ -57,5 +72,6 @@ protected:
 	string _msg;
 	Guest& _sender;
 	BanList& _ban;
+	GuestDataList& _guestHistory;
 };
 

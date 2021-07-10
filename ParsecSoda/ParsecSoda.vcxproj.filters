@@ -183,6 +183,9 @@
     <ClCompile Include="GuestDataList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\HostInfoWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminList.h">
@@ -204,9 +207,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX11.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParsecSession.h">
@@ -477,6 +477,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\ACommandSearchUserHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\HostInfoWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

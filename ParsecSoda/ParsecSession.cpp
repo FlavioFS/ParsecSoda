@@ -1,31 +1,4 @@
 #include "ParsecSession.h"
-
-void ParsecSession::mockSession(const char * sessionId, const char * hostPeerId)
-{
-	this->sessionId = sessionId;
-	this->hostPeerId = hostPeerId;
-}
-
-
-void ParsecSession::mockSession(bool isTestAccount)
-{
-	const char* session;
-	const char* hostpeerid;
-
-	if (isTestAccount)
-	{
-		session = MOCK_HOST_SESSION_ACC_TEST;
-		hostpeerid = MOCK_HOST_PEER_ACC_TEST;
-	}
-	else
-	{
-		session = MOCK_HOST_SESSION_ACC_MAIN;
-		hostpeerid = MOCK_HOST_PEER_ACC_MAIN;
-	}
-
-	this->mockSession(session, hostpeerid);
-}
-
 bool ParsecSession::loadSessionCache()
 {
 	MetadataCache::SessionCache cache = MetadataCache::loadSessionCache();

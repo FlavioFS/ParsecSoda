@@ -39,6 +39,10 @@ public:
 	static ID3D11ShaderResourceView* log;
 	static ID3D11ShaderResourceView* logoff;
 
+	static ID3D11ShaderResourceView* userOn;
+	static ID3D11ShaderResourceView* userOff;
+	static ID3D11ShaderResourceView* block;
+
 	static ID3D11ShaderResourceView* logo;
 
 private:
@@ -71,6 +75,10 @@ private:
 	static Texture _users;
 	static Texture _log;
 	static Texture _logoff;
+
+	static Texture _userOn;
+	static Texture _userOff;
+	static Texture _block;
 
 	static Texture _logo;
 };
