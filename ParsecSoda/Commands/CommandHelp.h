@@ -2,19 +2,22 @@
 
 #include "ACommand.h"
 #include <iostream>
+#include "../TierList.h"
+
+using namespace std;
 
 class CommandHelp : public ACommand
 {
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::HELP; }
 
-	CommandHelp(bool &isAdmin)
-		: _isAdmin(isAdmin)
+	CommandHelp(Guest& sender, TierList& tierList)
+		: _sender(sender), _tierList(tierList)
 	{}
 
 	bool run() override
 	{
-		const std::string pleb_commands = std::string()
+		const string pleb_commands = string()
 			+ "\n  " + "---- Normal Commands ----"
 			+ "\n  " + "!bonk\t\t\t\t |\tBonk another user."
 			+ "\n  " + "!help\t\t\t\t  |\tShow command list."
@@ -26,29 +29,42 @@ public:
 			+ "\n  " + "!swap\t\t\t\t |\tReplace your gamepad with another one."
 			;
 
-		const std::string admin_commands = std::string()
+		const string admin_commands = string()
 			+ pleb_commands
 			+ "\n  " + ""
 			+ "\n  " + "---- Admin Commands ----"
 			+ "\n  " + "!ban\t\t\t\t|\tBan a guest."
 			+ "\n  " + "!dc\t\t\t\t   |\tDisconnect a specific gamepad."
+			+ "\n  " + "!kick\t\t\t   |\tKick user from the room."
+			+ "\n  " + "!strip\t\t\t |\tStrip gamepad from player's hand."
+			+ "\n  " + "!limit\t\t\t   |\tSet the maximum amount of pads a guest can hold."
+			+ "\n  " + "!unban\t\t   |\tUnban a guest."
+			;
+
+		const string god_commands = string()
+			+ admin_commands
+			+ "\n  " + ""
+			+ "\n  " + "---- God Commands ----"
 			+ "\n  " + "!gameid\t\t|\tSet game id."
 			+ "\n  " + "!guests\t\t  |\tSet the amount of room slots."
-			+ "\n  " + "!kick\t\t\t   |\tKick user from the room."
 			+ "\n  " + "!mic\t\t\t\t|\tSet microphone volume."
 			+ "\n  " + "!name\t\t\t|\tSet room name."
 			+ "\n  " + "!private\t\t |\tMake the room private."
 			+ "\n  " + "!public\t\t   |\tMake the room public."
 			+ "\n  " + "!q\t\t\t\t\t |\tClose stream."
-			+ "\n  " + "!limit\t\t\t   |\tSet the maximum amount of pads a guest can hold."
 			+ "\n  " + "!setconfig\t |\tApply config changes."
 			+ "\n  " + "!speakers\t  |\tSet speakers volume."
-			+ "\n  " + "!unban\t\t   |\tUnban a guest."
 			;
 
+		Tier tier = _tierList.getTier(_sender.userID);
+		string commandList = pleb_commands;
+		if		(tier == Tier::ADMIN)	commandList = admin_commands;
+		else if	(tier == Tier::GOD)		commandList = god_commands;
+		else							commandList = pleb_commands;
+
 		_replyMessage =
-			std::string("[ChatBot] | Command list: ")
-			+ (_isAdmin ? admin_commands : pleb_commands)
+			string("[ChatBot] | Command list: ")
+			+ commandList
 			+ "\n\0";
 
 		return true;
@@ -60,6 +76,7 @@ public:
 	}
 
 protected:
-	bool &_isAdmin;
+	Guest& _sender;
+	TierList& _tierList;
 };
 

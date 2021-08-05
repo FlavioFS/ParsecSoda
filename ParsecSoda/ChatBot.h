@@ -9,6 +9,7 @@
 #include "Stringer.h"
 #include "GamepadClient.h"
 #include "DX11.h"
+#include "TierList.h"
 
 #include "Commands/ACommand.h"
 #include "Commands/CommandAFK.h"
@@ -49,16 +50,16 @@ class ChatBot
 public:
 
 	ChatBot(
-		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11 &dx11,
-		GamepadClient& gamepadClient, GuestList &guests, GuestDataList &guestHistory, ParsecDSO* parsec, ParsecHostConfig &hostConfig,
-		ParsecSession& parsecSession, SFXList& sfxList, bool &hostingLoopController, Guest& host
+		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11& dx11,
+		GamepadClient& gamepadClient, GuestList& guests, GuestDataList& guestHistory, ParsecDSO* parsec, ParsecHostConfig& hostConfig,
+		ParsecSession& parsecSession, SFXList& sfxList, TierList& _tierList, bool& hostingLoopController, Guest& host
 	)
 		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
 		_guests(guests), _guestHistory(guestHistory), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
-		_sfxList(sfxList), _hostingLoopController(hostingLoopController), _host(host)
+		_sfxList(sfxList), _tierList(_tierList), _hostingLoopController(hostingLoopController), _host(host)
 	{}
 
-	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool& isAdmin, bool isHost = false);
+	ACommand * identifyUserDataMessage(const char* msg, Guest& sender, bool isHost = false);
 
 	const uint32_t getLastUserId() const;
 	void setLastUserId(const uint32_t lastId = BOT_GUESTID);
@@ -87,7 +88,8 @@ private:
 	GuestDataList& _guestHistory;
 	ParsecHostConfig &_hostConfig;
 	ParsecSession &_parsecSession;
-	SFXList _sfxList;
+	SFXList& _sfxList;
+	TierList& _tierList;
 	bool &_hostingLoopController;
 	Guest& _host;
 };

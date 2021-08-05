@@ -1,47 +1,55 @@
 #include "ChatBot.h"
 
 
-ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool &isAdmin, bool isHost)
+ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool isHost)
 {
 	const uint32_t previous = this->_lastUserId;
 
 	setLastUserId(BOT_GUESTID);
 
 	// Pleb commands
-	if		(msgIsEqual(msg, CommandAFK::prefixes()))			return new CommandAFK(_guests, _gamepadClient);
-	else if	(msgStartsWith(msg, CommandBonk::prefixes()))		return new CommandBonk(msg, sender, _guests, _dice, _host);
-	else if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
-	else if	(msgIsEqual(msg, CommandHelp::prefixes()))			return new CommandHelp(isAdmin);
-	else if (CommandIpFilter::containsIp(msg))					return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
-	else if (msgIsEqual(msg, CommandJoin::prefixes()))			return new CommandJoin();
-	else if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
-	else if (msgIsEqual(msg, CommandOne::prefixes()))			return new CommandOne(sender, _gamepadClient);
-	else if (msgIsEqual(msg, CommandPads::prefixes()))			return new CommandPads(_gamepadClient);
-	else if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);
-	else if (msgStartsWith(msg, CommandSwap::prefixes()))		return new CommandSwap(msg, sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandAFK::prefixes()))		return new CommandAFK(_guests, _gamepadClient);
+	if (msgStartsWith(msg, CommandBonk::prefixes()))	return new CommandBonk(msg, sender, _guests, _dice, _host);
+	if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandHelp::prefixes()))		return new CommandHelp(sender, _tierList);
+	if (CommandIpFilter::containsIp(msg))				return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
+	if (msgIsEqual(msg, CommandJoin::prefixes()))		return new CommandJoin();
+	if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandOne::prefixes()))		return new CommandOne(sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandPads::prefixes()))		return new CommandPads(_gamepadClient);
+	if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);
+	if (msgStartsWith(msg, CommandSwap::prefixes()))	return new CommandSwap(msg, sender, _gamepadClient);
+	
+
+	Tier tier = _tierList.getTier(sender.userID);
 
 	// Admin commands
-	if (isAdmin)
+	if (tier == Tier::ADMIN)
 	{
-		if		(msgStartsWith(msg, CommandBan::prefixes()))		return new CommandBan(msg, sender, _parsec, _guests, _guestHistory, _ban);
-		else if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
-		else if	(msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
-		else if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
-		else if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests, isHost);
-		else if (msgStartsWith(msg, CommandLimit::prefixes()))		return new CommandLimit(msg, _guests, _gamepadClient);
-		else if (msgStartsWith(msg, CommandMic::prefixes()))		return new CommandMic(msg, _audioIn);
-		else if (msgStartsWith(msg, CommandName::prefixes()))		return new CommandName(msg, _hostConfig);
-		else if (msgIsEqual(msg, CommandPrivate::prefixes()))		return new CommandPrivate(_hostConfig);
-		else if (msgIsEqual(msg, CommandPublic::prefixes()))		return new CommandPublic(_hostConfig);
-		else if	(msgIsEqual(msg, CommandQuit::prefixes()))			return new CommandQuit(_hostingLoopController);
-		else if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
-		else if (msgStartsWith(msg, CommandStrip::prefixes()))		return new CommandStrip(msg, sender, _gamepadClient);
-		else if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioOut);
-		else if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban, _guestHistory);
+		if (msgStartsWith(msg, CommandBan::prefixes()))			return new CommandBan(msg, sender, _parsec, _guests, _guestHistory, _ban);
+		if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
+		if (msgStartsWith(msg, CommandKick::prefixes()))		return new CommandKick(msg, sender, _parsec, _guests, isHost);
+		if (msgStartsWith(msg, CommandLimit::prefixes()))		return new CommandLimit(msg, _guests, _gamepadClient);
+		if (msgStartsWith(msg, CommandStrip::prefixes()))		return new CommandStrip(msg, sender, _gamepadClient);
+		if (msgStartsWith(msg, CommandUnban::prefixes()))		return new CommandUnban(msg, sender, _ban, _guestHistory);
+	}
+
+	// God commands
+	if (tier == Tier::GOD)
+	{
+		if (msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
+		if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
+		if (msgStartsWith(msg, CommandMic::prefixes()))			return new CommandMic(msg, _audioIn);
+		if (msgStartsWith(msg, CommandName::prefixes()))		return new CommandName(msg, _hostConfig);
+		if (msgIsEqual(msg, CommandPrivate::prefixes()))		return new CommandPrivate(_hostConfig);
+		if (msgIsEqual(msg, CommandPublic::prefixes()))			return new CommandPublic(_hostConfig);
+		if (msgIsEqual(msg, CommandSetConfig::prefixes()))		return new CommandSetConfig(_parsec, &_hostConfig, _parsecSession.sessionId.c_str());
+		if (msgStartsWith(msg, CommandSpeakers::prefixes()))	return new CommandSpeakers(msg, _audioOut);
+		if (msgIsEqual(msg, CommandQuit::prefixes()))			return new CommandQuit(_hostingLoopController);
 	}
 
 	this->setLastUserId(previous);
-	return new CommandDefaultMessage(msg, sender, _lastUserId, isAdmin, isHost);
+	return new CommandDefaultMessage(msg, sender, _lastUserId, tier, isHost);
 }
 
 const uint32_t ChatBot::getLastUserId() const

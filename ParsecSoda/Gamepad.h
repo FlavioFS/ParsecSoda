@@ -54,6 +54,7 @@ public:
 	ParsecDSO * parsec;
 
 private:
+	void setState(XINPUT_STATE state);
 	bool refreshIndex();
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;

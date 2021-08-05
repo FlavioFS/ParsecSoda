@@ -11,6 +11,7 @@
 #include "LoadingRingWidget.h"
 #include "AlertWidget.h"
 #include "ConfirmPopupWidget.h"
+#include "../globals/AppColors.h"
 
 class LoginWidget
 {

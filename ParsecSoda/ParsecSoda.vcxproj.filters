@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AdminList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AudioIn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -186,11 +183,11 @@
     <ClCompile Include="Widgets\HostInfoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TierList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AdminList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AudioIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -482,6 +479,15 @@
     <ClInclude Include="Widgets\HostInfoWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TierList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GuestTier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -493,6 +499,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="icon2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\x64\Debug\icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -135,11 +135,11 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 preferences.windowY = 0;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW)) {
+            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW) || preferences.windowW < 100) {
                 preferences.windowW = 1280;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH)) {
+            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH) || preferences.windowH < 100) {
                 preferences.windowH = 720;
             }
             
@@ -260,6 +260,76 @@ bool MetadataCache::saveBannedUsers(vector<GuestData> guests)
 
     return false;
 }
+
+vector<GuestTier> MetadataCache::loadGuestTiers()
+{
+    vector<GuestTier> result;
+
+    string dirPath = getUserDir();
+    if (!dirPath.empty())
+    {
+        string filepath = dirPath + "tiers.json";
+
+        if (MTY_FileExists(filepath.c_str()))
+        {
+            MTY_JSON* json = MTY_JSONReadFile(filepath.c_str());
+            uint32_t size = MTY_JSONGetLength(json);
+
+            for (size_t i = 0; i < size; i++)
+            {
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+
+                char name[128] = "";
+                uint32_t userID, tier = 0;
+                bool tierSuccess = MTY_JSONObjGetUInt(guest, "tier", &tier);
+                bool userIDSuccess = MTY_JSONObjGetUInt(guest, "userID", &userID);
+
+                if (tierSuccess && userIDSuccess)
+                {
+                    result.push_back(GuestTier(userID, (Tier)tier));
+                }
+            }
+
+            std::sort(result.begin(), result.end(), [](const GuestTier a, const GuestTier b) {
+                return a.userID < b.userID;
+                });
+
+            MTY_JSONDestroy(&json);
+        }
+    }
+
+    return result;
+}
+
+bool MetadataCache::saveGuestTiers(vector<GuestTier> guestTiers)
+{
+    string dirPath = getUserDir();
+
+    if (!dirPath.empty())
+    {
+        string filepath = dirPath + "tiers.json";
+
+        MTY_JSON* json = MTY_JSONArrayCreate();
+
+        vector<GuestTier>::iterator gi = guestTiers.begin();
+        for (; gi != guestTiers.end(); ++gi)
+        {
+            MTY_JSON* guest = MTY_JSONObjCreate();
+
+            MTY_JSONObjSetUInt(guest, "tier", (uint32_t)(*gi).tier);
+            MTY_JSONObjSetUInt(guest, "userID", (*gi).userID);
+            MTY_JSONArrayAppendItem(json, guest);
+        }
+
+        MTY_JSONWriteFile(filepath.c_str(), json);
+        MTY_JSONDestroy(&json);
+
+        return true;
+    }
+
+    return false;
+}
+
 
 string MetadataCache::getUserDir()
 {

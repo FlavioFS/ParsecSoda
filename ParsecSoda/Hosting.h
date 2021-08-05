@@ -13,7 +13,7 @@
 #include "ParsecSession.h"
 #include "DX11.h"
 #include "matoya.h"
-#include "AdminList.h"
+#include "TierList.h"
 #include "ChatBot.h"
 #include "ChatLog.h"
 #include "Stringer.h"
@@ -70,7 +70,7 @@ public:
 	void stripGamepad(int index);
 	void setOwner(Gamepad& gamepad, Guest newOwner, int padId);
 
-	void handleMessage(const char* message, Guest& guest, bool& isAdmin, bool isHost = false);
+	void handleMessage(const char* message, Guest& guest, bool isHost = false);
 	void sendHostMessage(const char* message);
 
 	AudioIn audioIn;
@@ -89,7 +89,6 @@ private:
 	// Attributes
 	AudioMix _audioMix;
 	DX11 _dx11;
-	AdminList _adminList;
 	BanList _banList;
 	GuestDataList _guestHistory;
 	ChatBot *_chatBot;
@@ -104,6 +103,7 @@ private:
 	ParsecStatus _parsecStatus;
 	Guest _host;
 	SFXList _sfxList;
+	TierList _tierList;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;

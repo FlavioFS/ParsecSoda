@@ -32,12 +32,9 @@ Hosting::Hosting()
 	);
 
 	_sfxList.init("./sfx/custom/_sfx.json");
-
-	const vector<GuestData> admins{
-		GuestData("Melon Soda [BR]", 3888558),
-		GuestData("Melon soda Ice", 6711547)
-	};
-	_adminList = AdminList(admins);
+	
+	_tierList.loadTiers();
+	_tierList.saveTiers();
 
 	vector<GuestData> banned = MetadataCache::loadBannedUsers();
 	_banList = BanList(banned);
@@ -109,7 +106,8 @@ void Hosting::init()
 	_chatBot = new ChatBot(
 		audioIn, audioOut, _banList, _dice, _dx11,
 		_gamepadClient, _guestList, _guestHistory, _parsec,
-		_hostConfig, _parsecSession, _sfxList, _isRunning, _host
+		_hostConfig, _parsecSession, _sfxList, _tierList,
+		_isRunning, _host
 	);
 }
 
@@ -299,15 +297,17 @@ void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
 	}
 }
 
-void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin, bool isHost)
+void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 {
-	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isAdmin, isHost);
+	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isHost);
 	command->run();
 
 	// Non-blocked default message
 	if (!isFilteredCommand(command))
 	{
-		CommandDefaultMessage defaultMessage(message, guest, _chatBot->getLastUserId(), isAdmin);
+		Tier tier = _tierList.getTier(guest.userID);
+
+		CommandDefaultMessage defaultMessage(message, guest, _chatBot->getLastUserId(), tier);
 		defaultMessage.run();
 		_chatBot->setLastUserId(guest.userID);
 
@@ -334,7 +334,7 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool& isAdmin, bo
 void Hosting::sendHostMessage(const char* message)
 {
 	static bool isAdmin = true;
-	handleMessage(message, _host, isAdmin, true);
+	handleMessage(message, _host, true);
 }
 
 
@@ -426,7 +426,6 @@ void Hosting::pollEvents()
 	_isEventThreadRunning = true;
 
 	string chatBotReply;
-	bool isAdmin = false;
 
 	ParsecGuest* guests = nullptr;
 	int guestCount = 0;
@@ -439,7 +438,6 @@ void Hosting::pollEvents()
 			ParsecGuest parsecGuest = event.guestStateChange.guest;
 			ParsecGuestState state = parsecGuest.state;
 			Guest guest = Guest(parsecGuest.name, parsecGuest.userID, parsecGuest.id);
-			isAdmin = _adminList.isAdmin(guest.userID);
 			guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
 			_guestList.setGuests(guests, guestCount);
 
@@ -454,7 +452,7 @@ void Hosting::pollEvents()
 
 				if (event.userData.id == PARSEC_APP_CHAT_MSG)
 				{
-					handleMessage(msg, guest, isAdmin);
+					handleMessage(msg, guest);
 				}
 
 				ParsecFree(_parsec, msg);

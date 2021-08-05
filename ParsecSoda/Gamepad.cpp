@@ -123,14 +123,38 @@ bool Gamepad::isAttached()
 	return false;
 }
 
+void Gamepad::setState(XINPUT_STATE state)
+{
+	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
+}
+
 bool Gamepad::refreshIndex()
 {
 	if (_isAlive)
 	{
+		clearState();
 		VIGEM_ERROR err = vigem_target_x360_get_user_index(_client, pad, &_index);
-		if (VIGEM_SUCCESS(err))
+		if (!VIGEM_SUCCESS(err))
 		{
-			return _index;
+			XINPUT_STATE state = XINPUT_STATE();
+			state.Gamepad.sThumbRX = 7;
+			state.Gamepad.sThumbRY = 19;
+
+			setState(state);
+			
+			XINPUT_STATE iState = XINPUT_STATE();
+			for (size_t i = 0; i < XUSER_MAX_COUNT; ++i)
+			{
+				XInputGetState(i, &iState);
+				if (iState.Gamepad.sThumbRX == state.Gamepad.sThumbRX && iState.Gamepad.sThumbRY == state.Gamepad.sThumbRY)
+				{
+					_index = i;
+					clearState();
+					break;
+				}
+			}
+
+			clearState();
 		}
 	}
 

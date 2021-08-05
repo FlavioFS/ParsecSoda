@@ -389,5 +389,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
-Empty/Mock.h
-ParsecSoda/sfx/custom/*.wav
+ParsecSoda/sfx/custom/

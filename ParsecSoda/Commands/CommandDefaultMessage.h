@@ -4,14 +4,15 @@
 #include <sstream>
 #include "ACommand.h"
 #include "../Guest.h"
+#include "../Tier.h"
 
 class CommandDefaultMessage : public ACommand
 {
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::DEFAULT_MESSAGE; }
 
-	CommandDefaultMessage(const char* msg, Guest &sender, uint32_t lastUserID, bool isAdmin = false, bool isHost = false)
-		: _msg(msg), _sender(sender), _lastUserID(lastUserID), _isAdmin(isAdmin), _isHost(isHost)
+	CommandDefaultMessage(const char* msg, Guest &sender, uint32_t lastUserID, Tier tier, bool isHost = false)
+		: _msg(msg), _sender(sender), _lastUserID(lastUserID), _tier(tier), _isHost(isHost)
 	{}
 
 	bool run() override
@@ -20,8 +21,8 @@ public:
 		if (_sender.userID != _lastUserID)
 		{
 			static string role = "";
-			if (_isHost) role = "#  ";
-			else if (_isAdmin) role = "$  ";
+			if (_isHost || _tier == Tier::GOD) role = "#  ";
+			else if (_tier == Tier::ADMIN) role = "$  ";
 			else role = ">  ";
 			
 			if (_sender.isValid())
@@ -53,6 +54,6 @@ protected:
 	string _msg;
 	Guest &_sender;
 	uint32_t _lastUserID;
-	bool _isAdmin;
+	Tier _tier;
 	bool _isHost;
 };

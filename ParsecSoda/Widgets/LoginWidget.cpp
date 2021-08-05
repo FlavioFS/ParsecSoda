@@ -34,7 +34,7 @@ void LoginWidget::render(bool& isValidSession)
     ImGui::SetCursorPosX((size.x - 210.0f) * 0.5f);
     AppFonts::pushSugoiDekai();
     static ImVec4 loginTitleColor = ImVec4(0.00f, 0.96f, 0.68f, 1.00f);
-    AppColors::pushColor(loginTitleColor);
+    AppColors::pushColor(AppColors::primary);
     ImGui::Text("Parsec Soda");
     AppColors::pop();
     AppFonts::pop();

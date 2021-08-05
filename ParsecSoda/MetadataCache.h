@@ -7,6 +7,7 @@
 #include <ShlObj.h>
 #include "matoya.h"
 #include "GuestData.h"
+#include "GuestTier.h"
 
 using namespace std;
 
@@ -47,6 +48,9 @@ public:
 
 	static vector<GuestData> loadBannedUsers();
 	static bool saveBannedUsers(vector<GuestData> guests);
+
+	static vector<GuestTier> loadGuestTiers();
+	static bool saveGuestTiers(vector<GuestTier> guestTiers);
 
 	static Preferences preferences;
 

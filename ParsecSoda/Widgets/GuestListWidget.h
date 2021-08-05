@@ -17,7 +17,7 @@ public:
 private:
 	void renderOnlineGuests();
 	void renderBannedGuests();
-	void renderAllowedGuests();
+	void renderHistoryGuests();
 
 	// Dependency injection
 	Hosting& _hosting;
