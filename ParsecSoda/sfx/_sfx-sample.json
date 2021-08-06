@@ -1,0 +1,184 @@
+{
+    "sfx": [
+        {
+            "tag": "alert",
+            "path": "mg-alert.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "amigo",
+            "path": "amigo.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "avengers",
+            "path": "avengers.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "ayaya",
+            "path": "ayaya.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "bruh",
+            "path": "bruh.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "chaves",
+            "path": "chaves.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "clap",
+            "path": "clap.wav",
+            "cooldown": 10
+        },
+        {
+            "tag": "coffin dance",
+            "path": "coffin-dance.wav",
+            "cooldown": 10
+        },
+        {
+            "tag": "continue",
+            "path": "continue.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "deja vu",
+            "path": "deja-vu.wav",
+            "cooldown": 10
+        },
+        {
+            "tag": "dorime",
+            "path": "dorime.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "gg",
+            "path": "gg.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "golden wind",
+            "path": "golden-wind.wav",
+            "cooldown": 40
+        },
+        {
+            "tag": "hehe boi",
+            "path": "heheboi.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "ussr",
+            "path": "ky0resu.wav",
+            "cooldown": 20
+        },
+        {
+            "tag": "naruto 1",
+            "path": "naruto-battle.wav",
+            "cooldown": 25
+        },
+        {
+            "tag": "naruto 2",
+            "path": "naruto-battle-2.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "naruto sad",
+            "path": "naruto-sad.wav",
+            "cooldown": 20
+        },
+        {
+            "tag": "noice",
+            "path": "noice.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "nope",
+            "path": "nope.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "ooff",
+            "path": "ooff.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "praca",
+            "path": "praca.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "prassodia",
+            "path": "prassodia.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "quack",
+            "path": "quack.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "replay",
+            "path": "replay.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "run",
+            "path": "run.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "run 90s",
+            "path": "run-90s.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "titanic",
+            "path": "titanic.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "tuturu",
+            "path": "tuturu.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "victory",
+            "path": "victory.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "wide putin",
+            "path": "wide-putin.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "wonky",
+            "path": "wonky.wav",
+            "cooldown": 15
+        },
+        {
+            "tag": "wow",
+            "path": "wow.wav",
+            "cooldown": 5
+        },
+        {
+            "tag": "xfiles",
+            "path": "xfiles.wav",
+            "cooldown": 20
+        },
+        {
+            "tag": "yes",
+            "path": "yes.wav",
+            "cooldown": 10
+        },
+        {
+            "tag": "zelda",
+            "path": "zelda.wav",
+            "cooldown": 5
+        }
+    ]
+}
