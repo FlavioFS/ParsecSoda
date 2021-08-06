@@ -89,6 +89,8 @@ In order to share executables, one must replace the Personal API in ParsecSessio
  4. Make your local changes.
  5. Submit a pull request.
 
+You can also check my [Trello board here](https://trello.com/b/ysqWImSD/parsec-soda).
+
 <br>
 
 <a id="instructions"></a>
