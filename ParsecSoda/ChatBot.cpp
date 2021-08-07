@@ -24,7 +24,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	Tier tier = _tierList.getTier(sender.userID);
 
 	// Admin commands
-	if (tier == Tier::ADMIN)
+	if (tier >= Tier::ADMIN || isHost)
 	{
 		if (msgStartsWith(msg, CommandBan::prefixes()))			return new CommandBan(msg, sender, _parsec, _guests, _guestHistory, _ban);
 		if (msgStartsWith(msg, CommandDC::prefixes()))			return new CommandDC(msg, _gamepadClient);
@@ -35,7 +35,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	}
 
 	// God commands
-	if (tier == Tier::GOD)
+	if (tier >= Tier::GOD || isHost)
 	{
 		if (msgStartsWith(msg, CommandGameId::prefixes()))		return new CommandGameId(msg, _hostConfig);
 		if (msgStartsWith(msg, CommandGuests::prefixes()))		return new CommandGuests(msg, _hostConfig);
