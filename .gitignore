@@ -390,3 +390,4 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 ParsecSoda/sfx/custom/
+!Dependencies/vigem/[Bb]in
