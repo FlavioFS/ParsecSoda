@@ -27,6 +27,7 @@ private:
 	void attemptLogin();
 	char _email[128] = "";
 	char _password[128] = "";
+	char _2fa[128] = "";
 	string _sessionError;
 	int _sessionStatus;
 	bool _showError = false;

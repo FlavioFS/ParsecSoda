@@ -11,7 +11,7 @@ void LoginWidget::render(bool& isValidSession)
 		return;
 
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(352, 400), ImVec2(352, 600));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(352, 585), ImVec2(352, 585));
 	ImGui::Begin(
         "Login", (bool*)0,
         ImGuiWindowFlags_NoResize |
@@ -72,6 +72,17 @@ void LoginWidget::render(bool& isValidSession)
     AppStyle::pop();
     renderLoginTooltip();
 
+    ImGui::Dummy(ImVec2(0, 5));
+
+    ImGui::Text("2FA");
+    AppStyle::pushInput();
+    ImGui::SetNextItemWidth(w);
+    ImGui::InputText("##2fa", _2fa, 128);
+    AppStyle::pop();
+    TitleTooltipWidget::render(
+        "Two-Factor Authentication (2FA)",
+        "In case you have it activated"
+    );
     
     AppFonts::pushInput();
     AppColors::pushPrimary();
@@ -148,7 +159,7 @@ void LoginWidget::attemptLogin()
         _isLoginLocked = true;
         LoadingRingWidget::render(true);
         _loginThread = thread([&]() {
-            _hosting.getSession().fetchSession(_email, _password, "");
+            _hosting.getSession().fetchSession(_email, _password, _2fa);
 
             if (!_hosting.getSession().isValid())
             {
