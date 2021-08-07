@@ -15,6 +15,7 @@
 #include "IntRangeWidget.h"
 #include "BoolButtonWidget.h"
 #include "AudioControlWidget.h"
+#include <chrono>
 
 class HostSettingsWidget
 {
@@ -47,5 +48,10 @@ private:
 	char _secretLink[128];
 	int32_t _maxGuests;
 	bool _publicGame;
+
+	int _micVolume = 80;
+	int _speakersVolume = 30;
+
+	const unsigned int VOLUME_DEBOUNCE_MS = 1000;
 };
 

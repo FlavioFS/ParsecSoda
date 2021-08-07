@@ -109,6 +109,22 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "audioOutputDevice", &preferences.audioOutputDevice)) {
                 preferences.audioOutputDevice = 0;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "micVolume", &preferences.micVolume)) {
+                preferences.micVolume = 80;
+            }
+            
+            if (!MTY_JSONObjGetBool(json, "micEnabled", &preferences.micEnabled)) {
+                preferences.micEnabled = true;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "speakersVolume", &preferences.speakersVolume)) {
+                preferences.speakersVolume = 30;
+            }
+
+            if (!MTY_JSONObjGetBool(json, "speakersEnabled", &preferences.speakersEnabled)) {
+                preferences.speakersEnabled = true;
+            }
             
             if (MTY_JSONObjGetString(json, "roomName", roomName, 256)) preferences.roomName = roomName;
             else preferences.roomName = "Let's have fun!";
@@ -168,6 +184,10 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
             
         MTY_JSONObjSetUInt(json, "audioInputDevice", preferences.audioInputDevice);
         MTY_JSONObjSetUInt(json, "audioOutputDevice", preferences.audioOutputDevice);
+        MTY_JSONObjSetUInt(json, "micVolume", preferences.micVolume);
+        MTY_JSONObjSetBool(json, "micEnabled", preferences.micEnabled);
+        MTY_JSONObjSetUInt(json, "speakersVolume", preferences.speakersVolume);
+        MTY_JSONObjSetBool(json, "speakersEnabled", preferences.speakersEnabled);
         MTY_JSONObjSetString(json, "roomName", preferences.roomName.c_str());
         MTY_JSONObjSetString(json, "gameID", preferences.gameID.c_str());
         MTY_JSONObjSetString(json, "secret", preferences.secret.c_str());

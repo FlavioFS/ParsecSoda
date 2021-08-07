@@ -21,6 +21,16 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
     }
     _publicGame = cfg.publicGame;
     _maxGuests = cfg.maxGuests;
+    
+    _micVolume = MetadataCache::preferences.micVolume;
+    _audioIn.volume = (float)_micVolume / 100.0f;
+    
+    _speakersVolume = MetadataCache::preferences.speakersVolume;
+    _audioOut.volume = (float)_speakersVolume / 100.0f;
+
+    _audioIn.isEnabled = MetadataCache::preferences.micEnabled;
+    _audioOut.isEnabled = MetadataCache::preferences.speakersEnabled;
+
     updateSecretLink();
 }
 
@@ -164,27 +174,51 @@ bool HostSettingsWidget::render()
         _audioOut.captureAudio();
     }
 
-    static int micVolume;
+    using clock = chrono::system_clock;
+    using milli = chrono::duration<double, milli>;
+    static clock::time_point beforeVolume = clock::now();
+    static milli duration;
+    static int previousMicVolume, previousSpeakersVolume;
+    static bool isVolumeChanged = false;
+    previousMicVolume = _micVolume;
+    previousSpeakersVolume = _speakersVolume;
+
     static float micPreview, targetPreview;
-    micVolume = (int)(100.0f * _audioIn.volume);
+    _micVolume = (int)(100.0f * _audioIn.volume);
     targetPreview = AudioTools::decibelToFloat(_audioIn.popPreviewDecibel());
     micPreview = lerp(micPreview, targetPreview, easing(targetPreview - micPreview));
-    if (AudioControlWidget::render("Microphone", &micVolume, _audioIn.isEnabled, micPreview, AppIcons::micOn, AppIcons::micOff))
+    if (AudioControlWidget::render("Microphone", &_micVolume, _audioIn.isEnabled, micPreview, AppIcons::micOn, AppIcons::micOff))
     {
         _audioIn.isEnabled = !_audioIn.isEnabled;
+        savePreferences();
     }
-    _audioIn.volume = (float)micVolume / 100.0f;
+    _audioIn.volume = (float)_micVolume / 100.0f;
 
-    static int speakersVolume;
     static float speakersPreview;
-    speakersVolume = (int)(100.0f *_audioOut.volume);
+    _speakersVolume = (int)(100.0f *_audioOut.volume);
     targetPreview = AudioTools::decibelToFloat(_audioOut.popPreviewDecibel());
     speakersPreview = lerp(speakersPreview, targetPreview, easing(targetPreview - speakersPreview));
-    if (AudioControlWidget::render("Speakers", &speakersVolume, _audioOut.isEnabled, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
+    if (AudioControlWidget::render("Speakers", &_speakersVolume, _audioOut.isEnabled, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
     {
         _audioOut.isEnabled = !_audioOut.isEnabled;
+        savePreferences();
     }
-    _audioOut.volume = (float)speakersVolume / 100.0f;
+    _audioOut.volume = (float)_speakersVolume / 100.0f;
+
+    if (_micVolume != previousMicVolume || _speakersVolume != previousSpeakersVolume)
+    {
+        beforeVolume = clock::now();
+        isVolumeChanged = true;
+    }
+    else if (isVolumeChanged)
+    {
+        duration = clock::now() - beforeVolume;
+        if (duration.count() >= VOLUME_DEBOUNCE_MS)
+        {
+            savePreferences();
+            isVolumeChanged = false;
+        }
+    }
 
     AppStyle::pop();
     ImGui::End();
@@ -200,6 +234,10 @@ void HostSettingsWidget::savePreferences()
     MetadataCache::preferences.guestCount = _maxGuests;
     MetadataCache::preferences.publicRoom = _publicGame;
     MetadataCache::preferences.secret = _secret;
+    MetadataCache::preferences.micVolume = _micVolume;
+    MetadataCache::preferences.micEnabled = _audioIn.isEnabled;
+    MetadataCache::preferences.speakersVolume = _speakersVolume;
+    MetadataCache::preferences.speakersEnabled = _audioOut.isEnabled;
     MetadataCache::savePreferences();
 }
 

@@ -27,6 +27,10 @@ public:
 	public:
 		unsigned int audioInputDevice = 0;
 		unsigned int audioOutputDevice = 0;
+		unsigned int micVolume = 80;
+		bool micEnabled = true;
+		unsigned int speakersVolume = 30;
+		bool speakersEnabled = true;
 		string roomName = "";
 		string gameID = "";
 		string secret = "";
