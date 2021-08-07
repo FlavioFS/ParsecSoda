@@ -353,8 +353,6 @@ void Hosting::initAllModules()
 		_gamepadClient.sortGamepads();
 		_connectGamepadsThread.detach();
 	});
-	//_gamepadClient.setLimit(3888558, 0);		// Remove myself
-	//_gamepadClient.setLimit(6711547, 0);
 
 	parsecArcadeStart();
 }

@@ -81,7 +81,7 @@ void LoginWidget::render(bool& isValidSession)
     AppStyle::pop();
     TitleTooltipWidget::render(
         "Two-Factor Authentication (2FA)",
-        "In case you have it activated"
+        "Only fill this if you have 2FA enabled at your account.\nLeave blank otherwise."
     );
     
     AppFonts::pushInput();
