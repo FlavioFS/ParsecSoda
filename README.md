@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 <h1 name="metrix-home" align="center">
 	<img align="center" src="github/logo.png">
     <br>
@@ -173,4 +175,4 @@ If you want to make use of custom sound effects, see the [README file](ParsecSod
 
 <br>
 
-<h3 align="center"><a href="#summary">:back:</a></div>
+<h3 align="center"><a href="#top">:back:</a></div>
