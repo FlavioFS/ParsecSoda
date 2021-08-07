@@ -10,9 +10,16 @@
 
 <br>
 
+<h3 align="center">
+	:thumbsup: Leave a star and fork this repo if you like this project! :wink:
+</h3>
+
+<br>
+
 <a id="summary"></a>
 # :clipboard: Summary
  + [Video Demos](#demos)
+ + [Social Networks](#social)
  + [What is Parsec Soda?](#about)
  + [What Parsec Soda is not about?](#about-not)
  + [License](#license)
@@ -24,8 +31,15 @@
 
 <a id="demos"></a>
 # :tv: Video Demos
-## [Video 1: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
-## [Video 2: - Explanation and Nucleuscoop integration](https://www.youtube.com/watch?v=af_RHzN_oGI)
+### [Video 1: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
+### [Video 2: - Explanation and Nucleuscoop integration](https://www.youtube.com/watch?v=af_RHzN_oGI)
+
+<br>
+
+<a id="social"></a>
+# :mega: Social
+### [**Discord Server** - Parsec Soda](https://discord.gg/6RjwckWUhk)
+### [**Linktree** - My personal networks](https://linktr.ee/flafdraws)
 
 <br>
 
