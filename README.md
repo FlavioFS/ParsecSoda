@@ -215,6 +215,14 @@ static const float FPS = 60.0f;
 
 :warning: The lower the FPS value, the longer the pixelized effect from frame compression will last.
 
+## 6. My window disappeared! I start ParsecSoda and nothing shows up anymore!
+*Be not afraid.* 👁👁👁👄👁👁👁
+
+For our convenience, ParsecSoda caches window size and position. BUT. Sometimes (rarely) Windows fails to render the window or some error occurs and ParsecSoda accidentaly saves an invalid window size - like (0, 0) - or an invalid window position - like (32767, 32767).
+
+If that is the case, you can manually edit your preferences at *{user folder}/AppData/Roaming/ParsecSoda/preferences.json*.
+
+
 <br>
 
 <h3 align="center"><a href="#top">:back:</a></div>
