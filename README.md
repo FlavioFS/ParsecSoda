@@ -181,9 +181,15 @@ Use the Windows sound Mixer to change the volume of Parsec Soda app, that will o
 ## 4. I have audio glitches.
 That is because your audio output is at 48khz, so you have 2 options:
 
- 1. Set your audio output to 48khz 16-bit.
- 2. Go to [**AudioOut.cpp**](ParsecSoda/AudioOut.cpp), line 7.  
- 3. Replace the frequency levels (44100 -> 48000).
+### Option 1. Set your audio output to 44.1khz 16-bit.
+ 1. Go to Windows Sound Outputs.
+ 2. Choose your output device, go to Properties.
+ 3. Advanced tab.
+ 4. Change device frequency to 44.1Khz and bitrate to 16-bit.
+
+### Option 2. Rebuild ParsecSoda to 48khz.
+ 1. Go to [**AudioOut.cpp**](ParsecSoda/AudioOut.cpp), line 7.  
+ 2. Replace the frequency levels (44100 -> 48000).
  ```cpp
 // Replace this:
 #define AUDIO_OUT_DEFAULT_FREQUENCY 44100
@@ -191,7 +197,7 @@ That is because your audio output is at 48khz, so you have 2 options:
 // With this:
 #define AUDIO_OUT_DEFAULT_FREQUENCY 48000
 ```
- 4. Rebuild the executable.
+ 3. Rebuild the executable.
  5. You may want to do the same for [**AudioInput.cpp**](ParsecSoda/AudioOut.cpp) if you have issues with the microphone.
 
 ## 5. I want to lower badwidth usage even if it reduces stream quality.
