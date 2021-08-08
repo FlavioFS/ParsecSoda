@@ -28,6 +28,7 @@
  + [Features](#features)
  + [How to contribute?](#contributing)
  + [Build Instructions](#instructions)
+ + [FAQ](#faq)
 
 <br>
 
@@ -159,7 +160,9 @@ The building process is not trivial, so I'll guide you through the process and p
 
 <br>
 
-## About user preferences
+<a id="summary"></a>
+# FAQ
+## 1. How do I edit user preferences manually?
 In case you want to manually edit user preferences like blocked list, window size and position, room settings, user roles, or even your session cache, all of them are located at the user path: *{user folder}/AppData/Roaming/ParsecSoda*. This is the list of files and what they do:
 
 | File | Handles |
@@ -169,9 +172,42 @@ In case you want to manually edit user preferences like blocked list, window siz
 | session.json | Your account session cache. **DO NOT SHARE THIS**, it is sensitive data that allows people to login your account directly, even though it is cryptographed. |
 | tiers.json | A list of user tiers. |
 
-
-## About custom sound effects
+## 2. How do I create custom sound effects?
 If you want to make use of custom sound effects, see the [README file](ParsecSoda/sfx/README.md) in Sound Effects folder.
+
+## 3. The volume of sound effects is too loud!!
+Use the Windows sound Mixer to change the volume of Parsec Soda app, that will only affect the SFX (mic and speakers levels will remain unchanged).
+
+## 4. I have audio glitches.
+That is because your audio output is at 48khz, so you have 2 options:
+
+ 1. Set your audio output to 48khz 16-bit.
+ 2. Go to [**AudioOut.cpp**](ParsecSoda/AudioOut.cpp), line 7.  
+ 3. Replace the frequency levels (44100 -> 48000).
+ ```cpp
+// Replace this:
+#define AUDIO_OUT_DEFAULT_FREQUENCY 44100
+
+// With this:
+#define AUDIO_OUT_DEFAULT_FREQUENCY 48000
+```
+ 4. Rebuild the executable.
+ 5. You may want to do the same for [**AudioInput.cpp**](ParsecSoda/AudioOut.cpp) if you have issues with the microphone.
+
+## 5. I want to lower badwidth usage even if it reduces stream quality.
+ 1. Go to [**Hosting.cpp**](ParsecSoda/Hosting.cpp), line 367.
+ 2. Replace FPS value (250 -> 120 or 60):
+
+```cpp
+// Replace this:
+static const float FPS = 250.0f;
+
+// With this:
+static const float FPS = 60.0f;
+```
+ 3. Rebuild the executable.
+
+:warning: The lower the FPS value, the longer the pixelized effect from frame compression will last.
 
 <br>
 
