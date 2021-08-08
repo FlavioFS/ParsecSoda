@@ -222,6 +222,17 @@ For our convenience, ParsecSoda caches window size and position. BUT. Sometimes 
 
 If that is the case, you can manually edit your preferences at *{user folder}/AppData/Roaming/ParsecSoda/preferences.json*.
 
+These settings should work fine:
+```json
+{
+	"windowX": 0,
+	"windowY": 0,
+	"windowW": 1280,
+	"windowH": 720
+}
+```
+
+> I've been trying to fix that issue, but it is complicated due to so many possible setups.
 
 <br>
 

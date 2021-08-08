@@ -143,19 +143,20 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 preferences.publicRoom = false;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowX", &preferences.windowX)) {
+            static int LIMIT_POS = 4096 * 2;
+            if (!MTY_JSONObjGetInt(json, "windowX", &preferences.windowX) || preferences.windowX < -LIMIT_POS || preferences.windowX > LIMIT_POS) {
                 preferences.windowX = 0;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowY", &preferences.windowY)) {
+            if (!MTY_JSONObjGetInt(json, "windowY", &preferences.windowY) || preferences.windowY < -LIMIT_POS || preferences.windowY > LIMIT_POS) {
                 preferences.windowY = 0;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW) || preferences.windowW < 100) {
+            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW) || preferences.windowW < 400) {
                 preferences.windowW = 1280;
             }
 
-            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH) || preferences.windowH < 100) {
+            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH) || preferences.windowH < 400) {
                 preferences.windowH = 720;
             }
             
@@ -193,8 +194,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetString(json, "secret", preferences.secret.c_str());
         MTY_JSONObjSetUInt(json, "guestCount", preferences.guestCount);
         MTY_JSONObjSetBool(json, "publicRoom", preferences.publicRoom);
-        MTY_JSONObjSetUInt(json, "windowX", preferences.windowX);
-        MTY_JSONObjSetUInt(json, "windowY", preferences.windowY);
+        MTY_JSONObjSetInt(json, "windowX", preferences.windowX);
+        MTY_JSONObjSetInt(json, "windowY", preferences.windowY);
         MTY_JSONObjSetUInt(json, "windowW", preferences.windowW);
         MTY_JSONObjSetUInt(json, "windowH", preferences.windowH);
 
