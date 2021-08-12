@@ -34,8 +34,14 @@
 
 <a id="demos"></a>
 # :tv: Video Demos
-### [Video 1: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
-### [Video 2: - Explanation and Nucleuscoop integration](https://www.youtube.com/watch?v=af_RHzN_oGI)
+### [Video 1: - Trailer](https://www.youtube.com/watch?v=oIn0dTWHExg)
+<a href="https://youtu.be/u929KNLovj0"><img width=400 src="https://i.ytimg.com/vi/u929KNLovj0/maxresdefault.jpg"/></a>
+
+### [Video 2: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
+<a href="https://youtu.be/oIn0dTWHExg"><img width=400 src="https://i.ytimg.com/vi/oIn0dTWHExg/maxresdefault.jpg"/></a>
+
+### [Video 3: - Explanation and Nucleuscoop integration](https://youtu.be/af_RHzN_oGI)
+<a href="https://youtu.be/af_RHzN_oGI"><img width=400 src="https://i.ytimg.com/vi/af_RHzN_oGI/maxresdefault.jpg"/></a>
 
 <br>
 
