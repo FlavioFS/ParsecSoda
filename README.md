@@ -167,7 +167,7 @@ The building process is not trivial, so I'll guide you through the process and p
 <br>
 
 <a id="summary"></a>
-# FAQ
+# :question: FAQ
 ## 1. How do I edit user preferences manually?
 In case you want to manually edit user preferences like blocked list, window size and position, room settings, user roles, or even your session cache, all of them are located at the user path: *{user folder}/AppData/Roaming/ParsecSoda*. This is the list of files and what they do:
 
