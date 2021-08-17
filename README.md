@@ -34,7 +34,7 @@
 
 <a id="demos"></a>
 # :tv: Video Demos
-### [Video 1: - Trailer](https://www.youtube.com/watch?v=oIn0dTWHExg)
+### [Video 1: - Trailer](https://youtu.be/u929KNLovj0)
 <a href="https://youtu.be/u929KNLovj0"><img width=400 src="https://i.ytimg.com/vi/u929KNLovj0/maxresdefault.jpg"/></a>
 
 ### [Video 2: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
