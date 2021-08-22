@@ -7,11 +7,13 @@ void NavBar::render(
 	bool& showChat,
 	bool& showGuests,
 	bool& showLog,
-	bool& showAudio
+	bool& showAudio,
+	bool& showVideo,
+	bool& showInfo
 )
 {
 	static ImVec2 iconSize = ImVec2(24, 24);
-	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*7 + 8*11);
+	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*7 + 8*20);
 	static ImVec2 zero = ImVec2(0, 0);
 	static ImVec2 padding = ImVec2(8, 8);
 	
@@ -47,6 +49,12 @@ void NavBar::render(
 
 	if (ToggleIconButtonWidget::render(AppIcons::speakersOn, AppIcons::speakersOn, showAudio, iconSize)) showAudio = !showAudio;
 	renderNavtooltip("Audio", showAudio);
+
+	if (ToggleIconButtonWidget::render(AppIcons::video, AppIcons::video, showVideo, iconSize)) showVideo = !showVideo;
+	renderNavtooltip("Video", showVideo);
+
+	if (ToggleIconButtonWidget::render(AppIcons::info, AppIcons::info, showInfo, iconSize)) showInfo = !showInfo;
+	renderNavtooltip("About", showInfo);
 
 	if (IconButton::render(AppIcons::logoff, AppColors::primary, iconSize)) showLogin = !showLogin;
 	TitleTooltipWidget::render("Log off", "Go back to log in screen.");

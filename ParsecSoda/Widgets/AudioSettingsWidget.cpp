@@ -14,7 +14,7 @@ bool AudioSettingsWidget::render()
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 275), ImVec2(600, 500));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 550), ImVec2(600, 700));
     ImGui::Begin("Audio");
     AppStyle::pushLabel();
 
@@ -22,9 +22,6 @@ bool AudioSettingsWidget::render()
     static ImVec2 pos;
     size = ImGui::GetContentRegionAvail();
     pos = ImGui::GetWindowPos();
-
-    
-    ImGui::Dummy(dummySize);
 
     if (!_hosting.isRunning() && _hosting.isReady())
     {
@@ -38,7 +35,20 @@ bool AudioSettingsWidget::render()
     // =============================================================
     static UINT& currentInputDevice = _audioIn.currentDevice.id;
     ImGui::SetNextItemWidth(size.x);
+
+    AppFonts::pushTitle();
+    AppColors::pushInput();
+    ImGui::Text("Microphone");
+    AppColors::pop();
+    AppFonts::pop();
+
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+    AppStyle::pushLabel();
+    ImGui::Text("Source");
+    AppStyle::pop();
     AppFonts::pushInput();
+    ImGui::SetNextItemWidth(size.x);
     if (ImGui::BeginCombo("##input selection", _audioIn.currentDevice.name.c_str()))
     {
         for (size_t i = 0; i < _inputs.size(); i++)
@@ -60,6 +70,26 @@ bool AudioSettingsWidget::render()
     }
     AppFonts::pop();
 
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+    static int micFrequencyIndex = frequencyToCombo(_audioIn.getFrequency());
+    AppStyle::pushLabel();
+    ImGui::Text("Frequency");
+    AppStyle::pop();
+    AppStyle::pushInput();
+    ImGui::SetNextItemWidth(size.x);
+    if (ImGui::Combo("###Mic Frequency", &micFrequencyIndex, " 44100 Hz\0 48000 Hz\0\0", 2))
+    {
+        _audioIn.reinit(comboToFrequency(micFrequencyIndex));
+    }
+    AppStyle::pop();
+
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+    AppStyle::pushLabel();
+    ImGui::Text("Volume");
+    AppStyle::pop();
+
     static int micVolume;
     static float micPreview, targetPreview;
     micVolume = (int)(100.0f * _audioIn.volume);
@@ -77,6 +107,18 @@ bool AudioSettingsWidget::render()
     // =============================================================
     //  Output devices
     // =============================================================
+    AppFonts::pushTitle();
+    AppColors::pushInput();
+    ImGui::Text("Speakers");
+    AppColors::pop();
+    AppFonts::pop();
+
+    ImGui::Dummy(ImVec2(0.0f, 5.0f));
+    
+    AppStyle::pushLabel();
+    ImGui::Text("Source");
+    AppStyle::pop();
+
     static size_t& currentOutputDevice = _audioOut.currentDevice.index;
     ImGui::SetNextItemWidth(size.x);
     AppFonts::pushInput();
@@ -101,6 +143,26 @@ bool AudioSettingsWidget::render()
     }
     AppFonts::pop();
 
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+    static int speakersFrequencyIndex = frequencyToCombo(_audioOut.getFrequency());
+    AppStyle::pushLabel();
+    ImGui::Text("Frequency");
+    AppStyle::pop();
+    AppStyle::pushInput();
+    ImGui::SetNextItemWidth(size.x);
+    if (ImGui::Combo("###Speakers Frequency", &speakersFrequencyIndex, " 44100 Hz\0 48000 Hz\0\0", 2))
+    {
+        _audioOut.setFrequency(comboToFrequency(speakersFrequencyIndex));
+    }
+    AppStyle::pop();
+
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+    AppStyle::pushLabel();
+    ImGui::Text("Volume");
+    AppStyle::pop();
+
     static int speakersVolume;
     static float speakersPreview;
     speakersVolume = (int)(100.0f *_audioOut.volume);
@@ -117,6 +179,36 @@ bool AudioSettingsWidget::render()
     AppStyle::pop();
 
     return true;
+}
+
+int AudioSettingsWidget::frequencyToCombo(Frequency frequency)
+{
+    switch (frequency)
+    {
+    case Frequency::F48000:
+        return 1;
+        break;
+    case Frequency::F44100:
+    default:
+        return 0;
+        break;
+    }
+    return 0;
+}
+
+Frequency AudioSettingsWidget::comboToFrequency(int index)
+{
+    switch (index)
+    {
+    case 1:
+        return Frequency::F48000;
+        break;
+    default:
+    case 0:
+        return Frequency::F44100;
+        break;
+    }
+    return Frequency::F44100;
 }
 
 float AudioSettingsWidget::lerp(float val1, float val2, float t)

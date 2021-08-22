@@ -4,12 +4,31 @@
 //   Input Sources
 // ==================================================
 #define AUDIO_IN_FREQUENCY_HZ 44100
-#define AUDIO_IN_CHANNELS 2
+//#define AUDIO_IN_CHANNELS 2
+//#define AUDIO_IN_SWAP_BUFFERS 2
+//
+//#define AUDIO_IN_BITS 16
+//#define AUDIO_IN_BYTES (AUDIO_IN_BITS/8)
+//#define AUDIO_IN_SAMPLE_COUNT (4 * AUDIO_IN_FREQUENCY_HZ / 100)								// 1764 samples
+//#define AUDIO_IN_BUFFER_SIZE (AUDIO_IN_SAMPLE_COUNT * AUDIO_IN_CHANNELS * AUDIO_IN_BYTES)
+
+//#define AUDIO_IN_FREQUENCY_HZ 44100
+
 #define AUDIO_IN_SWAP_BUFFERS 2
+#define AUDIO_IN_CHANNELS 2
 #define AUDIO_IN_BITS 16
-#define AUDIO_IN_BYTES (AUDIO_IN_BITS/8)
-#define AUDIO_IN_SAMPLE_COUNT (4 * AUDIO_IN_FREQUENCY_HZ / 100)								// 1764 samples
-#define AUDIO_IN_BUFFER_SIZE (AUDIO_IN_SAMPLE_COUNT * AUDIO_IN_CHANNELS * AUDIO_IN_BYTES)	// 7056 bytes = 1764 samples x 2 channels x 2 bytes/sample
+
+//#define AUDIO_IN_SAMPLE_COUNT (4 * AUDIO_IN_FREQUENCY_HZ / 100)								// 1764 samples
+//#define AUDIO_IN_BUFFER_SIZE (AUDIO_IN_SAMPLE_COUNT * AUDIO_IN_CHANNELS * AUDIO_IN_BYTES)	// 7056 bytes = 1764 samples x 2 channels x 2 bytes/sample
+
+/**
+* Buffer Size explained.
+* 44100 Hz / 100  == 441 == 3² * 7²
+* 48000 Hz / 1000 == 48  == 2^4 * 3
+* GCD(441, 48) == 2^4 * 3² * 7² == 7056
+* This is probably the best common ground.
+*/
+#define AUDIO_IN_BUFFER_SIZE 7056
 
 
 HWAVEIN _win;
@@ -19,9 +38,23 @@ char _buffers[AUDIO_IN_SWAP_BUFFERS][AUDIO_IN_BUFFER_SIZE];
 std::vector<int16_t> _inBuffer;
 
 
+
 // ==================================================
 //   Output Sources
 // ==================================================
+void AudioIn::setFrequency(Frequency frequency)
+{
+	_frequency = (uint32_t) frequency;
+	_wfx.nSamplesPerSec = _frequency;
+	MetadataCache::preferences.micFrequency = _frequency;
+	MetadataCache::savePreferences();
+}
+
+Frequency AudioIn::getFrequency()
+{
+	return (Frequency)_frequency;
+}
+
 bool AudioIn::init(AudioInDevice device)
 {
 	if (_win != nullptr)
@@ -36,7 +69,7 @@ bool AudioIn::init(AudioInDevice device)
 	
 	_wfx.wFormatTag = WAVE_FORMAT_PCM;
 	_wfx.nChannels = AUDIO_IN_CHANNELS;
-	_wfx.nSamplesPerSec = AUDIO_IN_FREQUENCY_HZ;
+	_wfx.nSamplesPerSec = _frequency;
 	_wfx.wBitsPerSample = AUDIO_IN_BITS;
 	_wfx.nBlockAlign = (_wfx.wBitsPerSample / 8) * _wfx.nChannels;
 	_wfx.nAvgBytesPerSec = _wfx.nBlockAlign * _wfx.nSamplesPerSec;
@@ -52,6 +85,8 @@ bool AudioIn::init(AudioInDevice device)
 		return false;
 	}
 
+	_device = device;
+
 	for (size_t i = 0; i < _wfx.nChannels; i++)
 	{
 		_headers[i].lpData = _buffers[i];
@@ -63,6 +98,17 @@ bool AudioIn::init(AudioInDevice device)
 
 	waveInStart(_win);
 	return true;
+}
+
+void AudioIn::reinit(Frequency frequency)
+{
+	_mutex.lock();
+	if (!_device.isEmpty)
+	{
+		setFrequency(frequency);
+		init(_device);
+	}
+	_mutex.unlock();
 }
 
 void AudioIn::captureAudio()

@@ -83,6 +83,7 @@ void Hosting::init()
 	audioOut.setOutputDevice(preferences.audioOutputDevice);		// TODO Fix leak in setOutputDevice
 	audioOut.captureAudio();
 	audioOut.volume = 0.3f;
+	audioOut.setFrequency((Frequency)MetadataCache::preferences.speakersFrequency);
 
 	vector<AudioInDevice> audioInputDevices = audioIn.listInputDevices();
 	if (preferences.audioInputDevice >= audioInputDevices.size()) {
@@ -91,6 +92,7 @@ void Hosting::init()
 	AudioInDevice device = audioIn.selectInputDevice(preferences.audioInputDevice);
 	audioIn.init(device);
 	audioIn.volume = 0.8f;
+	audioIn.setFrequency((Frequency)MetadataCache::preferences.micFrequency);
 
 	preferences.isValid = true;
 	MetadataCache::savePreferences(preferences);
@@ -150,6 +152,11 @@ ParsecSession& Hosting::getSession()
 ParsecHostConfig& Hosting::getHostConfig()
 {
 	return _hostConfig;
+}
+
+DX11& Hosting::getDX11()
+{
+	return _dx11;
 }
 
 vector<string>& Hosting::getMessageLog()
@@ -374,13 +381,22 @@ void Hosting::liveStreamMedia()
 		before = clock::now();
 		_dx11.captureScreen(_parsec);
 
+#if NO_MICROPHONE
+		audioOut.captureAudio();
+		if (audioOut.isReady())
+		{
+			vector<int16_t> mixBuffer = audioOut.popBuffer();
+			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+		}
+#else
 		audioIn.captureAudio();
 		audioOut.captureAudio();
 		if (audioIn.isReady() && audioOut.isReady())
 		{
 			vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
-			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
 		}
+#endif // NOMIC
 
 		duration = clock::now() - before;
 		if (duration.count() < MS_PER_FRAME)

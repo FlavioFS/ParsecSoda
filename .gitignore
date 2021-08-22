@@ -389,5 +389,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+Builds
 ParsecSoda/sfx/custom/
 !Dependencies/vigem/[Bb]in

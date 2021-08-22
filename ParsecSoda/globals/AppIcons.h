@@ -30,6 +30,8 @@ public:
 	static ID3D11ShaderResourceView* speakersOn;
 	static ID3D11ShaderResourceView* speakersOff;
 
+	static ID3D11ShaderResourceView* video;
+
 	static ID3D11ShaderResourceView* refresh;
 	static ID3D11ShaderResourceView* sort;
 	static ID3D11ShaderResourceView* submit;
@@ -43,6 +45,7 @@ public:
 	static ID3D11ShaderResourceView* userOff;
 	static ID3D11ShaderResourceView* block;
 
+	static ID3D11ShaderResourceView* info;
 	static ID3D11ShaderResourceView* logo;
 
 private:
@@ -66,6 +69,8 @@ private:
 	static Texture _micOff;
 	static Texture _speakersOn;
 	static Texture _speakersOff;
+
+	static Texture _video;
 	
 	static Texture _refresh;
 	static Texture _sort;
@@ -80,6 +85,7 @@ private:
 	static Texture _userOff;
 	static Texture _block;
 
+	static Texture _info;
 	static Texture _logo;
 };
 

@@ -21,9 +21,9 @@ D3D11_MAPPED_SUBRESOURCE _resource;
 
 void DX11::clear()
 {
-	if (_lDevice != nullptr) _lDevice->Release();
-	if (_lDeskDupl != nullptr) _lDeskDupl->Release();
-	if (_lAcquiredDesktopImage != nullptr) _lAcquiredDesktopImage->Release();
+	//if (_lDevice != NULL) _lDevice->Release();
+	if (_lDeskDupl != NULL) _lDeskDupl->Release();
+	if (_lAcquiredDesktopImage != NULL) _lAcquiredDesktopImage->Release();
 }
 
 bool DX11::recover()
@@ -52,11 +52,9 @@ bool DX11::recover()
 
 	lDxgiDevice->Release();
 
-	UINT Output = 0;
-
 	// Get output
 	IDXGIOutput *lDxgiOutput;
-	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
+	hr = lDxgiAdapter->EnumOutputs(_currentScreen, &lDxgiOutput);
 
 	if (FAILED(hr))
 	{
@@ -116,6 +114,15 @@ bool DX11::recover()
 	return true;
 }
 
+bool DX11::clearAndRecover()
+{
+	_mutex.lock();
+	clear();
+	bool result = recover();
+	_mutex.unlock();
+	return result;
+}
+
 bool DX11::init()
 {
 	int lresult(-1);
@@ -141,6 +148,8 @@ bool DX11::init()
 	if (!_lDevice)
 		return false;
 
+	fetchScreenList();
+
 	// Get DXGI device
 	IDXGIDevice *lDxgiDevice;
 	hr = _lDevice->QueryInterface(__uuidof(IDXGIAdapter), (void**)&lDxgiDevice);
@@ -163,11 +172,9 @@ bool DX11::init()
 
 	lDxgiDevice->Release();
 
-	UINT Output = 0;
-
 	// Get output
 	IDXGIOutput *lDxgiOutput;
-	hr = lDxgiAdapter->EnumOutputs(Output, &lDxgiOutput);
+	hr = lDxgiAdapter->EnumOutputs(_currentScreen, &lDxgiOutput);
 
 	if (FAILED(hr))
 	{
@@ -227,12 +234,14 @@ bool DX11::captureScreen(ParsecDSO *ps)
 {
 	if (!_lDeskDupl)
 	{
-		if (!recover())
+		if (!clearAndRecover())
 		{
 			return false;
 		}
 	}
 	
+	_mutex.lock();
+
 	HRESULT hr(E_FAIL), hr0(E_FAIL);
 	IDXGIResource *lDesktopResource = nullptr;
 	DXGI_OUTDUPL_FRAME_INFO lFrameInfo;
@@ -242,9 +251,10 @@ bool DX11::captureScreen(ParsecDSO *ps)
 	if (FAILED(hr)) {
 		_lDeskDupl->ReleaseFrame();
 
+		_mutex.unlock();
 		if (hr != DXGI_ERROR_WAIT_TIMEOUT)
 		{
-			recover();
+			clearAndRecover();
 		}
 
 		return false;
@@ -261,6 +271,84 @@ bool DX11::captureScreen(ParsecDSO *ps)
 	
 	_lDeskDupl->ReleaseFrame();
 	
-
+	_mutex.unlock();
 	return true;
+}
+
+vector<string> DX11::listScreens()
+{
+	return _screens;
+}
+
+void DX11::setScreen(UINT index)
+{
+	if (index < _screens.size())
+	{
+		_currentScreen = index;
+		MetadataCache::preferences.monitor = index;
+		MetadataCache::savePreferences();
+		clearAndRecover();
+	}
+}
+
+UINT DX11::getScreen()
+{
+	return _currentScreen;
+}
+
+void DX11::fetchScreenList()
+{
+	HRESULT hr;
+
+	// Get DXGI device
+	IDXGIDevice* lDxgiDevice = 0;
+	hr = _lDevice->QueryInterface(__uuidof(IDXGIDevice), (void**)&lDxgiDevice);
+
+	if (FAILED(hr))
+	{
+		if (lDxgiDevice != nullptr) lDxgiDevice->Release();
+		return;
+	}
+
+	// Get DXGI adapter
+	IDXGIAdapter* lDxgiAdapter;
+	hr = lDxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&lDxgiAdapter);
+
+	if (FAILED(hr))
+	{
+		if (lDxgiAdapter != nullptr) lDxgiAdapter->Release();
+		return;
+	}
+
+	lDxgiDevice->Release();
+
+	UINT screen = 0;
+	IDXGIOutput* lDxgiOutput;
+	while (lDxgiAdapter->EnumOutputs(screen, &lDxgiOutput) != DXGI_ERROR_NOT_FOUND)
+	{
+		hr = lDxgiOutput->GetDesc(&_lOutputDesc);
+
+		if (FAILED(hr))
+		{
+			_screens.push_back(
+				string() + "[" + to_string(screen) + "] " + "Unknown Adapter"
+			);
+			screen++;
+			continue;
+		}
+
+		wstring wname (_lOutputDesc.DeviceName);
+		string name (wname.begin(), wname.end());
+		int width = _lOutputDesc.DesktopCoordinates.right - _lOutputDesc.DesktopCoordinates.left;
+		int height = _lOutputDesc.DesktopCoordinates.bottom - _lOutputDesc.DesktopCoordinates.top;
+		_screens.push_back(
+			string() + "[" + to_string(screen) + "] " + name + " (" + to_string(width) + "x" + to_string(height) + ")"
+		);
+
+		lDxgiOutput->Release();
+
+		screen++;
+	}
+
+	lDxgiAdapter->Release();
 }

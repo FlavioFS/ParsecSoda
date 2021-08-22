@@ -22,6 +22,8 @@ ID3D11ShaderResourceView* AppIcons::micOff;
 ID3D11ShaderResourceView* AppIcons::speakersOn;
 ID3D11ShaderResourceView* AppIcons::speakersOff;
 
+ID3D11ShaderResourceView* AppIcons::video;
+
 ID3D11ShaderResourceView* AppIcons::refresh;
 ID3D11ShaderResourceView* AppIcons::sort;
 ID3D11ShaderResourceView* AppIcons::submit;
@@ -35,6 +37,7 @@ ID3D11ShaderResourceView* AppIcons::userOn;
 ID3D11ShaderResourceView* AppIcons::userOff;
 ID3D11ShaderResourceView* AppIcons::block;
 
+ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
 
 Texture AppIcons::_play;
@@ -58,6 +61,8 @@ Texture AppIcons::_micOff;
 Texture AppIcons::_speakersOn;
 Texture AppIcons::_speakersOff;
 
+Texture AppIcons::_video;
+
 Texture AppIcons::_refresh;
 Texture AppIcons::_sort;
 Texture AppIcons::_submit;
@@ -71,6 +76,7 @@ Texture AppIcons::_userOn;
 Texture AppIcons::_userOff;
 Texture AppIcons::_block;
 
+Texture AppIcons::_info;
 Texture AppIcons::_logo;
 
 
@@ -97,6 +103,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _speakersOn.loadFromFile(pd3dDevice, "./icons/speakers-on.png");
     _speakersOff.loadFromFile(pd3dDevice, "./icons/speakers-off.png");
 
+    _video.loadFromFile(pd3dDevice, "./icons/video.png");
+
     _refresh.loadFromFile(pd3dDevice, "./icons/refresh.png");
     _sort.loadFromFile(pd3dDevice, "./icons/sort.png");
     _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
@@ -110,6 +118,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _userOff.loadFromFile(pd3dDevice, "./icons/user-off.png");
     _block.loadFromFile(pd3dDevice, "./icons/block.png");
 
+    _info.loadFromFile(pd3dDevice, "./icons/info.png");
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
 
     play = _play.texture;
@@ -133,6 +142,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     speakersOn = _speakersOn.texture;
     speakersOff = _speakersOff.texture;
     
+    video = _video.texture;
+
     refresh = _refresh.texture;
     sort = _sort.texture;
     submit = _submit.texture;
@@ -146,5 +157,6 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     userOn = _userOn.texture;
     userOff = _userOff.texture;
 
+    info = _info.texture;
     logo = _logo.texture;
 }

@@ -18,7 +18,9 @@ public:
         bool& showChat,
         bool& showGuests,
         bool& showLog,
-        bool& showAudio
+        bool& showAudio,
+        bool& showVideo,
+        bool& showInfo
     );
 
 private:

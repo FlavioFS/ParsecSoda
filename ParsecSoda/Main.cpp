@@ -27,6 +27,10 @@
 #include "Widgets/GamepadsWidget.h"
 #include "Widgets/StylePickerWidget.h"
 #include "Widgets/AudioSettingsWidget.h"
+#include "Widgets/VideoWidget.h"
+#include "Widgets/InfoWidget.h"
+#include "Widgets/VersionWidget.h"
+#include "Widgets/HostGamepadWidget.h"
 
 using namespace std;
 
@@ -117,6 +121,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     GuestListWidget guestsWindow(g_hosting);
     GamepadsWidget gamepadsWindow(g_hosting);
     AudioSettingsWidget audioSettingswidget(g_hosting);
+    VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
@@ -129,7 +134,9 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showGuests = true;
     bool showGamepads = true;
     bool showAudio = false;
+    bool showVideo = false;
     bool showStyles = true;
+    bool showInfo = false;
 
     // =====================================================================
 
@@ -166,6 +173,8 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         // =====================================================================
         ImGui::SetMouseCursor(ImGuiMouseCursor_Arrow);
 
+        VersionWidget::render();
+
         if (isValidSession)
         {
             if (showHostSettings)   hostSettingsWindow.render();
@@ -174,13 +183,17 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showGuests)         guestsWindow.render();
             if (showGamepads)       gamepadsWindow.render();
             if (showAudio)          audioSettingswidget.render();
-            NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio);
+            if (showVideo)          videoWidget.render();
+            if (showInfo)           InfoWidget::render();
+            NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio, showVideo, showInfo);
             hostInfoWidget.render();
+            HostGamepadWidget::render();
         }
         else
         {
             loginWindow.render(isValidSession);
         }
+
         //if (showStyles)         StylePickerWidget::render();
 
         //ImGui::ShowDemoWindow();

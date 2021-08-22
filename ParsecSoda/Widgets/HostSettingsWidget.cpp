@@ -96,7 +96,7 @@ bool HostSettingsWidget::render()
         updateSecretLink();
     }
     AppColors::pop();
-    TitleTooltipWidget::render("Room Secret", "Generates the share link that lets people\njoin your room anytime.");
+    TitleTooltipWidget::render("Room Secret", "Generates the share link that lets people\njoin your room anytime.\nMust have 8 characters.");
     AppStyle::pop();
     
     ImGui::SetNextItemWidth(size.x);
