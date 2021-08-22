@@ -10,10 +10,12 @@
 	The open-source Parsec Arcade hosting tool
 </h3>
 
-<br>
-
 <h3 align="center">
 	:thumbsup: Leave a star and fork this repo if you like this project! :wink:
+</h3>
+
+<h3 align="center">
+	<a href="https://github.com/FlavioFS/ParsecSoda/releases">:inbox_tray: <b>DOWNLOAD</b> the newest version from <b>RELEASES</b> tab</a>
 </h3>
 
 <br>
@@ -28,20 +30,20 @@
  + [Features](#features)
  + [How to contribute?](#contributing)
  + [Build Instructions](#instructions)
- + [FAQ](#faq)
+ + [FAQ](https://github.com/FlavioFS/ParsecSoda/wiki)
 
 <br>
 
 <a id="demos"></a>
 # :tv: Video Demos
-### [Video 1: - Trailer](https://youtu.be/u929KNLovj0)
-<a href="https://youtu.be/u929KNLovj0"><img width=400 src="https://i.ytimg.com/vi/u929KNLovj0/maxresdefault.jpg"/></a>
 
-### [Video 2: - Fighting-game gameplay](https://www.youtube.com/watch?v=oIn0dTWHExg)
-<a href="https://youtu.be/oIn0dTWHExg"><img width=400 src="https://i.ytimg.com/vi/oIn0dTWHExg/maxresdefault.jpg"/></a>
+|[Video 1: - Trailer](https://youtu.be/u929KNLovj0)|[Video 2: - Fighting-game gameplay](https://youtu.be/oIn0dTWHExg)|
+|:---:|:---:|
+|<a href="https://youtu.be/u929KNLovj0"><img width=350 src="https://i.ytimg.com/vi/u929KNLovj0/maxresdefault.jpg"/></a>|<a href="https://youtu.be/oIn0dTWHExg"><img width=350 src="https://i.ytimg.com/vi/oIn0dTWHExg/maxresdefault.jpg"/></a>|
 
-### [Video 3: - Explanation and Nucleuscoop integration](https://youtu.be/af_RHzN_oGI)
-<a href="https://youtu.be/af_RHzN_oGI"><img width=400 src="https://i.ytimg.com/vi/af_RHzN_oGI/maxresdefault.jpg"/></a>
+|[Video 3: - Nucleuscoop integration](https://youtu.be/af_RHzN_oGI)|[Video 4: - A very detailed tutorial](https://youtu.be/-xu4z2lxGY8)|
+|:---:|:---:|
+|<a href="https://youtu.be/af_RHzN_oGI"><img width=350 src="https://i.ytimg.com/vi/af_RHzN_oGI/maxresdefault.jpg"/></a>|<a href="https://youtu.be/-xu4z2lxGY8"><img width=350 src="https://i.ytimg.com/vi/-xu4z2lxGY8/maxresdefault.jpg"/></a>|
 
 <br>
 
@@ -77,7 +79,10 @@ Therefore, if you build this source code into a software, you **MUST** abide by 
 
 You may only build a copy of your own for personal use (and preferably to also [help me improve](#contributing) this project, haha).  
 
-In order to share executables, one must replace the Personal API in ParsecSession class with the Third-party API, and register the app with Parsec Team. That is part of my future roadmap and, once the app is registered these builds will be available in the Releases tab.
+In order to share executables, you must set **USE_PARSEC_PERSONAL_API** to **FALSE** in [**CompilerDirectives.h**](ParsecSoda/CompilerDirectives.h):
+```cpp
+#define USE_PARSEC_PERSONAL_API FALSE
+```
 
 <br>
 
@@ -163,83 +168,5 @@ The building process is not trivial, so I'll guide you through the process and p
   ![](https://i.postimg.cc/x81318YL/build.png)
   
   12. Now, build the project one more time just to be sure (Ctrl + Shift + B) and your executable should be good to go. Enjoy ParsecSoda.
-
-<br>
-
-<a id="summary"></a>
-# :question: FAQ
-## 1. How do I edit user preferences manually?
-In case you want to manually edit user preferences like blocked list, window size and position, room settings, user roles, or even your session cache, all of them are located at the user path: *{user folder}/AppData/Roaming/ParsecSoda*. This is the list of files and what they do:
-
-| File | Handles |
-| :------- | :----- |
-| banned.json | A list of blocked users. |
-| preferences.json | Window size and position, default room details, default audio devices etc. |
-| session.json | Your account session cache. **DO NOT SHARE THIS**, it is sensitive data that allows people to login your account directly, even though it is cryptographed. |
-| tiers.json | A list of user tiers. |
-
-## 2. How do I create custom sound effects?
-If you want to make use of custom sound effects, see the [README file](ParsecSoda/sfx/README.md) in Sound Effects folder.
-
-## 3. The volume of sound effects is too loud!!
-Use the Windows sound Mixer to change the volume of Parsec Soda app, that will only affect the SFX (mic and speakers levels will remain unchanged).
-
-## 4. I have audio glitches.
-That is because your audio output is at 48khz, so you have 2 options:
-
-### Option 1. Set your audio output to 44.1khz 16-bit.
- 1. Go to Windows Sound Outputs.
- 2. Choose your output device, go to Properties.
- 3. Advanced tab.
- 4. Change device frequency to 44.1Khz and bitrate to 16-bit.
-
-### Option 2. Rebuild ParsecSoda to 48khz.
- 1. Go to [**AudioOut.cpp**](ParsecSoda/AudioOut.cpp), line 7.  
- 2. Replace the frequency levels (44100 -> 48000).
- ```cpp
-// Replace this:
-#define AUDIO_OUT_DEFAULT_FREQUENCY 44100
-
-// With this:
-#define AUDIO_OUT_DEFAULT_FREQUENCY 48000
-```
- 3. Rebuild the executable.
- 5. You may want to do the same for [**AudioInput.cpp**](ParsecSoda/AudioOut.cpp) if you have issues with the microphone.
-
-## 5. I want to lower badwidth usage even if it reduces stream quality.
- 1. Go to [**Hosting.cpp**](ParsecSoda/Hosting.cpp), line 367.
- 2. Replace FPS value (250 -> 120 or 60):
-
-```cpp
-// Replace this:
-static const float FPS = 250.0f;
-
-// With this:
-static const float FPS = 60.0f;
-```
- 3. Rebuild the executable.
-
-:warning: The lower the FPS value, the longer the pixelized effect from frame compression will last.
-
-## 6. My window disappeared! I start ParsecSoda and nothing shows up anymore!
-*Be not afraid.* 👁👁👁👄👁👁👁
-
-For our convenience, ParsecSoda caches window size and position. BUT. Sometimes (rarely) Windows fails to render the window or some error occurs and ParsecSoda accidentaly saves an invalid window size - like (0, 0) - or an invalid window position - like (32767, 32767).
-
-If that is the case, you can manually edit your preferences at *{user folder}/AppData/Roaming/ParsecSoda/preferences.json*.
-
-These settings should work fine:
-```json
-{
-	"windowX": 0,
-	"windowY": 0,
-	"windowW": 1280,
-	"windowH": 720
-}
-```
-
-> I've been trying to fix that issue, but it is complicated due to so many possible setups.
-
-<br>
 
 <h3 align="center"><a href="#top">:back:</a></div>
