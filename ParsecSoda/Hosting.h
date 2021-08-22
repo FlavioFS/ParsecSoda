@@ -26,6 +26,7 @@
 #include "GuestList.h"
 #include "SFXList.h"
 #include "MetadataCache.h"
+#include "CompilerDirectives.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -49,6 +50,7 @@ public:
 	Guest& getHost();
 	ParsecSession& getSession();
 	ParsecHostConfig& getHostConfig();
+	DX11& getDX11();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();

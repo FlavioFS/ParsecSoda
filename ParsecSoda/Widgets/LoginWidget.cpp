@@ -51,49 +51,11 @@ void LoginWidget::render(bool& isValidSession)
 
     AppStyle::pushLabel();
 
-    
-
-    ImGui::Text("E-mail");
-    AppStyle::pushInput();
-    ImGui::SetNextItemWidth(w);
-    ImGui::InputText("##Login e-mail", _email, 128);
-    AppStyle::pop();
-    renderLoginTooltip();
-
-    ImGui::Dummy(ImVec2(0, 5));
-
-    ImGui::Text("Password");
-    ImGui::SetNextItemWidth(w);
-    AppStyle::pushInput();
-    if (ImGui::InputText("##Login password", _password, 128, ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue))
+    //renderPersonal(w);
+    if (_auth.success && !_sessionCancelled)
     {
-        attemptLogin();
+        render3rd(w);
     }
-    AppStyle::pop();
-    renderLoginTooltip();
-
-    ImGui::Dummy(ImVec2(0, 5));
-
-    ImGui::Text("2FA");
-    AppStyle::pushInput();
-    ImGui::SetNextItemWidth(w);
-    ImGui::InputText("##2fa", _2fa, 128);
-    AppStyle::pop();
-    TitleTooltipWidget::render(
-        "Two-Factor Authentication (2FA)",
-        "Only fill this if you have 2FA enabled at your account.\nLeave blank otherwise."
-    );
-    
-    AppFonts::pushInput();
-    AppColors::pushPrimary();
-    ImGui::SetCursorPosX(size.x - 166.0f);
-    if (ImGui::Button("Create new account"))
-    {
-        ShellExecute(0, 0, L"https://parsec.app/login", 0, 0, SW_SHOW);
-    }
-    if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    AppColors::pop();
-    AppFonts::pop();
 
     if (_showError)
     {
@@ -120,7 +82,8 @@ void LoginWidget::render(bool& isValidSession)
             ImVec2(w, 50)
         ))
         {
-            attemptLogin();
+            //attemptLoginPersonal();
+            attemptLogin3rd();
         }
         ImGui::PopStyleColor();
         ImGui::PopStyleColor();
@@ -128,16 +91,106 @@ void LoginWidget::render(bool& isValidSession)
         AppFonts::pop();
         AppColors::pop();
         if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+        renderCreateAccount(size.x);
     }
     else
     {
         ImGui::SetCursorPosX((size.x - 100.0f) * 0.5f);
         LoadingRingWidget::render();
+
+        ImGui::Dummy(ImVec2(0, 120));
+
+        if (_showCancelButton)
+        {
+            AppColors::pushInput();
+            AppFonts::pushTitle();
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.23f, 0.23f, 0.23f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.30f, 0.30f, 0.30f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.40f, 0.40f, 0.40f, 1.00f));
+            if (ImGui::Button(
+                "Cancel##Login Cancel",
+                ImVec2(w, 50)
+            ))
+            {
+                _sessionCancelled = true;
+            }
+            ImGui::PopStyleColor();
+            ImGui::PopStyleColor();
+            ImGui::PopStyleColor();
+            AppFonts::pop();
+            AppColors::pop();
+            if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+        }
     }
 
     AppStyle::pop();
 
 	ImGui::End();
+}
+
+void LoginWidget::renderPersonal(float width)
+{
+    ImGui::Text("E-mail");
+    AppStyle::pushInput();
+    ImGui::SetNextItemWidth(width);
+    ImGui::InputText("##Login e-mail", _email, 128);
+    AppStyle::pop();
+    renderLoginTooltip();
+
+    ImGui::Dummy(ImVec2(0, 5));
+
+    ImGui::Text("Password");
+    ImGui::SetNextItemWidth(width);
+    AppStyle::pushInput();
+    if (ImGui::InputText("##Login password", _password, 128, ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+        attemptLoginPersonal();
+    }
+    AppStyle::pop();
+    renderLoginTooltip();
+
+    ImGui::Dummy(ImVec2(0, 5));
+
+    ImGui::Text("2FA");
+    AppStyle::pushInput();
+    ImGui::SetNextItemWidth(width);
+    ImGui::InputText("##2fa", _2fa, 128);
+    AppStyle::pop();
+    TitleTooltipWidget::render(
+        "Two-Factor Authentication (2FA)",
+        "Only fill this if you have 2FA enabled at your account.\nLeave blank otherwise."
+    );
+}
+
+void LoginWidget::render3rd(float width)
+{
+
+    ImGui::Text("Auth Code");
+    AppColors::pushPrimary();
+    AppFonts::pushSugoiDekai();
+    ImGui::SetNextItemWidth(width);
+    ImGui::InputText("##Login auth", _auth.userCode, 16, ImGuiInputTextFlags_ReadOnly);
+    AppFonts::pop();
+    AppColors::pop();
+    TitleTooltipWidget::render(
+        "Authentication Code",
+        "Copy and Paste this code to the link in your browser window"
+    );
+}
+
+void LoginWidget::renderCreateAccount(float width)
+{
+    AppFonts::pushInput();
+    AppColors::pushPrimary();
+    ImGui::SetCursorPosX(width - 166.0f);
+    if (ImGui::Button("Create new account"))
+    {
+        ShellExecute(0, 0, L"https://parsec.app/login", 0, 0, SW_SHOW);
+    }
+    if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    AppColors::pop();
+    AppFonts::pop();
 }
 
 void LoginWidget::renderLoginTooltip()
@@ -152,7 +205,7 @@ void LoginWidget::renderLoginTooltip()
     );
 }
 
-void LoginWidget::attemptLogin()
+void LoginWidget::attemptLoginPersonal()
 {
     if (!_isLoginLocked)
     {
@@ -166,6 +219,55 @@ void LoginWidget::attemptLogin()
                 _sessionError = _hosting.getSession().getSessionError();
                 _sessionStatus = _hosting.getSession().getSessionStatus();
                 _showError = true;
+            }
+
+            _isLoginLocked = false;
+            _loginThread.detach();
+        });
+    }
+}
+
+void LoginWidget::attemptLogin3rd()
+{
+    if (!_isLoginLocked)
+    {
+        _sessionCancelled = false;
+        _showCancelButton = false;
+        _isLoginLocked = true;
+        LoadingRingWidget::render(true);
+        _loginThread = thread([&]() {
+            _auth = _hosting.getSession().authenticate();
+
+            if (_auth.success)
+            {
+                string uri(_auth.verificationUri);
+                wstring wuri(&uri[0], &uri[uri.size()]);
+                ShellExecute(0, 0, wuri.c_str(), 0, 0, SW_SHOW);
+            }
+
+            // Minimum auth cooldown
+            Sleep((_auth.interval+1) * 1000);
+            ParsecSession::SessionStatus status;
+
+            _showCancelButton = true;
+
+            bool done = false;
+            while (!done && !_sessionCancelled)
+            {
+                status = _hosting.getSession().pollSession(_auth);
+                switch (status)
+                {
+                case ParsecSession::SessionStatus::PENDING:
+                    Sleep(1500);
+                    break;
+                case ParsecSession::SessionStatus::APPROVED:
+                    done = true;
+                    break;
+                case ParsecSession::SessionStatus::INVALID:
+                default:
+                    done = true;
+                    break;
+                }
             }
 
             _isLoginLocked = false;

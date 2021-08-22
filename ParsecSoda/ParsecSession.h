@@ -10,10 +10,13 @@
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
+#define PARSEC_API_CODES "/auth/codes"
+#define PARSEC_API_SESSIONS "/auth/sessions"
 #define PARSEC_API_V2_HOSTS "/v2/hosts/"
 #define PARSEC_API_ME "/me/"
 #define HTTP_AUTO_PORT 0
 #define HTTP_TIMEOUT_MS 5000
+#define HTTP_TIMEOUT_CODES 120000
 #define HEADER_JSON "Content-Type: application/json"
 #define HEADER_AUTH_BEARER "Authorization: Bearer "
 
@@ -35,9 +38,30 @@ using namespace std;
 class ParsecSession
 {
 public:
+	class AuthResult
+	{
+	public:
+		AuthResult() :
+			verificationUri(""), userCode(""), hash(""),
+			expiresAt(0), interval(0), success(false)
+		{}
+		char verificationUri[256], userCode[16], hash[64];
+		uint32_t expiresAt, interval;
+		bool success;
+	};
+
+	enum class SessionStatus
+	{
+		PENDING = 202,
+		APPROVED = 201,
+		INVALID = 401
+	};
+
 	bool loadSessionCache();
 	bool saveSessionCache();
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
+	const ParsecSession::SessionStatus pollSession(ParsecSession::AuthResult auth);
+	const AuthResult authenticate();
 	const bool fetchArcadeRoomList();
 	const bool fetchAccountData(Guest* user);
 	bool& isValid();
@@ -50,7 +74,7 @@ public:
 
 private:
 	thread _accountDataThread;
-	bool _isValid = false;
+	bool _isValid = false, _isAuthenticating = false;
 	int _sessionStatus = 0;
 	string _sessionError = "";
 };

@@ -2,14 +2,19 @@
 
 
 // ==================================================
-//   Input Sources
+//   Constants
 // ==================================================
-#define AUDIO_OUT_DEFAULT_FREQUENCY 44100
 #define AUDIO_OUT_CHANNELS 2
-#define AUDIO_OUT_SWAP_BUFFERS 2
 #define AUDIO_OUT_BITS 32
 #define AUDIO_OUT_BYTES_PER_SAMPLE (AUDIO_OUT_BITS/8)
-#define AUDIO_OUT_SAMPLES_PER_BUFFER 4 * AUDIO_OUT_DEFAULT_FREQUENCY / 100
+/**
+* Buffer Size explained.
+* 44100 Hz / 100  == 441 == 3² * 7²
+* 48000 Hz / 1000 == 48  == 2^4 * 3
+* GCD(441, 48) == 2^4 * 3² * 7² == 7056
+* This is probably the best common ground.
+*/
+#define AUDIO_OUT_SAMPLES_PER_BUFFER 7056 / 4
 
 
 // ==================================================
@@ -264,13 +269,9 @@ const int AudioOut::popPreviewDecibel()
 	return AUDIOTOOLS_PREVIEW_MIN_DB;
 }
 
-const uint32_t AudioOut::getFrequency() const
+const uint32_t AudioOut::getFrequencyHz() const
 {
-	if (outWFX != NULL)
-	{
-		return outWFX->nSamplesPerSec;
-	}
-	return AUDIO_OUT_DEFAULT_FREQUENCY;
+	return _frequency;
 }
 
 // TODO Better check if the release here interferes with capture loop
@@ -331,6 +332,18 @@ void AudioOut::fetchDevices()
 	SAFE_RELEASE(pEnumerator);
 	SAFE_RELEASE(pCollection);
 	return;
+}
+
+void AudioOut::setFrequency(Frequency frequency)
+{
+	_frequency = (uint32_t)frequency;
+	MetadataCache::preferences.speakersFrequency = _frequency;
+	MetadataCache::savePreferences();
+}
+
+Frequency AudioOut::getFrequency()
+{
+	return (Frequency)_frequency;
 }
 
 

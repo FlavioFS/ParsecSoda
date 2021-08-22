@@ -11,6 +11,8 @@
 #include <initguid.h>
 #include "Stringer.h"
 #include "AudioTools.h"
+#include "MetadataCache.h"
+#include "Frequency.h"
 
 typedef struct AudioInDevice
 {
@@ -23,7 +25,10 @@ typedef struct AudioInDevice
 class AudioIn
 {
 public:
+	void setFrequency(Frequency frequency = Frequency::F44100);
+	Frequency getFrequency();
 	bool init(AudioInDevice device);
+	void reinit(Frequency frequency = Frequency::F44100);
 	void captureAudio();
 	const bool isReady() const;
 	const std::vector<int16_t> popBuffer();
@@ -45,6 +50,9 @@ private:
 	bool _isReady = false;
 	int _activeBuffer = 0;
 	int _previewIndex = 0;
+
+	uint32_t _frequency = 44100;
+	AudioInDevice _device;
 
 	mutex _mutex;
 };

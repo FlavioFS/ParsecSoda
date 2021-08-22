@@ -6,11 +6,13 @@
 #include <vector>
 #include <iostream>
 #include <mutex>
-#include "Stringer.h"
 #include <functiondiscoverykeys.h>
 #include <Audioclient.h>
 #include <initguid.h>
+#include "Stringer.h"
 #include "AudioTools.h"
+#include "Frequency.h"
+#include "MetadataCache.h"
 
 #define AUDIO_OUT_FORCE_RELEASE -1
 #define AUDIOOUT_PREVIEW_MIN_DB -60
@@ -29,6 +31,8 @@ class AudioOut
 public:
 	bool setOutputDevice(int index = 0);
 	void fetchDevices();
+	void setFrequency(Frequency frequency = Frequency::F44100);
+	Frequency getFrequency();
 	//AudioOutputDevice selectOutputDevice(const char * name);
 	//const std::vector<AudioOutputDevice> listOutputDevices() const;
 
@@ -37,7 +41,7 @@ public:
 	void captureAudio();
 	const std::vector<int16_t> popBuffer();
 	const int popPreviewDecibel();
-	const uint32_t getFrequency() const;
+	const uint32_t getFrequencyHz() const;
 
 	float volume = 1.0f;
 	bool isEnabled = true;
@@ -61,6 +65,8 @@ private:
 	const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 	const IID IID_IAudioClient = __uuidof(IAudioClient);
 	const IID IID_IAudioCaptureClient = __uuidof(IAudioCaptureClient);
+
+	uint32_t _frequency = 44100;
 
 	mutex _mutex;
 };

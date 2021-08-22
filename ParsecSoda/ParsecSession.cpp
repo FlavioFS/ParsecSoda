@@ -25,6 +25,143 @@ bool ParsecSession::saveSessionCache()
 	return success;
 }
 
+const ParsecSession::AuthResult ParsecSession::authenticate()
+{
+	AuthResult result;
+
+	// Body
+	const string bodyString = "{\"game_id\": \"1wdoHfhhZH5lPuZCwGBete0HIAj\"}";
+	const char* body = bodyString.c_str();
+	size_t bodySize = sizeof(char) * bodyString.length();
+
+	// Other Params
+	const bool isHttps = true;
+
+	// Response
+	void* response;
+	size_t responseSize;
+	uint16_t status;
+
+	const bool rekt = MTY_HttpRequest(
+		PARSEC_API_HOST, HTTP_AUTO_PORT, isHttps, "POST", PARSEC_API_CODES, HEADER_JSON,
+		body, bodySize,
+		HTTP_TIMEOUT_CODES,
+		&response, &responseSize, &status
+	);
+
+	const char* responseStr = (const char*)response;
+	const MTY_JSON* json = MTY_JSONParse(responseStr);
+	bool success = false;
+
+	if (responseSize > 0 && status == 201)
+	{
+		const MTY_JSON *data = MTY_JSONObjGetItem(json, "data");
+
+		result.success = MTY_JSONObjGetString(data, "verification_uri", result.verificationUri, 256);
+		result.success = result.success && MTY_JSONObjGetString(data, "user_code", result.userCode, 16);
+		result.success = result.success && MTY_JSONObjGetString(data, "hash", result.hash, 64);
+		result.success = result.success && MTY_JSONObjGetUInt(data, "expires_at", &result.expiresAt);
+		result.success = result.success && MTY_JSONObjGetUInt(data, "interval", &result.interval);
+
+		if (result.success)
+		{
+			_isAuthenticating = true;
+		}
+
+		return result;
+	}
+	else
+	{
+		_sessionStatus = status;
+		char error[256] = "";
+		if (MTY_JSONObjGetString(json, "error", error, 256))
+		{
+			_sessionError = error;
+		}
+	}
+
+	_isValid = false;
+	return result;
+}
+
+const ParsecSession::SessionStatus ParsecSession::pollSession(ParsecSession::AuthResult auth)
+{
+	if (!auth.success)
+	{
+		return SessionStatus::INVALID;
+	}
+
+	bool result = false;
+
+	// Body
+	ostringstream ss;
+	ss << "{"
+		<< "\"" << "grant_type" << "\":\"" << "auth_code" << "\", "
+		<< "\"" << "auth_code_hash" << "\":\"" << auth.hash << "\"}";
+	const string bodyString = ss.str();
+	const char* body = bodyString.c_str();
+	size_t bodySize = sizeof(char) * bodyString.length();
+
+	// Other Params
+	const bool isHttps = true;
+
+	// Response
+	void* response;
+	size_t responseSize;
+	uint16_t status;
+
+	const bool rekt = MTY_HttpRequest(
+		PARSEC_API_HOST, HTTP_AUTO_PORT, isHttps, "POST", PARSEC_API_SESSIONS, HEADER_JSON,
+		body, bodySize,
+		HTTP_TIMEOUT_MS,
+		&response, &responseSize, &status
+	);
+
+	const char* responseStr = (const char*)response;
+	const MTY_JSON* json = MTY_JSONParse(responseStr);
+	bool success = false;
+
+	if (responseSize > 0 && status == 201)
+	{
+		const MTY_JSON* data = MTY_JSONObjGetItem(json, "data");
+
+		bool success = false;
+
+		char id[256], peerId[128];
+
+		success = MTY_JSONObjGetString(data, "id", id, 256);
+		success = success && MTY_JSONObjGetString(data, "host_peer_id", peerId, 128);
+
+		if (success)
+		{
+			this->sessionId = id;
+			this->hostPeerId = peerId;
+
+			MetadataCache::SessionCache cache;
+			cache.sessionID = sessionId;
+			cache.peerID = hostPeerId;
+			cache.isValid = true;
+			MetadataCache::saveSessionCache(cache);
+			_isAuthenticating = true;
+			result = true;
+			_isValid = true;
+		}
+	}
+	else
+	{
+		_sessionStatus = status;
+		char error[256] = "";
+		if (MTY_JSONObjGetString(json, "error", error, 256))
+		{
+			_sessionError = error;
+		}
+
+		_isValid = false;
+	}
+	
+	return (SessionStatus)status;
+}
+
 const bool ParsecSession::fetchSession(const char* email, const char* password, const char* tfa)
 {
 	// Body

@@ -110,6 +110,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 preferences.audioOutputDevice = 0;
             }
 
+            if (!MTY_JSONObjGetUInt(json, "micFrequency", &preferences.micFrequency)) {
+                preferences.micFrequency = 44100;
+            }
+
             if (!MTY_JSONObjGetUInt(json, "micVolume", &preferences.micVolume)) {
                 preferences.micVolume = 80;
             }
@@ -118,12 +122,20 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 preferences.micEnabled = true;
             }
 
+            if (!MTY_JSONObjGetUInt(json, "speakersFrequency", &preferences.speakersFrequency)) {
+                preferences.speakersFrequency = 44100;
+            }
+
             if (!MTY_JSONObjGetUInt(json, "speakersVolume", &preferences.speakersVolume)) {
                 preferences.speakersVolume = 30;
             }
 
             if (!MTY_JSONObjGetBool(json, "speakersEnabled", &preferences.speakersEnabled)) {
                 preferences.speakersEnabled = true;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "monitor", &preferences.monitor)) {
+                preferences.monitor = 0;
             }
             
             if (MTY_JSONObjGetString(json, "roomName", roomName, 256)) preferences.roomName = roomName;
@@ -185,10 +197,13 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
             
         MTY_JSONObjSetUInt(json, "audioInputDevice", preferences.audioInputDevice);
         MTY_JSONObjSetUInt(json, "audioOutputDevice", preferences.audioOutputDevice);
+        MTY_JSONObjSetUInt(json, "micFrequency", preferences.micFrequency);
         MTY_JSONObjSetUInt(json, "micVolume", preferences.micVolume);
         MTY_JSONObjSetBool(json, "micEnabled", preferences.micEnabled);
+        MTY_JSONObjSetUInt(json, "speakersFrequency", preferences.speakersFrequency);
         MTY_JSONObjSetUInt(json, "speakersVolume", preferences.speakersVolume);
         MTY_JSONObjSetBool(json, "speakersEnabled", preferences.speakersEnabled);
+        MTY_JSONObjSetUInt(json, "monitor", preferences.monitor);
         MTY_JSONObjSetString(json, "roomName", preferences.roomName.c_str());
         MTY_JSONObjSetString(json, "gameID", preferences.gameID.c_str());
         MTY_JSONObjSetString(json, "secret", preferences.secret.c_str());
