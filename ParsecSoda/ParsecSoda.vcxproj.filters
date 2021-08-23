@@ -512,6 +512,9 @@
     <ClInclude Include="Widgets\VideoWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CompilerDirectives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">

@@ -3,23 +3,9 @@
 // ==================================================
 //   Input Sources
 // ==================================================
-#define AUDIO_IN_FREQUENCY_HZ 44100
-//#define AUDIO_IN_CHANNELS 2
-//#define AUDIO_IN_SWAP_BUFFERS 2
-//
-//#define AUDIO_IN_BITS 16
-//#define AUDIO_IN_BYTES (AUDIO_IN_BITS/8)
-//#define AUDIO_IN_SAMPLE_COUNT (4 * AUDIO_IN_FREQUENCY_HZ / 100)								// 1764 samples
-//#define AUDIO_IN_BUFFER_SIZE (AUDIO_IN_SAMPLE_COUNT * AUDIO_IN_CHANNELS * AUDIO_IN_BYTES)
-
-//#define AUDIO_IN_FREQUENCY_HZ 44100
-
 #define AUDIO_IN_SWAP_BUFFERS 2
 #define AUDIO_IN_CHANNELS 2
 #define AUDIO_IN_BITS 16
-
-//#define AUDIO_IN_SAMPLE_COUNT (4 * AUDIO_IN_FREQUENCY_HZ / 100)								// 1764 samples
-//#define AUDIO_IN_BUFFER_SIZE (AUDIO_IN_SAMPLE_COUNT * AUDIO_IN_CHANNELS * AUDIO_IN_BYTES)	// 7056 bytes = 1764 samples x 2 channels x 2 bytes/sample
 
 /**
 * Buffer Size explained.

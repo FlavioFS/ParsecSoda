@@ -222,6 +222,7 @@
     <ClInclude Include="Commands\CommandSFX.h" />
     <ClInclude Include="Commands\CommandOne.h" />
     <ClInclude Include="Commands\ACommandSearchUserHistory.h" />
+    <ClInclude Include="CompilerDirectives.h" />
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />

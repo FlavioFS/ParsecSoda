@@ -51,11 +51,14 @@ void LoginWidget::render(bool& isValidSession)
 
     AppStyle::pushLabel();
 
-    //renderPersonal(w);
+#if USE_PARSEC_PERSONAL_API
+    renderPersonal(w);
+#else
     if (_auth.success && !_sessionCancelled)
     {
         render3rd(w);
     }
+#endif
 
     if (_showError)
     {
