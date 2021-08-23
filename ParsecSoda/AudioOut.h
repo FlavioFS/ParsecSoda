@@ -19,6 +19,8 @@
 #define AUDIOOUT_PREVIEW_MAX_AMP 32768
 #define AUDIOOUT_PREVIEW_MIN_AMP 0.001f
 
+using namespace std;
+
 typedef struct AudioOutDevice
 {
 	std::string name;
@@ -37,9 +39,9 @@ public:
 	//const std::vector<AudioOutputDevice> listOutputDevices() const;
 
 	bool isReady();
-	const std::vector<AudioOutDevice> getDevices();
+	const vector<AudioOutDevice> getDevices();
 	void captureAudio();
-	const std::vector<int16_t> popBuffer();
+	const vector<int16_t> popBuffer();
 	const int popPreviewDecibel();
 	const uint32_t getFrequencyHz() const;
 
@@ -53,8 +55,8 @@ private:
 	bool releaseDeviceCollection(HRESULT hr = AUDIO_OUT_FORCE_RELEASE);
 	void swapBuffers();
 	
-	std::vector<AudioOutDevice> _devices;
-	std::vector<int16_t> _outBuffers[2];
+	vector<AudioOutDevice> _devices;
+	vector<int16_t> _outBuffers[2];
 	int _activeBuffer = 0;
 	int _isReady = false;
 	int _previewIndex = 0;

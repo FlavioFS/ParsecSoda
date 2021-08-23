@@ -381,22 +381,34 @@ void Hosting::liveStreamMedia()
 		before = clock::now();
 		_dx11.captureScreen(_parsec);
 
-#if NO_MICROPHONE
-		audioOut.captureAudio();
-		if (audioOut.isReady())
+		if (audioIn.isEnabled && audioOut.isEnabled)
 		{
-			vector<int16_t> mixBuffer = audioOut.popBuffer();
-			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+			audioIn.captureAudio();
+			audioOut.captureAudio();
+			if (audioIn.isReady() && audioOut.isReady())
+			{
+				vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+			}
 		}
-#else
-		audioIn.captureAudio();
-		audioOut.captureAudio();
-		if (audioIn.isReady() && audioOut.isReady())
+		else if (audioOut.isEnabled)
 		{
-			vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
-			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+			audioOut.captureAudio();
+			if (audioOut.isReady())
+			{
+				vector<int16_t> buffer = audioOut.popBuffer();
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), buffer.data(), (uint32_t)buffer.size() / 2);
+			}
 		}
-#endif // NOMIC
+		else
+		{
+			audioIn.captureAudio();
+			if (audioIn.isReady())
+			{
+				vector<int16_t> buffer = audioIn.popBuffer();
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, (uint32_t)audioIn.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
+			}
+		}
 
 		duration = clock::now() - before;
 		if (duration.count() < MS_PER_FRAME)

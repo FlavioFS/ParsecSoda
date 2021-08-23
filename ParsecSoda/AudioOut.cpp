@@ -180,15 +180,18 @@ void AudioOut::captureAudio()
 
 		if (pData != NULL)
 		{
-			if (_outBuffers[_activeBuffer].size() + numFramesInPacket >= maxOutBufferSize)
+			size_t frameCount = numFramesAvailable;
+			size_t requiredBufferLength = AUDIO_OUT_CHANNELS * frameCount;
+
+			if (_outBuffers[_activeBuffer].size() + requiredBufferLength >= maxOutBufferSize)
 			{
-				size_t framesToFill = maxOutBufferSize - _outBuffers[_activeBuffer].size();
-				size_t leftoverFrames = numFramesAvailable - framesToFill;
+				size_t bufferLengthToFill = maxOutBufferSize - _outBuffers[_activeBuffer].size();
+				size_t bufferLengthLeftover = requiredBufferLength - bufferLengthToFill;
 
 				float sampleF;
 				int16_t sampleI;
 				byte *p = pData;
-				byte *pe = p + framesToFill * AUDIO_OUT_CHANNELS * AUDIO_OUT_BYTES_PER_SAMPLE;
+				byte *pe = p + bufferLengthToFill * AUDIO_OUT_BYTES_PER_SAMPLE;
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
@@ -200,7 +203,7 @@ void AudioOut::captureAudio()
 				_outBuffers[_activeBuffer].clear();
 				_isReady = true;
 
-				pe = p + leftoverFrames * AUDIO_OUT_CHANNELS * AUDIO_OUT_BYTES_PER_SAMPLE;
+				pe = p + bufferLengthLeftover * AUDIO_OUT_BYTES_PER_SAMPLE;
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
@@ -213,7 +216,7 @@ void AudioOut::captureAudio()
 				float sampleF;
 				int16_t sampleI;
 				byte *p = pData;
-				byte *pe = p + numFramesInPacket * AUDIO_OUT_CHANNELS * AUDIO_OUT_BYTES_PER_SAMPLE;
+				byte *pe = p + requiredBufferLength * AUDIO_OUT_BYTES_PER_SAMPLE;
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
@@ -260,7 +263,7 @@ const int AudioOut::popPreviewDecibel()
 	if (_previewIndex >= 0 && _previewIndex < _outBuffers[inactiveBuffer].size())
 	{
 		static int decibelValue;
-		decibelValue = AudioTools::previewDecibel(_outBuffers[inactiveBuffer][_previewIndex]);
+		decibelValue = AudioTools::previewDecibel(isEnabled ? _outBuffers[inactiveBuffer][_previewIndex] : 0);
 		_previewIndex++;
 		
 		return decibelValue;

@@ -173,7 +173,7 @@ const int AudioIn::popPreviewDecibel()
 	if (_previewIndex >= 0 && _previewIndex < _inBuffer.size())
 	{
 		static int decibelValue;
-		decibelValue = AudioTools::previewDecibel(_inBuffer[_previewIndex]);
+		decibelValue = AudioTools::previewDecibel(isEnabled ? _inBuffer[_previewIndex] : 0);
 		_previewIndex++;
 		
 		return decibelValue;

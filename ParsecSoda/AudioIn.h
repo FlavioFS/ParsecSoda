@@ -14,6 +14,8 @@
 #include "MetadataCache.h"
 #include "Frequency.h"
 
+using namespace std;
+
 typedef struct AudioInDevice
 {
 	WAVEINCAPS wave;
@@ -31,9 +33,9 @@ public:
 	void reinit(Frequency frequency = Frequency::F44100);
 	void captureAudio();
 	const bool isReady() const;
-	const std::vector<int16_t> popBuffer();
+	const vector<int16_t> popBuffer();
 	const int popPreviewDecibel();
-	const std::vector<AudioInDevice> listInputDevices() const;
+	const vector<AudioInDevice> listInputDevices() const;
 	AudioInDevice selectInputDevice(const int index = 0);
 
 	float volume = 1.0f;
