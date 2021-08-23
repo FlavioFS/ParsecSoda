@@ -198,9 +198,6 @@
     <ClCompile Include="Widgets\VideoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\HostGamepadWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -513,9 +510,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Widgets\VideoWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Widgets\HostGamepadWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

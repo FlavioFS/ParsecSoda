@@ -155,7 +155,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Widgets\HostGamepadWidget.cpp" />
     <ClCompile Include="Widgets\VideoWidget.cpp" />
     <ClCompile Include="Widgets\VersionWidget.cpp" />
     <ClCompile Include="Widgets\InfoWidget.cpp" />
@@ -223,7 +222,6 @@
     <ClInclude Include="Commands\CommandSFX.h" />
     <ClInclude Include="Commands\CommandOne.h" />
     <ClInclude Include="Commands\ACommandSearchUserHistory.h" />
-    <ClInclude Include="Widgets\HostGamepadWidget.h" />
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />

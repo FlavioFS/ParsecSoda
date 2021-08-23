@@ -30,7 +30,6 @@
 #include "Widgets/VideoWidget.h"
 #include "Widgets/InfoWidget.h"
 #include "Widgets/VersionWidget.h"
-#include "Widgets/HostGamepadWidget.h"
 
 using namespace std;
 
@@ -187,7 +186,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showInfo)           InfoWidget::render();
             NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio, showVideo, showInfo);
             hostInfoWidget.render();
-            HostGamepadWidget::render();
         }
         else
         {
