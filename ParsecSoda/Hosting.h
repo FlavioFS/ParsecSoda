@@ -49,6 +49,7 @@ public:
 	bool& isGamepadLock();
 	Guest& getHost();
 	ParsecSession& getSession();
+	void fetchAccountData();
 	ParsecHostConfig& getHostConfig();
 	DX11& getDX11();
 	vector<string>& getMessageLog();

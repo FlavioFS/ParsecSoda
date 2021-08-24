@@ -63,7 +63,7 @@ public:
 	const ParsecSession::SessionStatus pollSession(ParsecSession::AuthResult auth);
 	const AuthResult authenticate();
 	const bool fetchArcadeRoomList();
-	const bool fetchAccountData(Guest* user);
+	void fetchAccountData(Guest* user);
 	bool& isValid();
 	const string getSessionError();
 	const int getSessionStatus();

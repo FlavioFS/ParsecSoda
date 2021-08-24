@@ -21,7 +21,6 @@ D3D11_MAPPED_SUBRESOURCE _resource;
 
 void DX11::clear()
 {
-	//if (_lDevice != NULL) _lDevice->Release();
 	if (_lDeskDupl != NULL) _lDeskDupl->Release();
 	if (_lAcquiredDesktopImage != NULL) _lAcquiredDesktopImage->Release();
 }
@@ -232,6 +231,8 @@ bool DX11::init()
 
 bool DX11::captureScreen(ParsecDSO *ps)
 {
+	static ID3D11Texture2D* lastFramePointer;
+
 	if (!_lDeskDupl)
 	{
 		if (!clearAndRecover())
@@ -247,13 +248,15 @@ bool DX11::captureScreen(ParsecDSO *ps)
 	DXGI_OUTDUPL_FRAME_INFO lFrameInfo;
 	ID3D11Texture2D* currTexture = NULL;
 
-	hr = _lDeskDupl->AcquireNextFrame(1, &lFrameInfo, &lDesktopResource);
+	hr = _lDeskDupl->AcquireNextFrame(4, &lFrameInfo, &lDesktopResource);
 	if (FAILED(hr)) {
 		_lDeskDupl->ReleaseFrame();
 
 		_mutex.unlock();
 		if (hr != DXGI_ERROR_WAIT_TIMEOUT)
 		{
+			if (lDesktopResource != nullptr) lDesktopResource->Release();
+			if (lastFramePointer != nullptr) lastFramePointer->Release();
 			clearAndRecover();
 		}
 
@@ -267,7 +270,7 @@ bool DX11::captureScreen(ParsecDSO *ps)
 	// LEL
 	//////////////////////////////////////// 
 	ParsecHostD3D11SubmitFrame(ps, 0, _lDevice, _lImmediateContext, _lAcquiredDesktopImage);
-	
+	lastFramePointer = _lAcquiredDesktopImage;
 	
 	_lDeskDupl->ReleaseFrame();
 	

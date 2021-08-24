@@ -11,7 +11,8 @@ public:
 	enum class Status
 	{
 		OK = 0,
-		INVALID = 1
+		INVALID = 1,
+		EXPIRED = 2
 	};
 
 	/**

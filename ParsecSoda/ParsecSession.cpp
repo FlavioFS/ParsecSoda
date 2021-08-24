@@ -6,7 +6,7 @@ bool ParsecSession::loadSessionCache()
 	{
 		sessionId = cache.sessionID;
 		hostPeerId = cache.peerID;
-		_isValid = true;
+		_isValid = false;
 		return true;
 	}
 
@@ -279,10 +279,10 @@ const bool ParsecSession::fetchArcadeRoomList()
 	return false;
 }
 
-const bool ParsecSession::fetchAccountData(Guest *user)
+void ParsecSession::fetchAccountData(Guest *user)
 {
-	if (!_isValid || sessionId.empty()) {
-		return false;
+	if (sessionId.empty()) {
+		return;
 	}
 
 	_accountDataThread = thread ([user, this]() {
@@ -341,6 +341,7 @@ const bool ParsecSession::fetchAccountData(Guest *user)
 
 				user->status = Guest::Status::OK;
 				result = true;
+				_isValid = true;
 			}
 			catch (const std::exception&) {}
 
@@ -348,9 +349,10 @@ const bool ParsecSession::fetchAccountData(Guest *user)
 		}
 		else
 		{
-			user->name = "Host";
+			user->name = "Session Expired";
 			user->userID = 0;
-			user->status = Guest::Status::INVALID;
+			user->status = Guest::Status::EXPIRED;
+			_isValid = false;
 		}
 
 		_accountDataThread.detach();

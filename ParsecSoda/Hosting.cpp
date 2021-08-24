@@ -98,12 +98,7 @@ void Hosting::init()
 	MetadataCache::savePreferences(preferences);
 	_parsecSession.loadSessionCache();
 
-	_host.name = "Host";
-	_host.status = Guest::Status::INVALID;
-	if (isReady())
-	{
-		_parsecSession.fetchAccountData(&_host);
-	}
+	fetchAccountData();
 
 	_chatBot = new ChatBot(
 		audioIn, audioOut, _banList, _dice, _dx11,
@@ -147,6 +142,16 @@ Guest& Hosting::getHost()
 ParsecSession& Hosting::getSession()
 {
 	return _parsecSession;
+}
+
+void Hosting::fetchAccountData()
+{
+	_host.name = "Host";
+	_host.status = Guest::Status::INVALID;
+	if (isReady())
+	{
+		_parsecSession.fetchAccountData(&_host);
+	}
 }
 
 ParsecHostConfig& Hosting::getHostConfig()

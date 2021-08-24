@@ -85,7 +85,6 @@ void LoginWidget::render(bool& isValidSession)
             ImVec2(w, 50)
         ))
         {
-            //attemptLoginPersonal();
             attemptLogin3rd();
         }
         ImGui::PopStyleColor();
@@ -178,7 +177,7 @@ void LoginWidget::render3rd(float width)
     AppColors::pop();
     TitleTooltipWidget::render(
         "Authentication Code",
-        "Copy and Paste this code to the link in your browser window"
+        "Copy and Paste this code to the link in your browser window\n\nIf a browser window does not show automatically, go to:\nhttps://parsec.app/activate/"
     );
 }
 
@@ -189,7 +188,7 @@ void LoginWidget::renderCreateAccount(float width)
     ImGui::SetCursorPosX(width - 166.0f);
     if (ImGui::Button("Create new account"))
     {
-        ShellExecute(0, 0, L"https://parsec.app/login", 0, 0, SW_SHOW);
+        ShellExecute(0, 0, L"https://parsec.app/activate/", 0, 0, SW_SHOW);
     }
     if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     AppColors::pop();
@@ -224,6 +223,7 @@ void LoginWidget::attemptLoginPersonal()
                 _showError = true;
             }
 
+            _hosting.fetchAccountData();
             _isLoginLocked = false;
             _loginThread.detach();
         });
@@ -273,6 +273,7 @@ void LoginWidget::attemptLogin3rd()
                 }
             }
 
+            _hosting.fetchAccountData();
             _isLoginLocked = false;
             _loginThread.detach();
         });
