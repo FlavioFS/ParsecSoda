@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Debouncer.cpp" />
+    <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="Widgets\VideoWidget.cpp" />
     <ClCompile Include="Widgets\VersionWidget.cpp" />
     <ClCompile Include="Widgets\InfoWidget.cpp" />
@@ -223,6 +225,8 @@
     <ClInclude Include="Commands\CommandOne.h" />
     <ClInclude Include="Commands\ACommandSearchUserHistory.h" />
     <ClInclude Include="CompilerDirectives.h" />
+    <ClInclude Include="Debouncer.h" />
+    <ClInclude Include="Stopwatch.h" />
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />

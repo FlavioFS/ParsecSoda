@@ -65,6 +65,7 @@ public:
 	void setMaxGuests(uint8_t maxGuests);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom, string secret);
+	void setHostVideoConfig(int32_t fps, int32_t bandwidth);
 	void setPublicRoom(bool isPublicRoom);
 	void setRoomName(string roomName);
 	void setRoomSecret(string secret);

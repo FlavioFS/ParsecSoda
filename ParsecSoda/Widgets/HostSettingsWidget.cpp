@@ -174,10 +174,6 @@ bool HostSettingsWidget::render()
         _audioOut.captureAudio();
     }
 
-    using clock = chrono::system_clock;
-    using milli = chrono::duration<double, milli>;
-    static clock::time_point beforeVolume = clock::now();
-    static milli duration;
     static int previousMicVolume, previousSpeakersVolume;
     static bool isVolumeChanged = false;
     previousMicVolume = _micVolume;
@@ -205,19 +201,10 @@ bool HostSettingsWidget::render()
     }
     _audioOut.volume = (float)_speakersVolume / 100.0f;
 
+    static Debouncer debouncer(DEBOUNCE_TIME_MS, [&]() { savePreferences(); });
     if (_micVolume != previousMicVolume || _speakersVolume != previousSpeakersVolume)
     {
-        beforeVolume = clock::now();
-        isVolumeChanged = true;
-    }
-    else if (isVolumeChanged)
-    {
-        duration = clock::now() - beforeVolume;
-        if (duration.count() >= VOLUME_DEBOUNCE_MS)
-        {
-            savePreferences();
-            isVolumeChanged = false;
-        }
+        debouncer.start();
     }
 
     AppStyle::pop();
@@ -230,7 +217,7 @@ bool HostSettingsWidget::render()
 void HostSettingsWidget::savePreferences()
 {
     MetadataCache::preferences.roomName = _roomName;
-    MetadataCache::preferences.gameID = _gameID;
+    MetadataCache::preferences.gameID = strlen(_gameID) <= 25 ? "1wdoHfhhZH5lPuZCwGBete0HIAj" : _gameID;
     MetadataCache::preferences.guestCount = _maxGuests;
     MetadataCache::preferences.publicRoom = _publicGame;
     MetadataCache::preferences.secret = _secret;

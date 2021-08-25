@@ -3,6 +3,7 @@
 #include "../imgui/imgui.h"
 #include "../Hosting.h"
 #include "../AudioTools.h"
+#include "../Debouncer.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppFonts.h"
 #include "../globals/AppColors.h"
@@ -52,6 +53,6 @@ private:
 	int _micVolume = 80;
 	int _speakersVolume = 30;
 
-	const unsigned int VOLUME_DEBOUNCE_MS = 1000;
+	const unsigned int DEBOUNCE_TIME_MS = 1000;
 };
 
