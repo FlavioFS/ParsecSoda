@@ -7,16 +7,17 @@
 #include "../Hosting.h"
 #include "../globals/AppStyle.h"
 #include "../globals/AppIcons.h"
+#include "../globals/AppColors.h"
 #include "TitleTooltipWidget.h"
 #include "LoadingRingWidget.h"
 #include "AlertWidget.h"
 #include "ConfirmPopupWidget.h"
-#include "../globals/AppColors.h"
+#include "HostSettingsWidget.h"
 
 class LoginWidget
 {
 public:
-	LoginWidget(Hosting& hosting);
+	LoginWidget(Hosting& hosting, HostSettingsWidget& hostSettingsWidget);
 	void render(bool& isValidSession);
 	void renderPersonal(float width);
 	void render3rd(float width);
@@ -38,5 +39,6 @@ private:
 	string _sessionError;
 	int _sessionStatus;
 	bool _showError = false;
+	HostSettingsWidget& _hostSettingsWidget;
 };
 

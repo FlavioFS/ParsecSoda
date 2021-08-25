@@ -22,13 +22,13 @@ class HostSettingsWidget
 public:
 	HostSettingsWidget(Hosting& hosting);
 	bool render();
+	void updateSecretLink();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
 	const uint8_t LINK_COMPATIBLE_SECRET_SIZE = 9;
 
 private:
 	void savePreferences();
-	void updateSecretLink();
 	bool isDirty();
 	float lerp(float val1, float val2, float t = 0.11f);
 	float easing(float t);

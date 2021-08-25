@@ -1,7 +1,7 @@
 #include "LoginWidget.h"
 
-LoginWidget::LoginWidget(Hosting& hosting)
-	: _hosting(hosting), _isLoginLocked(false)
+LoginWidget::LoginWidget(Hosting& hosting, HostSettingsWidget& hostSettingsWidget)
+	: _hosting(hosting), _isLoginLocked(false), _hostSettingsWidget(hostSettingsWidget)
 {
 }
 
@@ -274,6 +274,7 @@ void LoginWidget::attemptLogin3rd()
             }
 
             _hosting.fetchAccountData();
+            _hostSettingsWidget.updateSecretLink();
             _isLoginLocked = false;
             _loginThread.detach();
         });

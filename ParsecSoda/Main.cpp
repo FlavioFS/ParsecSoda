@@ -113,8 +113,8 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AppColors::init();
     g_hosting.init();
 
-    LoginWidget loginWindow(g_hosting);
     HostSettingsWidget hostSettingsWindow(g_hosting);
+    LoginWidget loginWindow(g_hosting, hostSettingsWindow);
     ChatWidget chatWindow(g_hosting);
     LogWidget logWindow(g_hosting);
     GuestListWidget guestsWindow(g_hosting);
