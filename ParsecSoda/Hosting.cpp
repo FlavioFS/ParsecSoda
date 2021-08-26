@@ -30,6 +30,7 @@ Hosting::Hosting()
 		MetadataCache::preferences.publicRoom,
 		MetadataCache::preferences.secret
 	);
+	setHostVideoConfig(MetadataCache::preferences.fps, MetadataCache::preferences.bandwidth);
 
 	_sfxList.init("./sfx/custom/_sfx.json");
 	
@@ -240,6 +241,16 @@ void Hosting::setHostConfig(string roomName, string gameId, uint8_t maxGuests, b
 	setRoomSecret(secret);
 }
 
+void Hosting::setHostVideoConfig(uint32_t fps, uint32_t bandwidth)
+{
+	_fps = fps;
+	_msPerFrame = 1000.0f / (float)_fps;
+	_hostConfig.video->encoderFPS = fps;
+	_hostConfig.video->encoderMaxBitrate = bandwidth;
+	MetadataCache::preferences.fps = fps;
+	MetadataCache::preferences.bandwidth = bandwidth;
+}
+
 void Hosting::setPublicRoom(bool isPublicRoom)
 {
 	_hostConfig.publicGame = isPublicRoom;
@@ -374,16 +385,14 @@ void Hosting::liveStreamMedia()
 	_mediaMutex.lock();
 	_isMediaThreadRunning = true;
 
-	using clock = chrono::system_clock;
-	using milli = chrono::duration<double, milli>;
-	static const float FPS = 250.0f;
-	static const float MS_PER_FRAME = 1000.0f / FPS;
-	static milli duration;
-	static clock::time_point before;
+	_fpsClock.setDuration(_msPerFrame);
+	_fpsClock.start();
+	static uint32_t sleepTimeMs = 50;
 
 	while (_isRunning)
 	{
-		before = clock::now();
+		_fpsClock.reset();
+
 		_dx11.captureScreen(_parsec);
 
 		if (audioIn.isEnabled && audioOut.isEnabled)
@@ -415,10 +424,10 @@ void Hosting::liveStreamMedia()
 			}
 		}
 
-		duration = clock::now() - before;
-		if (duration.count() < MS_PER_FRAME)
+		sleepTimeMs = _fpsClock.getRemainingTime();
+		if (sleepTimeMs > 0)
 		{
-			Sleep(MS_PER_FRAME - duration.count());
+			Sleep(sleepTimeMs);
 		}
 	}
 

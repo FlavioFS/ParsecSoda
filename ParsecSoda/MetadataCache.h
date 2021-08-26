@@ -44,6 +44,8 @@ public:
 		int windowY = 0;
 		unsigned int windowW = 1280;
 		unsigned int windowH = 720;
+		unsigned int fps = 60;
+		unsigned int bandwidth = 20;
 	};
 
 	static SessionCache loadSessionCache();

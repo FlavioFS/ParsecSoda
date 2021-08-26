@@ -171,6 +171,14 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH) || preferences.windowH < 400) {
                 preferences.windowH = 720;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "fps", &preferences.fps)) {
+                preferences.fps = 60;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "bandwidth", &preferences.bandwidth)) {
+                preferences.bandwidth = 20;
+            }
             
             preferences.isValid = true;
 
@@ -213,6 +221,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetInt(json, "windowY", preferences.windowY);
         MTY_JSONObjSetUInt(json, "windowW", preferences.windowW);
         MTY_JSONObjSetUInt(json, "windowH", preferences.windowH);
+        MTY_JSONObjSetUInt(json, "fps", preferences.fps);
+        MTY_JSONObjSetUInt(json, "bandwidth", preferences.bandwidth);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

@@ -27,6 +27,7 @@
 #include "SFXList.h"
 #include "MetadataCache.h"
 #include "CompilerDirectives.h"
+#include "Stopwatch.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -65,7 +66,7 @@ public:
 	void setMaxGuests(uint8_t maxGuests);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom);
 	void setHostConfig(string roomName, string gameId, uint8_t roomSlots, bool isPublicRoom, string secret);
-	void setHostVideoConfig(int32_t fps, int32_t bandwidth);
+	void setHostVideoConfig(uint32_t fps, uint32_t bandwidth);
 	void setPublicRoom(bool isPublicRoom);
 	void setRoomName(string roomName);
 	void setRoomSecret(string secret);
@@ -108,6 +109,11 @@ private:
 	Guest _host;
 	SFXList _sfxList;
 	TierList _tierList;
+
+	// FPS
+	uint32_t _fps = 60;
+	float _msPerFrame = 1000.0f / (float)_fps;
+	Stopwatch _fpsClock;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;
