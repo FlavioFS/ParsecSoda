@@ -243,8 +243,6 @@ void Hosting::setHostConfig(string roomName, string gameId, uint8_t maxGuests, b
 
 void Hosting::setHostVideoConfig(uint32_t fps, uint32_t bandwidth)
 {
-	_fps = fps;
-	_msPerFrame = 1000.0f / (float)_fps;
 	_hostConfig.video->encoderFPS = fps;
 	_hostConfig.video->encoderMaxBitrate = bandwidth;
 	MetadataCache::preferences.fps = fps;
@@ -385,13 +383,13 @@ void Hosting::liveStreamMedia()
 	_mediaMutex.lock();
 	_isMediaThreadRunning = true;
 
-	_fpsClock.setDuration(_msPerFrame);
-	_fpsClock.start();
-	static uint32_t sleepTimeMs = 50;
+	static uint32_t sleepTimeMs = 4;
+	_mediaClock.setDuration(sleepTimeMs);
+	_mediaClock.start();
 
 	while (_isRunning)
 	{
-		_fpsClock.reset();
+		_mediaClock.reset();
 
 		_dx11.captureScreen(_parsec);
 
@@ -424,7 +422,7 @@ void Hosting::liveStreamMedia()
 			}
 		}
 
-		sleepTimeMs = _fpsClock.getRemainingTime();
+		sleepTimeMs = _mediaClock.getRemainingTime();
 		if (sleepTimeMs > 0)
 		{
 			Sleep(sleepTimeMs);

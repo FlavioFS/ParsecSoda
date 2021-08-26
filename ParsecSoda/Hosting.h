@@ -109,11 +109,7 @@ private:
 	Guest _host;
 	SFXList _sfxList;
 	TierList _tierList;
-
-	// FPS
-	uint32_t _fps = 60;
-	float _msPerFrame = 1000.0f / (float)_fps;
-	Stopwatch _fpsClock;
+	Stopwatch _mediaClock;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;
