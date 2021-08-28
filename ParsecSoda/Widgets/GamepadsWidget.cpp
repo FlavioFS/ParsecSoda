@@ -242,8 +242,10 @@ bool GamepadsWidget::render()
         ImGui::EndGroup();
         ImGui::EndChild();
 
+        ImGui::Dummy(ImVec2(0, 2));
+
         ImGui::BeginGroup();
-        ImGui::Dummy(ImVec2(97, 0));
+        ImGui::Dummy(ImVec2(96, 0));
         
         ImGui::SameLine();
 
