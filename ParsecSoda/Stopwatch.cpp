@@ -51,7 +51,7 @@ void Stopwatch::setDuration(uint32_t duration)
 
 uint32_t Stopwatch::getRemainingTime()
 {
-	return isFinished() ? 0 : _duration - _elapsedDuration.count();
+	return isFinished() ? 0 : _duration - (uint32_t)_elapsedDuration.count();
 }
 
 void Stopwatch::fetchTimer()

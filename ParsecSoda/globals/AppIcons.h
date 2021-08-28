@@ -48,6 +48,12 @@ public:
 	static ID3D11ShaderResourceView* info;
 	static ID3D11ShaderResourceView* logo;
 
+	static ID3D11ShaderResourceView* xbox;
+	static ID3D11ShaderResourceView* xbox1;
+	static ID3D11ShaderResourceView* xbox2;
+	static ID3D11ShaderResourceView* xbox3;
+	static ID3D11ShaderResourceView* xbox4;
+
 private:
 	static Texture _play;
 	static Texture _stop;
@@ -87,5 +93,11 @@ private:
 
 	static Texture _info;
 	static Texture _logo;
+
+	static Texture _xbox;
+	static Texture _xbox1;
+	static Texture _xbox2;
+	static Texture _xbox3;
+	static Texture _xbox4;
 };
 

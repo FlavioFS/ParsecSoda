@@ -15,16 +15,24 @@ public:
 
 	bool run() override
 	{
+		int maxIndex = _gamepadClient.gamepads.size();
+
 		if ( !ACommandIntegerArg::run() )
 		{
-			_replyMessage = std::string() + "[ChatBot] | Usage: !dc <integer in range [1, 4]>\nExample: !dc 3\0";
+			_replyMessage =
+				std::string() +
+				"[ChatBot] | Usage: !dc <integer in range [1, " +
+				to_string(maxIndex) +
+				"]>\nExample: !dc 1\0"
+				;
 			return false;
 		}
 
+
 		std::ostringstream reply;
-		if (_intArg < 1 || _intArg > XUSER_MAX_COUNT)
+		if (_intArg < 1 || _intArg > maxIndex)
 		{
-			reply << "[ChatBot] | Wrong index: " << _intArg << " is not in range [1, 4].\0";
+			reply << "[ChatBot] | Wrong index: " << _intArg << " is not in range [1, " << maxIndex << "].\0";
 		}
 
 		if (_gamepadClient.disconnect(_intArg - 1))

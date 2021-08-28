@@ -8,7 +8,7 @@ LogWidget::LogWidget(Hosting& hosting)
 bool LogWidget::render()
 {
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 400), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 200), ImVec2(800, 900));
     ImGui::Begin("Log", (bool*)0);
     AppStyle::pushInput();
 

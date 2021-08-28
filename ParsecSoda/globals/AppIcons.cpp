@@ -40,6 +40,12 @@ ID3D11ShaderResourceView* AppIcons::block;
 ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
 
+ID3D11ShaderResourceView* AppIcons::xbox;
+ID3D11ShaderResourceView* AppIcons::xbox1;
+ID3D11ShaderResourceView* AppIcons::xbox2;
+ID3D11ShaderResourceView* AppIcons::xbox3;
+ID3D11ShaderResourceView* AppIcons::xbox4;
+
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
 
@@ -78,6 +84,12 @@ Texture AppIcons::_block;
 
 Texture AppIcons::_info;
 Texture AppIcons::_logo;
+
+Texture AppIcons::_xbox;
+Texture AppIcons::_xbox1;
+Texture AppIcons::_xbox2;
+Texture AppIcons::_xbox3;
+Texture AppIcons::_xbox4;
 
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
@@ -121,6 +133,12 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _info.loadFromFile(pd3dDevice, "./icons/info.png");
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
 
+    _xbox.loadFromFile(pd3dDevice, "./icons/xbox.png");
+    _xbox1.loadFromFile(pd3dDevice, "./icons/xbox1.png");
+    _xbox2.loadFromFile(pd3dDevice, "./icons/xbox2.png");
+    _xbox3.loadFromFile(pd3dDevice, "./icons/xbox3.png");
+    _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
+
     play = _play.texture;
     stop = _stop.texture;
     
@@ -159,4 +177,10 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
 
     info = _info.texture;
     logo = _logo.texture;
+
+    xbox = _xbox.texture;
+    xbox1 = _xbox1.texture;
+    xbox2 = _xbox2.texture;
+    xbox3 = _xbox3.texture;
+    xbox4 = _xbox4.texture;
 }

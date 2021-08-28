@@ -30,6 +30,7 @@
 #include "Widgets/VideoWidget.h"
 #include "Widgets/InfoWidget.h"
 #include "Widgets/VersionWidget.h"
+#include "Widgets/HostGamepadWidget.h"
 
 using namespace std;
 
@@ -122,6 +123,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AudioSettingsWidget audioSettingswidget(g_hosting);
     VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
+    //HostGamepadWidget::fetchSystemGamepads();
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
@@ -186,6 +188,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showInfo)           InfoWidget::render();
             NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio, showVideo, showInfo);
             hostInfoWidget.render();
+            HostGamepadWidget::render();
         }
         else
         {

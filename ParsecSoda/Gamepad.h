@@ -34,6 +34,7 @@ public:
 	bool isAttached();
 	void setIndex(ULONG index);
 	ULONG getIndex() const;
+	bool refreshIndex();
 	XINPUT_STATE getState();
 	void clearState();
 
@@ -55,7 +56,7 @@ public:
 
 private:
 	void setState(XINPUT_STATE state);
-	bool refreshIndex();
+	XINPUT_STATE fetchXInputState();
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;
 	ULONG _index = -1;
@@ -63,4 +64,6 @@ private:
 	bool _isConnected = false;
 
 	VOID CALLBACK notification(PVIGEM_CLIENT Client,PVIGEM_TARGET Target,UCHAR LargeMotor,UCHAR SmallMotor,UCHAR LedNumber, LPVOID UserData);
+
+	XINPUT_STATE _currentState;
 };

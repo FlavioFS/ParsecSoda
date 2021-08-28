@@ -39,7 +39,7 @@ bool GamepadClient::init()
 
 Gamepad GamepadClient::createGamepad(uint16_t index)
 {
-	if (_client == nullptr || gamepads.size() > XUSER_MAX_COUNT)
+	if (_client == nullptr)
 	{
 		return Gamepad();
 	}
@@ -51,7 +51,7 @@ Gamepad GamepadClient::createGamepad(uint16_t index)
 
 void GamepadClient::createMaximumGamepads()
 {
-	for (uint16_t i = 0; i < XUSER_MAX_COUNT; i++)
+	for (uint16_t i = 0; i < 8; i++)
 	{
 		this->createGamepad(i);
 		Sleep(200);

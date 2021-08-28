@@ -85,7 +85,11 @@ void LoginWidget::render(bool& isValidSession)
             ImVec2(w, 50)
         ))
         {
+#if USE_PARSEC_PERSONAL_API
+            attemptLoginPersonal();
+#else
             attemptLogin3rd();
+#endif
         }
         ImGui::PopStyleColor();
         ImGui::PopStyleColor();
@@ -224,6 +228,7 @@ void LoginWidget::attemptLoginPersonal()
             }
 
             _hosting.fetchAccountData();
+            _hostSettingsWidget.updateSecretLink();
             _isLoginLocked = false;
             _loginThread.detach();
         });

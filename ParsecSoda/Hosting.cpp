@@ -370,7 +370,6 @@ void Hosting::initAllModules()
 
 	// Instance all gamepads at once
 	_connectGamepadsThread = thread([&]() {
-		_gamepadClient.connectAllGamepads();
 		_gamepadClient.sortGamepads();
 		_connectGamepadsThread.detach();
 	});
@@ -448,7 +447,6 @@ void Hosting::mainLoopControl()
 	_eventMutex.lock();
 
 	ParsecHostStop(_parsec);
-	_gamepadClient.disconnectAllGamepads();
 	_isRunning = false;
 
 	_mediaMutex.unlock();

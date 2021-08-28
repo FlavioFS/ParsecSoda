@@ -1,19 +1,88 @@
 #include "AnimatedGamepadWidget.h"
 
-void AnimatedGamepadWidget::render(string widgetID, Gamepad& gamepad)
+void AnimatedGamepadWidget::render(XINPUT_GAMEPAD gamepad, float stickRadius)
+{	
+	float lDistance = 0, rDistance = 0;
+	ImVec2 lStick = stickShortToFloat(gamepad.sThumbLX, gamepad.sThumbLY, lDistance);
+	ImVec2 rStick = stickShortToFloat(gamepad.sThumbRX, gamepad.sThumbRY, rDistance);
+
+	static ImU32 primary = ImGui::GetColorU32(IM_COL32(0, 120, 204, 255));
+	static ImU32 disabled = ImGui::GetColorU32(IM_COL32(25, 25, 25, 255));
+	static float deadzone = 0.1f;
+
+	renderAnalog(lStick, stickRadius, lDistance > deadzone ? primary : disabled);
+
+	ImGui::SameLine();
+	ImGui::Dummy(ImVec2(5, 0));
+	ImGui::SameLine();
+
+	renderAnalog(rStick, stickRadius, rDistance > deadzone ? primary : disabled);
+}
+
+void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, float radius, ImU32 dotColor)
 {
+	static ImDrawList* drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor;
-	static ImVec2 size;
-	static ImVec2 res = ImVec2(180.0f, 118.0f);
-
-	ImGui::BeginGroup();
-	size = ImGui::GetContentRegionAvail();
 	cursor = ImGui::GetCursorPos();
-	
-	drawTrigger();
 
-	//ImGui::Image(AppIcons::gamepad_BG, res);
-	ImGui::EndGroup();
+	ImVec2 p0 = ImGui::GetCursorScreenPos();
+	ImVec2 p1 = ImVec2(p0.x + 2*radius, p0.y + 2*radius);
+	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImU32 backgroundColor = ImGui::GetColorU32(IM_COL32(20, 20, 20, 255));
+	drawList->AddCircleFilled(center, radius, backgroundColor);
+
+	ImVec2 dotCenter = stick;
+	float dotRatio = 0.4f;
+	dotCenter.x = center.x + min(max(stick.x, -1.0f), 1.0f) * radius * (1.0f - dotRatio);
+	dotCenter.y = center.y - min(max(stick.y, -1.0f), 1.0f) * radius * (1.0f - dotRatio);
+	drawList->AddCircleFilled(dotCenter, dotRatio * radius, dotColor);
+
+	ImGui::SetCursorPos(cursor);
+	ImGui::Dummy(ImVec2(2*radius, 2*radius));
+}
+
+ImVec2 AnimatedGamepadWidget::stickShortToFloat(SHORT lx, SHORT ly, float& distance)
+{
+	static float shortMax = 32768;
+	ImVec2 stick = ImVec2(
+		(float)lx / shortMax,
+		(float)ly / shortMax
+	);
+
+	distance = sqrtf(stick.x * stick.x + stick.y * stick.y);
+	if (distance > 0.01f)
+	{
+		if (abs(lx) > abs(ly))
+		{
+			if (abs(stick.x) > 0.01f)
+			{
+				float yy = stick.y / abs(stick.x);
+				float xx = 1.0f;
+				float maxDiagonal = sqrtf(xx * xx + yy * yy);
+				if (maxDiagonal > 0.01f)
+				{
+					stick.x /= maxDiagonal;
+					stick.y /= maxDiagonal;
+				}
+			}
+		}
+		else
+		{
+			if (abs(stick.y) > 0.01f)
+			{
+				float xx = stick.x / abs(stick.y);
+				float yy = 1.0f;
+				float maxDiagonal = sqrtf(xx * xx + yy * yy);
+				if (maxDiagonal > 0.01f)
+				{
+					stick.x /= maxDiagonal;
+					stick.y /= maxDiagonal;
+				}
+			}
+		}
+	}
+
+	return stick;
 }
 
 void AnimatedGamepadWidget::drawTrigger()

@@ -109,12 +109,13 @@ private:
 	Guest _host;
 	SFXList _sfxList;
 	TierList _tierList;
-	Stopwatch _mediaClock;
 
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;
 	bool _isInputThreadRunning = false;
 	bool _isEventThreadRunning = false;
+
+	Stopwatch _mediaClock;
 
 	thread _mainLoopControlThread;
 	thread _mediaThread;
