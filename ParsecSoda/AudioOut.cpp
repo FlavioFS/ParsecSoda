@@ -190,8 +190,8 @@ void AudioOut::captureAudio()
 
 				float sampleF;
 				int16_t sampleI;
-				byte *p = pData;
-				byte *pe = p + bufferLengthToFill * AUDIO_OUT_BYTES_PER_SAMPLE;
+				BYTE *p = pData;
+				BYTE *pe = p + bufferLengthToFill * AUDIO_OUT_BYTES_PER_SAMPLE;
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;
@@ -215,8 +215,8 @@ void AudioOut::captureAudio()
 			{
 				float sampleF;
 				int16_t sampleI;
-				byte *p = pData;
-				byte *pe = p + requiredBufferLength * AUDIO_OUT_BYTES_PER_SAMPLE;
+				BYTE *p = pData;
+				BYTE *pe = p + requiredBufferLength * AUDIO_OUT_BYTES_PER_SAMPLE;
 				for (; p < pe; p += 4)
 				{
 					sampleF = *(float*)p;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -157,6 +158,8 @@
   <ItemGroup>
     <ClCompile Include="Debouncer.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
+    <ClCompile Include="Widgets\AnimatedGamepadWidget.cpp" />
+    <ClCompile Include="Widgets\HostGamepadWidget.cpp" />
     <ClCompile Include="Widgets\VideoWidget.cpp" />
     <ClCompile Include="Widgets\VersionWidget.cpp" />
     <ClCompile Include="Widgets\InfoWidget.cpp" />
@@ -227,6 +230,8 @@
     <ClInclude Include="CompilerDirectives.h" />
     <ClInclude Include="Debouncer.h" />
     <ClInclude Include="Stopwatch.h" />
+    <ClInclude Include="Widgets\AnimatedGamepadWidget.h" />
+    <ClInclude Include="Widgets\HostGamepadWidget.h" />
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />
@@ -337,7 +342,18 @@
     <Image Include="icon1.ico" />
     <Image Include="icon2.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.210825.3\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>

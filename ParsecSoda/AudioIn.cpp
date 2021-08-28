@@ -108,8 +108,8 @@ void AudioIn::captureAudio()
 			if (_headers[i].dwFlags & WHDR_DONE)
 			{
 				_inBuffer.clear();
-				byte *p = (byte*)&_buffers[i];
-				byte *pe = p + AUDIO_IN_BUFFER_SIZE;
+				std::byte *p = (std::byte*)&_buffers[i];
+				std::byte *pe = p + AUDIO_IN_BUFFER_SIZE;
 				for (; p < pe; p+=2)
 				{
 					_inBuffer.push_back(
