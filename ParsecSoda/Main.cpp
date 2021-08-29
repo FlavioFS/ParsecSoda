@@ -188,7 +188,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showInfo)           InfoWidget::render();
             NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio, showVideo, showInfo);
             hostInfoWidget.render();
-            HostGamepadWidget::render();
+            //HostGamepadWidget::render();
         }
         else
         {

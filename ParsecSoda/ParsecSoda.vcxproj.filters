@@ -204,10 +204,10 @@
     <ClCompile Include="Debouncer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\HostGamepadWidget.cpp">
+    <ClCompile Include="Widgets\AnimatedGamepadWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\AnimatedGamepadWidget.cpp">
+    <ClCompile Include="Widgets\HostGamepadWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -533,10 +533,10 @@
     <ClInclude Include="Debouncer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Widgets\HostGamepadWidget.h">
+    <ClInclude Include="Widgets\AnimatedGamepadWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Widgets\AnimatedGamepadWidget.h">
+    <ClInclude Include="Widgets\HostGamepadWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -558,8 +558,5 @@
     <Image Include="..\x64\Debug\icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

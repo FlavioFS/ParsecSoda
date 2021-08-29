@@ -1,5 +1,5 @@
 #include "HostGamepadWidget.h"
-
+/*
 vector<Input::Gamepad> HostGamepadWidget::_systemGamepads;
 
 bool HostGamepadWidget::render()
@@ -123,3 +123,4 @@ bool HostGamepadWidget::fetchSystemGamepads()
 
     return false;
 }
+*/
