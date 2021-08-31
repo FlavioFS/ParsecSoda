@@ -4,9 +4,13 @@
 #include <string>
 #include <sstream>
 #include <thread>
+#include <functional>
 #include "Utils.h"
 #include "GuestList.h"
 #include "MetadataCache.h"
+#include "Clock.h"
+
+#define SESSION_LIFETIME (uint32_t)(HOURS(3))
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
@@ -58,23 +62,33 @@ public:
 	};
 
 	bool loadSessionCache();
-	bool saveSessionCache();
+	bool saveSessionCache(bool isValid = true);
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
 	const ParsecSession::SessionStatus pollSession(ParsecSession::AuthResult auth);
 	const AuthResult authenticate();
 	const bool fetchArcadeRoomList();
 	void fetchAccountData(Guest* user);
+	void fetchAccountDataSync(Guest* user);
 	bool& isValid();
+	bool isUpdating();
 	const string getSessionError();
 	const int getSessionStatus();
+	const uint32_t getRemainingTime();
+	const uint32_t getLifespan();
 
 	string hostPeerId;
 	string sessionId;
+	MetadataCache::SessionCache::SessionType type;
+
 	MTY_JSON *arcadeRooms;
 
 private:
+	const void extendSessionTime();
+
+	uint32_t _start, _expiry;
 	thread _accountDataThread;
 	bool _isValid = false, _isAuthenticating = false;
+	bool _isUpdating = false;
 	int _sessionStatus = 0;
 	string _sessionError = "";
 };

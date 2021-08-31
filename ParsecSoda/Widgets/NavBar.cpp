@@ -1,6 +1,7 @@
 #include "NavBar.h"
 
 void NavBar::render(
+	Hosting& hosting,
 	bool& showLogin,
 	bool& showHostSettings,
 	bool& showGamepads,
@@ -56,8 +57,14 @@ void NavBar::render(
 	if (ToggleIconButtonWidget::render(AppIcons::info, AppIcons::info, showInfo, iconSize)) showInfo = !showInfo;
 	renderNavtooltip("About", showInfo);
 
-	if (IconButton::render(AppIcons::logoff, AppColors::primary, iconSize)) showLogin = !showLogin;
-	TitleTooltipWidget::render("Log off", "Go back to log in screen.");
+	if (IconButton::render(AppIcons::logoff, AppColors::primary, iconSize))
+	{
+		if (!hosting.isRunning())
+		{
+			showLogin = !showLogin;
+		}
+	}
+	TitleTooltipWidget::render("Log off", "Go back to log in screen.\n\n * Stop streaming before trying to log out.");
 
 	ImGui::End();
 

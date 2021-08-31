@@ -155,10 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Debouncer.cpp" />
     <ClCompile Include="Stopwatch.cpp" />
+    <ClCompile Include="Timespan.cpp" />
+    <ClCompile Include="Widgets\Vec2.cpp" />
+    <ClCompile Include="Widgets\ProgressCircularWidget.cpp" />
     <ClCompile Include="Widgets\AnimatedGamepadWidget.cpp" />
-    <ClCompile Include="Widgets\HostGamepadWidget.cpp" />
     <ClCompile Include="Widgets\VideoWidget.cpp" />
     <ClCompile Include="Widgets\VersionWidget.cpp" />
     <ClCompile Include="Widgets\InfoWidget.cpp" />
@@ -223,14 +226,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioTools.h" />
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="Commands\CommandSFX.h" />
     <ClInclude Include="Commands\CommandOne.h" />
     <ClInclude Include="Commands\ACommandSearchUserHistory.h" />
     <ClInclude Include="CompilerDirectives.h" />
     <ClInclude Include="Debouncer.h" />
     <ClInclude Include="Stopwatch.h" />
+    <ClInclude Include="Timespan.h" />
+    <ClInclude Include="Widgets\Vec2.h" />
+    <ClInclude Include="Widgets\ProgressCircularWidget.h" />
     <ClInclude Include="Widgets\AnimatedGamepadWidget.h" />
-    <ClInclude Include="Widgets\HostGamepadWidget.h" />
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />

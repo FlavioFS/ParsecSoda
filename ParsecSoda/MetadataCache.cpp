@@ -32,15 +32,26 @@ MetadataCache::SessionCache MetadataCache::loadSessionCache()
             if (json != nullptr)
             {
                 char sessionID[128];
-                char peerID[64];   
-                if (
-                    MTY_JSONObjGetString(json, "sessionID", sessionID, 128) &&
-                    MTY_JSONObjGetString(json, "peerID", peerID, 64)
-                )
+                char peerID[64];
+                uint32_t type = (uint32_t)SessionCache::SessionType::THIRD;
+                uint32_t expiry = 0, start = 0;
+
+                bool success =
+                    MTY_JSONObjGetString(json, "sessionID", sessionID, 128)
+                    && MTY_JSONObjGetString(json, "peerID", peerID, 64)
+                    && MTY_JSONObjGetUInt(json, "type", &type)
+                    && MTY_JSONObjGetUInt(json, "start", &start)
+                    && MTY_JSONObjGetUInt(json, "expiry", &expiry)
+                    ;
+
+                if (success)
                 {
                     result.isValid = true;
                     result.sessionID = sessionID;
                     result.peerID = peerID;
+                    result.type = (SessionCache::SessionType)type;
+                    result.start = start;
+                    result.expiry = expiry;
                 }
                 
                 MTY_JSONDestroy(&json);
@@ -67,6 +78,9 @@ bool MetadataCache::saveSessionCache(SessionCache sessionCache)
             MTY_JSON* json = MTY_JSONObjCreate();
             MTY_JSONObjSetString(json, "sessionID", sessionCache.sessionID.c_str());
             MTY_JSONObjSetString(json, "peerID", sessionCache.peerID.c_str());
+            MTY_JSONObjSetUInt(json, "type", (uint32_t)sessionCache.type);
+            MTY_JSONObjSetUInt(json, "start", sessionCache.start);
+            MTY_JSONObjSetUInt(json, "expiry", sessionCache.expiry);
 
             string jsonStr = MTY_JSONSerialize(json);
             char encryptedJson[256];

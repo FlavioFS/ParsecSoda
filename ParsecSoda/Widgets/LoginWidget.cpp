@@ -5,11 +5,8 @@ LoginWidget::LoginWidget(Hosting& hosting, HostSettingsWidget& hostSettingsWidge
 {
 }
 
-void LoginWidget::render(bool& isValidSession)
+void LoginWidget::render(bool& showLogin)
 {
-	if (isValidSession)
-		return;
-
     AppStyle::pushTitle();
     ImGui::SetNextWindowSizeConstraints(ImVec2(352, 585), ImVec2(352, 585));
 	ImGui::Begin(
@@ -52,7 +49,7 @@ void LoginWidget::render(bool& isValidSession)
     AppStyle::pushLabel();
 
 #if USE_PARSEC_PERSONAL_API
-    renderPersonal(w);
+    renderPersonal(w, showLogin);
 #else
     if (_auth.success && !_sessionCancelled)
     {
@@ -86,9 +83,9 @@ void LoginWidget::render(bool& isValidSession)
         ))
         {
 #if USE_PARSEC_PERSONAL_API
-            attemptLoginPersonal();
+            attemptLoginPersonal(showLogin);
 #else
-            attemptLogin3rd();
+            attemptLogin3rd(showLogin);
 #endif
         }
         ImGui::PopStyleColor();
@@ -135,7 +132,7 @@ void LoginWidget::render(bool& isValidSession)
 	ImGui::End();
 }
 
-void LoginWidget::renderPersonal(float width)
+void LoginWidget::renderPersonal(float width, bool& showLogin)
 {
     ImGui::Text("E-mail");
     AppStyle::pushInput();
@@ -151,7 +148,7 @@ void LoginWidget::renderPersonal(float width)
     AppStyle::pushInput();
     if (ImGui::InputText("##Login password", _password, 128, ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue))
     {
-        attemptLoginPersonal();
+        attemptLoginPersonal(showLogin);
     }
     AppStyle::pop();
     renderLoginTooltip();
@@ -211,7 +208,7 @@ void LoginWidget::renderLoginTooltip()
     );
 }
 
-void LoginWidget::attemptLoginPersonal()
+void LoginWidget::attemptLoginPersonal(bool& showLogin)
 {
     if (!_isLoginLocked)
     {
@@ -226,6 +223,10 @@ void LoginWidget::attemptLoginPersonal()
                 _sessionStatus = _hosting.getSession().getSessionStatus();
                 _showError = true;
             }
+            else
+            {
+                showLogin = true;
+            }
 
             _hosting.fetchAccountData();
             _hostSettingsWidget.updateSecretLink();
@@ -235,7 +236,7 @@ void LoginWidget::attemptLoginPersonal()
     }
 }
 
-void LoginWidget::attemptLogin3rd()
+void LoginWidget::attemptLogin3rd(bool& showLogin)
 {
     if (!_isLoginLocked)
     {
@@ -270,6 +271,7 @@ void LoginWidget::attemptLogin3rd()
                     break;
                 case ParsecSession::SessionStatus::APPROVED:
                     done = true;
+                    showLogin = true;
                     break;
                 case ParsecSession::SessionStatus::INVALID:
                 default:

@@ -145,13 +145,20 @@ ParsecSession& Hosting::getSession()
 	return _parsecSession;
 }
 
-void Hosting::fetchAccountData()
+void Hosting::fetchAccountData(bool sync)
 {
 	_host.name = "Host";
 	_host.status = Guest::Status::INVALID;
 	if (isReady())
 	{
-		_parsecSession.fetchAccountData(&_host);
+		if (sync)
+		{
+			_parsecSession.fetchAccountDataSync(&_host);
+		}
+		else
+		{
+			_parsecSession.fetchAccountData(&_host);
+		}
 	}
 }
 

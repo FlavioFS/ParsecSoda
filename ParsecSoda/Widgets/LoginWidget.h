@@ -18,18 +18,18 @@ class LoginWidget
 {
 public:
 	LoginWidget(Hosting& hosting, HostSettingsWidget& hostSettingsWidget);
-	void render(bool& isValidSession);
-	void renderPersonal(float width);
+	void render(bool& showLogin);
+	void renderPersonal(float width, bool& showLogin);
 	void render3rd(float width);
 	void renderCreateAccount(float width);
 
 private:
 	void renderLoginTooltip();
+	void attemptLogin3rd(bool& showLogin);
+	void attemptLoginPersonal(bool& showLogin);
 	Hosting& _hosting;
 	thread _loginThread;
 	bool _isLoginLocked;
-	void attemptLogin3rd();
-	void attemptLoginPersonal();
 	char _email[128] = "";
 	char _password[128] = "";
 	char _2fa[128] = "";

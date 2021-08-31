@@ -72,8 +72,6 @@ int64_t SFXList::getRemainingCooldown()
 
 SFXList::SFXPlayResult SFXList::play(const string tag)
 {
-	static wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
-
 	vector<SFX>::iterator it = _sfxList.begin();
 	for (; it != _sfxList.end(); ++it)
 	{
@@ -85,7 +83,7 @@ SFXList::SFXPlayResult SFXList::play(const string tag)
 			}
 
 			string path = string("./sfx/custom/") + string((*it).path);
-			wstring wide = converter.from_bytes(path);
+			wstring wide (path.begin(), path.end());
 			PlaySound(wide.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 			_lastCooldown = (*it).cooldown;
 			_lastUseTimestamp = steady_clock::now();

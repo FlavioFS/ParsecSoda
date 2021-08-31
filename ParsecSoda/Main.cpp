@@ -128,7 +128,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
 
-    bool& isValidSession = g_hosting.getSession().isValid();
     bool showHostSettings = true;
     bool showChat = true;
     bool showLog = true;
@@ -138,6 +137,16 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showVideo = false;
     bool showStyles = true;
     bool showInfo = false;
+    bool showLogin = true;
+
+    thread t;
+    t = thread([&]() {
+        g_hosting.fetchAccountData(true);
+        showLogin = !g_hosting.getSession().isValid();
+        t.detach();
+    });
+
+    //static Stopwatch stopwatch;
 
     // =====================================================================
 
@@ -176,7 +185,11 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
 
         VersionWidget::render();
 
-        if (isValidSession)
+        if (showLogin)
+        {
+            loginWindow.render(showLogin);
+        }
+        else
         {
             if (showHostSettings)   hostSettingsWindow.render();
             if (showChat)           chatWindow.render();
@@ -186,13 +199,13 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showAudio)          audioSettingswidget.render();
             if (showVideo)          videoWidget.render();
             if (showInfo)           InfoWidget::render();
-            NavBar::render(isValidSession, showHostSettings, showGamepads, showChat, showGuests, showLog, showAudio, showVideo, showInfo);
+            NavBar::render(
+                g_hosting,
+                showLogin, showHostSettings, showGamepads, showChat,
+                showGuests, showLog, showAudio, showVideo, showInfo
+            );
             hostInfoWidget.render();
             //HostGamepadWidget::render();
-        }
-        else
-        {
-            loginWindow.render(isValidSession);
         }
 
         //if (showStyles)         StylePickerWidget::render();

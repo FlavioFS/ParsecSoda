@@ -12,7 +12,6 @@
 #include "Stringer.h"
 #include "matoya.h"
 
-using namespace std;
 using namespace chrono;
 using sec = chrono::duration<double>;
 

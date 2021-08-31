@@ -12,6 +12,7 @@ class NavBar
 {
 public:
 	static void render(
+        Hosting& hosting,
         bool& showLogin,
         bool& showHostSettings,
         bool& showGamepads,

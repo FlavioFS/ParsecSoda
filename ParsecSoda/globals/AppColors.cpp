@@ -36,6 +36,11 @@ ImVec4 AppColors::alpha(ImVec4& color, float alpha)
 	return ImVec4(color.x, color.y, color.z, alpha);
 }
 
+ImU32 AppColors::toU32(ImVec4& color)
+{
+	return ImGui::GetColorU32(IM_COL32(255 * color.x, 255 * color.y, 255 * color.z, 255 * color.w));
+}
+
 void AppColors::pushColor(ImVec4& color)
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, color);
