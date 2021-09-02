@@ -236,10 +236,18 @@ const bool ParsecSession::fetchSession(const char* email, const char* password, 
 	return success;
 }
 
-const bool ParsecSession::fetchArcadeRoomList()
+void ParsecSession::fetchArcadeRoomList()
+{
+	_roomListThread = thread([&]() {
+		fetchArcadeRoomListSync();
+		_roomListThread.detach();
+	});
+}
+
+void ParsecSession::fetchArcadeRoomListSync()
 {
 	if (sessionId.empty()) {
-		return false;
+		return;
 	}
 
 	// Body
@@ -275,20 +283,32 @@ const bool ParsecSession::fetchArcadeRoomList()
 		if (responseSize > 0 && status == 200)
 		{
 			string responseStr = (const char*)response;
-			const MTY_JSON* json = MTY_JSONParse(responseStr.c_str());
+			MTY_JSON* json = MTY_JSONParse(responseStr.c_str());
 
-			return true;
+			const MTY_JSON* data = MTY_JSONObjGetItem(json, "data");
+			const uint32_t length = MTY_JSONGetLength(data);
+
+			char name[256], gameId[64];
+			bool success = false;
+
+			for (size_t i = 0; i < length; i++)
+			{
+				const MTY_JSON* room = MTY_JSONArrayGetItem(data, i);
+				success =
+					MTY_JSONObjGetString(room, "name", name, 256)
+					&& MTY_JSONObjGetString(room, "game_id", gameId, 64)
+					;
+
+				if (success)
+				{
+					_thumbnailList.add(Thumbnail(gameId, name));
+				}
+			}
+
+			MTY_JSONDestroy(&json);
 		}
 	}
-	catch (const std::exception&)
-	{
-		bool debug = true;
-	}
-
-	//Soda::ParsecSession::hostPeerId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "host_peer_id"));
-	//Soda::ParsecSession::sessionId = MTY_JSONSerialize(MTY_JSONObjGetItem(json, "session_id"));
-
-	return false;
+	catch (const std::exception&) {}
 }
 
 void ParsecSession::fetchAccountData(Guest *user)
@@ -420,6 +440,11 @@ const uint32_t ParsecSession::getRemainingTime()
 const uint32_t ParsecSession::getLifespan()
 {
 	return _expiry - _start;
+}
+
+vector<Thumbnail>& ParsecSession::getThumbnails()
+{
+	return _thumbnailList.getThumbnails();
 }
 
 const void ParsecSession::extendSessionTime()

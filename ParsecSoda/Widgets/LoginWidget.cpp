@@ -225,7 +225,7 @@ void LoginWidget::attemptLoginPersonal(bool& showLogin)
             }
             else
             {
-                showLogin = true;
+                showLogin = false;
             }
 
             _hosting.fetchAccountData();
@@ -271,7 +271,7 @@ void LoginWidget::attemptLogin3rd(bool& showLogin)
                     break;
                 case ParsecSession::SessionStatus::APPROVED:
                     done = true;
-                    showLogin = true;
+                    showLogin = false;
                     break;
                 case ParsecSession::SessionStatus::INVALID:
                 default:

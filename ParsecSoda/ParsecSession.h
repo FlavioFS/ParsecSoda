@@ -9,8 +9,9 @@
 #include "GuestList.h"
 #include "MetadataCache.h"
 #include "Clock.h"
+#include "ThumbnailList.h"
 
-#define SESSION_LIFETIME (uint32_t)(HOURS(3))
+#define SESSION_LIFETIME (uint32_t)(HOURS(2))
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
@@ -66,7 +67,8 @@ public:
 	const bool fetchSession(const char* email, const char* password, const char* tfa = "");
 	const ParsecSession::SessionStatus pollSession(ParsecSession::AuthResult auth);
 	const AuthResult authenticate();
-	const bool fetchArcadeRoomList();
+	void fetchArcadeRoomList();
+	void fetchArcadeRoomListSync();
 	void fetchAccountData(Guest* user);
 	void fetchAccountDataSync(Guest* user);
 	bool& isValid();
@@ -75,6 +77,7 @@ public:
 	const int getSessionStatus();
 	const uint32_t getRemainingTime();
 	const uint32_t getLifespan();
+	vector<Thumbnail>& getThumbnails();
 
 	string hostPeerId;
 	string sessionId;
@@ -86,9 +89,11 @@ private:
 	const void extendSessionTime();
 
 	uint32_t _start, _expiry;
-	thread _accountDataThread;
+	thread _accountDataThread, _roomListThread;
 	bool _isValid = false, _isAuthenticating = false;
 	bool _isUpdating = false;
 	int _sessionStatus = 0;
 	string _sessionError = "";
+
+	ThumbnailList _thumbnailList;
 };

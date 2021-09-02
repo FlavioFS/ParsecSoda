@@ -27,6 +27,8 @@ ID3D11ShaderResourceView* AppIcons::video;
 ID3D11ShaderResourceView* AppIcons::refresh;
 ID3D11ShaderResourceView* AppIcons::sort;
 ID3D11ShaderResourceView* AppIcons::submit;
+ID3D11ShaderResourceView* AppIcons::saveOn;
+ID3D11ShaderResourceView* AppIcons::saveOff;
 
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
@@ -72,6 +74,8 @@ Texture AppIcons::_video;
 Texture AppIcons::_refresh;
 Texture AppIcons::_sort;
 Texture AppIcons::_submit;
+Texture AppIcons::_saveOn;
+Texture AppIcons::_saveOff;
 
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
@@ -120,6 +124,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _refresh.loadFromFile(pd3dDevice, "./icons/refresh.png");
     _sort.loadFromFile(pd3dDevice, "./icons/sort.png");
     _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
+    _saveOn.loadFromFile(pd3dDevice, "./icons/save-on.png");
+    _saveOff.loadFromFile(pd3dDevice, "./icons/save-off.png");
 
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
@@ -165,6 +171,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     refresh = _refresh.texture;
     sort = _sort.texture;
     submit = _submit.texture;
+    saveOn = _saveOn.texture;
+    saveOff = _saveOff.texture;
 
     chat = _chat.texture;
     users = _users.texture;
