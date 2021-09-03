@@ -249,7 +249,7 @@ void LoginWidget::attemptLogin3rd(bool& showLogin)
 
             if (_auth.success)
             {
-                string uri(_auth.verificationUri);
+                string uri = string(_auth.verificationUri) + "/" + _auth.userCode;
                 wstring wuri(&uri[0], &uri[uri.size()]);
                 ShellExecute(0, 0, wuri.c_str(), 0, 0, SW_SHOW);
             }

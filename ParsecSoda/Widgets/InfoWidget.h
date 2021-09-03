@@ -11,5 +11,6 @@ public:
 
 private:
 	static bool renderSugoiButton(const char* text, const wchar_t* link);
+	static bool renderLinkButton(const char* text, const wchar_t* link);
 };
 

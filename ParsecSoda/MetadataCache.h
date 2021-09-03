@@ -2,12 +2,15 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 #include <algorithm>
 #include <Windows.h>
 #include <ShlObj.h>
 #include "matoya.h"
 #include "GuestData.h"
 #include "GuestTier.h"
+#include "Thumbnail.h"
+#include "Stringer.h"
 
 using namespace std;
 
@@ -71,6 +74,9 @@ public:
 	static vector<GuestTier> loadGuestTiers();
 	static bool saveGuestTiers(vector<GuestTier> guestTiers);
 
+	static vector<Thumbnail> loadThumbnails();
+	static bool saveThumbnails(vector<Thumbnail> thumbnails);
+
 	static Preferences preferences;
 
 private:
@@ -83,4 +89,6 @@ private:
 	static string _key;
 	/** Must have 12 bytes. */
 	static string _nonce;
+
+	static mutex _mutex;
 };

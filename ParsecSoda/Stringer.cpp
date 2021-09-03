@@ -48,6 +48,23 @@ const bool Stringer::isCloseEnough(const std::string str1, const std::string str
 	return Stringer::isCloseEnough(str1.c_str(), str2.c_str(), matches);
 }
 
+string Stringer::toLower(const string str)
+{
+	string result = str;
+	for (size_t i = 0; i < result.size(); ++i)
+	{
+		result[i] = std::tolower(result[i]);
+	}
+	return result;
+}
+
+int Stringer::compareNoCase(const string a, const string b)
+{
+	const string aLower = Stringer::toLower(a);
+	const string bLower = Stringer::toLower(b);
+	return aLower.compare(bLower);
+}
+
 void Stringer::replacePattern(string& source, string oldPattern, string newPattern)
 {
 	size_t index = 0;

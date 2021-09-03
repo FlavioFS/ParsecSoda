@@ -2,7 +2,8 @@
 
 void ProgressCircularWidget::render(int radius, int thickness, float value, float valueMin, float valueMax, ImU32 activeColor, ImU32 backgroundColor)
 {
-	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	static ImDrawList* drawList;
+	drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 

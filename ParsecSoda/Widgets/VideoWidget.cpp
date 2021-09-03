@@ -86,7 +86,7 @@ bool VideoWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("FPS");
     AppStyle::pop();
-    if (IntRangeWidget::render("Encoder FPS", _fps, 30, 250, 0.5f))
+    if (IntRangeWidget::render("Encoder FPS", _fps, 10, 250, 0.5f))
     {
         TitleTooltipWidget::render("Encoder FPS", "Limits the amount of frames per second.");
     }

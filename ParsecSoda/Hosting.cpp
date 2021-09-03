@@ -97,6 +97,7 @@ void Hosting::init()
 
 	preferences.isValid = true;
 	MetadataCache::savePreferences(preferences);
+	_parsecSession.loadThumbnails();
 	_parsecSession.loadSessionCache();
 
 	fetchAccountData();

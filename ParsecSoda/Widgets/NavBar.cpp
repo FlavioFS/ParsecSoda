@@ -7,6 +7,7 @@ void NavBar::render(
 	bool& showGamepads,
 	bool& showChat,
 	bool& showGuests,
+	bool& showThumbnails,
 	bool& showLog,
 	bool& showAudio,
 	bool& showVideo,
@@ -14,7 +15,7 @@ void NavBar::render(
 )
 {
 	static ImVec2 iconSize = ImVec2(24, 24);
-	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*7 + 8*20);
+	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*7 + 8*25);
 	static ImVec2 zero = ImVec2(0, 0);
 	static ImVec2 padding = ImVec2(8, 8);
 	
@@ -44,6 +45,9 @@ void NavBar::render(
 
 	if (ToggleIconButtonWidget::render(AppIcons::users, AppIcons::users, showGuests, iconSize))	showGuests = !showGuests;
 	renderNavtooltip("Guests", showGuests);
+
+	if (ToggleIconButtonWidget::render(AppIcons::image, AppIcons::image, showThumbnails, iconSize))	showThumbnails = !showThumbnails;
+	renderNavtooltip("Public Thumbnails (Arcade)", showThumbnails);
 
 	if (ToggleIconButtonWidget::render(AppIcons::log, AppIcons::log, showLog, iconSize)) showLog = !showLog;
 	renderNavtooltip("Log", showLog);

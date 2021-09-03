@@ -5,7 +5,7 @@ bool InfoWidget::render()
     AppStyle::pushTitle();
 
     static ImVec2 res;
-    static ImVec2 size = ImVec2(600, 300);
+    static ImVec2 size = ImVec2(880, 700);
 
     res = ImGui::GetMainViewport()->Size;
 
@@ -19,15 +19,76 @@ bool InfoWidget::render()
     
     ImGui::Dummy(ImVec2(0, 20));
 
-    ImGui::TextWrapped("Parsec Soda is FREE and Open Source. If you paid for this app, you have been scammed. You can find the source code at:");
-    
     renderSugoiButton("github.com/FlavioFS/ParsecSoda", L"https://github.com/FlavioFS/ParsecSoda");
+    ImGui::SetCursorPosX(25);
+    ImGui::TextWrapped("Parsec Soda is FREE and Open Source. If you paid for this app, you have been scammed. You can find the source code at this address.");
 
     ImGui::Dummy(ImVec2(0, 15));
-
-    ImGui::TextWrapped("Parsec Soda was created by @flafdraws. Find me on social media:");
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0, 15));
 
     renderSugoiButton("linktr.ee/flafdraws", L"https://linktr.ee/flafdraws");
+    ImGui::SetCursorPosX(25);
+    ImGui::TextWrapped("Parsec Soda was created by @flafdraws. Find me on social media.");
+
+    ImGui::Dummy(ImVec2(0, 15));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0, 15));
+
+    renderSugoiButton("Donate", L"https://github.com/FlavioFS/ParsecSoda#donate");
+    ImGui::SetCursorPosX(25);
+    ImGui::TextWrapped("Want to support my work?");
+
+    ImGui::Dummy(ImVec2(0, 10));
+
+    renderLinkButton("Ko-fi", L"https://ko-fi.com/flafdraws");
+    renderLinkButton("Paypal", L"https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72");
+
+    ImGui::BeginGroup();
+    static char pix[] = "43.379.701/0001-96";
+    AppFonts::pushInput();
+    ImGui::SetCursorPosX(25);
+    ImGui::Text("Pix (Brazil)");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(120);
+    ImGui::SetNextItemWidth(150);
+    ImGui::InputText("### Donate Pix", pix, 64, ImGuiInputTextFlags_ReadOnly);
+    ImGui::SameLine();
+    ImGui::Text("   (Flavio Freitas)");
+
+    static char btc[] = "bc1qmvuljqen7tcs57z6pems5jam7dt0taswp6y5x9";
+    ImGui::SetCursorPosX(25);
+    ImGui::Text("BTC");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(120);
+    ImGui::SetNextItemWidth(365);
+    ImGui::InputText("### Donate BTC", btc, 64, ImGuiInputTextFlags_ReadOnly);
+
+    static char ltc[] = "ltc1q349yxyzt09u7kvdz5xvkln0pappxhcwl4g4mt9";
+    ImGui::SetCursorPosX(25);
+    ImGui::Text("LTC");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(120);
+    ImGui::SetNextItemWidth(365);
+    ImGui::InputText("### Donate LTC", ltc, 64, ImGuiInputTextFlags_ReadOnly);
+    AppFonts::pop();
+    ImGui::EndGroup();
+
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(20, 0));
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
+    ImGui::Text("BTC");
+    ImGui::Image(AppIcons::btc, ImVec2(145, 145));
+    ImGui::EndGroup();
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(20, 0));
+    ImGui::SameLine();
+    ImGui::BeginGroup();
+    ImGui::Text("LTC");
+    ImGui::Image(AppIcons::ltc, ImVec2(145, 145));
+    ImGui::EndGroup();
 
     AppStyle::pop();
     ImGui::End();
@@ -42,6 +103,23 @@ bool InfoWidget::renderSugoiButton(const char* text, const wchar_t* link)
 
     AppColors::pushPrimary();
     AppFonts::pushSugoiDekai();
+    if (ImGui::Button(text))
+    {
+        ShellExecute(0, 0, link, 0, 0, SW_SHOW);
+        result = true;
+    }
+    AppFonts::pop();
+    AppColors::pop();
+
+    return result;
+}
+
+bool InfoWidget::renderLinkButton(const char* text, const wchar_t* link)
+{
+    bool result = false;
+
+    AppColors::pushPrimary();
+    AppFonts::pushTitle();
     if (ImGui::Button(text))
     {
         ShellExecute(0, 0, link, 0, 0, SW_SHOW);

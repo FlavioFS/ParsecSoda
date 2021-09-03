@@ -20,7 +20,25 @@
 
 <br>
 
+<a id="donate"></a>
+
+# :moneybag: Donate | Doações
+## **Brazil**
+Pix  &nbsp; **43.379.701/0001-96** &nbsp; (Flávio Freitas)
+
+## **Worldwide**
+ + [**Ko-fi**](https://ko-fi.com/flafdraws)  
+ + [**Paypal**](https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72)
+
+|BTC|LTC|
+|:---:|:---:|
+|bc1qmvuljqen7tcs57z6pems5jam7dt0taswp6y5x9|ltc1q349yxyzt09u7kvdz5xvkln0pappxhcwl4g4mt9|
+|![](https://i.postimg.cc/c1wRzTXT/btc.png)|![](https://i.postimg.cc/9MNr405F/ltc.png)|
+
+<br>
+
 <a id="summary"></a>
+
 # :clipboard: Summary
  + [Video Demos](#demos)
  + [Social Networks](#social)
@@ -34,7 +52,9 @@
 
 <br>
 
+
 <a id="demos"></a>
+
 # :tv: Video Demos
 
 |[Video 1: - Trailer](https://youtu.be/u929KNLovj0)|[Video 2: - Fighting-game gameplay](https://youtu.be/oIn0dTWHExg)|
@@ -47,14 +67,18 @@
 
 <br>
 
+
 <a id="social"></a>
+
 # :mega: Social
 ### [**Discord Server** - Parsec Soda](https://discord.gg/6RjwckWUhk)
 ### [**Linktree** - My personal networks](https://linktr.ee/flafdraws)
 
 <br>
 
+
 <a id="about"></a>
+
 # :video_game: What is Parsec Soda?
 Parsec Soda is a custom and open-source [**Parsec**](https://parsec.app/login) tool dedicated to improve Hosting experience in Parsec Arcade.
 
@@ -64,14 +88,18 @@ Parsec Soda has a plethora of [**Features**](#features) to assist the Host.
 
 <br>
 
+
 <a id="about-not"></a>
+
 # :x: What Parsec Soda is not about?
  + Parsec Soda is **NOT** a replacement for the official Parsec client.
  + Parsec Soda can create Arcade rooms, but not join them. So if you want to join a room instead of hosting, you still need the official Parsec client to do it (including your own room created with Parsec Soda) - and I recommend you use the official client for testing your Parsec Soda room.  
 
 <br>
 
+
 <a id="license"></a>
+
 # :scroll: License
 Parsec Soda code is under [MIT license](LICENSE), **BUT** all of the code from [**Parsec SDK**](https://github.com/parsec-cloud/parsec-sdk) has it's own license, the [Parsec SDK License](Dependencies/parsecsdk/LICENSE.md).
 
@@ -86,7 +114,9 @@ In order to share executables, you must set **USE_PARSEC_PERSONAL_API** to **FAL
 
 <br>
 
+
 <a id="features"></a>
+
 # :triangular_flag_on_post: Features
  + Plug/unplug, pre-instance gamepads manually.  
  ![](https://i.postimg.cc/jShk85BQ/plug.gif)  
@@ -109,7 +139,9 @@ In order to share executables, you must set **USE_PARSEC_PERSONAL_API** to **FAL
  
 <br>
 
+
 <a id="contributing"></a>
+
 # :raising_hand: How to contribute?
  1. Open a new issue reporting what you're going to do (this helps preventing merge conflicts/doubled work).  
  2. Fork this repository.
@@ -121,7 +153,9 @@ You can also check my [Trello board here](https://trello.com/b/ysqWImSD/parsec-s
 
 <br>
 
+
 <a id="instructions"></a>
+
 # :construction_worker: Build Instructions
 The building process is not trivial, so I'll guide you through the process and prevent the major caveats.
 

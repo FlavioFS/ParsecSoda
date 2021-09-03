@@ -1,7 +1,7 @@
 #include "HostSettingsWidget.h"
 
 HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
-    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut)
+    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut), _thumbnails(_hosting.getSession().getThumbnails())
 {
     ParsecHostConfig cfg = hosting.getHostConfig();
     try
@@ -30,6 +30,15 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
 
     _audioIn.isEnabled = MetadataCache::preferences.micEnabled;
     _audioOut.isEnabled = MetadataCache::preferences.speakersEnabled;
+
+    vector<Thumbnail>::iterator it;
+    for (it = _thumbnails.begin(); it != _thumbnails.end(); ++it)
+    {
+        if ((*it).gameId.compare(_gameID) == 0)
+        {
+            _thumbnailName = (*it).name;
+        }
+    }
 
     updateSecretLink();
 }
@@ -77,11 +86,31 @@ bool HostSettingsWidget::render()
 
     ImGui::Dummy(dummySize);
 
-    ImGui::Text("Game ID");
+    ImGui::Text("Thumbnail");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
-    ImGui::InputText("##Game ID input", _gameID, GAME_ID_LEN);
-    TitleTooltipWidget::render("Thumbnail ID", "Sets thumbnail, but you need to know beforehand\nthe specific hash value for your game.");
+    if (ImGui::BeginCombo("### Thumbnail picker combo", _thumbnailName.c_str(), ImGuiComboFlags_HeightLarge))
+    {
+        for (size_t i = 0; i < _thumbnails.size(); ++i)
+        {
+            bool isSelected = (_thumbnails[i].gameId.compare(_gameID) == 0);
+            if (ImGui::Selectable(_thumbnails[i].name.c_str(), isSelected))
+            {
+                _thumbnailName = _thumbnails[i].name;
+                try
+                {
+                    strcpy_s(_gameID, GAME_ID_LEN, _thumbnails[i].gameId.c_str());
+                }
+                catch (const std::exception&) {}
+            }
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+    TitleTooltipWidget::render("Thumbnail Picker", "To find new thumbnails, go to the Arcade Thumbnails window.");
     AppStyle::pop();
 
     ImGui::Dummy(dummySize);

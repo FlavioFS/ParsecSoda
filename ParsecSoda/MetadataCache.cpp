@@ -6,6 +6,7 @@
 string MetadataCache::_key = "ParsecSodaKey***";
 string MetadataCache::_nonce = "ParsecSoda**";
 MetadataCache::Preferences MetadataCache::preferences = MetadataCache::Preferences();
+mutex MetadataCache::_mutex;
 
 MetadataCache::SessionCache MetadataCache::loadSessionCache()
 {
@@ -390,6 +391,108 @@ bool MetadataCache::saveGuestTiers(vector<GuestTier> guestTiers)
     return false;
 }
 
+vector<Thumbnail> MetadataCache::loadThumbnails()
+{
+    _mutex.lock();
+
+    vector<Thumbnail> result;
+
+    string dirPath = getUserDir();
+    if (!dirPath.empty())
+    {
+        string filepath = dirPath + "thumbnails.json";
+
+        if (MTY_FileExists(filepath.c_str()))
+        {
+            size_t size;
+            const char* encryptedContent;
+            encryptedContent = (char*)MTY_ReadFile(filepath.c_str(), &size);
+
+            char *originalText = new char[size + 100];
+            MTY_AESGCM *ctx = MTY_AESGCMCreate(_key.c_str());
+            char tag[16] = "ParsecSodaTag**";
+
+            MTY_AESGCMDecrypt(ctx, _nonce.c_str(), encryptedContent, size + 100, tag, (void*)originalText);
+            MTY_JSON* json = MTY_JSONParse(originalText);
+            uint32_t thumbnailCount = MTY_JSONGetLength(json);
+
+            for (size_t i = 0; i < thumbnailCount; i++)
+            {
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+
+                char name[256] = "", gameId[64] = "";
+
+                bool success =
+                    MTY_JSONObjGetString(guest, "gameId", gameId, 64) &&
+                    MTY_JSONObjGetString(guest, "name", name, 256);
+
+                if (success)
+                {
+                    result.push_back(Thumbnail(gameId, name, true));
+                }
+            }
+            delete originalText;
+
+            //std::sort(result.begin(), result.end(), [](const Thumbnail a, const Thumbnail b) {
+            //    int compare = Stringer::toLower(a.name).compare(Stringer::toLower(b.name));
+            //    return compare;
+            //});
+
+            MTY_JSONDestroy(&json);
+            MTY_AESGCMDestroy(&ctx);
+        }
+    }
+
+    _mutex.unlock();
+    return result;
+}
+
+bool MetadataCache::saveThumbnails(vector<Thumbnail> thumbnails)
+{
+    _mutex.lock();
+
+    bool result = false;
+    string dirPath = getUserDir();
+
+    if (!dirPath.empty())
+    {
+        string filepath = dirPath + "thumbnails.json";
+
+        MTY_JSON* json = MTY_JSONArrayCreate();
+
+        vector<Thumbnail>::iterator it = thumbnails.begin();
+        for (; it != thumbnails.end(); ++it)
+        {
+            if ((*it).saved)
+            {
+                MTY_JSON* thumb = MTY_JSONObjCreate();
+
+                MTY_JSONObjSetString(thumb, "gameId", (*it).gameId.c_str());
+                MTY_JSONObjSetString(thumb, "name", (*it).name.c_str());
+                MTY_JSONArrayAppendItem(json, thumb);
+            }
+        }
+
+        string jsonStr = MTY_JSONSerialize(json);
+        char *encryptedJson = new char[jsonStr.size() + 100];
+        char tag[16] = "ParsecSodaTag**";
+        MTY_AESGCM* ctx = MTY_AESGCMCreate(_key.c_str());
+        if (MTY_AESGCMEncrypt(ctx, _nonce.c_str(), jsonStr.c_str(), jsonStr.size() + 100, tag, encryptedJson))
+        {
+            if (MTY_WriteFile(filepath.c_str(), encryptedJson, jsonStr.size()))
+            {
+                result = true;
+            }
+        }
+        delete encryptedJson;
+
+        MTY_JSONDestroy(&json);
+        MTY_AESGCMDestroy(&ctx);
+    }
+
+    _mutex.unlock();
+    return result;
+}
 
 string MetadataCache::getUserDir()
 {

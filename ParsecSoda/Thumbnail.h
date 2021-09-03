@@ -6,8 +6,8 @@ class Thumbnail
 {
 public:
 	Thumbnail();
-	Thumbnail(std::string gameId, std::string name, bool saved = false);
-	Thumbnail(char* gameId, char* name, bool saved = false);
+	Thumbnail(std::string gameId, std::string name, bool saved = false, bool edit = false);
+	Thumbnail(char* gameId, char* name, bool saved = false, bool edit = false);
 	bool isValid();
 
 
@@ -22,6 +22,7 @@ public:
 	std::string gameId;
 	std::string name;
 	bool saved;
+	bool edit;
 
 private:
 	const uint32_t GAMEID_MINIMUM_LENGTH = 25;

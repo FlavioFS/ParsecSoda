@@ -53,6 +53,10 @@ private:
 	int _micVolume = 80;
 	int _speakersVolume = 30;
 
+
 	const unsigned int DEBOUNCE_TIME_MS = 1000;
+
+	vector<Thumbnail>& _thumbnails;
+	string _thumbnailName = "Please select thumbnail.";
 };
 

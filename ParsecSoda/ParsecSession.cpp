@@ -447,6 +447,17 @@ vector<Thumbnail>& ParsecSession::getThumbnails()
 	return _thumbnailList.getThumbnails();
 }
 
+void ParsecSession::loadThumbnails()
+{
+	_thumbnailList.load();
+	_thumbnailList.add(Thumbnail("1wdoHfhhZH5lPuZCwGBete0HIAj", "Parsec Soda"));
+}
+
+void ParsecSession::saveThumbnails()
+{
+	_thumbnailList.save();
+}
+
 const void ParsecSession::extendSessionTime()
 {
 	_start = Clock::now();

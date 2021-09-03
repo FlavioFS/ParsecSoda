@@ -27,18 +27,19 @@ public:
 
 	bool run() override
 	{
-		if (!_isHost)
-		{
-			ParsecHostKickGuest(_parsec, _sender.id);
-		}
-		_ban.ban(GuestData(_sender.name, _sender.userID));
-		_replyMessage = std::string() + "! [ChatBot] | " + _sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
+		//if (!_isHost)
+		//{
+		//	ParsecHostKickGuest(_parsec, _sender.id);
+		//}
+		//_ban.ban(GuestData(_sender.name, _sender.userID));
+		//_replyMessage = std::string() + "! [ChatBot] | " + _sender.name + " was banned by ChatBot.\n\t\tBEGONE! *MEGA BONK*\0";
+		_replyMessage = "\0";
 
-		try
-		{
-			PlaySound(TEXT("./sfx/banido.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
-		}
-		catch (const std::exception&) {}
+		//try
+		//{
+		//	PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+		//}
+		//catch (const std::exception&) {}
 
 		return true;
 	}

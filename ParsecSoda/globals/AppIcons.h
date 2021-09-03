@@ -37,6 +37,8 @@ public:
 	static ID3D11ShaderResourceView* submit;
 	static ID3D11ShaderResourceView* saveOn;
 	static ID3D11ShaderResourceView* saveOff;
+	static ID3D11ShaderResourceView* edit;
+	static ID3D11ShaderResourceView* image;
 
 	static ID3D11ShaderResourceView* chat;
 	static ID3D11ShaderResourceView* users;
@@ -55,6 +57,9 @@ public:
 	static ID3D11ShaderResourceView* xbox2;
 	static ID3D11ShaderResourceView* xbox3;
 	static ID3D11ShaderResourceView* xbox4;
+
+	static ID3D11ShaderResourceView* btc;
+	static ID3D11ShaderResourceView* ltc;
 
 private:
 	static Texture _play;
@@ -85,6 +90,8 @@ private:
 	static Texture _submit;
 	static Texture _saveOn;
 	static Texture _saveOff;
+	static Texture _edit;
+	static Texture _image;
 
 	static Texture _chat;
 	static Texture _users;
@@ -103,5 +110,8 @@ private:
 	static Texture _xbox2;
 	static Texture _xbox3;
 	static Texture _xbox4;
+
+	static Texture _btc;
+	static Texture _ltc;
 };
 

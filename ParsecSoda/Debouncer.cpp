@@ -24,7 +24,6 @@ void Debouncer::start()
 			_stopwatch.stop();
 			_callback();
 			_thread.detach();
-
 		});
 	}
 	else

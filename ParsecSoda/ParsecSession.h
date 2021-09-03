@@ -11,7 +11,7 @@
 #include "Clock.h"
 #include "ThumbnailList.h"
 
-#define SESSION_LIFETIME (uint32_t)(HOURS(2))
+#define SESSION_LIFETIME (uint32_t)(HOURS(1) + MINUTES(25))
 
 #define PARSEC_API_HOST "kessel-api.parsecgaming.com"
 #define PARSEC_API_V1_AUTH "/v1/auth/"
@@ -78,6 +78,8 @@ public:
 	const uint32_t getRemainingTime();
 	const uint32_t getLifespan();
 	vector<Thumbnail>& getThumbnails();
+	void loadThumbnails();
+	void saveThumbnails();
 
 	string hostPeerId;
 	string sessionId;

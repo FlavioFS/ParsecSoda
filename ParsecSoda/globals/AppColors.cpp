@@ -14,6 +14,8 @@ ImVec4 AppColors::invisible;
 ImVec4 AppColors::primary;
 ImVec4 AppColors::secondary;
 
+ImVec4 AppColors::disabled;
+
 void AppColors::init()
 {
 	title = ImVec4(0.05f, 0.03f, 0.07f, 1.0f);
@@ -29,6 +31,8 @@ void AppColors::init()
 
 	primary = ImVec4(0.00f, 0.47f, 0.80f, 1.00f);
 	secondary = ImVec4(0.02f, 0.29f, 0.53f, 1.00f);
+
+	disabled = ImVec4(0.06f, 0.06f, 0.06f, 1.00f);
 }
 
 ImVec4 AppColors::alpha(ImVec4& color, float alpha)

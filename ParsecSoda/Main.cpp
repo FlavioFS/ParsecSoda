@@ -139,7 +139,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showStyles = true;
     bool showInfo = false;
     bool showLogin = true;
-    bool showThumbs = true;
+    bool showThumbs = false;
 
     ParsecSession& g_session = g_hosting.getSession();
     vector<Thumbnail>& g_thumbnails = g_session.getThumbnails();
@@ -150,8 +150,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         showLogin = !g_hosting.getSession().isValid();
         t.detach();
     });
-
-    //static Stopwatch stopwatch;
 
     // =====================================================================
 
@@ -208,7 +206,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             NavBar::render(
                 g_hosting,
                 showLogin, showHostSettings, showGamepads, showChat,
-                showGuests, showLog, showAudio, showVideo, showInfo
+                showGuests, showThumbs, showLog, showAudio, showVideo, showInfo
             );
             hostInfoWidget.render();
             //HostGamepadWidget::render();

@@ -53,5 +53,26 @@ public:
 	*/
 	static const bool isCloseEnough(const string str1, const string str2, uint8_t matches = STRINGER_DEFAULT_MATCH);
 
+	/**
+	* Converts a whole string to lower case.
+	* @param str The string to be converted.
+	* @return Lower case string.
+	*/
+	static string toLower(const string str);
+
+	/**
+	* Compares two strings, but ignores case (internally converts both to lower case).
+	* @param a First string.
+	* @param b Second string.
+	* @result Comparison result.
+	*/
+	static int compareNoCase(const string a, const string b);
+
+	/**
+	* Replaces all occurrences of a pattern in a string with another pattern.
+	* @param source Original string reference to be edited.
+	* @param oldPattern Pattern to be replaced.
+	* @param newPattern Pattern to insert.
+	*/
 	static void replacePattern(string& source, string oldPattern, string newPattern);
 };

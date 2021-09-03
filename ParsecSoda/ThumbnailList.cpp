@@ -9,15 +9,18 @@ bool ThumbnailList::add(Thumbnail thumb)
 {
     if (thumb.isValid())
     {
+
         vector<Thumbnail>::iterator it;
+        bool found = find(thumb.gameId);
+        if (found)
+        {
+            return false;
+        }
+
+        // Insertion sort
         for (it = _thumbnails.begin(); it != _thumbnails.end(); ++it)
         {
-            if ((*it).gameId.compare(thumb.gameId) == 0)
-            {
-                return false;
-            }
-
-            if ((*it).name.compare(thumb.name) > 0)
+            if (Stringer::compareNoCase((*it).name, thumb.name) > 0)
             {
                 _thumbnails.insert(it, thumb);
                 return true;
@@ -47,4 +50,20 @@ bool ThumbnailList::find(string gameId, function<void(Thumbnail&)> callback)
     }
 
     return false;
+}
+
+void ThumbnailList::load()
+{
+    vector<Thumbnail> thumbs = MetadataCache::loadThumbnails();
+    vector<Thumbnail>::iterator it;
+
+    for (it = thumbs.begin(); it != thumbs.end(); ++it)
+    {
+        add(*it);
+    }
+}
+
+void ThumbnailList::save()
+{
+    MetadataCache::saveThumbnails(_thumbnails);
 }

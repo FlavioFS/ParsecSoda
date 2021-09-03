@@ -18,6 +18,7 @@ public:
         bool& showGamepads,
         bool& showChat,
         bool& showGuests,
+        bool& showThumbnails,
         bool& showLog,
         bool& showAudio,
         bool& showVideo,

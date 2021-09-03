@@ -29,6 +29,8 @@ ID3D11ShaderResourceView* AppIcons::sort;
 ID3D11ShaderResourceView* AppIcons::submit;
 ID3D11ShaderResourceView* AppIcons::saveOn;
 ID3D11ShaderResourceView* AppIcons::saveOff;
+ID3D11ShaderResourceView* AppIcons::edit;
+ID3D11ShaderResourceView* AppIcons::image;
 
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
@@ -47,6 +49,9 @@ ID3D11ShaderResourceView* AppIcons::xbox1;
 ID3D11ShaderResourceView* AppIcons::xbox2;
 ID3D11ShaderResourceView* AppIcons::xbox3;
 ID3D11ShaderResourceView* AppIcons::xbox4;
+
+ID3D11ShaderResourceView* AppIcons::btc;
+ID3D11ShaderResourceView* AppIcons::ltc;
 
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
@@ -76,6 +81,8 @@ Texture AppIcons::_sort;
 Texture AppIcons::_submit;
 Texture AppIcons::_saveOn;
 Texture AppIcons::_saveOff;
+Texture AppIcons::_edit;
+Texture AppIcons::_image;
 
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
@@ -94,6 +101,9 @@ Texture AppIcons::_xbox1;
 Texture AppIcons::_xbox2;
 Texture AppIcons::_xbox3;
 Texture AppIcons::_xbox4;
+
+Texture AppIcons::_btc;
+Texture AppIcons::_ltc;
 
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
@@ -126,6 +136,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
     _saveOn.loadFromFile(pd3dDevice, "./icons/save-on.png");
     _saveOff.loadFromFile(pd3dDevice, "./icons/save-off.png");
+    _edit.loadFromFile(pd3dDevice, "./icons/edit.png");
+    _image.loadFromFile(pd3dDevice, "./icons/image.png");
 
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
@@ -144,6 +156,9 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _xbox2.loadFromFile(pd3dDevice, "./icons/xbox2.png");
     _xbox3.loadFromFile(pd3dDevice, "./icons/xbox3.png");
     _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
+
+    _btc.loadFromFile(pd3dDevice, "./icons/btc.png");
+    _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
 
     play = _play.texture;
     stop = _stop.texture;
@@ -173,6 +188,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     submit = _submit.texture;
     saveOn = _saveOn.texture;
     saveOff = _saveOff.texture;
+    edit = _edit.texture;
+    image = _image.texture;
 
     chat = _chat.texture;
     users = _users.texture;
@@ -191,4 +208,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     xbox2 = _xbox2.texture;
     xbox3 = _xbox3.texture;
     xbox4 = _xbox4.texture;
+
+    btc = _btc.texture;
+    ltc = _ltc.texture;
 }
