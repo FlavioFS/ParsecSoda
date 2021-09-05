@@ -74,7 +74,7 @@ bool VideoWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("Bandwidth (Mbps)");
     AppStyle::pop();
-    if (IntRangeWidget::render("Bandwidth (Mbps)", _bandwidth, 10, 200, 1))
+    if (IntRangeWidget::render("Bandwidth (Mbps)", _bandwidth, 1, 1000, 1))
     {
         TitleTooltipWidget::render("Encoder Bandwidth", "Limits the encoder bandwidth usage.\n(This value is split between guests.)");
     }

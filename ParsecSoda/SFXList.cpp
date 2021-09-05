@@ -98,3 +98,8 @@ const string SFXList::loadedTags()
 {
 	return _loadedTags;
 }
+
+const size_t SFXList::size()
+{
+	return _sfxList.size();
+}

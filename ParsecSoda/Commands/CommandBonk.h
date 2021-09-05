@@ -7,6 +7,7 @@
 #include <sstream>
 #include "parsec.h"
 #include "../Dice.h"
+#include "../Stopwatch.h"
 
 class CommandBonk : public ACommandSearchUser
 {
@@ -19,6 +20,14 @@ public:
 
 	bool run() override
 	{
+		if (!_stopwatch.isFinished())
+		{
+			_replyMessage = std::string() +
+				"[ChatBot] | Bonk command is on cooldown: " +
+				to_string(_stopwatch.getRemainingTime()/1000) + " seconds left.\0";
+			return false;
+		}
+
 		ACommandSearchUser::run();
 
 		if (_searchResult != SEARCH_USER_RESULT::FOUND)
@@ -54,6 +63,7 @@ public:
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
+			_stopwatch.reset();
 			rv = true;
 			if (_sender.userID == _targetGuest.userID)
 			{
@@ -98,11 +108,15 @@ public:
 		return vector<const char*> { "!bonk" };
 	}
 
+	static void init();
+
 protected:
 	static vector<const char*> internalPrefixes()
 	{
 		return vector<const char*> { "!bonk " };
 	}
+
+	static Stopwatch _stopwatch;
 
 	Guest& _sender;
 	Dice& _dice;

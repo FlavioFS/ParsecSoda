@@ -108,6 +108,8 @@ void Hosting::init()
 		_hostConfig, _parsecSession, _sfxList, _tierList,
 		_isRunning, _host
 	);
+
+	CommandBonk::init();
 }
 
 void Hosting::release()

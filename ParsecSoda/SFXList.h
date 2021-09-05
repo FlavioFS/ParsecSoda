@@ -37,6 +37,7 @@ public:
 	int64_t getRemainingCooldown();
 	SFXPlayResult play(const string tag);
 	const string loadedTags();
+	const size_t size();
 
 private:
 	steady_clock::time_point _lastUseTimestamp;

@@ -15,6 +15,12 @@ public:
 
 	bool run() override
 	{
+		if (_sfxList.size() <= 0)
+		{
+			_replyMessage = "[ChatBot] | No sound effects available.\0";
+			return false;
+		}
+
 		if ( !ACommandStringArg::run() )
 		{
 			_replyMessage =
