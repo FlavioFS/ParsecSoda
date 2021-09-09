@@ -5,6 +5,7 @@
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
 #include "../Hosting.h"
+#include "../Stopwatch.h"
 
 class ChatWidget
 {
@@ -21,6 +22,7 @@ private:
 	bool isDirty();
 	void sendMessage();
 	bool setSendBuffer(const char* value);
+	void toClipboard(const string& message);
 
 	// Dependency injection
 	Hosting& _hosting;

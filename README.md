@@ -30,10 +30,10 @@ Pix  &nbsp; **43.379.701/0001-96** &nbsp; (Flávio Freitas)
  + [**Ko-fi**](https://ko-fi.com/flafdraws)  
  + [**Paypal**](https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72)
 
-|BTC|LTC|
-|:---:|:---:|
-|bc1qmvuljqen7tcs57z6pems5jam7dt0taswp6y5x9|ltc1q349yxyzt09u7kvdz5xvkln0pappxhcwl4g4mt9|
-|![](https://i.postimg.cc/c1wRzTXT/btc.png)|![](https://i.postimg.cc/9MNr405F/ltc.png)|
+|BTC|LTC|ETH|
+|:---:|:---:|:---:|
+|bc1qmvuljqen7tcs57z6pems5jam7dt0taswp6y5x9|ltc1q349yxyzt09u7kvdz5xvkln0pappxhcwl4g4mt9|0x4B0d629d60e7b910d03f3f15d0Db25146Be05642|
+|![](https://i.postimg.cc/c1wRzTXT/btc.png)|![](https://i.postimg.cc/9MNr405F/ltc.png)|![](https://i.postimg.cc/9MbhkWdb/eth.png)|
 
 <br>
 

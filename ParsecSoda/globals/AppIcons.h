@@ -60,6 +60,7 @@ public:
 
 	static ID3D11ShaderResourceView* btc;
 	static ID3D11ShaderResourceView* ltc;
+	static ID3D11ShaderResourceView* eth;
 
 private:
 	static Texture _play;
@@ -113,5 +114,6 @@ private:
 
 	static Texture _btc;
 	static Texture _ltc;
+	static Texture _eth;
 };
 
