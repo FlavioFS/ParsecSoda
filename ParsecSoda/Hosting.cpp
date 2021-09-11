@@ -41,6 +41,8 @@ Hosting::Hosting()
 	_banList = BanList(banned);
 
 	_parsec = nullptr;
+
+	SDL_Init(SDL_INIT_JOYSTICK);
 }
 
 void Hosting::applyHostConfig()

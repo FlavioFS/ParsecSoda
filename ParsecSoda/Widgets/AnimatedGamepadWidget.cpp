@@ -28,6 +28,8 @@ void AnimatedGamepadWidget::render(XINPUT_GAMEPAD gamepad, float height, ImU32 a
 void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float radius, bool deadzoned, ImU32 activeColor)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList = ImGui::GetWindowDrawList();
+
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 
@@ -56,6 +58,7 @@ void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float 
 void AnimatedGamepadWidget::renderDpad(WORD wButtons, float height, ImU32 activeColor)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 
@@ -83,6 +86,7 @@ void AnimatedGamepadWidget::renderDpad(WORD wButtons, float height, ImU32 active
 void AnimatedGamepadWidget::renderFaceButtons(WORD wButtons, float height)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 
@@ -110,6 +114,7 @@ void AnimatedGamepadWidget::renderFaceButtons(WORD wButtons, float height)
 void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTrigger, float height, ImU32 activeColor)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 
@@ -229,6 +234,7 @@ ImVec2 AnimatedGamepadWidget::stickShortToFloat(SHORT lx, SHORT ly, float& dista
 void AnimatedGamepadWidget::drawTrigger()
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
+	drawList = ImGui::GetWindowDrawList();
 	static ImVec2 cursor, a, b, c, d, uva, uvb, uvc, uvd, triggerCenter, triggerSize;
 	//static float angle = IM_PI / 12.0f;
 	cursor = ImGui::GetCursorPos();
@@ -254,6 +260,7 @@ void AnimatedGamepadWidget::drawTrigger()
 void AnimatedGamepadWidget::RenderImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle)
 {
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
+	draw_list = ImGui::GetWindowDrawList();
 
 	float cos_a = cosf(angle);
 	float sin_a = sinf(angle);

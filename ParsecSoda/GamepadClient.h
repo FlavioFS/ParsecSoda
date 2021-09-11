@@ -29,7 +29,8 @@ public:
 		TAKEN,
 		EMPTY_HANDS,
 		LIMIT_BLOCK,
-		OUT_OF_RANGE
+		OUT_OF_RANGE,
+		PUPPET
 	};
 
 	class GuestPreferences
@@ -78,6 +79,7 @@ public:
 	vector<GuestPreferences> guestPreferences;
 
 	bool lock = false;
+	bool isPuppetMaster = false;
 
 
 private:

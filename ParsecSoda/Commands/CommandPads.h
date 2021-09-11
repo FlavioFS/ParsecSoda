@@ -27,7 +27,11 @@ public:
 				<< ((*gi).isConnected() ? "ON  " : "OFF") << "\t"
 				<< "[" << i << "] \t";
 
-			if (!(*gi).owner.guest.isValid())
+			if (_gamepadClient.isPuppetMaster && (*gi).isPuppet)
+			{
+				reply << "(Host) Puppet Master" << "\n";
+			}
+			else if (!(*gi).owner.guest.isValid())
 			{
 				reply << "\n";
 			}

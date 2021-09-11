@@ -280,6 +280,11 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 		return PICK_REQUEST::TAKEN;
 	}
 
+	if (isPuppetMaster && gamepads[gamepadIndex].isPuppet)
+	{
+		return PICK_REQUEST::PUPPET;
+	}
+
 	GuestPreferences prefs = GuestPreferences(guest.userID);
 	int limit = 1;
 	bool found = findPreferences(guest.userID, [&limit](GuestPreferences& prefs) {
@@ -370,16 +375,16 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
-	if (guest.userID == pad.owner.guest.userID)
-	{
-		slots++;
-		if (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID)
+		if (guest.userID == pad.owner.guest.userID)
 		{
-			pad.setState(gamepadState);
-			return true;
+			slots++;
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID))
+			{
+				pad.setState(gamepadState);
+				return true;
+			}
 		}
-	}
-	return false;
+		return false;
 	});
 }
 
@@ -389,7 +394,7 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID))
 			{
 				pad.setState(gamepadAxis);
 				return true;
@@ -405,7 +410,7 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID))
 			{
 				pad.setState(gamepadButton);
 				return true;
@@ -421,7 +426,7 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || pad.owner.isKeyboard)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || pad.owner.isKeyboard))
 			{
 				pad.setState(keyboard);
 				return true;
@@ -439,7 +444,10 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 	}
 	
 	return reduceUntilFirst([&](Gamepad& gamepad) {
-		if (gamepad.isAttached() && !gamepad.owner.guest.isValid())
+		if (
+			!(isPuppetMaster && gamepad.isPuppet) &&
+			(gamepad.isAttached() && !gamepad.owner.guest.isValid())
+		)
 		{
 			gamepad.setOwner(guest, deviceID, isKeyboard);
 			return true;

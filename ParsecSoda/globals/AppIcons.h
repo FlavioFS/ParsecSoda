@@ -52,6 +52,9 @@ public:
 	static ID3D11ShaderResourceView* info;
 	static ID3D11ShaderResourceView* logo;
 
+	static ID3D11ShaderResourceView* xinput;
+	static ID3D11ShaderResourceView* dinput;
+
 	static ID3D11ShaderResourceView* xbox;
 	static ID3D11ShaderResourceView* xbox1;
 	static ID3D11ShaderResourceView* xbox2;
@@ -105,6 +108,9 @@ private:
 
 	static Texture _info;
 	static Texture _logo;
+
+	static Texture _xinput;
+	static Texture _dinput;
 
 	static Texture _xbox;
 	static Texture _xbox1;

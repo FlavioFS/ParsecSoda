@@ -43,6 +43,7 @@ public:
 	bool setState(ParsecKeyboardMessage key);
 	bool setState(ParsecGamepadButtonMessage button);
 	bool setState(ParsecGamepadAxisMessage axis);
+	void setState(XINPUT_STATE state);
 
 	void setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard);
 	void copyOwner(Gamepad pad);
@@ -51,11 +52,11 @@ public:
 	bool isConnected() const;
 	GuestDevice owner = GuestDevice();
 	bool mirror = false;
+	bool isPuppet = false;
 
 	ParsecDSO * parsec;
 
 private:
-	void setState(XINPUT_STATE state);
 	XINPUT_STATE fetchXInputState();
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;

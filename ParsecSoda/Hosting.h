@@ -9,6 +9,7 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
+#include <SDL.h>
 #include "parsec-dso.h"
 #include "ParsecSession.h"
 #include "DX11.h"

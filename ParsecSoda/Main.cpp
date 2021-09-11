@@ -30,8 +30,8 @@
 #include "Widgets/VideoWidget.h"
 #include "Widgets/InfoWidget.h"
 #include "Widgets/VersionWidget.h"
-#include "Widgets/HostGamepadWidget.h"
 #include "Widgets/ThumbnailsWidget.h"
+#include "Widgets/MasterOfPuppetsWidget.h"
 
 using namespace std;
 
@@ -124,7 +124,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AudioSettingsWidget audioSettingswidget(g_hosting);
     VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
-    //HostGamepadWidget::fetchSystemGamepads();
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
@@ -150,6 +149,8 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         showLogin = !g_hosting.getSession().isValid();
         t.detach();
     });
+
+    MasterOfPuppetsWidget::fetchSystemGamepads();
 
     // =====================================================================
 
@@ -209,7 +210,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
                 showGuests, showThumbs, showLog, showAudio, showVideo, showInfo
             );
             hostInfoWidget.render();
-            //HostGamepadWidget::render();
+            MasterOfPuppetsWidget::render(g_hosting.getGamepadClient());
         }
 
         //if (showStyles)         StylePickerWidget::render();

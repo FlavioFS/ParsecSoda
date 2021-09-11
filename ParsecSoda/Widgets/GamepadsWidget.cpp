@@ -144,15 +144,33 @@ bool GamepadsWidget::render()
 
         ImGui::Dummy(ImVec2(0,8));
 
+
+        static string name, id;
+        if (_hosting.getGamepadClient().isPuppetMaster && (*gi).isPuppet)
+        {
+            id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
+            name = _hosting.getHost().name;
+
+        }
+        else if ((*gi).owner.guest.isValid())
+        {
+            id = string() + "(# " + to_string((*gi).owner.guest.userID) + ")\t";
+            name = (*gi).owner.guest.name;
+        }
+        else
+        {
+            id = "    ";
+            name = (*gi).owner.guest.name;
+        }
+
         AppStyle::pushLabel();
-        if ((*gi).owner.guest.isValid())  ImGui::TextWrapped("(# %d)\t", (*gi).owner.guest.userID);
-        else                              ImGui::TextWrapped("    ");
+        ImGui::TextWrapped(id.c_str());
         AppStyle::pop();
 
         AppFonts::pushInput();
         AppColors::pushPrimary();
         ImGui::SetNextItemWidth(gamepadLabelWidth);
-        ImGui::Text((*gi).owner.guest.name.c_str());
+        ImGui::Text(name.c_str());
         AppColors::pop();
         AppFonts::pop();
 

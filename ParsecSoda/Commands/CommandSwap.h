@@ -65,6 +65,11 @@ public:
 				<< "[ChatBot] | " << _sender.name << ", your gamepad index is wrong (valid range is [1, 4]).\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
+		case GamepadClient::PICK_REQUEST::PUPPET:
+			reply
+				<< "[ChatBot] | " << _sender.name << ", puppet master is handling that gamepad.\n"
+				<< "\t\tType !pads to see the gamepad list.\0";
+			break;
 		default:
 			break;
 		}
