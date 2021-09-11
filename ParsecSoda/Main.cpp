@@ -133,6 +133,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showLog = true;
     bool showGuests = true;
     bool showGamepads = true;
+    bool showMasterOfPuppets = false;
     bool showAudio = false;
     bool showVideo = false;
     bool showStyles = true;
@@ -195,22 +196,22 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         }
         else
         {
-            if (showHostSettings)   hostSettingsWindow.render();
-            if (showChat)           chatWindow.render();
-            if (showLog)            logWindow.render();
-            if (showGuests)         guestsWindow.render();
-            if (showGamepads)       gamepadsWindow.render();
-            if (showAudio)          audioSettingswidget.render();
-            if (showVideo)          videoWidget.render();
-            if (showInfo)           InfoWidget::render();
-            if (showThumbs)         ThumbnailsWidget::render(g_session, g_thumbnails);
+            if (showHostSettings)       hostSettingsWindow.render();
+            if (showChat)               chatWindow.render();
+            if (showLog)                logWindow.render();
+            if (showGuests)             guestsWindow.render();
+            if (showGamepads)           gamepadsWindow.render();
+            if (showMasterOfPuppets)    MasterOfPuppetsWidget::render(g_hosting.getGamepadClient());
+            if (showAudio)              audioSettingswidget.render();
+            if (showVideo)              videoWidget.render();
+            if (showInfo)               InfoWidget::render();
+            if (showThumbs)             ThumbnailsWidget::render(g_session, g_thumbnails);
             NavBar::render(
                 g_hosting,
-                showLogin, showHostSettings, showGamepads, showChat,
+                showLogin, showHostSettings, showGamepads, showMasterOfPuppets, showChat,
                 showGuests, showThumbs, showLog, showAudio, showVideo, showInfo
             );
             hostInfoWidget.render();
-            MasterOfPuppetsWidget::render(g_hosting.getGamepadClient());
         }
 
         //if (showStyles)         StylePickerWidget::render();

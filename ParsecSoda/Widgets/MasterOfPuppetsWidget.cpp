@@ -12,7 +12,7 @@ bool MasterOfPuppetsWidget::render(GamepadClient& gamepadClient)
     stopwatch.start();
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(400, 320), ImVec2(900, 740));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(820, 300), ImVec2(1300, 900));
     ImGui::Begin("Master of Puppets##Master of Puppets");
     AppStyle::pushInput();
 
@@ -41,21 +41,7 @@ bool MasterOfPuppetsWidget::render(GamepadClient& gamepadClient)
     
     if (masterIndex >= _masters.size()) {
         masterIndex = -1;
-
     }
-
-    ImGui::SameLine();
-    ImGui::Dummy(ImVec2(10, 0));
-    ImGui::SameLine();
-
-    ImGui::BeginGroup();
-    AppStyle::pushInput();
-    ImGui::Text("[!] Warning");
-    AppStyle::pop();
-    AppStyle::pushLabel();
-    ImGui::TextWrapped("This window is under construction.");
-    AppStyle::pop();
-    ImGui::EndGroup();
 
     SDL_JoystickUpdate();
 

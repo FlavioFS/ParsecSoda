@@ -44,6 +44,7 @@ ID3D11ShaderResourceView* AppIcons::block;
 ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
 
+ID3D11ShaderResourceView* AppIcons::puppet;
 ID3D11ShaderResourceView* AppIcons::xinput;
 ID3D11ShaderResourceView* AppIcons::dinput;
 
@@ -100,6 +101,7 @@ Texture AppIcons::_block;
 Texture AppIcons::_info;
 Texture AppIcons::_logo;
 
+Texture AppIcons::_puppet;
 Texture AppIcons::_xinput;
 Texture AppIcons::_dinput;
 
@@ -159,6 +161,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _info.loadFromFile(pd3dDevice, "./icons/info.png");
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
 
+    _puppet.loadFromFile(pd3dDevice, "./icons/puppet.png");
     _xinput.loadFromFile(pd3dDevice, "./icons/xinput.png");
     _dinput.loadFromFile(pd3dDevice, "./icons/dinput.png");
 
@@ -215,6 +218,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     info = _info.texture;
     logo = _logo.texture;
 
+    puppet = _puppet.texture;
     xinput = _xinput.texture;
     dinput = _dinput.texture;
 
