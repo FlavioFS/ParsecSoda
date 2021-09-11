@@ -16,7 +16,6 @@
 using namespace std;
 
 #define GAMEPAD_LIMIT_NOT_FOUND -1
-#define GAMEPAD_PICK_TIMEOUT_MS 1000
 
 class GamepadClient
 {
@@ -87,6 +86,11 @@ private:
 	bool sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
+
+	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
 
 	void releaseGamepads();
 	void setMirror(uint32_t guestUserID, bool mirror);

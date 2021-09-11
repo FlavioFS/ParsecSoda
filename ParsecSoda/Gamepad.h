@@ -39,11 +39,8 @@ public:
 	void clearState();
 
 	// State mesages
-	bool setState(ParsecGamepadStateMessage state);
-	bool setState(ParsecKeyboardMessage key);
-	bool setState(ParsecGamepadButtonMessage button);
-	bool setState(ParsecGamepadAxisMessage axis);
 	void setState(XINPUT_STATE state);
+	void setStateSafe(XINPUT_STATE state);
 
 	void setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard);
 	void copyOwner(Gamepad pad);
@@ -51,7 +48,6 @@ public:
 	const bool isOwned();
 	bool isConnected() const;
 	GuestDevice owner = GuestDevice();
-	bool mirror = false;
 	bool isPuppet = false;
 
 	ParsecDSO * parsec;
