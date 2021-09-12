@@ -44,6 +44,7 @@ Hosting::Hosting()
 
 	SDL_Init(SDL_INIT_JOYSTICK);
 	_masterOfPuppets.init(_gamepadClient);
+	_masterOfPuppets.start();
 }
 
 void Hosting::applyHostConfig()
@@ -124,6 +125,7 @@ void Hosting::release()
 	}
 	_dx11.clear();
 	_gamepadClient.release();
+	_masterOfPuppets.stop();
 }
 
 bool Hosting::isReady()

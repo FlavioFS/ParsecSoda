@@ -3,6 +3,7 @@
 MasterOfPuppets::MasterOfPuppets()
     : _gamepadClient(nullptr), masterIndex(-1), isSDLEngine(true)
 {
+    stopwatch = Stopwatch(5000);
 }
 
 void MasterOfPuppets::init(GamepadClient& gamepadClient)
@@ -11,7 +12,57 @@ void MasterOfPuppets::init(GamepadClient& gamepadClient)
     _xinputReader.init();
 }
 
+void MasterOfPuppets::start()
+{
+    if (isRunning) return;
+
+    isRunning = true;
+    _thread = thread([&]() {
+        stopwatch.start();
+
+        while (isRunning)
+        {
+            inputMutex.lock();
+            if (isSDLEngine) {
+                if (stopwatch.isFinished())
+                {
+                    internalFetchSDLGamepads();
+                    stopwatch.reset();
+                }
+
+                SDL_JoystickUpdate();
+                mapFromSDL();
+            }
+            else
+            {
+                mapFromXInput();
+            }
+
+            inputMutex.unlock();
+            Sleep(8);
+        }
+
+        stopwatch.stop();
+        _thread.detach();
+        });
+}
+
+void MasterOfPuppets::stop()
+{
+    isRunning = false;
+}
+
 void MasterOfPuppets::fetchSDLGamepads()
+{
+    if (isSDLEngine)
+    {
+        inputMutex.lock();
+        internalFetchSDLGamepads();
+        inputMutex.unlock();
+    }
+}
+
+void MasterOfPuppets::internalFetchSDLGamepads()
 {
     if (isSDLEngine) _sdlReader.fetchGamepads();
 }

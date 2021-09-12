@@ -21,10 +21,9 @@ bool MasterOfPuppetsWidget::render()
 
     if (_masterOfPuppets.isSDLEngine)
     {
-        static Stopwatch stopwatch = Stopwatch(5000);
+        static Stopwatch& stopwatch = _masterOfPuppets.stopwatch;
         static float fill;
         
-        stopwatch.start();
         fill = 1.0f - (float)stopwatch.getRemainingTime() / stopwatch.getDuration();
         
         if (IconButton::render(AppIcons::sdl, AppColors::primary))
@@ -42,11 +41,7 @@ bool MasterOfPuppetsWidget::render()
         ProgressCircularWidget::render(20, 10, fill);
         
         ImGui::SetCursorPos(cursor);
-        if (stopwatch.isFinished())
-        {
-            _masterOfPuppets.fetchSDLGamepads();
-            stopwatch.reset();
-        }
+
         if (ImGui::Button("### SDL Joysticks Refresh", ImVec2(40, 40)))
         {
             static Debouncer debouncer = Debouncer(500, [&]() {
@@ -73,10 +68,7 @@ bool MasterOfPuppetsWidget::render()
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 5));
 
-    SDL_JoystickUpdate();
-
-    _masterOfPuppets.mapInputs();
-
+    _masterOfPuppets.inputMutex.lock();
     ImGui::BeginGroup();
     renderMaster();
     ImGui::SameLine();
@@ -89,11 +81,11 @@ bool MasterOfPuppetsWidget::render()
 
     renderPuppets();
     ImGui::EndGroup();
+    _masterOfPuppets.inputMutex.unlock();
 
     AppStyle::pop();
     AppStyle::pop();
     ImGui::End();
-
 
     return true;
 }
