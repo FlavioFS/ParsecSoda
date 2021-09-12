@@ -52,18 +52,14 @@ bool GamepadsWidget::render()
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 10));
 
-    static vector<Gamepad>::iterator gi;
-    gi = _gamepads.begin();
-    static int index;
-    index = 0;
-
-    for (; gi != _gamepads.end(); ++gi)
+    for (size_t i = 0; i < _gamepads.size(); ++i)
     {
+        Gamepad& gi = _gamepads[i];
         static uint32_t userID;
-        userID = (*gi).owner.guest.userID;
+        userID = gi.owner.guest.userID;
 
         ImGui::BeginChild(
-            (string("##Gamepad " ) + to_string(index)).c_str(),
+            (string("##Gamepad " ) + to_string(i)).c_str(),
             ImVec2(size.x, 50)
         );
 
@@ -71,10 +67,10 @@ bool GamepadsWidget::render()
         cursor = ImGui::GetCursorPos();
         
         static int xboxIndex = 0, padIndex = 0;
-        xboxIndex = (int)(*gi).getIndex();
+        xboxIndex = (int)gi.getIndex();
         padIndex = xboxIndex + 1;
         static bool isIndexSuccess = false;
-        isIndexSuccess = (*gi).isConnected() && padIndex > 0 && padIndex <= 4;
+        isIndexSuccess = gi.isConnected() && padIndex > 0 && padIndex <= 4;
 
         ImGui::BeginGroup();
         if (isIndexSuccess)
@@ -110,7 +106,7 @@ bool GamepadsWidget::render()
 
         if (IconButton::render(AppIcons::back, AppColors::primary))
         {
-            (*gi).clearOwner();
+            gi.clearOwner();
         }
         TitleTooltipWidget::render("Strip gamepad", "Unlink current user from this gamepad.");
 
@@ -118,17 +114,17 @@ bool GamepadsWidget::render()
 
         //static ImVec4 colorOn;
         //colorOn = padIndex > 0 ? AppColors::positive : AppColors::warning;
-        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, (*gi).isConnected(), AppColors::positive))
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi.isConnected(), AppColors::positive))
         {
-            if ((*gi).isConnected())
+            if (gi.isConnected())
             {
-                (*gi).disconnect();
+                gi.disconnect();
                 hasDisconnectedGamepads = true;
             }
             else
-                (*gi).connect();
+                gi.connect();
         }
-        if ((*gi).isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
+        if (gi.isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
         else                     TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
 
         ImGui::SameLine();
@@ -137,7 +133,7 @@ bool GamepadsWidget::render()
         gamepadLabelWidth = size.x - 180.0f;
         
         ImGui::BeginChild(
-            (string("##name ") + to_string(index)).c_str(),
+            (string("##name ") + to_string(i)).c_str(),
             ImVec2(gamepadLabelWidth, 50.0f)
         );
         cursor = ImGui::GetCursorPos();
@@ -146,21 +142,21 @@ bool GamepadsWidget::render()
 
 
         static string name, id;
-        if (_hosting.getGamepadClient().isPuppetMaster && (*gi).isPuppet)
+        if (_hosting.getGamepadClient().isPuppetMaster && gi.isPuppet)
         {
             id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
             name = _hosting.getHost().name;
 
         }
-        else if ((*gi).owner.guest.isValid())
+        else if (gi.owner.guest.isValid())
         {
-            id = string() + "(# " + to_string((*gi).owner.guest.userID) + ")\t";
-            name = (*gi).owner.guest.name;
+            id = string() + "(# " + to_string(gi.owner.guest.userID) + ")\t";
+            name = gi.owner.guest.name;
         }
         else
         {
             id = "    ";
-            name = (*gi).owner.guest.name;
+            name = gi.owner.guest.name;
         }
 
         AppStyle::pushLabel();
@@ -179,17 +175,17 @@ bool GamepadsWidget::render()
 
         ImGui::SetCursorPos(cursor);
         ImGui::Button(
-            (string("##gamepad button") + to_string(index + 1)).c_str(),
+            (string("##gamepad button") + to_string(i + 1)).c_str(),
             ImVec2(gamepadLabelWidth, 50.0f)
         );
 
         if (ImGui::BeginDragDropSource())
         {
-            ImGui::SetDragDropPayload("Gamepad", &index, sizeof(int));
+            ImGui::SetDragDropPayload("Gamepad", &i, sizeof(int));
 
             AppFonts::pushInput();
             AppColors::pushPrimary();
-            ImGui::Text("%s", ((*gi).owner.guest.isValid() ? (*gi).owner.guest.name.c_str() : "Empty gamepad"));
+            ImGui::Text("%s", (gi.owner.guest.isValid() ? gi.owner.guest.name.c_str() : "Empty gamepad"));
             AppColors::pop();
             AppFonts::pop();
 
@@ -208,7 +204,7 @@ bool GamepadsWidget::render()
                     int guestIndex = *(const int*)payload->Data;
                     if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
                     {
-                        (*gi).owner.guest.copy(_hosting.getGuestList()[guestIndex]);
+                        gi.owner.guest.copy(_hosting.getGuestList()[guestIndex]);
                     }
                 }
             }
@@ -220,11 +216,11 @@ bool GamepadsWidget::render()
                     if (sourceIndex >= 0 && sourceIndex < _gamepads.size())
                     {
                         static GuestDevice backupOwner;
-                        backupOwner.copy(_gamepads[index].owner);
+                        backupOwner.copy(_gamepads[i].owner);
                         
-                        _gamepads[index].copyOwner(_gamepads[sourceIndex]);
+                        _gamepads[i].copyOwner(_gamepads[sourceIndex]);
                         _gamepads[sourceIndex].owner.copy(backupOwner);
-                        _gamepads[index].clearState();
+                        _gamepads[i].clearState();
                         _gamepads[sourceIndex].clearState();
                     }
                 }
@@ -243,15 +239,15 @@ bool GamepadsWidget::render()
         ImGui::BeginGroup();
         ImGui::Dummy(ImVec2(0.0f, 12.0f));
         ImGui::SetNextItemWidth(40);
-        deviceIndices[index] = (*gi).owner.deviceID;
+        deviceIndices[i] = gi.owner.deviceID;
 
         AppFonts::pushTitle();
         if (ImGui::DragInt(
-            (string("##DeviceIndex") + to_string(index)).c_str(),
-            &deviceIndices[index], 0.1f, -1, 65536
+            (string("##DeviceIndex") + to_string(i)).c_str(),
+            &deviceIndices[i], 0.1f, -1, 65536
         ))
         {
-            (*gi).owner.deviceID = deviceIndices[index];
+            gi.owner.deviceID = deviceIndices[i];
         }
         if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
         AppFonts::pop();
@@ -267,13 +263,11 @@ bool GamepadsWidget::render()
         
         ImGui::SameLine();
 
-        AnimatedGamepadWidget::render((*gi).getState().Gamepad);
+        AnimatedGamepadWidget::render(gi.getState().Gamepad);
 
         ImGui::EndGroup();
 
         ImGui::Dummy(ImVec2(0, 5));
-
-        index++;
     }
 
     ImGui::PopStyleVar();

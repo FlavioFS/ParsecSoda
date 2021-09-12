@@ -29,14 +29,16 @@ bool ChatWidget::render()
     ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 160));
     for (; it != _chatLog.end(); ++it)
     {
-        static ImVec2 textSize;
-        textSize = ImGui::CalcTextSize((*it).c_str());
+        static float textHeight;
         cursor = ImGui::GetCursorPos();
+        
         ImGui::TextWrapped((*it).c_str());
+        textHeight = ImGui::GetCursorPosY() - cursor.y;
+
         ImGui::SetCursorPos(cursor);
         if (ImGui::Button(
             (string() + "### Chat Message " + to_string(index)).c_str(),
-            ImVec2(size.x, textSize.y)
+            ImVec2(size.x, textHeight)
         ))
         {
             toClipboard((*it));
@@ -57,15 +59,33 @@ bool ChatWidget::render()
     ImGui::Separator();
 
     ImGui::BeginChild("Message Preview", ImVec2(size.x, 60));
-    ImGui::TextWrapped(_sendBuffer);
+    ImGui::TextWrapped(_previewBuffer);
     ImGui::EndChild();
 
     if (ImGui::IsWindowFocused() && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
         ImGui::SetKeyboardFocusHere(0);
     ImGui::SetNextItemWidth(size.x);
+    try
+    {
+        strcpy_s(_lastBuffer, SEND_BUFFER_LEN, _sendBuffer);
+    }
+    catch (const std::exception&) {}
     if (ImGui::InputText(" ", _sendBuffer, SEND_BUFFER_LEN, ImGuiInputTextFlags_EnterReturnsTrue))
     {
         sendMessage();
+    }
+    if (strcmp(_sendBuffer, _lastBuffer) != 0)
+    {
+        string newSendBuffer = _sendBuffer;
+        Stringer::replacePatternOnce(newSendBuffer, "%", "%%");
+
+        string check = newSendBuffer.substr(0, SEND_BUFFER_LEN-1);
+
+        try
+        {
+            strcpy_s(_previewBuffer, SEND_BUFFER_LEN, newSendBuffer.substr(0, SEND_BUFFER_LEN-1).c_str());
+        }
+        catch (const std::exception&) {}
     }
 
     cursor = ImGui::GetCursorPos();
@@ -126,6 +146,8 @@ bool ChatWidget::setSendBuffer(const char* value)
     try
     {
         strcpy_s(_sendBuffer, SEND_BUFFER_LEN, value);
+        strcpy_s(_lastBuffer, SEND_BUFFER_LEN, value);
+        strcpy_s(_previewBuffer, SEND_BUFFER_LEN, value);
         return true;
     }
     catch (const std::exception&)
@@ -138,14 +160,17 @@ bool ChatWidget::setSendBuffer(const char* value)
 
 void ChatWidget::toClipboard(const string& message)
 {
+    string adjustedMessage = message;
+    Stringer::replacePatternOnce(adjustedMessage, "%%", "%");
+
     OpenClipboard(0);
     EmptyClipboard();
-    HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, message.size());
+    HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, adjustedMessage.size());
     if (!hg) {
         CloseClipboard();
         return;
     }
-    memcpy(GlobalLock(hg), message.c_str(), message.size());
+    memcpy(GlobalLock(hg), adjustedMessage.c_str(), adjustedMessage.size());
     GlobalUnlock(hg);
     SetClipboardData(CF_TEXT, hg);
     CloseClipboard();

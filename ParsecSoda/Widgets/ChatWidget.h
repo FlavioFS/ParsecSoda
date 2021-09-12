@@ -30,6 +30,8 @@ private:
 	// Attributes
 	string _logBuffer;
 	char _sendBuffer[SEND_BUFFER_LEN];
+	char _lastBuffer[SEND_BUFFER_LEN];
+	char _previewBuffer[SEND_BUFFER_LEN];
 	vector<string>& _chatLog;
 	size_t _messageCount;
 };

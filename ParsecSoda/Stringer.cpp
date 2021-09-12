@@ -77,3 +77,26 @@ void Stringer::replacePattern(string& source, string oldPattern, string newPatte
 		index++;
 	}
 }
+
+void Stringer::replacePatternOnce(string& source, string oldPattern, string newPattern)
+{
+	size_t index = 0;
+	vector<size_t> positions;
+
+	while (true)
+	{
+		index = source.find(oldPattern, index);
+		if (index == std::string::npos) break;
+
+		positions.push_back(index);
+		index++;
+	}
+
+	size_t offset = 0;
+	int offsetSize = newPattern.size() - oldPattern.size();
+	for (int i = 0; i < positions.size(); i++)
+	{
+		source.replace(positions[offset] + (int)(offset * offsetSize), oldPattern.size(), newPattern);
+		offset++;
+	}
+}

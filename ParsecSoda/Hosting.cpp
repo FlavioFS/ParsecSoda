@@ -352,8 +352,12 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 
 		if (!defaultMessage.replyMessage().empty())
 		{
-			_chatLog.logMessage(defaultMessage.replyMessage());
 			broadcastChatMessage(defaultMessage.replyMessage());
+			
+			string adjustedMessage = defaultMessage.replyMessage();
+			Stringer::replacePatternOnce(adjustedMessage, "%", "%%");
+			_chatLog.logMessage(adjustedMessage);
+
 			cout << endl << defaultMessage.replyMessage();
 		}
 	}
@@ -361,8 +365,8 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 	// Chatbot's command reply
 	if (!command->replyMessage().empty() && command->type() != COMMAND_TYPE::DEFAULT_MESSAGE)
 	{
-		_chatLog.logCommand(command->replyMessage());
 		broadcastChatMessage(command->replyMessage());
+		_chatLog.logCommand(command->replyMessage());
 		cout << endl << command->replyMessage();
 		_chatBot->setLastUserId();
 	}

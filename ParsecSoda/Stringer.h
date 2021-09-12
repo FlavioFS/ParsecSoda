@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cmath>
+#include <vector>
 
 #define STRINGER_MAX_WEIGHT (uint64_t)63
 #define STRINGER_MAX_DISTANCE (uint64_t)(-1)
@@ -69,10 +70,18 @@ public:
 	static int compareNoCase(const string a, const string b);
 
 	/**
-	* Replaces all occurrences of a pattern in a string with another pattern.
+	* Recursively replaces all occurrences of a pattern in a string with another pattern.
 	* @param source Original string reference to be edited.
 	* @param oldPattern Pattern to be replaced.
 	* @param newPattern Pattern to insert.
 	*/
 	static void replacePattern(string& source, string oldPattern, string newPattern);
+
+	/**
+	* Non-recursively replaces all occurrences of a pattern in a string with another pattern.
+	* @param source Original string reference to be edited.
+	* @param oldPattern Pattern to be replaced.
+	* @param newPattern Pattern to insert.
+	*/
+	static void replacePatternOnce(string& source, string oldPattern, string newPattern);
 };
