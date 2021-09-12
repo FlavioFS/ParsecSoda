@@ -3,93 +3,94 @@
 #include "../imgui/imgui.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
-#include "../Bitwise.h"
-#include "../GamepadClient.h"
 #include "../Stopwatch.h"
 #include "../Debouncer.h"
+#include "../Hosting.h"
 
 #include "ProgressCircularWidget.h"
 #include "AnimatedGamepadWidget.h"
 #include "IconButton.h"
 #include "IntRangeWidget.h"
 #include "TitleTooltipWidget.h"
-#include "ViGEm/Client.h"
 
-#include <Xinput.h>
-
-#include <vector>
-
-#include <cstdint>
-#include <iostream>
-
-#include <SDL.h>
-
-
-enum class DInput
-{
-	Triangle = 0,
-	Circle = 1,
-	X = 2,
-	Square = 3,
-	L1 = 4,
-	R1 = 5,
-	L2 = 6,
-	R2 = 7,
-	SELECT = 8,
-	START = 9,
-	L3 = 10,
-	R3 = 11
-};
-
-enum class XInput
-{
-	A = 0,
-	B = 1,
-	X = 2,
-	Y = 3,
-	LB = 4,
-	RB = 5,
-	BACK = 6,
-	START = 7,
-	L3 = 8,
-	R3 = 9
-};
 
 class MasterOfPuppetsWidget
 {
 public:
-	static bool render(GamepadClient& gamepadClient);
-	static void fetchSystemGamepads();
+	MasterOfPuppetsWidget(Hosting& hosting);
+	bool render();
 
 private:
-	class Master
-	{
-	public:
-		Master(SDL_Joystick* joystick, bool isXInput = true)
-			: joystick(joystick), isXInput(isXInput) {}
-		SDL_Joystick* joystick;
-		bool isXInput;
-	};
+	// Render engines
+	void renderMaster();
+	void renderMasterSDL();
+	void renderMasterXInput();
 
-	class Puppet
-	{
-	public:
-		Puppet(Gamepad& gamepad, bool isSelected = false)
-			: gamepad(gamepad), isSelected(isSelected) {}
-		Gamepad& gamepad;
-		bool isSelected = false;
-	};
+	// UI control
+	void setMaster(int value);
+	void clearPuppets();
+	void renderPuppets();
 
-	static void renderMasterJoysticks(int& masterIndex, GamepadClient& gamepadClient);
-	static void renderPuppets(vector<Gamepad>& gamepads);
+	MasterOfPuppets& _masterOfPuppets;
+	GamepadClient& _gamepadClient;
 
-	static XINPUT_GAMEPAD sdlJoystickToGamepad(SDL_Joystick* pad, bool isXInput = false);
-	static void eraseDetachedJoysticks();
-	static bool contains(SDL_Joystick* joystick);
-	
-	static void mapInputs(int& masterIndex, vector<Gamepad>& gamepads);
-	static void setMaster(int value, int& masterIndex, GamepadClient& gamepadClient);
-	static void clearPuppets(vector<Gamepad>& gamepads);
+	// ==========================================
+	// Tooltips
+	// ==========================================
+	const string _sdlTooltipString = string() +
+		"Engine: SDL\n" +
+		"\n" +
+		"Pros:\n" +
+		" + Detects all gamepads (XInput and DirectInput).\n" +
+		" + Does not require window focus.\n" +
+		"\n" +
+		"Cons:\n" +
+		" - Only pads in the 4 XInput slots can press both triggers at same time.\n" +
+		" - Needs to choose manually between XBox and Dualshock button mapping.\n" +
+		" - Sometimes detects additional ghost gamepads.\n" +
+		" - DInput/Dualshock mapping treats triggers as buttons, not axis.\n" +
+		"\n" +
+		"* Click to switch to Windows Gaming Input engine.";
 
-	static vector<Master> _masters;
+	const string _wgiTooltipString = string() +
+		"Engine: Windows Gaming Input\n" +
+		"\n" +
+		"Pros:\n" +
+		" + No button issues (triggers always work).\n" +
+		" + Button mapping not required.\n" +
+		"\n" +
+		"Cons:\n" +
+		" - Only detects XInput gamepads.\n" +
+		" - Requires window focus (Parsec Soda must be focused).\n" +
+		"\n" +
+		"* Click to switch to SDL engine.";
+
+	const string _masterTooltipBase = string() +
+		"\n" +
+		"The Master is a physical (or virtual) gamepad that controls virtual gamepads (the Puppets).\n" +
+		"Master gamepad overwrites the Virtual Gamepads window, so it...\n" +
+		" + Overwrites Guest inputs.\n" +
+		" + Still works even when inputs are locked.\n" +
+		" + Manipulates multiple Puppets at same time.\n"
+		;
+	const string _masterTooltipOn = "Master of Puppets is pulling the strings.\n" + _masterTooltipBase;
+	const string _masterTooltipOff = "Click to set this gamepad as Master.\n" + _masterTooltipBase;
+
+	const string _sdlDualshockMapTooltip = string() +
+		"Mapping type: Dualshock\n" +
+		"\n" +
+		"Cons:\n"
+		" - DInput mapping treats triggers as buttons instead of axis (empty or full, no in-between).\n" +
+		"\n" +
+		"* Click to switch to XInput type."
+		;
+	const string _sdlXInputMapTooltip = string() +
+		"Mapping type: XInput\n" +
+		"\n" +
+		"Cons:\n"
+		" - Only fully supports 4 slots (including Puppets).\n" +
+		" - XBox-like controlers above slot 4 cannot press both triggers at same time.\n" +
+		"\n" +
+		"* Click to switch to Dualshock type."
+		;
 };

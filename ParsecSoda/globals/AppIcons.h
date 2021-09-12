@@ -55,6 +55,8 @@ public:
 	static ID3D11ShaderResourceView* puppet;
 	static ID3D11ShaderResourceView* xinput;
 	static ID3D11ShaderResourceView* dinput;
+	static ID3D11ShaderResourceView* windows;
+	static ID3D11ShaderResourceView* sdl;
 
 	static ID3D11ShaderResourceView* xbox;
 	static ID3D11ShaderResourceView* xbox1;
@@ -113,6 +115,8 @@ private:
 	static Texture _puppet;
 	static Texture _xinput;
 	static Texture _dinput;
+	static Texture _windows;
+	static Texture _sdl;
 
 	static Texture _xbox;
 	static Texture _xbox1;

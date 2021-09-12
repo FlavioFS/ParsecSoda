@@ -43,6 +43,7 @@ Hosting::Hosting()
 	_parsec = nullptr;
 
 	SDL_Init(SDL_INIT_JOYSTICK);
+	_masterOfPuppets.init(_gamepadClient);
 }
 
 void Hosting::applyHostConfig()
@@ -210,6 +211,11 @@ vector<Gamepad>& Hosting::getGamepads()
 GamepadClient& Hosting::getGamepadClient()
 {
 	return _gamepadClient;
+}
+
+MasterOfPuppets& Hosting::getMasterOfPuppets()
+{
+	return _masterOfPuppets;
 }
 
 const char** Hosting::getGuestNames()

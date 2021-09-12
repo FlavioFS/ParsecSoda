@@ -11,6 +11,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
+#include <SDL.h>
 #include "resource.h"
 #include "Hosting.h"
 #include "Texture.h"
@@ -124,6 +125,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AudioSettingsWidget audioSettingswidget(g_hosting);
     VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
+    MasterOfPuppetsWidget masterOfPuppets(g_hosting);
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
@@ -150,8 +152,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         showLogin = !g_hosting.getSession().isValid();
         t.detach();
     });
-
-    MasterOfPuppetsWidget::fetchSystemGamepads();
 
     // =====================================================================
 
@@ -201,7 +201,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showLog)                logWindow.render();
             if (showGuests)             guestsWindow.render();
             if (showGamepads)           gamepadsWindow.render();
-            if (showMasterOfPuppets)    MasterOfPuppetsWidget::render(g_hosting.getGamepadClient());
+            if (showMasterOfPuppets)    masterOfPuppets.render();
             if (showAudio)              audioSettingswidget.render();
             if (showVideo)              videoWidget.render();
             if (showInfo)               InfoWidget::render();

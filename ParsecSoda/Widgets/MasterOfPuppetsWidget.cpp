@@ -1,90 +1,123 @@
 #include "MasterOfPuppetsWidget.h"
 
-vector<MasterOfPuppetsWidget::Master> MasterOfPuppetsWidget::_masters;
+MasterOfPuppetsWidget::MasterOfPuppetsWidget(Hosting& hosting)
+    : _gamepadClient(hosting.getGamepadClient()), _masterOfPuppets(hosting.getMasterOfPuppets())
+{
+}
 
-bool MasterOfPuppetsWidget::render(GamepadClient& gamepadClient)
+bool MasterOfPuppetsWidget::render()
 {
     static int masterIndex = -1;
     static ImVec2 cursor;
     static ImVec2 size;
     size = ImGui::GetWindowSize();
-    static Stopwatch stopwatch = Stopwatch(5000);
-    stopwatch.start();
+
     AppStyle::pushTitle();
 
     ImGui::SetNextWindowSizeConstraints(ImVec2(820, 300), ImVec2(1300, 900));
     ImGui::Begin("Master of Puppets##Master of Puppets");
     AppStyle::pushInput();
 
-    cursor = ImGui::GetCursorPos();
-    static float fill;
-    fill = 1.0f - (float)stopwatch.getRemainingTime() / stopwatch.getDuration();
-    ProgressCircularWidget::render(20, 10, fill);
-    ImGui::SetCursorPos(cursor);
 
-    if (stopwatch.isFinished())
+    if (_masterOfPuppets.isSDLEngine)
     {
-        eraseDetachedJoysticks();
-        fetchSystemGamepads();
-        stopwatch.reset();
-    }
-    if (ImGui::Button("### SDL Joysticks Refresh", ImVec2(40, 40)))
-    {
-        static Debouncer debouncer = Debouncer(500, [&]() {
-            eraseDetachedJoysticks();
-            fetchSystemGamepads();
+        static Stopwatch stopwatch = Stopwatch(5000);
+        static float fill;
+        
+        stopwatch.start();
+        fill = 1.0f - (float)stopwatch.getRemainingTime() / stopwatch.getDuration();
+        
+        if (IconButton::render(AppIcons::sdl, AppColors::primary))
+        {
+            _masterOfPuppets.isSDLEngine = !_masterOfPuppets.isSDLEngine;
+        }
+
+        TitleTooltipWidget::render("Master Gamepad Engine", _sdlTooltipString.c_str());
+
+        static float yPos = ImGui::GetCursorPosY();
+
+        ImGui::SameLine();
+
+        cursor = ImGui::GetCursorPos();
+        ProgressCircularWidget::render(20, 10, fill);
+        
+        ImGui::SetCursorPos(cursor);
+        if (stopwatch.isFinished())
+        {
+            _masterOfPuppets.fetchSDLGamepads();
             stopwatch.reset();
-        });
-        debouncer.start();
+        }
+        if (ImGui::Button("### SDL Joysticks Refresh", ImVec2(40, 40)))
+        {
+            static Debouncer debouncer = Debouncer(500, [&]() {
+                _masterOfPuppets.fetchSDLGamepads();
+                stopwatch.reset();
+            });
+            debouncer.start();
+        }
+        TitleTooltipWidget::render("Gamepad refresh", "Click to manually refresh the gamepad detection list.");
+
+        ImGui::SetCursorPosY(yPos);
     }
-    TitleTooltipWidget::render("Gamepad refresh", "Click to manually refresh the gamepad detection list.");
-    
-    if (masterIndex >= _masters.size()) {
-        masterIndex = -1;
+    else
+    {
+        if (IconButton::render(AppIcons::windows, AppColors::primary))
+        {
+            _masterOfPuppets.isSDLEngine = !_masterOfPuppets.isSDLEngine;
+            _masterOfPuppets.fetchSDLGamepads();
+        }
+        TitleTooltipWidget::render("Master Gamepad Engine", _wgiTooltipString.c_str());
     }
+
+    ImGui::Dummy(ImVec2(0, 5));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0, 5));
 
     SDL_JoystickUpdate();
 
-    ImGui::Dummy(ImVec2(0, 10));
+    _masterOfPuppets.mapInputs();
 
     ImGui::BeginGroup();
-    renderMasterJoysticks(masterIndex, gamepadClient);
+    renderMaster();
     ImGui::SameLine();
-    ImGui::Dummy(ImVec2(50, 0));
-    ImGui::SameLine();
-    renderPuppets(gamepadClient.gamepads);
+
+    if (_masterOfPuppets.isSDLEngine)
+    {
+        ImGui::Dummy(ImVec2(50, 0));
+        ImGui::SameLine();
+    }
+
+    renderPuppets();
     ImGui::EndGroup();
 
     AppStyle::pop();
     AppStyle::pop();
     ImGui::End();
 
-    mapInputs(masterIndex, gamepadClient.gamepads);
 
     return true;
 }
 
-void MasterOfPuppetsWidget::fetchSystemGamepads()
-{
-    for (int i = 0; i < SDL_NumJoysticks(); ++i)
-    {
-        SDL_Joystick* joy = SDL_JoystickOpen(i);
-        if (SDL_JoystickGetAttached(joy))
-        {
-            if (contains(joy))
-            {
-                continue;
-            }
 
-            _masters.push_back(Master(joy));
-        }
-    }
+void MasterOfPuppetsWidget::renderMaster()
+{
+    if (_masterOfPuppets.isSDLEngine)
+        renderMasterSDL();
+    else
+        renderMasterXInput();
 }
 
-void MasterOfPuppetsWidget::renderMasterJoysticks(int& masterIndex, GamepadClient& gamepadClient)
+// ===============================================================
+// Render engines
+// ===============================================================
+void MasterOfPuppetsWidget::renderMasterSDL()
 {
+    vector<SDLGamepad>& sdlGamepads = _masterOfPuppets.getSDLGamepads();
     static ImVec2 cursor;
 
+    if (_masterOfPuppets.getMasterIndex() >= sdlGamepads.size()) {
+        _masterOfPuppets.setMasterIndex(-1);
+    }
     ImGui::BeginGroup();
 
     AppFonts::pushSugoiDekai();
@@ -93,7 +126,7 @@ void MasterOfPuppetsWidget::renderMasterJoysticks(int& masterIndex, GamepadClien
 
     ImGui::Dummy(ImVec2(380, 0));
 
-    for (int i = 0; i < _masters.size(); ++i)
+    for (int i = 0; i < sdlGamepads.size(); ++i)
     {
         static float shift1 = 55.0f, shift2 = 55.0f, shift3 = 5.0f;
         cursor = ImGui::GetCursorPos();
@@ -109,13 +142,16 @@ void MasterOfPuppetsWidget::renderMasterJoysticks(int& masterIndex, GamepadClien
 
         ImGui::PushID(i);
         if (IconButton::render(
-            _masters[i].isXInput ? AppIcons::xinput : AppIcons::dinput,
+            sdlGamepads[i].isXInput ? AppIcons::xinput : AppIcons::dinput,
             AppColors::primary)
             )
         {
-            _masters[i].isXInput = !_masters[i].isXInput;
+            sdlGamepads[i].isXInput = !sdlGamepads[i].isXInput;
         }
-        TitleTooltipWidget::render("Button Mapping", "Click to switch between default XInput vs. Dualshock mappings.");
+        TitleTooltipWidget::render(
+            "Button Mapping",
+            sdlGamepads[i].isXInput ? _sdlXInputMapTooltip.c_str() : _sdlDualshockMapTooltip.c_str()
+        );
 
         ImGui::SetCursorPos(cursor);
         ImGui::SetCursorPosX(shift1 + shift2);
@@ -125,27 +161,23 @@ void MasterOfPuppetsWidget::renderMasterJoysticks(int& masterIndex, GamepadClien
             (
                 string() + "### Master Gamepad " + to_string(i)
             ).c_str(),
-            masterIndex == i, 0, ImVec2(275, 40))
+            _masterOfPuppets.getMasterIndex() == i, 0, ImVec2(275, 40))
         )
         {
-            setMaster(
-                (masterIndex == i) ? -1 : i,
-                masterIndex,
-                gamepadClient
-            );
+            setMaster(i);
         }
+
         TitleTooltipWidget::render(
             "Master Gamepad",
-            (masterIndex == i) ?
-                "Master of Puppets is pulling the strings." :
-                "Click to set this gamepad as Master.\n\n* Sometimes SDL returns weird results.\n   In that case, just try reconnecting the gamepads."
+            (_masterOfPuppets.getMasterIndex() == i) ? _masterTooltipOn.c_str() : _masterTooltipOff.c_str()
         );
 
         ImGui::SetCursorPos(cursor);
         ImGui::SetCursorPosX(shift1 + shift2 + shift3);
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 
-        AnimatedGamepadWidget::render(sdlJoystickToGamepad(_masters[i].joystick, _masters[i].isXInput));
+        XINPUT_GAMEPAD gg = sdlGamepads[i].getGamepadState().state.Gamepad;
+        AnimatedGamepadWidget::render(sdlGamepads[i].getGamepadState().state.Gamepad);
         ImGui::PopStyleVar();
 
         ImGui::PopID();
@@ -153,8 +185,94 @@ void MasterOfPuppetsWidget::renderMasterJoysticks(int& masterIndex, GamepadClien
     ImGui::EndGroup();
 }
 
-void MasterOfPuppetsWidget::renderPuppets(vector<Gamepad>& gamepads)
+void MasterOfPuppetsWidget::renderMasterXInput()
 {
+    vector<GamepadState>& xinputGamepads = _masterOfPuppets.getXInputGamepads();
+    static ImVec2 cursor;
+
+    if (_masterOfPuppets.getMasterIndex() >= xinputGamepads.size()) {
+        _masterOfPuppets.setMasterIndex(-1);
+    }
+    ImGui::BeginGroup();
+
+    AppFonts::pushSugoiDekai();
+    ImGui::Text("Master");
+    AppFonts::pop();
+
+    ImGui::Dummy(ImVec2(380, 0));
+
+    for (int i = 0; i < xinputGamepads.size(); ++i)
+    {
+        static float shift1 = 55.0f, shift2 = 55.0f, shift3 = 5.0f;
+        cursor = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 3);
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 5));
+        AppFonts::pushSugoiDekai();
+        ImGui::Text("%d ", i + 1);
+        AppFonts::pop();
+
+        ImGui::PushID(i);
+        ImGui::SetCursorPos(cursor);
+        ImGui::SetCursorPosX(shift1);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+        if (ImGui::Selectable(
+            (
+                string() + "### Master Gamepad " + to_string(i)
+                ).c_str(),
+            _masterOfPuppets.getMasterIndex() == i, 0, ImVec2(275, 40))
+            )
+        {
+            setMaster(i);
+        }
+        TitleTooltipWidget::render(
+            "Master Gamepad",
+            (_masterOfPuppets.getMasterIndex() == i) ? _masterTooltipOn.c_str() : _masterTooltipOff.c_str()
+        );
+
+        ImGui::SetCursorPos(cursor);
+        ImGui::SetCursorPosX(shift1 + shift3);
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
+
+        AnimatedGamepadWidget::render(xinputGamepads[i].state.Gamepad);
+        ImGui::PopStyleVar();
+
+        ImGui::PopID();
+    }
+    ImGui::EndGroup();
+}
+
+
+// ===============================================================
+// UI Control
+// ===============================================================
+void MasterOfPuppetsWidget::setMaster(int value)
+{
+    _masterOfPuppets.setMasterIndex( (_masterOfPuppets.getMasterIndex() == value) ? -1 : value );
+    _gamepadClient.isPuppetMaster = value >= 0;
+    if (!_gamepadClient.isPuppetMaster)
+    {
+        clearPuppets();
+    }
+}
+
+void MasterOfPuppetsWidget::clearPuppets()
+{
+    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+
+    for (size_t i = 0; i < gamepads.size(); ++i)
+    {
+        if (gamepads[i].isPuppet)
+        {
+            gamepads[i].clearState();
+        }
+    }
+}
+
+void MasterOfPuppetsWidget::renderPuppets()
+{
+    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+
     static ImVec2 cursor;
 
     ImGui::BeginGroup();
@@ -207,162 +325,4 @@ void MasterOfPuppetsWidget::renderPuppets(vector<Gamepad>& gamepads)
         ImGui::PopID();
     }
     ImGui::EndGroup();
-}
-
-XINPUT_GAMEPAD MasterOfPuppetsWidget::sdlJoystickToGamepad(SDL_Joystick* joy, bool isXInput)
-{
-    XINPUT_GAMEPAD pad;
-    
-    pad.wButtons = 0;
-    pad.bLeftTrigger = 0;
-    pad.bRightTrigger = 0;
-    pad.sThumbLX = 0;
-    pad.sThumbLY = 0;
-    pad.sThumbRX = 0;
-    pad.sThumbRY = 0;
-
-
-    // =====================================================
-    // Shared
-    // =====================================================
-    pad.sThumbLX = SDL_JoystickGetAxis(joy, 0);
-    pad.sThumbLY = SDL_JoystickGetAxis(joy, 1);
-    pad.sThumbRX = SDL_JoystickGetAxis(joy, 2);
-    pad.sThumbRY = SDL_JoystickGetAxis(joy, 3);
-
-    if (pad.sThumbLY == SDL_JOYSTICK_AXIS_MIN) pad.sThumbLY = SDL_JOYSTICK_AXIS_MAX;
-    else if (pad.sThumbLY == SDL_JOYSTICK_AXIS_MAX) pad.sThumbLY = SDL_JOYSTICK_AXIS_MIN;
-    else     pad.sThumbLY = -pad.sThumbLY;
-
-    if (pad.sThumbRY == SDL_JOYSTICK_AXIS_MIN) pad.sThumbRY = SDL_JOYSTICK_AXIS_MAX;
-    else if (pad.sThumbRY == SDL_JOYSTICK_AXIS_MAX) pad.sThumbRY = SDL_JOYSTICK_AXIS_MIN;
-    else     pad.sThumbRY = -pad.sThumbRY;
-
-    Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_UP, (SDL_JoystickGetHat(joy, 0) & SDL_HAT_UP) != 0);
-    Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, (SDL_JoystickGetHat(joy, 0) & SDL_HAT_DOWN) != 0);
-    Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, (SDL_JoystickGetHat(joy, 0) & SDL_HAT_LEFT) != 0);
-    Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, (SDL_JoystickGetHat(joy, 0) & SDL_HAT_RIGHT) != 0);
-
-
-    // =====================================================
-    // XInput
-    // =====================================================
-    if (isXInput)
-    {
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joy, (Uint8)XInput::A) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joy, (Uint8)XInput::B) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joy, (Uint8)XInput::X) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joy, (Uint8)XInput::Y) != 0);
-
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER,  SDL_JoystickGetButton(joy, (Uint8)XInput::LB) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joy, (Uint8)XInput::RB) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_BACK,           SDL_JoystickGetButton(joy, (Uint8)XInput::BACK) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_START,          SDL_JoystickGetButton(joy, (Uint8)XInput::START) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB,     SDL_JoystickGetButton(joy, (Uint8)XInput::L3) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB,    SDL_JoystickGetButton(joy, (Uint8)XInput::R3) != 0);
-        
-        pad.bLeftTrigger = SDL_JoystickGetAxis(joy, 4);
-        pad.bRightTrigger = SDL_JoystickGetAxis(joy, 5);
-    }
-
-    // =====================================================
-    // DInput
-    // =====================================================
-    else
-    {
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joy, (Uint8)DInput::X) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joy, (Uint8)DInput::Circle) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joy, (Uint8)DInput::Square) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joy, (Uint8)DInput::Triangle) != 0);
-
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joy, (Uint8)DInput::L1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joy, (Uint8)DInput::R1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joy, (Uint8)DInput::SELECT) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joy, (Uint8)DInput::START) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joy, (Uint8)DInput::L3) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joy, (Uint8)DInput::R3) != 0);
-
-        pad.bLeftTrigger  = (SDL_JoystickGetButton(joy, (Uint8)DInput::L2) != 0) ? 255 : 0;
-        pad.bRightTrigger = (SDL_JoystickGetButton(joy, (Uint8)DInput::R2) != 0) ? 255 : 0;
-    }
-
-    return pad;
-}
-
-void MasterOfPuppetsWidget::eraseDetachedJoysticks()
-{
-    vector<Master>::iterator it;
-    for (it = _masters.begin(); it != _masters.end(); ++it)
-    {
-        if (_masters.empty())
-        {
-            break;
-        }
-
-        if (!SDL_JoystickGetAttached((*it).joystick))
-        {
-            SDL_JoystickClose((*it).joystick);
-            _masters.erase(it);
-
-            if (_masters.empty())
-            {
-                break;
-            }
-            else
-            {
-                it = _masters.begin();
-            }
-        }
-    }
-}
-
-bool MasterOfPuppetsWidget::contains(SDL_Joystick* joystick)
-{
-    vector<Master>::iterator it;
-    for (it = _masters.begin(); it != _masters.end(); ++it)
-    {
-        if ((*it).joystick == joystick)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void MasterOfPuppetsWidget::mapInputs(int& masterIndex, vector<Gamepad>& gamepads)
-{
-    if (masterIndex >= 0 && masterIndex < _masters.size())
-    {
-        XINPUT_STATE state;
-        state.Gamepad = sdlJoystickToGamepad(_masters[masterIndex].joystick, _masters[masterIndex].isXInput);
-        for (size_t i = 0; i < gamepads.size(); ++i)
-        {
-            if (gamepads[i].isPuppet)
-            {
-                gamepads[i].setState(state);
-            }
-        }
-    }
-}
-
-void MasterOfPuppetsWidget::setMaster(int value, int& masterIndex, GamepadClient& gamepadClient)
-{
-    masterIndex = value;
-    gamepadClient.isPuppetMaster = value >= 0;
-    if (!gamepadClient.isPuppetMaster)
-    {
-        clearPuppets(gamepadClient.gamepads);
-    }
-}
-
-void MasterOfPuppetsWidget::clearPuppets(vector<Gamepad>& gamepads)
-{
-    for (size_t i = 0; i < gamepads.size(); ++i)
-    {
-        if (gamepads[i].isPuppet)
-        {
-            gamepads[i].clearState();
-        }
-    }
 }

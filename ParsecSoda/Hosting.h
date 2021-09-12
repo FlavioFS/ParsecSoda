@@ -9,7 +9,6 @@
 #include <thread>
 #include <chrono>
 #include <mutex>
-#include <SDL.h>
 #include "parsec-dso.h"
 #include "ParsecSession.h"
 #include "DX11.h"
@@ -29,6 +28,7 @@
 #include "MetadataCache.h"
 #include "CompilerDirectives.h"
 #include "Stopwatch.h"
+#include "MasterOfPuppets.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -61,6 +61,7 @@ public:
 	BanList& getBanList();
 	vector<Gamepad>& getGamepads();
 	GamepadClient& getGamepadClient();
+	MasterOfPuppets& getMasterOfPuppets();
 	const char** getGuestNames();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
@@ -102,6 +103,7 @@ private:
 	Dice _dice;
 	GamepadClient _gamepadClient;
 	GuestList _guestList;
+	MasterOfPuppets _masterOfPuppets;
 	
 	ParsecDSO* _parsec;
 	ParsecHostConfig _hostConfig;

@@ -202,13 +202,7 @@ XINPUT_STATE Gamepad::fetchXInputState()
 
 void Gamepad::clearState()
 {
-	_currentState.Gamepad.wButtons = 0;
-	_currentState.Gamepad.bLeftTrigger = 0;
-	_currentState.Gamepad.bRightTrigger = 0;
-	_currentState.Gamepad.sThumbLX = 0;
-	_currentState.Gamepad.sThumbLY = 0;
-	_currentState.Gamepad.sThumbRX = 0;
-	_currentState.Gamepad.sThumbRY = 0;
+	ZeroMemory(&_currentState, sizeof(XINPUT_STATE));
 	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
 }
 
