@@ -161,11 +161,15 @@ bool ChatWidget::setSendBuffer(const char* value)
 void ChatWidget::toClipboard(const string& message)
 {
     string adjustedMessage = message;
-    Stringer::replacePatternOnce(adjustedMessage, "%%", "%");
+
+    if (Stringer::startsWithPattern(adjustedMessage.c_str(), "\t\t "))
+    {
+        Stringer::replacePatternOnce(adjustedMessage, "\t\t ", "");
+    }
 
     OpenClipboard(0);
     EmptyClipboard();
-    HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, adjustedMessage.size());
+    HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, adjustedMessage.size()+1);
     if (!hg) {
         CloseClipboard();
         return;
