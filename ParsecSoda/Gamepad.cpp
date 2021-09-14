@@ -55,6 +55,7 @@ bool Gamepad::connect()
 	{
 		clearOwner();
 		refreshIndex();
+
 		_isConnected = true;
 
 		const VIGEM_ERROR error = vigem_target_x360_register_notification(
@@ -143,33 +144,29 @@ bool Gamepad::refreshIndex()
 {
 	if (_isAlive)
 	{
-		VIGEM_ERROR err = vigem_target_x360_get_user_index(_client, pad, &_index);
-		bool stop = true;
-		if (!VIGEM_SUCCESS(err))
+		_index = -1;
+
+		clearState();
+		XINPUT_STATE previousState = XINPUT_STATE(_currentState);
+		XINPUT_STATE state = XINPUT_STATE();
+		state.Gamepad.sThumbRX = 5 + Dice::number(15);
+		state.Gamepad.sThumbRY = 5 + Dice::number(15);
+
+		setState(state);
+
+		XINPUT_STATE iState = XINPUT_STATE();
+		for (size_t i = 0; i < XUSER_MAX_COUNT; ++i)
 		{
-			_index = -1;
-
-			clearState();
-			XINPUT_STATE state = XINPUT_STATE();
-			state.Gamepad.sThumbRX = 7;
-			state.Gamepad.sThumbRY = 19;
-
-			setState(state);
-
-			XINPUT_STATE iState = XINPUT_STATE();
-			for (size_t i = 0; i < XUSER_MAX_COUNT; ++i)
+			XInputGetState(i, &iState);
+			if (iState.Gamepad.sThumbRX == state.Gamepad.sThumbRX && iState.Gamepad.sThumbRY == state.Gamepad.sThumbRY)
 			{
-				XInputGetState(i, &iState);
-				if (iState.Gamepad.sThumbRX == state.Gamepad.sThumbRX && iState.Gamepad.sThumbRY == state.Gamepad.sThumbRY)
-				{
-					_index = i;
-					clearState();
-					break;
-				}
+				_index = i;
+				break;
 			}
-
-			clearState();
 		}
+
+		clearState();
+		setState(previousState);
 	}
 
 	return _index;

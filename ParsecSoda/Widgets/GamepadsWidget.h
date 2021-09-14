@@ -10,6 +10,7 @@
 #include "AnimatedGamepadWidget.h"
 #include "LoadingRingWidget.h"
 
+
 class GamepadsWidget
 {
 public:

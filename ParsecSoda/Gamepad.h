@@ -10,6 +10,7 @@
 #include "Bitwise.h"
 #include "KeyboardMaps.h"
 #include "GuestDevice.h"
+#include "Dice.h"
 
 using namespace std;
 

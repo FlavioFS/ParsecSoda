@@ -107,7 +107,7 @@ void Hosting::init()
 	fetchAccountData();
 
 	_chatBot = new ChatBot(
-		audioIn, audioOut, _banList, _dice, _dx11,
+		audioIn, audioOut, _banList, _dx11,
 		_gamepadClient, _guestList, _guestHistory, _parsec,
 		_hostConfig, _parsecSession, _sfxList, _tierList,
 		_isRunning, _host
@@ -390,8 +390,6 @@ void Hosting::sendHostMessage(const char* message)
 // ============================================================
 void Hosting::initAllModules()
 {
-	_dice.init();
-
 	// Instance all gamepads at once
 	_connectGamepadsThread = thread([&]() {
 		_gamepadClient.sortGamepads();

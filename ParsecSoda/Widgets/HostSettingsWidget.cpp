@@ -43,7 +43,7 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
     updateSecretLink();
 }
 
-bool HostSettingsWidget::render()
+bool HostSettingsWidget::render(HWND& hwnd)
 {
     static float indentSize = 0;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
@@ -182,6 +182,7 @@ bool HostSettingsWidget::render()
         if (_hosting.isRunning())
         {
             _hosting.stopHosting();
+            SetWindowTextA(hwnd, "Parsec Soda");
         }
 
         // Was clicked and is not running (must start)
@@ -190,6 +191,7 @@ bool HostSettingsWidget::render()
             _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
             _hosting.applyHostConfig();
             _hosting.startHosting();
+            SetWindowTextA(hwnd, "[LIVE] Parsec Soda");
         }
     }
 

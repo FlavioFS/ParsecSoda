@@ -7,7 +7,7 @@ GamepadsWidget::GamepadsWidget(Hosting& hosting)
 
 bool GamepadsWidget::render()
 {
-    static bool hasDisconnectedGamepads = false;
+    static bool isConnectionButtonPressed = false;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
 
     AppStyle::pushTitle();
@@ -112,20 +112,15 @@ bool GamepadsWidget::render()
 
         ImGui::SameLine();
 
-        //static ImVec4 colorOn;
-        //colorOn = padIndex > 0 ? AppColors::positive : AppColors::warning;
-        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi.isConnected(), AppColors::positive))
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi.isConnected()))
         {
-            if (gi.isConnected())
-            {
-                gi.disconnect();
-                hasDisconnectedGamepads = true;
-            }
-            else
-                gi.connect();
+            if (gi.isConnected()) gi.disconnect();
+            else gi.connect();
+
+            isConnectionButtonPressed = true;
         }
         if (gi.isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
-        else                     TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
+        else                  TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
 
         ImGui::SameLine();
         
@@ -272,19 +267,23 @@ bool GamepadsWidget::render()
 
     ImGui::PopStyleVar();
 
-
-    if (hasDisconnectedGamepads)
+    static bool mustUpdateIndices = false;
+    if (isConnectionButtonPressed)
     {
-        hasDisconnectedGamepads = false;
+        isConnectionButtonPressed = false;
 
         static Debouncer debouncer (500, [&]() {
-            for (vector<Gamepad>::iterator it = _gamepads.begin(); it != _gamepads.end(); ++it)
-            {
-                (*it).refreshIndex();
-            }
+            mustUpdateIndices = true;
         });
-
         debouncer.start();
+    }
+    if (mustUpdateIndices)
+    {
+        mustUpdateIndices = false;
+        for (size_t i = 0; i < _gamepads.size(); ++i)
+        {
+            _gamepads[i].refreshIndex();
+        }
     }
 
     AppStyle::pop();

@@ -50,11 +50,11 @@ class ChatBot
 public:
 
 	ChatBot(
-		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, Dice& dice, DX11& dx11,
+		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, DX11& dx11,
 		GamepadClient& gamepadClient, GuestList& guests, GuestDataList& guestHistory, ParsecDSO* parsec, ParsecHostConfig& hostConfig,
 		ParsecSession& parsecSession, SFXList& sfxList, TierList& _tierList, bool& hostingLoopController, Guest& host
 	)
-		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dice(dice), _dx11(dx11), _gamepadClient(gamepadClient),
+		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dx11(dx11), _gamepadClient(gamepadClient),
 		_guests(guests), _guestHistory(guestHistory), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
 		_sfxList(sfxList), _tierList(_tierList), _hostingLoopController(hostingLoopController), _host(host)
 	{}
@@ -81,7 +81,6 @@ private:
 	AudioIn& _audioIn;
 	AudioOut& _audioOut;
 	BanList &_ban;
-	Dice &_dice;
 	DX11 &_dx11;
 	GamepadClient& _gamepadClient;
 	GuestList& _guests;

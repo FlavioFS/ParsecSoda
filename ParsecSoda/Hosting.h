@@ -22,7 +22,6 @@
 #include "AudioMix.h"
 #include "GamepadClient.h"
 #include "BanList.h"
-#include "Dice.h"
 #include "GuestList.h"
 #include "SFXList.h"
 #include "MetadataCache.h"
@@ -100,7 +99,6 @@ private:
 	GuestDataList _guestHistory;
 	ChatBot *_chatBot;
 	ChatLog _chatLog;
-	Dice _dice;
 	GamepadClient _gamepadClient;
 	GuestList _guestList;
 	MasterOfPuppets _masterOfPuppets;
