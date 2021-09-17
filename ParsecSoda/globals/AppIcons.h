@@ -39,6 +39,8 @@ public:
 	static ID3D11ShaderResourceView* saveOff;
 	static ID3D11ShaderResourceView* edit;
 	static ID3D11ShaderResourceView* image;
+	static ID3D11ShaderResourceView* trash;
+	static ID3D11ShaderResourceView* move;
 
 	static ID3D11ShaderResourceView* chat;
 	static ID3D11ShaderResourceView* users;
@@ -48,6 +50,7 @@ public:
 	static ID3D11ShaderResourceView* userOn;
 	static ID3D11ShaderResourceView* userOff;
 	static ID3D11ShaderResourceView* block;
+	static ID3D11ShaderResourceView* kick;
 
 	static ID3D11ShaderResourceView* info;
 	static ID3D11ShaderResourceView* logo;
@@ -99,6 +102,8 @@ private:
 	static Texture _saveOff;
 	static Texture _edit;
 	static Texture _image;
+	static Texture _trash;
+	static Texture _move;
 
 	static Texture _chat;
 	static Texture _users;
@@ -108,6 +113,7 @@ private:
 	static Texture _userOn;
 	static Texture _userOff;
 	static Texture _block;
+	static Texture _kick;
 
 	static Texture _info;
 	static Texture _logo;

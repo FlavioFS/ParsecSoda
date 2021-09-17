@@ -180,6 +180,11 @@ DX11& Hosting::getDX11()
 	return _dx11;
 }
 
+ChatBot* Hosting::getChatBot()
+{
+	return _chatBot;
+}
+
 vector<string>& Hosting::getMessageLog()
 {
 	return _chatLog.getMessageLog();
@@ -319,6 +324,7 @@ void Hosting::startHosting()
 void Hosting::stopHosting()
 {
 	_isRunning = false;
+	_guestList.clear();
 }
 
 void Hosting::stripGamepad(int index)
@@ -338,7 +344,7 @@ void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
 	}
 }
 
-void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
+void Hosting::handleMessage(const char* message, Guest& guest, bool isHost, bool isHidden)
 {
 	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isHost);
 	command->run();
@@ -352,15 +358,13 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 		defaultMessage.run();
 		_chatBot->setLastUserId(guest.userID);
 
-		if (!defaultMessage.replyMessage().empty())
+		if (!defaultMessage.replyMessage().empty() && !isHidden)
 		{
 			broadcastChatMessage(defaultMessage.replyMessage());
 			
 			string adjustedMessage = defaultMessage.replyMessage();
 			Stringer::replacePatternOnce(adjustedMessage, "%", "%%");
 			_chatLog.logMessage(adjustedMessage);
-
-			cout << endl << defaultMessage.replyMessage();
 		}
 	}
 
@@ -369,17 +373,16 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 	{
 		broadcastChatMessage(command->replyMessage());
 		_chatLog.logCommand(command->replyMessage());
-		cout << endl << command->replyMessage();
 		_chatBot->setLastUserId();
 	}
 
 	delete command;
 }
 
-void Hosting::sendHostMessage(const char* message)
+void Hosting::sendHostMessage(const char* message, bool isHidden)
 {
 	static bool isAdmin = true;
-	handleMessage(message, _host, true);
+	handleMessage(message, _host, true, isHidden);
 }
 
 

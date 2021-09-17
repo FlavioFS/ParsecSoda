@@ -24,6 +24,7 @@ private:
 	BanList& _banList;
 	
 	// Attributes
+	char _filterText[256] = "";
 	string _logBuffer;
 	vector<Guest>& _guests;
 	vector<GuestData>& _guestHistory;

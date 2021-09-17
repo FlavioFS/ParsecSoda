@@ -7,12 +7,16 @@ GamepadsWidget::GamepadsWidget(Hosting& hosting)
 
 bool GamepadsWidget::render()
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+
+    static ImVec2 cursor;
+    static bool isWindowLocked = true;
     static bool isConnectionButtonPressed = false;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
 
     AppStyle::pushTitle();
     ImGui::SetNextWindowSizeConstraints(ImVec2(400, 280), ImVec2(800, 1100));
-    ImGui::Begin("Virtual Gamepads", (bool*)0);
+    ImGui::Begin("Virtual Gamepads", (bool*)0, isWindowLocked ? (ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize) : 0);
     AppStyle::pushInput();
     
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -48,9 +52,23 @@ bool GamepadsWidget::render()
     if (_hosting.isGamepadLock())   TitleTooltipWidget::render("Unlock guest inputs", "Guests will be able to control gamepads again.");
     else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
 
-    ImGui::Dummy(ImVec2(0, 10));
+    ImGui::SameLine();
+    cursor = ImGui::GetCursorPos();
+    ImGui::SetCursorPosX(size.x - 25);
+    if (IconButton::render(
+        AppIcons::move,
+        isWindowLocked ? AppColors::negative : AppColors::positive,
+        ImVec2(30, 30)
+    ))
+    {
+        isWindowLocked = !isWindowLocked;
+    }
+    if (isWindowLocked) TitleTooltipWidget::render("Window Locked", "This window cannot move or resize.");
+    else TitleTooltipWidget::render("Window Unlocked", "This window can move and resize.");
+
+    ImGui::Dummy(ImVec2(0, 5));
     ImGui::Separator();
-    ImGui::Dummy(ImVec2(0, 10));
+    ImGui::Dummy(ImVec2(0, 5));
 
     for (size_t i = 0; i < _gamepads.size(); ++i)
     {
@@ -63,7 +81,6 @@ bool GamepadsWidget::render()
             ImVec2(size.x, 50)
         );
 
-        static ImVec2 cursor;
         cursor = ImGui::GetCursorPos();
         
         static int xboxIndex = 0, padIndex = 0;
@@ -289,6 +306,8 @@ bool GamepadsWidget::render()
     AppStyle::pop();
     ImGui::End();
     AppStyle::pop();
+
+    ImGui::PopStyleVar();
 
     return true;
 }

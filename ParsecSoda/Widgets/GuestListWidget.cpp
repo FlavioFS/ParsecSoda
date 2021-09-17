@@ -19,6 +19,17 @@ bool GuestListWidget::render()
     it = _guests.begin();
     ImGui::BeginChild("Guest List", ImVec2(size.x, size.y));
 
+    AppStyle::pushLabel();
+    ImGui::Text("Filter Guests");
+    AppStyle::pop();
+    ImGui::SetNextItemWidth(size.x);
+    ImGui::InputText("### Guest List Filter", _filterText, 256);
+    TitleTooltipWidget::render("Filter Guests", "Type user Name or ID to filter.");
+
+    ImGui::Dummy(ImVec2(0, 5));
+    //ImGui::Separator();
+    //ImGui::Dummy(ImVec2(0, 5));
+
     if (ImGui::BeginTabBar("Guest Tabs", ImGuiTabBarFlags_None))
     {
         AppFonts::pushInput();
@@ -54,6 +65,8 @@ bool GuestListWidget::render()
 
 void GuestListWidget::renderOnlineGuests()
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
+
     static ImVec2 size;
     size = ImGui::GetContentRegionAvail();
     static size_t popupIndex;
@@ -62,12 +75,46 @@ void GuestListWidget::renderOnlineGuests()
     static ImVec2 cursor;
 
     // Guests
+    static bool showKickPopup = false;
+    static string kickPopupTitle = "";
     static bool showBanPopup = false;
     static string banPopupTitle = "";
+    static string filterTextStr;
+    static bool filterSuccess = false;
     for (size_t i = 0; i < _guests.size(); ++i)
     {
         name = _guests[i].name;
         userID = _guests[i].userID;
+
+        filterTextStr = _filterText;
+        if (!filterTextStr.empty())
+        {
+            filterSuccess = (Stringer::fuzzyDistance(_filterText, name) == 0);
+            if (!filterSuccess)
+            {
+                filterSuccess = (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0);
+            }
+
+            if (!filterSuccess)
+            {
+                continue;
+            }
+        }
+
+        IconButton::render(AppIcons::kick, AppColors::primary, ImVec2(30, 30));
+        if (ImGui::IsItemActive())
+        {
+            showKickPopup = true;
+            kickPopupTitle = string("Kick ") + name + "?" + "##Online Kick " + to_string(userID);
+            popupIndex = i;
+            ImGui::OpenPopup(kickPopupTitle.c_str());
+        }
+        TitleTooltipWidget::render(
+            "Kick user",
+            (string("Press to kick ") + name + "").c_str()
+        );
+
+        ImGui::SameLine();
 
         IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
         if (ImGui::IsItemActive())
@@ -85,17 +132,26 @@ void GuestListWidget::renderOnlineGuests()
         if (i == popupIndex)
         {
             if (ConfirmPopupWidget::render(
+                kickPopupTitle.c_str(),
+                showKickPopup
+            ))
+            {
+                _hosting.sendHostMessage((
+                    string("!kick ") + to_string(userID)
+                ).c_str(), true);
+            }
+
+            if (ConfirmPopupWidget::render(
                 banPopupTitle.c_str(),
                 showBanPopup
             ))
             {
                 _hosting.sendHostMessage((
                     string("!ban ") + to_string(userID)
-                ).c_str());
+                ).c_str(), true);
             }
         }
 
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
         ImGui::SameLine();
 
         cursor = ImGui::GetCursorPos();
@@ -108,7 +164,6 @@ void GuestListWidget::renderOnlineGuests()
         AppStyle::pop();
         ImGui::Dummy(ImVec2(0.0f, 5.0f));
         ImGui::EndGroup();
-        ImGui::PopStyleVar();
         ImGui::SetCursorPos(cursor);
         ImGui::Button((string("##") + to_string(i + 1)).c_str(), ImVec2(size.x - 45, 40));
 
@@ -129,6 +184,8 @@ void GuestListWidget::renderOnlineGuests()
             ImGui::EndDragDropSource();
         }
     }
+    
+    ImGui::PopStyleVar();
 }
 
 void GuestListWidget::renderBannedGuests()
@@ -139,11 +196,28 @@ void GuestListWidget::renderBannedGuests()
     static string name;
     static uint32_t userID;
     static vector<GuestData>& _bannedGuests = _banList.getGuests();
+    static string filterTextStr;
+    static bool filterSuccess = false;
 
     for (size_t i = 0; i < _bannedGuests.size(); ++i)
     {
         name = _bannedGuests[i].name;
         userID = _bannedGuests[i].userID;
+
+        filterTextStr = _filterText;
+        if (!filterTextStr.empty())
+        {
+            filterSuccess = (Stringer::fuzzyDistance(_filterText, name) == 0);
+            if (!filterSuccess)
+            {
+                filterSuccess = (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0);
+            }
+
+            if (!filterSuccess)
+            {
+                continue;
+            }
+        }
 
         IconButton::render(AppIcons::userOff, AppColors::negative, ImVec2(30, 30));
         if (ImGui::IsItemActive())
@@ -167,7 +241,7 @@ void GuestListWidget::renderBannedGuests()
             {
                 _hosting.sendHostMessage((
                     string("!unban ") + to_string(userID)
-                ).c_str());
+                ).c_str(), true);
             }
         }
 
@@ -195,11 +269,28 @@ void GuestListWidget::renderHistoryGuests()
     static size_t popupIndex;
     static string name;
     static uint32_t userID;
+    static string filterTextStr;
+    static bool filterSuccess = false;
 
     for (size_t i = 0; i < _guestHistory.size(); ++i)
     {
         name = _guestHistory[i].name;
         userID = _guestHistory[i].userID;
+
+        filterTextStr = _filterText;
+        if (!filterTextStr.empty())
+        {
+            filterSuccess = (Stringer::fuzzyDistance(_filterText, name) == 0);
+            if (!filterSuccess)
+            {
+                filterSuccess = (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0);
+            }
+
+            if (!filterSuccess)
+            {
+                continue;
+            }
+        }
 
         IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
         if(ImGui::IsItemActive())
@@ -221,7 +312,7 @@ void GuestListWidget::renderHistoryGuests()
             {
                 _hosting.sendHostMessage((
                     string("!ban ") + to_string(userID)
-                ).c_str());
+                ).c_str(), true);
             }
         }
 

@@ -29,6 +29,11 @@ vector<Guest>& GuestList::getGuests()
     return _guests;
 }
 
+void GuestList::clear()
+{
+	_guests.clear();
+}
+
 const bool GuestList::find(uint32_t targetGuestID, Guest* result)
 {
 	vector<Guest>::iterator i;

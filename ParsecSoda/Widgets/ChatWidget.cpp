@@ -8,12 +8,16 @@ ChatWidget::ChatWidget(Hosting& hosting)
 
 bool ChatWidget::render()
 {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+
+    static bool isClearChat = false;
+    static bool isWindowLocked = true;
     static Stopwatch stopwatch = Stopwatch(2000);
     stopwatch.start();
 
     AppStyle::pushTitle();
     ImGui::SetNextWindowSizeConstraints(ImVec2(300, 400), ImVec2(800, 900));
-    ImGui::Begin("Chat", (bool*)0);
+    ImGui::Begin("Chat", (bool*)0, isWindowLocked ? (ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize) : 0);
     AppStyle::pushInput();
 
     static ImVec2 size;
@@ -26,7 +30,11 @@ bool ChatWidget::render()
 
     static vector<string>::iterator it;
     it = _chatLog.begin();
-    ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 160));
+
+    renderTopBar(isWindowLocked, isClearChat);
+    ImGui::Separator();
+
+    ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 210));
     for (; it != _chatLog.end(); ++it)
     {
         static float textHeight;
@@ -56,9 +64,9 @@ bool ChatWidget::render()
     }
     ImGui::EndChild();
 
-    ImGui::Separator();
 
     ImGui::BeginChild("Message Preview", ImVec2(size.x, 60));
+    ImGui::Separator();
     ImGui::TextWrapped(_previewBuffer);
     ImGui::EndChild();
 
@@ -113,7 +121,78 @@ bool ChatWidget::render()
     ImGui::End();
     AppStyle::pop();
 
+    ImGui::PopStyleVar();
+
+    if (isClearChat)
+    {
+        _chatLog.clear();
+        ChatBot* chatBot = _hosting.getChatBot();
+        if (chatBot != nullptr) {
+            chatBot->setLastUserId();
+        }
+        isClearChat = false;
+    }
+
     return true;
+}
+
+bool ChatWidget::renderTopBar(bool& isWindowLocked, bool& isClearChat)
+{
+    static ImVec2 cursor;
+    static bool result;
+    result = false;
+
+    static bool isDeletingChat = false;
+    if (!isDeletingChat)
+    {
+        if (IconButton::render(AppIcons::trash, AppColors::primary, ImVec2(30, 30)))
+        {
+            isDeletingChat = true;
+        }
+        TitleTooltipWidget::render("Clear Chat", "Deletes all chat messages.");
+    }
+    else
+    {
+        ImGui::BeginGroup();
+
+        AppStyle::pushInput();
+        ImGui::Text("Delete chat history?");
+        AppStyle::pop();
+
+        static bool btnYes, btnNo;
+
+        btnNo = IconButton::render(AppIcons::no, AppColors::negative, ImVec2(30, 30));
+        ImGui::SameLine();
+        btnYes = IconButton::render(AppIcons::yes, AppColors::positive, ImVec2(30, 30));
+
+        if (btnYes) {
+            isClearChat = true;
+            isDeletingChat = false;
+            result = true;
+        }
+        else if (btnNo)
+        {
+            isDeletingChat = false;
+        }
+
+        ImGui::EndGroup();
+    }
+
+    ImGui::SameLine();
+    cursor = ImGui::GetCursorPos();
+    ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
+    if (IconButton::render(
+        AppIcons::move,
+        isWindowLocked ? AppColors::negative : AppColors::positive,
+        ImVec2(30, 30)
+    ))
+    {
+        isWindowLocked = !isWindowLocked;
+    }
+    if (isWindowLocked) TitleTooltipWidget::render("Window Locked", "This window cannot move or resize.");
+    else TitleTooltipWidget::render("Window Unlocked", "This window can move and resize.");
+
+    return result;
 }
 
 bool ChatWidget::isDirty()

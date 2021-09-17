@@ -1,6 +1,6 @@
 <a id="top"></a>
 
-<h1 name="metrix-home" align="center">
+<h1 name="home" align="center">
 	<img align="center" src="github/logo.png">
     <br>
 	Parsec Soda

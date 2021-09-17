@@ -53,6 +53,7 @@ public:
 	void fetchAccountData(bool sync = false);
 	ParsecHostConfig& getHostConfig();
 	DX11& getDX11();
+	ChatBot* getChatBot();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
@@ -76,8 +77,8 @@ public:
 	void stripGamepad(int index);
 	void setOwner(Gamepad& gamepad, Guest newOwner, int padId);
 
-	void handleMessage(const char* message, Guest& guest, bool isHost = false);
-	void sendHostMessage(const char* message);
+	void handleMessage(const char* message, Guest& guest, bool isHost = false, bool isHidden = false);
+	void sendHostMessage(const char* message, bool isHidden = false);
 
 	AudioIn audioIn;
 	AudioOut audioOut;

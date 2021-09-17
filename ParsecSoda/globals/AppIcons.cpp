@@ -31,6 +31,8 @@ ID3D11ShaderResourceView* AppIcons::saveOn;
 ID3D11ShaderResourceView* AppIcons::saveOff;
 ID3D11ShaderResourceView* AppIcons::edit;
 ID3D11ShaderResourceView* AppIcons::image;
+ID3D11ShaderResourceView* AppIcons::trash;
+ID3D11ShaderResourceView* AppIcons::move;
 
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
@@ -40,6 +42,7 @@ ID3D11ShaderResourceView* AppIcons::logoff;
 ID3D11ShaderResourceView* AppIcons::userOn;
 ID3D11ShaderResourceView* AppIcons::userOff;
 ID3D11ShaderResourceView* AppIcons::block;
+ID3D11ShaderResourceView* AppIcons::kick;
 
 ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
@@ -90,6 +93,8 @@ Texture AppIcons::_saveOn;
 Texture AppIcons::_saveOff;
 Texture AppIcons::_edit;
 Texture AppIcons::_image;
+Texture AppIcons::_trash;
+Texture AppIcons::_move;
 
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
@@ -99,6 +104,7 @@ Texture AppIcons::_logoff;
 Texture AppIcons::_userOn;
 Texture AppIcons::_userOff;
 Texture AppIcons::_block;
+Texture AppIcons::_kick;
 
 Texture AppIcons::_info;
 Texture AppIcons::_logo;
@@ -152,6 +158,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _saveOff.loadFromFile(pd3dDevice, "./icons/save-off.png");
     _edit.loadFromFile(pd3dDevice, "./icons/edit.png");
     _image.loadFromFile(pd3dDevice, "./icons/image.png");
+    _trash.loadFromFile(pd3dDevice, "./icons/trash.png");
+    _move.loadFromFile(pd3dDevice, "./icons/move.png");
 
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
@@ -161,6 +169,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _userOn.loadFromFile(pd3dDevice, "./icons/user-on.png");
     _userOff.loadFromFile(pd3dDevice, "./icons/user-off.png");
     _block.loadFromFile(pd3dDevice, "./icons/block.png");
+    _kick.loadFromFile(pd3dDevice, "./icons/kick.png");
 
     _info.loadFromFile(pd3dDevice, "./icons/info.png");
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
@@ -211,12 +220,15 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     saveOff = _saveOff.texture;
     edit = _edit.texture;
     image = _image.texture;
+    trash = _trash.texture;
+    move = _move.texture;
 
     chat = _chat.texture;
     users = _users.texture;
     log = _log.texture;
     logoff = _logoff.texture;
     block = _block.texture;
+    kick = _kick.texture;
 
     userOn = _userOn.texture;
     userOff = _userOff.texture;

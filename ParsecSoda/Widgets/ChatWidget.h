@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ToggleIconButtonWidget.h"
+#include "TitleTooltipWidget.h"
 #include "../imgui/imgui.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
@@ -19,6 +20,8 @@ public:
 	#define SEND_BUFFER_LEN 1023
 
 private:
+	bool renderTopBar(bool& isWindowLocked, bool& isClearChat);
+
 	bool isDirty();
 	void sendMessage();
 	bool setSendBuffer(const char* value);
