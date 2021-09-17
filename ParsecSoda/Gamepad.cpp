@@ -199,8 +199,14 @@ XINPUT_STATE Gamepad::fetchXInputState()
 
 void Gamepad::clearState()
 {
+	_keyboard.clear();
 	ZeroMemory(&_currentState, sizeof(XINPUT_STATE));
 	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
+}
+
+Gamepad::Keyboard& Gamepad::getKeyboard()
+{
+	return _keyboard;
 }
 
 void Gamepad::setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard)

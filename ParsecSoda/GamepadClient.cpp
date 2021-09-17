@@ -428,7 +428,7 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 			slots++;
 			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || pad.owner.isKeyboard))
 			{
-				pad.setStateSafe(toXInput(keyboard, pad.getState(), prefs));
+				pad.setStateSafe(toXInput(keyboard, pad.getKeyboard(), pad.getState(), prefs));
 				return true;
 			}
 		}
@@ -581,45 +581,43 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, XINPUT_ST
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
 {
 	XINPUT_STATE result = previousState;
 
 	switch (key.code)
 	{
-
 		// Directions
 	case (int)KEY_TO_GAMEPAD::LEFT:
 	case (int)KEY_TO_GAMEPAD2::LEFT:
-		result.Gamepad.sThumbLX = (key.pressed ? GAMEPAD_STICK_MIN : 0);
-		if (prefs.mirror)
-		{
-			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, key.pressed);
-		}
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MIN;
+		else result.Gamepad.sThumbLX = keyboard.right ? GAMEPAD_STICK_MAX : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, key.pressed);
+		keyboard.left = key.pressed;
 		break;
+
 	case (int)KEY_TO_GAMEPAD::RIGHT:
 	case (int)KEY_TO_GAMEPAD2::RIGHT:
-		result.Gamepad.sThumbLX = (key.pressed ? GAMEPAD_STICK_MAX : 0);
-		if (prefs.mirror)
-		{
-			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, key.pressed);
-		}
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MAX;
+		else result.Gamepad.sThumbLX = keyboard.left ? GAMEPAD_STICK_MIN : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, key.pressed);
+		keyboard.right = key.pressed;
 		break;
+
 	case (int)KEY_TO_GAMEPAD::UP:
 	case (int)KEY_TO_GAMEPAD2::UP:
-		result.Gamepad.sThumbLY = (key.pressed ? GAMEPAD_STICK_MAX : 0);
-		if (prefs.mirror)
-		{
-			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, key.pressed);
-		}
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MAX;
+		else result.Gamepad.sThumbLY = keyboard.down ? GAMEPAD_STICK_MIN : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, key.pressed);
+		keyboard.up = key.pressed;
 		break;
+
 	case (int)KEY_TO_GAMEPAD::DOWN:
 	case (int)KEY_TO_GAMEPAD2::DOWN:
-		result.Gamepad.sThumbLY = (key.pressed ? GAMEPAD_STICK_MIN : 0);
-		if (prefs.mirror)
-		{
-			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, key.pressed);
-		}
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MIN;
+		else result.Gamepad.sThumbLY = keyboard.up ? GAMEPAD_STICK_MAX : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, key.pressed);
+		keyboard.down = key.pressed;
 		break;
 
 		// Face buttons

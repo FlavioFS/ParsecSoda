@@ -88,7 +88,7 @@ private:
 	bool sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 
 	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs);
 	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
 	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
 

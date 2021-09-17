@@ -25,6 +25,18 @@ using namespace std;
 class Gamepad
 {
 public:
+	class Keyboard
+	{
+	public:
+		void clear() {
+			left = right = up = down = false;
+		};
+		bool left = false;
+		bool right = false;
+		bool up = false;
+		bool down = false;
+	};
+
 	Gamepad();
 	Gamepad(ParsecDSO * parsec, PVIGEM_CLIENT client);
 	bool alloc();
@@ -38,6 +50,7 @@ public:
 	bool refreshIndex();
 	XINPUT_STATE getState();
 	void clearState();
+	Keyboard& getKeyboard();
 
 	// State mesages
 	void setState(XINPUT_STATE state);
@@ -53,8 +66,10 @@ public:
 
 	ParsecDSO * parsec;
 
+
 private:
 	XINPUT_STATE fetchXInputState();
+	Keyboard _keyboard;
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;
 	ULONG _index = -1;
