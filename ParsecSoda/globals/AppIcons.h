@@ -67,6 +67,8 @@ public:
 	static ID3D11ShaderResourceView* xbox3;
 	static ID3D11ShaderResourceView* xbox4;
 
+	static ID3D11ShaderResourceView* vpad;
+
 	static ID3D11ShaderResourceView* btc;
 	static ID3D11ShaderResourceView* ltc;
 	static ID3D11ShaderResourceView* eth;
@@ -129,6 +131,8 @@ private:
 	static Texture _xbox2;
 	static Texture _xbox3;
 	static Texture _xbox4;
+
+	static Texture _vpad;
 
 	static Texture _btc;
 	static Texture _ltc;

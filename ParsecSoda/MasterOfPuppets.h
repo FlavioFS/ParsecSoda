@@ -20,6 +20,9 @@ public:
 	void mapInputs();
 	void setMasterIndex(int index);
 	int getMasterIndex();
+	void setVirtualMaster(bool enabled);
+	bool getVirtualMaster();
+	void setVirtualMasterState(XINPUT_GAMEPAD vpad);
 
 	vector<SDLGamepad>& getSDLGamepads();
 	vector<GamepadState>& getXInputGamepads();
@@ -30,15 +33,18 @@ public:
 
 private:
 	void internalFetchSDLGamepads();
+	void mapFromVirtualMaster();
 	void mapFromSDL();
 	void mapFromXInput();
 	bool isRunning = false;
+	bool _isVirtualPad = false;
 	
 	int masterIndex;
 
 	GamepadClient* _gamepadClient;
 	SDLGamepadReader _sdlReader;
 	XInputReader _xinputReader;
+	XINPUT_STATE _vMasterState;
 
 	thread _thread;
 };

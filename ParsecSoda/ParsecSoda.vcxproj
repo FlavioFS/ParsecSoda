@@ -160,6 +160,7 @@
     <ClCompile Include="MasterOfPuppets.cpp" />
     <ClCompile Include="SDLGamepad.cpp" />
     <ClCompile Include="SDLGamepadReader.cpp" />
+    <ClCompile Include="Widgets\VirtualGamepadWidget.cpp" />
     <ClCompile Include="XInputReader.cpp" />
     <ClCompile Include="Thumbnail.cpp" />
     <ClCompile Include="Widgets\MasterOfPuppetsWidget.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="MasterOfPuppets.h" />
     <ClInclude Include="SDLGamepad.h" />
     <ClInclude Include="SDLGamepadReader.h" />
+    <ClInclude Include="Widgets\VirtualGamepadWidget.h" />
     <ClInclude Include="XInputReader.h" />
     <ClInclude Include="IGamepadReader.h" />
     <ClInclude Include="Widgets\MasterOfPuppetsWidget.h" />

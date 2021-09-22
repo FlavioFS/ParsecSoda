@@ -154,19 +154,17 @@ bool GamepadsWidget::render()
 
 
         static string name, id;
-        if (_hosting.getGamepadClient().isPuppetMaster && gi.isPuppet)
-        {
-            id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
-            name = _hosting.getHost().name;
-
-        }
-        else if (gi.owner.guest.isValid())
+        if (gi.owner.guest.isValid())
         {
             id = string() + "(# " + to_string(gi.owner.guest.userID) + ")\t";
             name = gi.owner.guest.name;
         }
-        else
+        else if (_hosting.getGamepadClient().isPuppetMaster && gi.isPuppet)
         {
+            id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
+            name = _hosting.getHost().name;
+        }
+        else {
             id = "    ";
             name = gi.owner.guest.name;
         }
@@ -247,24 +245,33 @@ bool GamepadsWidget::render()
         
         ImGui::SameLine();
         
-        static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
-        ImGui::Dummy(ImVec2(0.0f, 12.0f));
-        ImGui::SetNextItemWidth(40);
-        deviceIndices[i] = gi.owner.deviceID;
-
-        AppFonts::pushTitle();
-        if (ImGui::DragInt(
-            (string("##DeviceIndex") + to_string(i)).c_str(),
-            &deviceIndices[i], 0.1f, -1, 65536
-        ))
+        if (_hosting.getGamepadClient().isPuppetMaster && gi.isPuppet)
         {
-            gi.owner.deviceID = deviceIndices[i];
+            ImGui::Dummy(ImVec2(0, 8));
+            ImGui::Image(AppIcons::puppet, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary);
+            TitleTooltipWidget::render("Puppet", "This gamepad is under control of Master of Puppets.");
         }
-        if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-        AppFonts::pop();
+        else
+        {
+            static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+            ImGui::Dummy(ImVec2(0.0f, 12.0f));
+            ImGui::SetNextItemWidth(40);
+            deviceIndices[i] = gi.owner.deviceID;
 
-        TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
+            AppFonts::pushTitle();
+            if (ImGui::DragInt(
+                (string("##DeviceIndex") + to_string(i)).c_str(),
+                &deviceIndices[i], 0.1f, -1, 65536
+            ))
+            {
+                gi.owner.deviceID = deviceIndices[i];
+            }
+            if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+            AppFonts::pop();
+
+            TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
+        }
         ImGui::EndGroup();
         ImGui::EndChild();
 

@@ -59,6 +59,8 @@ ID3D11ShaderResourceView* AppIcons::xbox2;
 ID3D11ShaderResourceView* AppIcons::xbox3;
 ID3D11ShaderResourceView* AppIcons::xbox4;
 
+ID3D11ShaderResourceView* AppIcons::vpad;
+
 ID3D11ShaderResourceView* AppIcons::btc;
 ID3D11ShaderResourceView* AppIcons::ltc;
 ID3D11ShaderResourceView* AppIcons::eth;
@@ -120,6 +122,8 @@ Texture AppIcons::_xbox1;
 Texture AppIcons::_xbox2;
 Texture AppIcons::_xbox3;
 Texture AppIcons::_xbox4;
+
+Texture AppIcons::_vpad;
 
 Texture AppIcons::_btc;
 Texture AppIcons::_ltc;
@@ -186,6 +190,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _xbox3.loadFromFile(pd3dDevice, "./icons/xbox3.png");
     _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
 
+    _vpad.loadFromFile(pd3dDevice, "./icons/vpad.png");
+
     _btc.loadFromFile(pd3dDevice, "./icons/btc.png");
     _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
     _eth.loadFromFile(pd3dDevice, "./icons/eth.png");
@@ -247,6 +253,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     xbox2 = _xbox2.texture;
     xbox3 = _xbox3.texture;
     xbox4 = _xbox4.texture;
+
+    vpad = _vpad.texture;
 
     btc = _btc.texture;
     ltc = _ltc.texture;

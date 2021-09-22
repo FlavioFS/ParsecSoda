@@ -249,6 +249,9 @@
     <ClCompile Include="MasterOfPuppets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\VirtualGamepadWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -615,6 +618,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MasterOfPuppets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\VirtualGamepadWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

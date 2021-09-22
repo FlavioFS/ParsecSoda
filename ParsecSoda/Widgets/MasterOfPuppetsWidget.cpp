@@ -7,6 +7,7 @@ MasterOfPuppetsWidget::MasterOfPuppetsWidget(Hosting& hosting)
 
 bool MasterOfPuppetsWidget::render()
 {
+    static bool isWindowLocked = false;
     static int masterIndex = -1;
     static ImVec2 cursor;
     static ImVec2 size;
@@ -15,7 +16,7 @@ bool MasterOfPuppetsWidget::render()
     AppStyle::pushTitle();
 
     ImGui::SetNextWindowSizeConstraints(ImVec2(820, 300), ImVec2(1300, 900));
-    ImGui::Begin("Master of Puppets##Master of Puppets");
+    ImGui::Begin("Master of Puppets##Master of Puppets", 0, isWindowLocked ? ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize : 0);
     AppStyle::pushInput();
 
 
@@ -64,9 +65,43 @@ bool MasterOfPuppetsWidget::render()
         TitleTooltipWidget::render("Master Gamepad Engine", _wgiTooltipString.c_str());
     }
 
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(5, 0));
+    ImGui::SameLine();
+    static bool showVPad = false;
+    if (IconButton::render(AppIcons::vpad, showVPad ? AppColors::positive : AppColors::negative))
+    {
+        showVPad = !showVPad;
+        isWindowLocked = showVPad;
+    }
+    TitleTooltipWidget::render("Virtual Master Gamepad", "Click to toggle Master VPad.");
+
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(ImGui::GetWindowContentRegionWidth() - 20);
+    if (IconButton::render(AppIcons::move, isWindowLocked ? AppColors::negative : AppColors::positive))
+    {
+        isWindowLocked = !isWindowLocked;
+    }
+    if (isWindowLocked) TitleTooltipWidget::render("Window Locked", "This window cannot move or resize.");
+    else TitleTooltipWidget::render("Window Unlocked", "This window can move and resize.");
+
     ImGui::Dummy(ImVec2(0, 5));
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 5));
+
+    static XINPUT_GAMEPAD vpadState;
+    static VirtualGamepadWidget vpad;
+    _masterOfPuppets.setVirtualMaster(showVPad);
+    if (showVPad)
+    {
+        vpadState = vpad.render();
+
+        ImGui::Dummy(ImVec2(0, 5));
+        ImGui::Separator();
+        ImGui::Dummy(ImVec2(0, 5));
+
+        _masterOfPuppets.setVirtualMasterState(vpadState);
+    }
 
     _masterOfPuppets.inputMutex.lock();
     ImGui::BeginGroup();
@@ -89,7 +124,6 @@ bool MasterOfPuppetsWidget::render()
 
     return true;
 }
-
 
 void MasterOfPuppetsWidget::renderMaster()
 {

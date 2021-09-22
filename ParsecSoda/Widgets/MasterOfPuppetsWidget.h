@@ -8,6 +8,7 @@
 #include "../Hosting.h"
 
 #include "ProgressCircularWidget.h"
+#include "VirtualGamepadWidget.h"
 #include "AnimatedGamepadWidget.h"
 #include "IconButton.h"
 #include "IntRangeWidget.h"

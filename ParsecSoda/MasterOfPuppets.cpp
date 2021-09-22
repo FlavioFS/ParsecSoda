@@ -38,6 +38,11 @@ void MasterOfPuppets::start()
                 mapFromXInput();
             }
 
+            if (_isVirtualPad)
+            {
+                mapFromVirtualMaster();
+            }
+
             inputMutex.unlock();
             Sleep(8);
         }
@@ -76,12 +81,29 @@ void MasterOfPuppets::mapInputs()
 void MasterOfPuppets::setMasterIndex(int index)
 {
     masterIndex = index;
-    _gamepadClient->isPuppetMaster = index >= 0;
+    _gamepadClient->isPuppetMaster = (index >= 0) || _isVirtualPad;
 }
 
 int MasterOfPuppets::getMasterIndex()
 {
     return masterIndex;
+}
+
+void MasterOfPuppets::setVirtualMaster(bool enabled)
+{
+    _isVirtualPad = enabled;
+    _gamepadClient->isPuppetMaster = (masterIndex >= 0) || _isVirtualPad;
+}
+
+bool MasterOfPuppets::getVirtualMaster()
+{
+    return _isVirtualPad;
+}
+
+void MasterOfPuppets::setVirtualMasterState(XINPUT_GAMEPAD vpad)
+{
+    ZeroMemory(&_vMasterState, sizeof(XINPUT_STATE));
+    _vMasterState.Gamepad = vpad;
 }
 
 vector<SDLGamepad>& MasterOfPuppets::getSDLGamepads()
@@ -92,6 +114,21 @@ vector<SDLGamepad>& MasterOfPuppets::getSDLGamepads()
 vector<GamepadState>& MasterOfPuppets::getXInputGamepads()
 {
     return _xinputReader.readInputs();
+}
+
+void MasterOfPuppets::mapFromVirtualMaster()
+{
+    if (_gamepadClient == nullptr) return;
+
+    vector<Gamepad>& puppets = _gamepadClient->gamepads;
+
+    for (size_t i = 0; i < puppets.size(); ++i)
+    {
+        if (puppets[i].isPuppet)
+        {
+            puppets[i].setState(_vMasterState);
+        }
+    }
 }
 
 void MasterOfPuppets::mapFromSDL()
