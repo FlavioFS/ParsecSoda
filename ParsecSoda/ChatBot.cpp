@@ -9,7 +9,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 
 	// Pleb commands
 	//if (msgIsEqual(msg, CommandAFK::prefixes()))		return new CommandAFK(_guests, _gamepadClient);
-	if (msgStartsWith(msg, CommandBonk::prefixes()))	return new CommandBonk(msg, sender, _guests, _dice, _host);
+	if (msgStartsWith(msg, CommandBonk::prefixes()))	return new CommandBonk(msg, sender, _guests, _host);
 	if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandHelp::prefixes()))		return new CommandHelp(sender, _tierList);
 	//if (CommandIpFilter::containsIp(msg))				return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);

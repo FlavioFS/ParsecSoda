@@ -152,6 +152,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "monitor", &preferences.monitor)) {
                 preferences.monitor = 0;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "adapter", &preferences.adapter)) {
+                preferences.adapter = 0;
+            }
             
             if (MTY_JSONObjGetString(json, "roomName", roomName, 256)) preferences.roomName = roomName;
             else preferences.roomName = "Let's have fun!";
@@ -238,6 +242,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "windowH", preferences.windowH);
         MTY_JSONObjSetUInt(json, "fps", preferences.fps);
         MTY_JSONObjSetUInt(json, "bandwidth", preferences.bandwidth);
+        MTY_JSONObjSetUInt(json, "monitor", preferences.monitor);
+        MTY_JSONObjSetUInt(json, "adapter", preferences.adapter);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

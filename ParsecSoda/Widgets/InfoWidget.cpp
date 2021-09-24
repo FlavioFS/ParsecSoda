@@ -5,7 +5,7 @@ bool InfoWidget::render()
     AppStyle::pushTitle();
 
     static ImVec2 res;
-    static ImVec2 size = ImVec2(880, 700);
+    static ImVec2 size = ImVec2(875, 700);
 
     res = ImGui::GetMainViewport()->Size;
 
@@ -17,7 +17,7 @@ bool InfoWidget::render()
     ImGui::Begin("About###About Window", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse);
     AppStyle::pushInput();
     
-    ImGui::Dummy(ImVec2(0, 20));
+    ImGui::Dummy(ImVec2(0, 10));
 
     renderSugoiButton("github.com/FlavioFS/ParsecSoda", L"https://github.com/FlavioFS/ParsecSoda");
     ImGui::SetCursorPosX(25);
@@ -35,16 +35,16 @@ bool InfoWidget::render()
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 15));
 
+    ImGui::BeginGroup();
     renderSugoiButton("Donate", L"https://github.com/FlavioFS/ParsecSoda#donate");
     ImGui::SetCursorPosX(25);
     ImGui::TextWrapped("Want to support my work?");
 
     ImGui::Dummy(ImVec2(0, 10));
-
+    
     renderLinkButton("Ko-fi", L"https://ko-fi.com/flafdraws");
     renderLinkButton("Paypal", L"https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72");
 
-    ImGui::BeginGroup();
     static char pix[] = "43.379.701/0001-96";
     AppFonts::pushInput();
     ImGui::SetCursorPosX(25);
@@ -71,23 +71,43 @@ bool InfoWidget::render()
     ImGui::SetCursorPosX(120);
     ImGui::SetNextItemWidth(365);
     ImGui::InputText("### Donate LTC", ltc, 64, ImGuiInputTextFlags_ReadOnly);
+
+    static char eth[] = "0x4B0d629d60e7b910d03f3f15d0Db25146Be05642";
+    ImGui::SetCursorPosX(25);
+    ImGui::Text("ETH");
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(120);
+    ImGui::SetNextItemWidth(365);
+    ImGui::InputText("### Donate ETH", eth, 64, ImGuiInputTextFlags_ReadOnly);
     AppFonts::pop();
     ImGui::EndGroup();
 
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(20, 0));
     ImGui::SameLine();
-
+    
+    // QR
+    ImGui::BeginGroup();
     ImGui::BeginGroup();
     ImGui::Text("BTC");
     ImGui::Image(AppIcons::btc, ImVec2(145, 145));
     ImGui::EndGroup();
+    
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(20, 0));
     ImGui::SameLine();
+    
     ImGui::BeginGroup();
     ImGui::Text("LTC");
     ImGui::Image(AppIcons::ltc, ImVec2(145, 145));
+    ImGui::EndGroup();
+    
+    ImGui::Dummy(ImVec2(0, 10));
+
+    ImGui::BeginGroup();
+    ImGui::Text("ETH");
+    ImGui::Image(AppIcons::eth, ImVec2(145, 145));
+    ImGui::EndGroup();
     ImGui::EndGroup();
 
     AppStyle::pop();

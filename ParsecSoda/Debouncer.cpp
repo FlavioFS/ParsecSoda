@@ -22,7 +22,10 @@ void Debouncer::start()
 			}
 
 			_stopwatch.stop();
-			_callback();
+			if (_callback != nullptr)
+			{
+				_callback();
+			}
 			_thread.detach();
 		});
 	}

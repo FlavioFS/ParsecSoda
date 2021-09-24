@@ -39,6 +39,8 @@ public:
 	static ID3D11ShaderResourceView* saveOff;
 	static ID3D11ShaderResourceView* edit;
 	static ID3D11ShaderResourceView* image;
+	static ID3D11ShaderResourceView* trash;
+	static ID3D11ShaderResourceView* move;
 
 	static ID3D11ShaderResourceView* chat;
 	static ID3D11ShaderResourceView* users;
@@ -48,9 +50,16 @@ public:
 	static ID3D11ShaderResourceView* userOn;
 	static ID3D11ShaderResourceView* userOff;
 	static ID3D11ShaderResourceView* block;
+	static ID3D11ShaderResourceView* kick;
 
 	static ID3D11ShaderResourceView* info;
 	static ID3D11ShaderResourceView* logo;
+
+	static ID3D11ShaderResourceView* puppet;
+	static ID3D11ShaderResourceView* xinput;
+	static ID3D11ShaderResourceView* dinput;
+	static ID3D11ShaderResourceView* windows;
+	static ID3D11ShaderResourceView* sdl;
 
 	static ID3D11ShaderResourceView* xbox;
 	static ID3D11ShaderResourceView* xbox1;
@@ -58,8 +67,11 @@ public:
 	static ID3D11ShaderResourceView* xbox3;
 	static ID3D11ShaderResourceView* xbox4;
 
+	static ID3D11ShaderResourceView* vpad;
+
 	static ID3D11ShaderResourceView* btc;
 	static ID3D11ShaderResourceView* ltc;
+	static ID3D11ShaderResourceView* eth;
 
 private:
 	static Texture _play;
@@ -92,6 +104,8 @@ private:
 	static Texture _saveOff;
 	static Texture _edit;
 	static Texture _image;
+	static Texture _trash;
+	static Texture _move;
 
 	static Texture _chat;
 	static Texture _users;
@@ -101,9 +115,16 @@ private:
 	static Texture _userOn;
 	static Texture _userOff;
 	static Texture _block;
+	static Texture _kick;
 
 	static Texture _info;
 	static Texture _logo;
+
+	static Texture _puppet;
+	static Texture _xinput;
+	static Texture _dinput;
+	static Texture _windows;
+	static Texture _sdl;
 
 	static Texture _xbox;
 	static Texture _xbox1;
@@ -111,7 +132,10 @@ private:
 	static Texture _xbox3;
 	static Texture _xbox4;
 
+	static Texture _vpad;
+
 	static Texture _btc;
 	static Texture _ltc;
+	static Texture _eth;
 };
 

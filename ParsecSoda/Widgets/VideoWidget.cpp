@@ -15,7 +15,7 @@ bool VideoWidget::render()
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 210), ImVec2(500, 600));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 280), ImVec2(500, 600));
     ImGui::Begin("Video");
 
 
@@ -24,14 +24,14 @@ bool VideoWidget::render()
     static ImVec2 size;
     size = ImGui::GetContentRegionAvail();
 
-    // =============================================================
-    //  Input devices
-    // =============================================================
+    // =========================================================
+    // Monitors
+    // =========================================================
     static UINT currentScreen = 0;
     currentScreen = _dx11.getScreen();
 
     static vector<string> screens = _dx11.listScreens();
-    static string name = (currentScreen < screens.size()) ? screens[currentScreen] : "";
+    static string screenName = (currentScreen < screens.size()) ? screens[currentScreen] : "";
 
     ImGui::SetNextItemWidth(size.x);
 
@@ -40,7 +40,7 @@ bool VideoWidget::render()
     AppStyle::pop();
     AppFonts::pushInput();
     ImGui::SetNextItemWidth(size.x);
-    if (ImGui::BeginCombo("##Monitor list", name.c_str()))
+    if (ImGui::BeginCombo("##Monitor list", screenName.c_str()))
     {
         for (UINT i = 0; i < screens.size(); ++i)
         {
@@ -48,7 +48,7 @@ bool VideoWidget::render()
             if (ImGui::Selectable(screens[i].c_str(), isSelected))
             {
                 currentScreen = i;
-                name = screens[currentScreen];
+                screenName = screens[currentScreen];
                 _dx11.setScreen(i);
             }
             if (isSelected)
@@ -59,10 +59,64 @@ bool VideoWidget::render()
         ImGui::EndCombo();
     }
     AppFonts::pop();
-    TitleTooltipWidget::render("Monitor List", "Choose the screen you want to display.\nAvoid changing this while stream is running.");
+    TitleTooltipWidget::render("Monitor List", "Choose the screen you want to display.\n\n* Avoid changing this while stream is already running.");
     
     ImGui::Dummy(dummySize);
 
+    // =========================================================
+    // Adapters
+    // =========================================================
+    static size_t currentGPU = 0;
+    currentGPU = _dx11.getGPU();
+
+    static vector<string> gpus = _dx11.listGPUs();
+    static string gpuName = (currentGPU < gpus.size()) ? gpus[currentGPU] : "";
+
+    ImGui::SetNextItemWidth(size.x);
+
+    AppStyle::pushLabel();
+    ImGui::Text("Adapters");
+    AppStyle::pop();
+    AppFonts::pushInput();
+    ImGui::SetNextItemWidth(size.x);
+    if (ImGui::BeginCombo("##Adapter list", gpuName.c_str()))
+    {
+        for (UINT i = 0; i < gpus.size(); ++i)
+        {
+            bool isSelected = (currentGPU == i);
+            if (ImGui::Selectable(gpus[i].c_str(), isSelected))
+            {
+                currentGPU = i;
+                gpuName = gpus[currentGPU];
+                _dx11.setGPU(i);
+                screens = _dx11.listScreens();
+                _dx11.setScreen(currentScreen);
+                currentScreen = _dx11.getScreen();
+                screenName = currentScreen >= screens.size() ? "" : screens[currentScreen];
+            }
+            if (isSelected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+    AppFonts::pop();
+    TitleTooltipWidget::render(
+        "Adapter List",
+        (
+            string() +
+            "Choose the GPU that renders your desktop.\n" +
+            "Picking the wrong GPU may result in black screen.\n\n" +
+            "* Avoid changing this while stream is already running."
+        ).c_str()
+    );
+
+    ImGui::Dummy(dummySize);
+
+    // =========================================================
+    // Bandwidth
+    // =========================================================
     static int previousBandwidth;
     static int previousFps;
     previousBandwidth = _bandwidth;
@@ -82,6 +136,9 @@ bool VideoWidget::render()
 
     ImGui::SetCursorPos(ImVec2(cursor.x + size.x - 105, cursor.y));
 
+    // =========================================================
+    // FPS
+    // =========================================================
     ImGui::BeginGroup();
     AppStyle::pushLabel();
     ImGui::Text("FPS");

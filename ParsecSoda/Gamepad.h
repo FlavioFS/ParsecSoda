@@ -10,6 +10,7 @@
 #include "Bitwise.h"
 #include "KeyboardMaps.h"
 #include "GuestDevice.h"
+#include "Dice.h"
 
 using namespace std;
 
@@ -24,6 +25,18 @@ using namespace std;
 class Gamepad
 {
 public:
+	class Keyboard
+	{
+	public:
+		void clear() {
+			left = right = up = down = false;
+		};
+		bool left = false;
+		bool right = false;
+		bool up = false;
+		bool down = false;
+	};
+
 	Gamepad();
 	Gamepad(ParsecDSO * parsec, PVIGEM_CLIENT client);
 	bool alloc();
@@ -37,12 +50,11 @@ public:
 	bool refreshIndex();
 	XINPUT_STATE getState();
 	void clearState();
+	Keyboard& getKeyboard();
 
 	// State mesages
-	bool setState(ParsecGamepadStateMessage state);
-	bool setState(ParsecKeyboardMessage key);
-	bool setState(ParsecGamepadButtonMessage button);
-	bool setState(ParsecGamepadAxisMessage axis);
+	void setState(XINPUT_STATE state);
+	void setStateSafe(XINPUT_STATE state);
 
 	void setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard);
 	void copyOwner(Gamepad pad);
@@ -50,13 +62,14 @@ public:
 	const bool isOwned();
 	bool isConnected() const;
 	GuestDevice owner = GuestDevice();
-	bool mirror = false;
+	bool isPuppet = false;
 
 	ParsecDSO * parsec;
 
+
 private:
-	void setState(XINPUT_STATE state);
 	XINPUT_STATE fetchXInputState();
+	Keyboard _keyboard;
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET pad;
 	ULONG _index = -1;

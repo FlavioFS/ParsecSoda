@@ -22,7 +22,7 @@ class HostSettingsWidget
 {
 public:
 	HostSettingsWidget(Hosting& hosting);
-	bool render();
+	bool render(HWND& hwnd);
 	void updateSecretLink();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);

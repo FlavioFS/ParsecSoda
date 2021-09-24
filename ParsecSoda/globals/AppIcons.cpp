@@ -31,6 +31,8 @@ ID3D11ShaderResourceView* AppIcons::saveOn;
 ID3D11ShaderResourceView* AppIcons::saveOff;
 ID3D11ShaderResourceView* AppIcons::edit;
 ID3D11ShaderResourceView* AppIcons::image;
+ID3D11ShaderResourceView* AppIcons::trash;
+ID3D11ShaderResourceView* AppIcons::move;
 
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
@@ -40,9 +42,16 @@ ID3D11ShaderResourceView* AppIcons::logoff;
 ID3D11ShaderResourceView* AppIcons::userOn;
 ID3D11ShaderResourceView* AppIcons::userOff;
 ID3D11ShaderResourceView* AppIcons::block;
+ID3D11ShaderResourceView* AppIcons::kick;
 
 ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
+
+ID3D11ShaderResourceView* AppIcons::puppet;
+ID3D11ShaderResourceView* AppIcons::xinput;
+ID3D11ShaderResourceView* AppIcons::dinput;
+ID3D11ShaderResourceView* AppIcons::windows;
+ID3D11ShaderResourceView* AppIcons::sdl;
 
 ID3D11ShaderResourceView* AppIcons::xbox;
 ID3D11ShaderResourceView* AppIcons::xbox1;
@@ -50,8 +59,11 @@ ID3D11ShaderResourceView* AppIcons::xbox2;
 ID3D11ShaderResourceView* AppIcons::xbox3;
 ID3D11ShaderResourceView* AppIcons::xbox4;
 
+ID3D11ShaderResourceView* AppIcons::vpad;
+
 ID3D11ShaderResourceView* AppIcons::btc;
 ID3D11ShaderResourceView* AppIcons::ltc;
+ID3D11ShaderResourceView* AppIcons::eth;
 
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
@@ -83,6 +95,8 @@ Texture AppIcons::_saveOn;
 Texture AppIcons::_saveOff;
 Texture AppIcons::_edit;
 Texture AppIcons::_image;
+Texture AppIcons::_trash;
+Texture AppIcons::_move;
 
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
@@ -92,9 +106,16 @@ Texture AppIcons::_logoff;
 Texture AppIcons::_userOn;
 Texture AppIcons::_userOff;
 Texture AppIcons::_block;
+Texture AppIcons::_kick;
 
 Texture AppIcons::_info;
 Texture AppIcons::_logo;
+
+Texture AppIcons::_puppet;
+Texture AppIcons::_xinput;
+Texture AppIcons::_dinput;
+Texture AppIcons::_windows;
+Texture AppIcons::_sdl;
 
 Texture AppIcons::_xbox;
 Texture AppIcons::_xbox1;
@@ -102,8 +123,11 @@ Texture AppIcons::_xbox2;
 Texture AppIcons::_xbox3;
 Texture AppIcons::_xbox4;
 
+Texture AppIcons::_vpad;
+
 Texture AppIcons::_btc;
 Texture AppIcons::_ltc;
+Texture AppIcons::_eth;
 
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
@@ -138,6 +162,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _saveOff.loadFromFile(pd3dDevice, "./icons/save-off.png");
     _edit.loadFromFile(pd3dDevice, "./icons/edit.png");
     _image.loadFromFile(pd3dDevice, "./icons/image.png");
+    _trash.loadFromFile(pd3dDevice, "./icons/trash.png");
+    _move.loadFromFile(pd3dDevice, "./icons/move.png");
 
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
@@ -147,9 +173,16 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _userOn.loadFromFile(pd3dDevice, "./icons/user-on.png");
     _userOff.loadFromFile(pd3dDevice, "./icons/user-off.png");
     _block.loadFromFile(pd3dDevice, "./icons/block.png");
+    _kick.loadFromFile(pd3dDevice, "./icons/kick.png");
 
     _info.loadFromFile(pd3dDevice, "./icons/info.png");
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
+
+    _puppet.loadFromFile(pd3dDevice, "./icons/puppet.png");
+    _xinput.loadFromFile(pd3dDevice, "./icons/xinput.png");
+    _dinput.loadFromFile(pd3dDevice, "./icons/dinput.png");
+    _windows.loadFromFile(pd3dDevice, "./icons/windows.png");
+    _sdl.loadFromFile(pd3dDevice, "./icons/sdl.png");
 
     _xbox.loadFromFile(pd3dDevice, "./icons/xbox.png");
     _xbox1.loadFromFile(pd3dDevice, "./icons/xbox1.png");
@@ -157,8 +190,11 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _xbox3.loadFromFile(pd3dDevice, "./icons/xbox3.png");
     _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
 
+    _vpad.loadFromFile(pd3dDevice, "./icons/vpad.png");
+
     _btc.loadFromFile(pd3dDevice, "./icons/btc.png");
     _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
+    _eth.loadFromFile(pd3dDevice, "./icons/eth.png");
 
     play = _play.texture;
     stop = _stop.texture;
@@ -190,12 +226,15 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     saveOff = _saveOff.texture;
     edit = _edit.texture;
     image = _image.texture;
+    trash = _trash.texture;
+    move = _move.texture;
 
     chat = _chat.texture;
     users = _users.texture;
     log = _log.texture;
     logoff = _logoff.texture;
     block = _block.texture;
+    kick = _kick.texture;
 
     userOn = _userOn.texture;
     userOff = _userOff.texture;
@@ -203,12 +242,21 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     info = _info.texture;
     logo = _logo.texture;
 
+    puppet = _puppet.texture;
+    xinput = _xinput.texture;
+    dinput = _dinput.texture;
+    windows = _windows.texture;
+    sdl = _sdl.texture;
+
     xbox = _xbox.texture;
     xbox1 = _xbox1.texture;
     xbox2 = _xbox2.texture;
     xbox3 = _xbox3.texture;
     xbox4 = _xbox4.texture;
 
+    vpad = _vpad.texture;
+
     btc = _btc.texture;
     ltc = _ltc.texture;
+    eth = _eth.texture;
 }

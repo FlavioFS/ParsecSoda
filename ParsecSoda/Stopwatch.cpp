@@ -49,6 +49,11 @@ void Stopwatch::setDuration(uint32_t duration)
 	_duration = duration;
 }
 
+uint32_t Stopwatch::getDuration()
+{
+	return _duration;
+}
+
 uint32_t Stopwatch::getRemainingTime()
 {
 	return isFinished() ? 0 : _duration - (uint32_t)_elapsedDuration.count();

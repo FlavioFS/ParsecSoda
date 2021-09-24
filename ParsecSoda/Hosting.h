@@ -22,12 +22,12 @@
 #include "AudioMix.h"
 #include "GamepadClient.h"
 #include "BanList.h"
-#include "Dice.h"
 #include "GuestList.h"
 #include "SFXList.h"
 #include "MetadataCache.h"
 #include "CompilerDirectives.h"
 #include "Stopwatch.h"
+#include "MasterOfPuppets.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -53,6 +53,7 @@ public:
 	void fetchAccountData(bool sync = false);
 	ParsecHostConfig& getHostConfig();
 	DX11& getDX11();
+	ChatBot* getChatBot();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
@@ -60,6 +61,7 @@ public:
 	BanList& getBanList();
 	vector<Gamepad>& getGamepads();
 	GamepadClient& getGamepadClient();
+	MasterOfPuppets& getMasterOfPuppets();
 	const char** getGuestNames();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
@@ -75,8 +77,8 @@ public:
 	void stripGamepad(int index);
 	void setOwner(Gamepad& gamepad, Guest newOwner, int padId);
 
-	void handleMessage(const char* message, Guest& guest, bool isHost = false);
-	void sendHostMessage(const char* message);
+	void handleMessage(const char* message, Guest& guest, bool isHost = false, bool isHidden = false);
+	void sendHostMessage(const char* message, bool isHidden = false);
 
 	AudioIn audioIn;
 	AudioOut audioOut;
@@ -98,9 +100,9 @@ private:
 	GuestDataList _guestHistory;
 	ChatBot *_chatBot;
 	ChatLog _chatLog;
-	Dice _dice;
 	GamepadClient _gamepadClient;
 	GuestList _guestList;
+	MasterOfPuppets _masterOfPuppets;
 	
 	ParsecDSO* _parsec;
 	ParsecHostConfig _hostConfig;

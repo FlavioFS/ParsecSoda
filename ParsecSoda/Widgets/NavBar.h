@@ -16,6 +16,7 @@ public:
         bool& showLogin,
         bool& showHostSettings,
         bool& showGamepads,
+        bool& showMasterOfPuppets,
         bool& showChat,
         bool& showGuests,
         bool& showThumbnails,

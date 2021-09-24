@@ -14,6 +14,7 @@ public:
 	bool isFinished();
 	bool isRunning();
 	void setDuration(uint32_t duration);
+	uint32_t getDuration();
 	uint32_t getRemainingTime();
 
 private:

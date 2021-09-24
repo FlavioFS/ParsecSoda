@@ -14,8 +14,8 @@ class CommandBonk : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::BONK; }
 
-	CommandBonk(const char* msg, Guest& sender, GuestList& guests, Dice &dice, Guest& host)
-		: ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _dice(dice), _host(host)
+	CommandBonk(const char* msg, Guest& sender, GuestList& guests, Guest& host)
+		: ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _host(host)
 	{}
 
 	bool run() override
@@ -56,7 +56,7 @@ public:
 		switch (_searchResult)
 		{
 		case SEARCH_USER_RESULT::NOT_FOUND:
-			if (_dice.roll(BONK_CHANCE))
+			if (Dice::roll(BONK_CHANCE))
 				_replyMessage = std::string() + "[ChatBot] | " + _sender.name + " dreams of bonking but the target out of reach.\0";
 			else
 				_replyMessage = std::string() + "[ChatBot] | " + _sender.name + " yearns for bonking but the victim is not here.\0";
@@ -74,7 +74,7 @@ public:
 				}
 				catch (const std::exception&) {}
 			}
-			else if (_dice.roll(BONK_CHANCE))
+			else if (Dice::roll(BONK_CHANCE))
 			{
 				_replyMessage = std::string() + "[ChatBot] | " + _sender.name + " bonked " + _targetGuest.name + ". *Bonk!*\0";
 				try
@@ -119,7 +119,6 @@ protected:
 	static Stopwatch _stopwatch;
 
 	Guest& _sender;
-	Dice& _dice;
 	Guest& _host;
 };
 

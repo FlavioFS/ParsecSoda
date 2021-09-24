@@ -15,6 +15,7 @@ class GuestList
 public:
 	void setGuests(ParsecGuest* guests, int guestCount);
 	vector<Guest> &getGuests();
+	void clear();
 	const bool find(uint32_t targetGuestID, Guest *result);
 	const bool find(const char* targetName, Guest* result);
 	const bool find(string targetName, Guest* result);

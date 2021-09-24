@@ -280,6 +280,11 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 		return PICK_REQUEST::TAKEN;
 	}
 
+	if (isPuppetMaster && gamepads[gamepadIndex].isPuppet)
+	{
+		return PICK_REQUEST::PUPPET;
+	}
+
 	GuestPreferences prefs = GuestPreferences(guest.userID);
 	int limit = 1;
 	bool found = findPreferences(guest.userID, [&limit](GuestPreferences& prefs) {
@@ -370,16 +375,16 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots, GuestPreferences prefs)
 {
 	return reduceUntilFirst([&](Gamepad& pad) {
-	if (guest.userID == pad.owner.guest.userID)
-	{
-		slots++;
-		if (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID)
+		if (guest.userID == pad.owner.guest.userID)
 		{
-			pad.setState(gamepadState);
-			return true;
+			slots++;
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID))
+			{
+				pad.setStateSafe(toXInput(gamepadState, pad.getState(), prefs));
+				return true;
+			}
 		}
-	}
-	return false;
+		return false;
 	});
 }
 
@@ -389,9 +394,9 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID))
 			{
-				pad.setState(gamepadAxis);
+				pad.setStateSafe(toXInput(gamepadAxis, pad.getState(), prefs));
 				return true;
 			}
 		}
@@ -405,9 +410,9 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID))
 			{
-				pad.setState(gamepadButton);
+				pad.setStateSafe(toXInput(gamepadButton, pad.getState(), prefs));
 				return true;
 			}
 		}
@@ -421,9 +426,9 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
-			if (prefs.ignoreDeviceID || pad.owner.isKeyboard)
+			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || pad.owner.isKeyboard))
 			{
-				pad.setState(keyboard);
+				pad.setStateSafe(toXInput(keyboard, pad.getKeyboard(), pad.getState(), prefs));
 				return true;
 			}
 		}
@@ -439,7 +444,7 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 	}
 	
 	return reduceUntilFirst([&](Gamepad& gamepad) {
-		if (gamepad.isAttached() && !gamepad.owner.guest.isValid())
+		if (!(isPuppetMaster && gamepad.isPuppet) && (gamepad.isAttached() && !gamepad.owner.guest.isValid()))
 		{
 			gamepad.setOwner(guest, deviceID, isKeyboard);
 			return true;
@@ -549,4 +554,236 @@ bool GamepadClient::findPreferences(uint32_t guestUserID, function<void(GamepadC
 	}
 
 	return false;
+}
+
+
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs)
+{
+	XINPUT_STATE result = previousState;
+
+	//if (_isAlive && _isConnected && _client != nullptr)
+	result.Gamepad.wButtons = state.buttons;
+	result.Gamepad.bLeftTrigger = state.leftTrigger;
+	result.Gamepad.bRightTrigger = state.rightTrigger;
+	result.Gamepad.sThumbLX = state.thumbLX;
+	result.Gamepad.sThumbLY = state.thumbLY;
+	result.Gamepad.sThumbRX = state.thumbRX;
+	result.Gamepad.sThumbRY = state.thumbRY;
+
+	if (prefs.mirror)
+	{
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, state.thumbLX < -GAMEPAD_DEADZONE);
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, state.thumbLX > GAMEPAD_DEADZONE);
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, state.thumbLY > GAMEPAD_DEADZONE);
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, state.thumbLY < -GAMEPAD_DEADZONE);
+	}
+
+	return result;
+}
+
+XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
+{
+	XINPUT_STATE result = previousState;
+
+	switch (key.code)
+	{
+		// Directions
+	case (int)KEY_TO_GAMEPAD::LEFT:
+	case (int)KEY_TO_GAMEPAD2::LEFT:
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MIN;
+		else result.Gamepad.sThumbLX = keyboard.right ? GAMEPAD_STICK_MAX : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, key.pressed);
+		keyboard.left = key.pressed;
+		break;
+
+	case (int)KEY_TO_GAMEPAD::RIGHT:
+	case (int)KEY_TO_GAMEPAD2::RIGHT:
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MAX;
+		else result.Gamepad.sThumbLX = keyboard.left ? GAMEPAD_STICK_MIN : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, key.pressed);
+		keyboard.right = key.pressed;
+		break;
+
+	case (int)KEY_TO_GAMEPAD::UP:
+	case (int)KEY_TO_GAMEPAD2::UP:
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MAX;
+		else result.Gamepad.sThumbLY = keyboard.down ? GAMEPAD_STICK_MIN : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, key.pressed);
+		keyboard.up = key.pressed;
+		break;
+
+	case (int)KEY_TO_GAMEPAD::DOWN:
+	case (int)KEY_TO_GAMEPAD2::DOWN:
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MIN;
+		else result.Gamepad.sThumbLY = keyboard.up ? GAMEPAD_STICK_MAX : 0;
+		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, key.pressed);
+		keyboard.down = key.pressed;
+		break;
+
+		// Face buttons
+	case (int)KEY_TO_GAMEPAD::A:
+	case (int)KEY_TO_GAMEPAD2::A:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_A, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::B:
+	case (int)KEY_TO_GAMEPAD2::B:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_B, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::X:
+	case (int)KEY_TO_GAMEPAD2::X:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_X, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::Y:
+	case (int)KEY_TO_GAMEPAD2::Y:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_Y, key.pressed);
+		break;
+
+		// Center
+	case (int)KEY_TO_GAMEPAD::BACK:
+	case (int)KEY_TO_GAMEPAD2::BACK:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_BACK, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::START:
+	case (int)KEY_TO_GAMEPAD2::START:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_START, key.pressed);
+		break;
+
+		// Shoulders
+	case (int)KEY_TO_GAMEPAD::LB:
+	case (int)KEY_TO_GAMEPAD2::LB:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::RB:
+	case (int)KEY_TO_GAMEPAD2::RB:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, key.pressed);
+		break;
+
+		// Triggers
+	case (int)KEY_TO_GAMEPAD::LT:
+	case (int)KEY_TO_GAMEPAD2::LT:
+		result.Gamepad.bLeftTrigger = (key.pressed ? GAMEPAD_STICK_MAX : GAMEPAD_STICK_MIN);
+		break;
+	case (int)KEY_TO_GAMEPAD::RT:
+	case (int)KEY_TO_GAMEPAD2::RT:
+		result.Gamepad.bRightTrigger = (key.pressed ? GAMEPAD_STICK_MAX : GAMEPAD_STICK_MIN);
+		break;
+
+		// Thumbs
+	case (int)KEY_TO_GAMEPAD::LTHUMB:
+	case (int)KEY_TO_GAMEPAD2::LTHUMB:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, key.pressed);
+		break;
+	case (int)KEY_TO_GAMEPAD::RTHUMB:
+	case (int)KEY_TO_GAMEPAD2::RTHUMB:
+		Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, key.pressed);
+		break;
+
+	default:
+		break;
+	}
+
+	return result;
+}
+
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs)
+{
+	XINPUT_STATE result = previousState;
+	
+	int buttonCode = 0;
+
+	switch (button.button)
+	{
+	case GAMEPAD_BUTTON_A:
+		buttonCode = XUSB_GAMEPAD_A;
+		break;
+	case GAMEPAD_BUTTON_B:
+		buttonCode = XUSB_GAMEPAD_B;
+		break;
+	case GAMEPAD_BUTTON_X:
+		buttonCode = XUSB_GAMEPAD_X;
+		break;
+	case GAMEPAD_BUTTON_Y:
+		buttonCode = XUSB_GAMEPAD_Y;
+		break;
+	case GAMEPAD_BUTTON_BACK:
+		buttonCode = XUSB_GAMEPAD_BACK;
+		break;
+	case GAMEPAD_BUTTON_GUIDE:
+		buttonCode = XUSB_GAMEPAD_GUIDE;
+		break;
+	case GAMEPAD_BUTTON_START:
+		buttonCode = XUSB_GAMEPAD_START;
+		break;
+	case GAMEPAD_BUTTON_LSTICK:
+		buttonCode = XUSB_GAMEPAD_LEFT_THUMB;
+		break;
+	case GAMEPAD_BUTTON_RSTICK:
+		buttonCode = XUSB_GAMEPAD_RIGHT_THUMB;
+		break;
+	case GAMEPAD_BUTTON_LSHOULDER:
+		buttonCode = XUSB_GAMEPAD_LEFT_SHOULDER;
+		break;
+	case GAMEPAD_BUTTON_RSHOULDER:
+		buttonCode = XUSB_GAMEPAD_RIGHT_SHOULDER;
+		break;
+	case GAMEPAD_BUTTON_DPAD_UP:
+		buttonCode = XUSB_GAMEPAD_DPAD_UP;
+		break;
+	case GAMEPAD_BUTTON_DPAD_DOWN:
+		buttonCode = XUSB_GAMEPAD_DPAD_DOWN;
+		break;
+	case GAMEPAD_BUTTON_DPAD_LEFT:
+		buttonCode = XUSB_GAMEPAD_DPAD_LEFT;
+		break;
+	case GAMEPAD_BUTTON_DPAD_RIGHT:
+		buttonCode = XUSB_GAMEPAD_DPAD_RIGHT;
+		break;
+	default:
+		break;
+	}
+
+	Bitwise::setValue(&result.Gamepad.wButtons, buttonCode, button.pressed);
+
+	return result;
+}
+
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs)
+{
+	XINPUT_STATE result = previousState;
+
+	switch (axis.axis)
+	{
+	case GAMEPAD_AXIS_LX:
+		result.Gamepad.sThumbLX = axis.value;
+		if (prefs.mirror)
+		{
+			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, axis.value < -GAMEPAD_DEADZONE);
+			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, axis.value > GAMEPAD_DEADZONE);
+		}
+		break;
+	case GAMEPAD_AXIS_LY:
+		result.Gamepad.sThumbLY = -axis.value;
+		if (prefs.mirror)
+		{
+			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, axis.value < -GAMEPAD_DEADZONE);
+			Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, axis.value > GAMEPAD_DEADZONE);
+		}
+		break;
+	case GAMEPAD_AXIS_RX:
+		result.Gamepad.sThumbRX = axis.value;
+		break;
+	case GAMEPAD_AXIS_RY:
+		result.Gamepad.sThumbRY = -axis.value;
+		break;
+	case GAMEPAD_AXIS_TRIGGERL:
+		result.Gamepad.bLeftTrigger = axis.value;
+		break;
+	case GAMEPAD_AXIS_TRIGGERR:
+		result.Gamepad.bRightTrigger = axis.value;
+		break;
+	default:
+		break;
+	}
+
+	return result;
 }

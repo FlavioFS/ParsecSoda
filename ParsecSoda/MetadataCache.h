@@ -47,6 +47,7 @@ public:
 		unsigned int speakersVolume = 30;
 		bool speakersEnabled = true;
 		unsigned int monitor = 0;
+		unsigned int adapter = 0;
 		string roomName = "";
 		string gameID = "";
 		string secret = "";

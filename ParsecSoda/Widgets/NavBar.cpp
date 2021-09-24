@@ -5,6 +5,7 @@ void NavBar::render(
 	bool& showLogin,
 	bool& showHostSettings,
 	bool& showGamepads,
+	bool& showMasterOfPuppets,
 	bool& showChat,
 	bool& showGuests,
 	bool& showThumbnails,
@@ -15,11 +16,10 @@ void NavBar::render(
 )
 {
 	static ImVec2 iconSize = ImVec2(24, 24);
-	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*7 + 8*25);
+	static ImVec2 windowSize = ImVec2(24 + 3*8, 24*8 + 8*26);
 	static ImVec2 zero = ImVec2(0, 0);
 	static ImVec2 padding = ImVec2(8, 8);
 	
-	//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, zero);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, padding);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 0);
@@ -39,6 +39,9 @@ void NavBar::render(
 
 	if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOn, showGamepads, iconSize)) showGamepads = !showGamepads;
 	renderNavtooltip("Gamepads", showGamepads);
+
+	if (ToggleIconButtonWidget::render(AppIcons::puppet, AppIcons::puppet, showMasterOfPuppets, iconSize)) showMasterOfPuppets = !showMasterOfPuppets;
+	renderNavtooltip("Master of Puppets", showMasterOfPuppets);
 
 	if (ToggleIconButtonWidget::render(AppIcons::chat, AppIcons::chat, showChat, iconSize))	showChat = !showChat;
 	renderNavtooltip("Chat", showChat);

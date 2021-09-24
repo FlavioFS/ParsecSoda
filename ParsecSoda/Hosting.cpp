@@ -41,6 +41,10 @@ Hosting::Hosting()
 	_banList = BanList(banned);
 
 	_parsec = nullptr;
+
+	SDL_Init(SDL_INIT_JOYSTICK);
+	_masterOfPuppets.init(_gamepadClient);
+	_masterOfPuppets.start();
 }
 
 void Hosting::applyHostConfig()
@@ -103,7 +107,7 @@ void Hosting::init()
 	fetchAccountData();
 
 	_chatBot = new ChatBot(
-		audioIn, audioOut, _banList, _dice, _dx11,
+		audioIn, audioOut, _banList, _dx11,
 		_gamepadClient, _guestList, _guestHistory, _parsec,
 		_hostConfig, _parsecSession, _sfxList, _tierList,
 		_isRunning, _host
@@ -121,6 +125,7 @@ void Hosting::release()
 	}
 	_dx11.clear();
 	_gamepadClient.release();
+	_masterOfPuppets.stop();
 }
 
 bool Hosting::isReady()
@@ -175,6 +180,11 @@ DX11& Hosting::getDX11()
 	return _dx11;
 }
 
+ChatBot* Hosting::getChatBot()
+{
+	return _chatBot;
+}
+
 vector<string>& Hosting::getMessageLog()
 {
 	return _chatLog.getMessageLog();
@@ -208,6 +218,11 @@ vector<Gamepad>& Hosting::getGamepads()
 GamepadClient& Hosting::getGamepadClient()
 {
 	return _gamepadClient;
+}
+
+MasterOfPuppets& Hosting::getMasterOfPuppets()
+{
+	return _masterOfPuppets;
 }
 
 const char** Hosting::getGuestNames()
@@ -309,6 +324,7 @@ void Hosting::startHosting()
 void Hosting::stopHosting()
 {
 	_isRunning = false;
+	_guestList.clear();
 }
 
 void Hosting::stripGamepad(int index)
@@ -328,7 +344,7 @@ void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
 	}
 }
 
-void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
+void Hosting::handleMessage(const char* message, Guest& guest, bool isHost, bool isHidden)
 {
 	ACommand* command = _chatBot->identifyUserDataMessage(message, guest, isHost);
 	command->run();
@@ -342,30 +358,31 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost)
 		defaultMessage.run();
 		_chatBot->setLastUserId(guest.userID);
 
-		if (!defaultMessage.replyMessage().empty())
+		if (!defaultMessage.replyMessage().empty() && !isHidden)
 		{
-			_chatLog.logMessage(defaultMessage.replyMessage());
 			broadcastChatMessage(defaultMessage.replyMessage());
-			cout << endl << defaultMessage.replyMessage();
+			
+			string adjustedMessage = defaultMessage.replyMessage();
+			Stringer::replacePatternOnce(adjustedMessage, "%", "%%");
+			_chatLog.logMessage(adjustedMessage);
 		}
 	}
 
 	// Chatbot's command reply
 	if (!command->replyMessage().empty() && command->type() != COMMAND_TYPE::DEFAULT_MESSAGE)
 	{
-		_chatLog.logCommand(command->replyMessage());
 		broadcastChatMessage(command->replyMessage());
-		cout << endl << command->replyMessage();
+		_chatLog.logCommand(command->replyMessage());
 		_chatBot->setLastUserId();
 	}
 
 	delete command;
 }
 
-void Hosting::sendHostMessage(const char* message)
+void Hosting::sendHostMessage(const char* message, bool isHidden)
 {
 	static bool isAdmin = true;
-	handleMessage(message, _host, true);
+	handleMessage(message, _host, true, isHidden);
 }
 
 
@@ -376,8 +393,6 @@ void Hosting::sendHostMessage(const char* message)
 // ============================================================
 void Hosting::initAllModules()
 {
-	_dice.init();
-
 	// Instance all gamepads at once
 	_connectGamepadsThread = thread([&]() {
 		_gamepadClient.sortGamepads();

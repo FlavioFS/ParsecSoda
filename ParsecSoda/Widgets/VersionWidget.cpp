@@ -19,7 +19,7 @@ bool VersionWidget::render()
     ImGui::SetNextWindowSize(ImVec2(100, 32));
     ImGui::Begin("##Version", (bool*)0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
     AppStyle::pushLabel();
-    ImGui::Text("V. 1.0.1-exp");
+    ImGui::Text("v. 1.0.2");
     AppStyle::pop();
     ImGui::End();
 
