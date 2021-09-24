@@ -51,7 +51,7 @@ Gamepad GamepadClient::createGamepad(uint16_t index)
 
 void GamepadClient::createMaximumGamepads()
 {
-	for (uint16_t i = 0; i < 8; i++)
+	for (uint16_t i = 0; i < 16; i++)
 	{
 		this->createGamepad(i);
 		Sleep(200);

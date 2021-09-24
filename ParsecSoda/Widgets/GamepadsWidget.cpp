@@ -221,7 +221,7 @@ bool GamepadsWidget::render()
         
         ImGui::SameLine();
         
-        static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        static int deviceIndices[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         ImGui::BeginGroup();
         ImGui::Dummy(ImVec2(0.0f, 12.0f));
         ImGui::SetNextItemWidth(40);
