@@ -7,11 +7,12 @@
 #include "../globals/AppStyle.h"
 #include "../Hosting.h"
 #include "../Stopwatch.h"
+#include <functional>
 
 class ChatWidget
 {
 public:
-	ChatWidget(Hosting& hosting);
+	ChatWidget(Hosting& hosting, function<void(void)> onMessageCallback = nullptr);
 	bool render();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
@@ -37,5 +38,5 @@ private:
 	char _previewBuffer[SEND_BUFFER_LEN];
 	vector<string>& _chatLog;
 	size_t _messageCount;
+	function<void(void)> _onMessageCallback;
 };
-

@@ -1,7 +1,7 @@
 #include "ChatWidget.h"
 
-ChatWidget::ChatWidget(Hosting& hosting)
-    : _hosting(hosting), _chatLog(hosting.getMessageLog()), _messageCount(0)
+ChatWidget::ChatWidget(Hosting& hosting, function<void(void)> onMessageCallback)
+    : _hosting(hosting), _chatLog(hosting.getMessageLog()), _messageCount(0), _onMessageCallback(onMessageCallback)
 {
     setSendBuffer("\0");
 }
@@ -61,6 +61,11 @@ bool ChatWidget::render()
             ImGui::SetScrollHereY(1.0f);
         }
         _messageCount = _chatLog.size();
+
+        if (_onMessageCallback != nullptr)
+        {
+            _onMessageCallback();
+        }
     }
     ImGui::EndChild();
 
