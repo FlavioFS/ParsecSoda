@@ -17,11 +17,12 @@
 #include "BoolButtonWidget.h"
 #include "AudioControlWidget.h"
 #include <chrono>
+#include <functional>
 
 class HostSettingsWidget
 {
 public:
-	HostSettingsWidget(Hosting& hosting);
+	HostSettingsWidget(Hosting& hosting, function<void(bool)> onHostRunningStatusCallback);
 	bool render(HWND& hwnd);
 	void updateSecretLink();
 
@@ -58,5 +59,6 @@ private:
 
 	vector<Thumbnail>& _thumbnails;
 	string _thumbnailName = "Please select thumbnail.";
+	function<void(bool)> _onHostRunningStatusCallback;
 };
 

@@ -1,7 +1,8 @@
-#include "HostSettingsWidget.h"
+﻿#include "HostSettingsWidget.h"
 
-HostSettingsWidget::HostSettingsWidget(Hosting& hosting)
-    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut), _thumbnails(_hosting.getSession().getThumbnails())
+HostSettingsWidget::HostSettingsWidget(Hosting& hosting, function<void(bool)> onHostRunningStatusCallback)
+    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut),
+    _thumbnails(_hosting.getSession().getThumbnails()), _onHostRunningStatusCallback(onHostRunningStatusCallback)
 {
     ParsecHostConfig cfg = hosting.getHostConfig();
     try
@@ -182,7 +183,7 @@ bool HostSettingsWidget::render(HWND& hwnd)
         if (_hosting.isRunning())
         {
             _hosting.stopHosting();
-            SetWindowTextA(hwnd, "Parsec Soda");
+            if (_onHostRunningStatusCallback != nullptr) _onHostRunningStatusCallback(false);
         }
 
         // Was clicked and is not running (must start)
@@ -191,7 +192,7 @@ bool HostSettingsWidget::render(HWND& hwnd)
             _hosting.setHostConfig(_roomName, _gameID, _maxGuests, _publicGame, _secret);
             _hosting.applyHostConfig();
             _hosting.startHosting();
-            SetWindowTextA(hwnd, "[LIVE] Parsec Soda");
+            if (_onHostRunningStatusCallback != nullptr) _onHostRunningStatusCallback(true);
         }
     }
 

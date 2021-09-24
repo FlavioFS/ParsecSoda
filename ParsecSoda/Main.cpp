@@ -1,4 +1,4 @@
-// Dear ImGui: standalone example application for DirectX 11
+﻿// Dear ImGui: standalone example application for DirectX 11
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
@@ -116,9 +116,10 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     AppColors::init();
     g_hosting.init();
 
-    HostSettingsWidget hostSettingsWindow(g_hosting);
+    HostSettingsWidget hostSettingsWindow(g_hosting, [&hwnd](bool isRunning) {
+            SetWindowTextW(hwnd, isRunning ? L"⚫ [LIVE] Parsec Soda" : L"Parsec Soda");
+    });
     LoginWidget loginWindow(g_hosting, hostSettingsWindow);
-    ChatWidget chatWindow(g_hosting);
     LogWidget logWindow(g_hosting);
     GuestListWidget guestsWindow(g_hosting);
     GamepadsWidget gamepadsWindow(g_hosting);
@@ -126,6 +127,16 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
     MasterOfPuppetsWidget masterOfPuppets(g_hosting);
+    
+    FLASHWINFO fi;
+    fi.cbSize = sizeof(FLASHWINFO);
+    fi.hwnd = hwnd;
+    fi.dwFlags = FLASHW_ALL | FLASHW_TIMERNOFG;
+    fi.uCount = 0;
+    fi.dwTimeout = 0;
+    ChatWidget chatWindow(g_hosting, [&hwnd, &fi]() {
+        FlashWindowEx(&fi);
+    });
 
     ImVec4 clear_color = ImVec4(0.01f, 0.01f, 0.01f, 1.00f);
     ImGui::loadStyle();
