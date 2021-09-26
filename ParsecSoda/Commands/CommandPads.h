@@ -21,26 +21,37 @@ public:
 
 		std::vector<Gamepad>::iterator gi = _gamepadClient.gamepads.begin();
 		uint16_t i = 1;
+		int onlineCount = 0;
 		for (; gi != _gamepadClient.gamepads.end(); ++gi)
 		{
-			reply << "\t\t"
-				<< ((*gi).isConnected() ? "ON  " : "OFF") << "\t"
-				<< "[" << i << "] \t";
+			if ((*gi).isConnected())
+			{
+				onlineCount++;
 
-			if (_gamepadClient.isPuppetMaster && (*gi).isPuppet)
-			{
-				reply << "(Host) Puppet Master" << "\n";
+				reply << "\t\t[" << i << "] \t";
+
+				if (_gamepadClient.isPuppetMaster && (*gi).isPuppet)
+				{
+					reply << "(Host) Puppet Master" << "\n";
+				}
+				else if (!(*gi).owner.guest.isValid())
+				{
+					reply << "\n";
+				}
+				else
+				{
+					reply << "(" << (*gi).owner.guest.userID << ")\t" << (*gi).owner.guest.name << "\n";
+				}
 			}
-			else if (!(*gi).owner.guest.isValid())
-			{
-				reply << "\n";
-			}
-			else
-			{
-				reply << "(" << (*gi).owner.guest.userID << ")\t" << (*gi).owner.guest.name << "\n";
-			}
+
 			++i;
 		}
+
+		if (onlineCount <= 0)
+		{
+			reply << "\t\tNo gamepads connected.\n";
+		}
+
 		reply << "\0";
 
 		_replyMessage = reply.str();
