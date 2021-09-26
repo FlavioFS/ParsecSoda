@@ -251,7 +251,7 @@ bool GamepadClient::toggleIgnoreDeviceID(uint32_t guestUserID)
 
 	if (!found)
 	{
-		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, true);
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, false);
 		guestPreferences.push_back(prefs);
 		currentValue = prefs.ignoreDeviceID;
 	}
