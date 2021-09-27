@@ -41,6 +41,7 @@
 #include "Commands/CommandSwap.h"
 #include "Commands/CommandUnban.h"
 #include "Commands/CommandVideoFix.h"
+#include "CompilerDirectives.h"
 
 #define BOT_GUESTID 0
 

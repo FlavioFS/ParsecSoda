@@ -9,7 +9,6 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 
 	// Pleb commands
 	//if (msgIsEqual(msg, CommandAFK::prefixes()))		return new CommandAFK(_guests, _gamepadClient);
-	if (msgStartsWith(msg, CommandBonk::prefixes()))	return new CommandBonk(msg, sender, _guests, _host);
 	if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandHelp::prefixes()))		return new CommandHelp(sender, _tierList);
 	//if (CommandIpFilter::containsIp(msg))				return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
@@ -17,8 +16,12 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandOne::prefixes()))		return new CommandOne(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandPads::prefixes()))		return new CommandPads(_gamepadClient);
-	if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);
 	if (msgStartsWith(msg, CommandSwap::prefixes()))	return new CommandSwap(msg, sender, _gamepadClient);
+
+#if !BASIC_VERSION
+	if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);
+	if (msgStartsWith(msg, CommandBonk::prefixes()))	return new CommandBonk(msg, sender, _guests, _host);
+#endif
 	
 
 	Tier tier = _tierList.getTier(sender.userID);
