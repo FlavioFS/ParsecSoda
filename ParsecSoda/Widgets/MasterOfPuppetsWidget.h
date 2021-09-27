@@ -77,14 +77,6 @@ private:
 	const string _masterTooltipOn = "Master of Puppets is pulling the strings.\n" + _masterTooltipBase;
 	const string _masterTooltipOff = "Click to set this gamepad as Master.\n" + _masterTooltipBase;
 
-	const string _sdlDualshockMapTooltip = string() +
-		"Mapping type: Dualshock\n" +
-		"\n" +
-		"Cons:\n"
-		" - DInput mapping treats triggers as buttons instead of axis (empty or full, no in-between).\n" +
-		"\n" +
-		"* Click to switch to XInput type."
-		;
 	const string _sdlXInputMapTooltip = string() +
 		"Mapping type: XInput\n" +
 		"\n" +
@@ -93,5 +85,22 @@ private:
 		" - XBox-like controlers above slot 4 cannot press both triggers at same time.\n" +
 		"\n" +
 		"* Click to switch to Dualshock type."
+		;
+	const string _sdlDualshockMapTooltip = string() +
+		"Mapping type: Dualshock\n" +
+		"\n" +
+		"Cons:\n"
+		" - DInput mapping treats triggers as buttons instead of axis (empty or full, no in-between).\n" +
+		"\n" +
+		"* Click to switch to Dualshock 4 type."
+		;
+	const string _sdlDS4MapTooltip = string() +
+		"Mapping type: Dualshock 4\n" +
+		"\n" +
+		"This is 100%% experimental, I have no idea what is going to happen.\n" +
+		"Hopefully, it will map correctly official DS4 gamepads connected to PC.\n" +
+		"Use it at your own risk.\n" +
+		"\n" +
+		"* Click to switch to XInput type."
 		;
 };
