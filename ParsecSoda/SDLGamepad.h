@@ -8,6 +8,24 @@
 
 #define SDL_AXIS_RANGE (SDL_JOYSTICK_AXIS_MAX - SDL_JOYSTICK_AXIS_MIN)
 
+enum class DS4
+{
+	X = 0,
+	Circle = 1,
+	Square = 2,
+	Triangle = 3,
+	SELECT = 4,
+	START = 6,
+	L3 = 7,
+	R3 = 8,
+	L1 = 9,
+	R1 = 10,
+	DUp = 11,
+	DDown = 12,
+	DLeft = 13,
+	DRight = 14
+};
+
 enum class DInput
 {
 	Triangle = 0,
@@ -41,13 +59,22 @@ enum class XInput
 class SDLGamepad
 {
 public:
-	SDLGamepad(SDL_Joystick* joystick, bool isXInput = true)
-		: joystick(joystick), isXInput(isXInput) {}
+	enum class Type
+	{
+		XBox,
+		DS,
+		DS4,
+		COUNT
+	};
+
+	SDLGamepad(SDL_Joystick* joystick, Type type = Type::XBox)
+		: joystick(joystick), type(type) {}
 	
 	GamepadState getGamepadState();
+	void cycleType();
 
 	SDL_Joystick* joystick;
-	bool isXInput;
+	Type type;
 
 private:
 	BYTE axisToByte(Sint16 axis);

@@ -29,12 +29,16 @@ public:
 	{
 	public:
 		void clear() {
-			left = right = up = down = false;
+			LLeft = LRight = LUp = LDown = RLeft = RRight = RUp = RDown = false;
 		};
-		bool left = false;
-		bool right = false;
-		bool up = false;
-		bool down = false;
+		bool LLeft = false;
+		bool LRight = false;
+		bool LUp = false;
+		bool LDown = false;
+		bool RLeft = false;
+		bool RRight = false;
+		bool RUp = false;
+		bool RDown = false;
 	};
 
 	Gamepad();

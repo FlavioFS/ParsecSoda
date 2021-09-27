@@ -167,17 +167,31 @@ void MasterOfPuppetsWidget::renderMasterSDL()
         ImGui::SetCursorPosX(shift1);
 
         ImGui::PushID(i);
-        if (IconButton::render(
-            sdlGamepads[i].isXInput ? AppIcons::xinput : AppIcons::dinput,
-            AppColors::primary)
-            )
+
+        static bool isMappingBtnPressed = false;
+        switch (sdlGamepads[i].type)
         {
-            sdlGamepads[i].isXInput = !sdlGamepads[i].isXInput;
+        case SDLGamepad::Type::XBox:
+            isMappingBtnPressed = IconButton::render(AppIcons::xinput, AppColors::primary);
+            TitleTooltipWidget::render("Button Mapping", _sdlXInputMapTooltip.c_str());
+            break;
+        case SDLGamepad::Type::DS:
+            isMappingBtnPressed = IconButton::render(AppIcons::dinput, AppColors::primary);
+            TitleTooltipWidget::render("Button Mapping", _sdlDualshockMapTooltip.c_str());
+            break;
+        case SDLGamepad::Type::DS4:
+            isMappingBtnPressed = IconButton::render(AppIcons::ds4, AppColors::primary);
+            TitleTooltipWidget::render("Button Mapping", _sdlDS4MapTooltip.c_str());
+            break;
+        default:
+            isMappingBtnPressed = false;
+            break;
         }
-        TitleTooltipWidget::render(
-            "Button Mapping",
-            sdlGamepads[i].isXInput ? _sdlXInputMapTooltip.c_str() : _sdlDualshockMapTooltip.c_str()
-        );
+
+        if (isMappingBtnPressed)
+        {
+            sdlGamepads[i].cycleType();
+        }
 
         ImGui::SetCursorPos(cursor);
         ImGui::SetCursorPosX(shift1 + shift2);
