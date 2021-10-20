@@ -33,6 +33,14 @@ bool GamepadsWidget::render()
     TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
     
     ImGui::SameLine();
+
+    if (IconButton::render(AppIcons::padOff, AppColors::primary, ImVec2(30, 30)))
+    {
+        _hosting.getGamepadClient().disconnectAllGamepads();
+    }
+    TitleTooltipWidget::render("Disconnect all gamepads", "Disconnects all of the gamepads currently enabled.");
+
+    ImGui::SameLine();
     
     if (IconButton::render(AppIcons::sort, AppColors::primary, ImVec2(30, 30)))
     {
@@ -73,7 +81,7 @@ bool GamepadsWidget::render()
     for (size_t i = 0; i < _gamepads.size(); ++i)
     {
         Gamepad& gi = _gamepads[i];
-        static uint32_t userID;
+        static uint32_t userID; 
         userID = gi.owner.guest.userID;
 
         ImGui::BeginChild(
