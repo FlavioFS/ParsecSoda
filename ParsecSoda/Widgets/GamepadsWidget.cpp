@@ -81,7 +81,7 @@ bool GamepadsWidget::render()
     for (size_t i = 0; i < _gamepads.size(); ++i)
     {
         Gamepad& gi = _gamepads[i];
-        static uint32_t userID; 
+        static uint32_t userID;
         userID = gi.owner.guest.userID;
 
         ImGui::BeginChild(
