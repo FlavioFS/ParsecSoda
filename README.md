@@ -193,7 +193,8 @@ The building process is not trivial, so I'll guide you through the process and p
 
 | Dependency | File | Source | What is it for? |
 | :------- | :----- | :----- | :----- |
-| Parsec SDK dll | parsec.dll or parsec32.dll | /Dependencies/parsecsdk/windows/ | Prevents application from crashing, since everything related to Parsec SDK is built upon that dll. Copy parsec.dll if your system is x64. For 32 bits, copy parsec32.dll.
+| Parsec SDK dll | parsec.dll or parsec32.dll | /Dependencies/parsecsdk/windows/ | Prevents application from crashing, since everything related to Parsec SDK is built upon that dll. Copy parsec.dll if your system is x64. For 32 bits, copy parsec32.dll. |
+| SDL2 | SDL2.dll | /Dependencies/sdl/lib/x64 or /Dependencies/sdl/lib/x86 | Prevents the application from failing to build, since the usage of SDL2 in the Master of Puppets requires that dll. Copy SDL2.dll from the /x64 subfolder if your system is x64. For 32 bits, copy it from the /x86 subfolder. |
 | icons | The icons folder | /ParsecSoda/icons | Without this, ParsecSoda displays no icons, every button and image becomes blank. |
 | fonts | The fonts folder | /ParsecSoda/fonts | Without this, all fonts and font sizes will be wrong, degrading user experience. |
 | sfx | The sound effects folder | /ParsecSoda/sfx | These are standard sound effects. Without this, the app may crash when a sfx is played (e.g.: when blocking or kicking an user). |
