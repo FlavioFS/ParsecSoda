@@ -33,6 +33,14 @@ bool GamepadsWidget::render()
     TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
     
     ImGui::SameLine();
+
+    if (IconButton::render(AppIcons::padOff, AppColors::primary, ImVec2(30, 30)))
+    {
+        _hosting.getGamepadClient().disconnectAllGamepads();
+    }
+    TitleTooltipWidget::render("Disconnect all gamepads", "Disconnects all of the gamepads currently enabled.");
+
+    ImGui::SameLine();
     
     if (IconButton::render(AppIcons::sort, AppColors::primary, ImVec2(30, 30)))
     {
