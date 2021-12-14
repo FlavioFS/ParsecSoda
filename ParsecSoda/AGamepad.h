@@ -24,7 +24,6 @@ using namespace std;
 #define GAMEPAD_UBYTE_MIN 0
 #define GAMEPAD_UNYTE_MAX 255
 
-
 class AGamepad
 {
 public:
@@ -61,7 +60,6 @@ public:
 	bool isAttached();
 	void setIndex(ULONG index);
 	ULONG getIndex() const;
-	virtual bool refreshIndex();
 	XINPUT_STATE getState();
 	Keyboard& getKeyboard();
 
@@ -70,28 +68,27 @@ public:
 	const bool isOwned();
 	bool isConnected() const;
 	GuestDevice owner = GuestDevice();
-	bool isPuppet = false;
+
 
 	// Child specific implementations
 	virtual bool alloc() = 0;
 	virtual bool connect() = 0;
 	virtual void clearState() = 0;
 	virtual void clearOwner();
+	virtual bool refreshIndex() = 0;
 	virtual void setState(XINPUT_STATE state) = 0;
 	virtual void setStateSafe(XINPUT_STATE state) = 0;
 
+	bool isPuppet = false;
 	ParsecDSO * parsec;
 
 protected:
-	//XINPUT_STATE fetchXInputState();
 	Keyboard _keyboard;
 	PVIGEM_CLIENT _client;
 	PVIGEM_TARGET _pad;
 	ULONG _index = -1;
 	bool _isAlive = false;
 	bool _isConnected = false;
-
-	//VOID CALLBACK notification(PVIGEM_CLIENT Client,PVIGEM_TARGET Target,UCHAR LargeMotor,UCHAR SmallMotor,UCHAR LedNumber, LPVOID UserData);
 
 	XINPUT_STATE _currentState;
 };

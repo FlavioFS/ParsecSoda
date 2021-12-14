@@ -17,6 +17,8 @@ bool DualshockGamepad::alloc()
 	{
 		_pad = vigem_target_ds4_alloc();
 
+		vigem_target_set_vid(_pad, 0x054C);
+		vigem_target_set_pid(_pad, 0x05C4);
 		_isAlive = true;
 	}
 	else
@@ -36,7 +38,6 @@ bool DualshockGamepad::connect()
 	if (VIGEM_SUCCESS(err))
 	{
 		clearOwner();
-		refreshIndex();
 
 		_isConnected = true;
 
@@ -77,6 +78,11 @@ void DualshockGamepad::clearOwner()
 {
 	clearState();
 	AGamepad::clearOwner();
+}
+
+bool DualshockGamepad::refreshIndex()
+{
+	return false;
 }
 
 void DualshockGamepad::setState(XINPUT_STATE state)

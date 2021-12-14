@@ -80,21 +80,6 @@ void XBoxGamepad::clearOwner()
 	AGamepad::clearOwner();
 }
 
-void XBoxGamepad::setState(XINPUT_STATE state)
-{
-	_currentState = state;
-	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
-}
-
-void XBoxGamepad::setStateSafe(XINPUT_STATE state)
-{
-	if (_isAlive && _isConnected && _client != nullptr)
-	{
-		_currentState = state;
-		vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
-	}
-}
-
 bool XBoxGamepad::refreshIndex()
 {
 	if (_isAlive)
@@ -125,4 +110,19 @@ bool XBoxGamepad::refreshIndex()
 	}
 
 	return _index;
+}
+
+void XBoxGamepad::setState(XINPUT_STATE state)
+{
+	_currentState = state;
+	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
+}
+
+void XBoxGamepad::setStateSafe(XINPUT_STATE state)
+{
+	if (_isAlive && _isConnected && _client != nullptr)
+	{
+		_currentState = state;
+		vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
+	}
 }

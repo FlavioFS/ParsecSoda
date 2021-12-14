@@ -46,7 +46,6 @@ AGamepad* GamepadClient::createGamepad(uint16_t index, AGamepad::Type type)
 		return nullptr;
 	}
 
-
 	AGamepad* gamepad = nullptr;
 	switch (type)
 	{
