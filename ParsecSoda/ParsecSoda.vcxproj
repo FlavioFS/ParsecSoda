@@ -158,6 +158,7 @@
     <ClCompile Include="Commands\CommandBonk.cpp" />
     <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
+    <ClCompile Include="XBoxGamepad.cpp" />
     <ClCompile Include="MasterOfPuppets.cpp" />
     <ClCompile Include="SDLGamepad.cpp" />
     <ClCompile Include="SDLGamepadReader.cpp" />
@@ -213,7 +214,7 @@
     <ClCompile Include="globals\AppFonts.cpp" />
     <ClCompile Include="Widgets\TooltipWidget.cpp" />
     <ClCompile Include="Widgets\ChatWidget.cpp" />
-    <ClCompile Include="Gamepad.cpp" />
+    <ClCompile Include="AGamepad.cpp" />
     <ClCompile Include="GamepadClient.cpp" />
     <ClCompile Include="Guest.cpp" />
     <ClCompile Include="GuestData.cpp" />
@@ -239,6 +240,7 @@
   <ItemGroup>
     <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
+    <ClInclude Include="XBoxGamepad.h" />
     <ClInclude Include="MasterOfPuppets.h" />
     <ClInclude Include="SDLGamepad.h" />
     <ClInclude Include="SDLGamepadReader.h" />
@@ -350,7 +352,7 @@
     <ClInclude Include="KeyboardMaps.h" />
     <ClInclude Include="Dice.h" />
     <ClInclude Include="DX11.h" />
-    <ClInclude Include="Gamepad.h" />
+    <ClInclude Include="AGamepad.h" />
     <ClInclude Include="GamepadClient.h" />
     <ClInclude Include="GuestData.h" />
     <ClInclude Include="ParsecSession.h" />

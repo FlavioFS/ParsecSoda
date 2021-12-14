@@ -298,7 +298,7 @@ void MasterOfPuppetsWidget::setMaster(int value)
 
 void MasterOfPuppetsWidget::clearPuppets()
 {
-    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+    vector<AGamepad>& gamepads = _gamepadClient.gamepads;
 
     for (size_t i = 0; i < gamepads.size(); ++i)
     {
@@ -311,7 +311,7 @@ void MasterOfPuppetsWidget::clearPuppets()
 
 void MasterOfPuppetsWidget::renderPuppets()
 {
-    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+    vector<AGamepad>& gamepads = _gamepadClient.gamepads;
 
     static ImVec2 cursor;
 

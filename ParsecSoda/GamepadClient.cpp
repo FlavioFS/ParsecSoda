@@ -39,14 +39,14 @@ bool GamepadClient::init()
 	return true;
 }
 
-Gamepad GamepadClient::createGamepad(uint16_t index)
+AGamepad GamepadClient::createGamepad(uint16_t index)
 {
 	if (_client == nullptr)
 	{
-		return Gamepad();
+		return AGamepad();
 	}
 
-	Gamepad gamepad(_parsec, _client);
+	AGamepad gamepad(_parsec, _client);
 	gamepads.push_back(gamepad);
 	return gamepad;
 }
@@ -62,7 +62,7 @@ void GamepadClient::createMaximumGamepads()
 
 void GamepadClient::connectAllGamepads()
 {
-	reduce([](Gamepad& pad) {
+	reduce([](AGamepad& pad) {
 		pad.connect();
 		Sleep(200);
 	});
@@ -70,18 +70,18 @@ void GamepadClient::connectAllGamepads()
 
 void GamepadClient::disconnectAllGamepads()
 {
-	reduce([](Gamepad& pad) {
+	reduce([](AGamepad& pad) {
 		pad.disconnect();
 	});
 }
 
 void GamepadClient::sortGamepads()
 {
-	std::vector<Gamepad> sorted = gamepads;
+	std::vector<AGamepad> sorted = gamepads;
 	std::sort(
 		sorted.begin(),
 		sorted.end(),
-		[](const Gamepad a, const Gamepad b) {
+		[](const AGamepad a, const AGamepad b) {
 			return a.getIndex() < b.getIndex();
 		}
 	);
@@ -104,17 +104,17 @@ void GamepadClient::resetAll()
 void GamepadClient::toggleLock()
 {
 	lock = !lock;
-	reduce([&](Gamepad& pad) {
+	reduce([&](AGamepad& pad) {
 		pad.clearState();
 	});
 }
 
 
-Gamepad GamepadClient::connectNextGamepad()
+AGamepad GamepadClient::connectNextGamepad()
 {
-	Gamepad rv;
+	AGamepad rv;
 
-	bool success = reduceUntilFirst([&](Gamepad& pad) {
+	bool success = reduceUntilFirst([&](AGamepad& pad) {
 		if (pad.connect())
 		{
 			rv = pad;
@@ -128,7 +128,7 @@ Gamepad GamepadClient::connectNextGamepad()
 		return rv;
 	}
 	
-	return Gamepad();
+	return AGamepad();
 }
 
 bool GamepadClient::disconnect(int gamepadIndex)
@@ -163,21 +163,21 @@ void GamepadClient::release()
 }
 
 
-Gamepad GamepadClient::getGamepad(int index)
+AGamepad GamepadClient::getGamepad(int index)
 {
 	if (index >= 0 && index < gamepads.size())
 	{
 		return gamepads[index];
 	}
 
-	return Gamepad();
+	return AGamepad();
 }
 
 int GamepadClient::clearAFK(GuestList &guests)
 {
 	int clearCount = 0;
 
-	reduce([&](Gamepad& pad) {
+	reduce([&](AGamepad& pad) {
 		if (pad.isOwned())
 		{
 			Guest guest;
@@ -196,7 +196,7 @@ int GamepadClient::onQuit(Guest& guest)
 {
 	int result = 0;
 
-	reduce([&](Gamepad& gamepad) {
+	reduce([&](AGamepad& gamepad) {
 		if (gamepad.owner.guest.userID == guest.userID)
 		{
 			gamepad.clearOwner();
@@ -298,7 +298,7 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 		return PICK_REQUEST::LIMIT_BLOCK;
 	}
 
-	bool success = reduceUntilFirst([&](Gamepad& gamepad) {
+	bool success = reduceUntilFirst([&](AGamepad& gamepad) {
 		if (gamepad.owner.guest.userID == guest.userID)
 		{
 			gamepads[gamepadIndex].clearState();
@@ -376,7 +376,7 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 
 bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
+	return reduceUntilFirst([&](AGamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
@@ -392,7 +392,7 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 
 bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
+	return reduceUntilFirst([&](AGamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
@@ -408,7 +408,7 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 
 bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
+	return reduceUntilFirst([&](AGamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
@@ -424,7 +424,7 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 
 bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
+	return reduceUntilFirst([&](AGamepad& pad) {
 		if (guest.userID == pad.owner.guest.userID)
 		{
 			slots++;
@@ -445,7 +445,7 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 		return false;
 	}
 	
-	return reduceUntilFirst([&](Gamepad& gamepad) {
+	return reduceUntilFirst([&](AGamepad& gamepad) {
 		if (!(isPuppetMaster && gamepad.isPuppet) && (gamepad.isAttached() && !gamepad.owner.guest.isValid()))
 		{
 			gamepad.setOwner(guest, deviceID, isKeyboard);
@@ -458,7 +458,7 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 
 void GamepadClient::releaseGamepads()
 {
-	reduce([](Gamepad& pad) {
+	reduce([](AGamepad& pad) {
 		pad.release();
 	});
 
@@ -516,18 +516,18 @@ bool GamepadClient::isRequestKeyboard(ParsecMessage message)
 	);
 }
 
-void GamepadClient::reduce(function<void(Gamepad&)> func)
+void GamepadClient::reduce(function<void(AGamepad&)> func)
 {
-	vector<Gamepad>::iterator gi = gamepads.begin();
+	vector<AGamepad>::iterator gi = gamepads.begin();
 	for (; gi != gamepads.end(); ++gi)
 	{
 		func(*gi);
 	}
 }
 
-bool GamepadClient::reduceUntilFirst(function<bool(Gamepad&)> func)
+bool GamepadClient::reduceUntilFirst(function<bool(AGamepad&)> func)
 {
-	vector<Gamepad>::iterator gi = gamepads.begin();
+	vector<AGamepad>::iterator gi = gamepads.begin();
 	for (; gi != gamepads.end(); ++gi)
 	{
 		if (func(*gi))
@@ -682,7 +682,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STAT
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
 {
 	XINPUT_STATE result = previousState;
 

@@ -1,24 +1,24 @@
 #pragma once
 
-#include "Gamepad.h"
+#include "AGamepad.h"
 
 #define DS4_BYTE_MIN -128
 #define DS4_BYTE_MAX 127
 
-class DualshockGamepad : public Gamepad
+class DualshockGamepad : public AGamepad
 {
 public:
-	DualshockGamepad() : Gamepad() {}
-	DualshockGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client) : Gamepad(parsec, client) {}
-	bool alloc();
-	bool connect();
-	bool refreshIndex();
-	XINPUT_STATE fetchXInputState();
-	void clearState();
+	const AGamepad::Type type() override { return AGamepad::Type::DUALSHOCK; }
 
-	// State mesages
-	void setState(XINPUT_STATE state);
-	void setStateSafe(XINPUT_STATE state);
+	DualshockGamepad() : AGamepad() {}
+	DualshockGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client) : AGamepad(parsec, client) {}
+	
+	// AGamepad Interface
+	bool alloc() override;
+	bool connect() override;
+	void clearState() override;
+	void setState(XINPUT_STATE state) override;
+	void setStateSafe(XINPUT_STATE state) override;
 
 private:
 	DS4_REPORT XInputToDS4(XINPUT_GAMEPAD& state);

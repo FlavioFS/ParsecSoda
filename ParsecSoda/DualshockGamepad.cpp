@@ -32,7 +32,7 @@ bool DualshockGamepad::connect()
 		const VIGEM_ERROR error = vigem_target_ds4_register_notification(
 			_client, _pad,
 			[](PVIGEM_CLIENT Client, PVIGEM_TARGET Target, UCHAR LargeMotor, UCHAR SmallMotor, DS4_LIGHTBAR_COLOR LightbarColor, LPVOID UserData) {
-				Gamepad* gamepad = reinterpret_cast<Gamepad*>(UserData);
+				AGamepad* gamepad = reinterpret_cast<AGamepad*>(UserData);
 				if (gamepad != nullptr)
 				{
 					if (gamepad->isConnected() && gamepad->isOwned() && gamepad->parsec != nullptr)
@@ -53,17 +53,6 @@ bool DualshockGamepad::connect()
 	}
 
 	return false;
-}
-
-bool DualshockGamepad::refreshIndex()
-{
-	setIndex(-1);
-	return getIndex();
-}
-
-XINPUT_STATE DualshockGamepad::fetchXInputState()
-{
-	return _currentState;
 }
 
 void DualshockGamepad::clearState()
@@ -106,6 +95,6 @@ DS4_REPORT DualshockGamepad::XInputToDS4(XINPUT_GAMEPAD& state)
 
 BYTE DualshockGamepad::ShortToByteAxis(SHORT axis)
 {
-	if (axis < 0) return (BYTE)(((float)axis / GAMEPAD_STICK_MIN) * DS4_BYTE_MIN);
-	return (BYTE)(((float)axis / GAMEPAD_STICK_MAX) * DS4_BYTE_MAX);
+	if (axis < 0) return (BYTE)(((float)axis / GAMEPAD_SHORT_MIN) * DS4_BYTE_MIN);
+	return (BYTE)(((float)axis / GAMEPAD_SHORT_MAX) * DS4_BYTE_MAX);
 }

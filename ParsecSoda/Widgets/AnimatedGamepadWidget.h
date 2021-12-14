@@ -3,7 +3,7 @@
 #include <cmath>
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
-#include "../Gamepad.h"
+#include "../AGamepad.h"
 #include "../globals/AppColors.h"
 
 #define IMVEC2_UP ImVec2(0.0f, 1.0f)

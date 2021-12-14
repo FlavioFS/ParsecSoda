@@ -48,7 +48,7 @@
     <ClCompile Include="GamepadClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Gamepad.cpp">
+    <ClCompile Include="AGamepad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BanList.cpp">
@@ -255,6 +255,9 @@
     <ClCompile Include="DualshockGamepad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XBoxGamepad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -290,7 +293,7 @@
     <ClInclude Include="GamepadClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Gamepad.h">
+    <ClInclude Include="AGamepad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BanList.h">
@@ -627,6 +630,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DualshockGamepad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="XBoxGamepad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

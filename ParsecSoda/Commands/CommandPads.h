@@ -19,7 +19,7 @@ public:
 		std::ostringstream reply;
 		reply << "[ChatBot] | Gamepad Holders:\n";
 
-		std::vector<Gamepad>::iterator gi = _gamepadClient.gamepads.begin();
+		std::vector<AGamepad>::iterator gi = _gamepadClient.gamepads.begin();
 		uint16_t i = 1;
 		int onlineCount = 0;
 		for (; gi != _gamepadClient.gamepads.end(); ++gi)
