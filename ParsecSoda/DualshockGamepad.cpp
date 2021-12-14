@@ -1,5 +1,16 @@
 #include "DualshockGamepad.h"
 
+DualshockGamepad::DualshockGamepad()
+	: AGamepad()
+{
+}
+
+DualshockGamepad::DualshockGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client)
+	: AGamepad(parsec, client)
+{
+	alloc();
+}
+
 bool DualshockGamepad::alloc()
 {
 	if (_client != nullptr)
@@ -62,6 +73,12 @@ void DualshockGamepad::clearState()
 	vigem_target_ds4_update(_client, _pad, XInputToDS4(_currentState.Gamepad));
 }
 
+void DualshockGamepad::clearOwner()
+{
+	clearState();
+	AGamepad::clearOwner();
+}
+
 void DualshockGamepad::setState(XINPUT_STATE state)
 {
 	_currentState = state;
@@ -80,21 +97,8 @@ void DualshockGamepad::setStateSafe(XINPUT_STATE state)
 DS4_REPORT DualshockGamepad::XInputToDS4(XINPUT_GAMEPAD& state)
 {
 	DS4_REPORT rv;
-
-	rv.wButtons = state.wButtons;
-	rv.bTriggerL = state.bLeftTrigger;
-	rv.bTriggerR = state.bRightTrigger;
-
-	rv.bThumbLX = ShortToByteAxis(state.sThumbLX);
-	rv.bThumbLY = ShortToByteAxis(state.sThumbLY);
-	rv.bThumbRX = ShortToByteAxis(state.sThumbRX);
-	rv.bThumbRY = ShortToByteAxis(state.sThumbRY);
+	DS4_REPORT_INIT(&rv);
+	XUSB_TO_DS4_REPORT(reinterpret_cast<PXUSB_REPORT>(&state), &rv);
 
 	return rv;
-}
-
-BYTE DualshockGamepad::ShortToByteAxis(SHORT axis)
-{
-	if (axis < 0) return (BYTE)(((float)axis / GAMEPAD_SHORT_MIN) * DS4_BYTE_MIN);
-	return (BYTE)(((float)axis / GAMEPAD_SHORT_MAX) * DS4_BYTE_MAX);
 }

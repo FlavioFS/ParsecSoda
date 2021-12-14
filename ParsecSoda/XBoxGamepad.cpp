@@ -6,7 +6,9 @@ XBoxGamepad::XBoxGamepad()
 
 XBoxGamepad::XBoxGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client)
 	: AGamepad(parsec, client)
-{}
+{
+	alloc();
+}
 
 bool XBoxGamepad::alloc()
 {
@@ -25,12 +27,6 @@ bool XBoxGamepad::alloc()
 
 	return _isAlive;
 }
-
-//bool XBoxGamepad::realloc()
-//{
-//	release();
-//	return alloc();
-//}
 
 bool XBoxGamepad::connect()
 {
@@ -71,46 +67,18 @@ bool XBoxGamepad::connect()
 	return false;
 }
 
-//bool XBoxGamepad::disconnect()
-//{
-//	if (!_isAlive || _client == nullptr)
-//	{
-//		_isConnected = false;
-//		return false;
-//	}
-//
-//	if (!VIGEM_SUCCESS(vigem_target_remove(_client, _pad)))
-//	{
-//		return false;
-//	}
-//
-//	_index = -1;
-//	_isConnected = false;
-//	clearOwner();
-//	return true;
-//}
-//
-//void XBoxGamepad::release()
-//{
-//	if (_isAlive)
-//	{
-//		disconnect();
-//		vigem_target_free(_pad);
-//		clearOwner();
-//		_isAlive = false;
-//		_isConnected = false;
-//	}
-//}
+void XBoxGamepad::clearState()
+{
+	_keyboard.clear();
+	ZeroMemory(&_currentState, sizeof(XINPUT_STATE));
+	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
+}
 
-//bool XBoxGamepad::isAttached()
-//{
-//	if (_isAlive)
-//	{
-//		return vigem_target_is_attached(_pad);
-//	}
-//
-//	return false;
-//}
+void XBoxGamepad::clearOwner()
+{
+	clearState();
+	AGamepad::clearOwner();
+}
 
 void XBoxGamepad::setState(XINPUT_STATE state)
 {
@@ -158,68 +126,3 @@ bool XBoxGamepad::refreshIndex()
 
 	return _index;
 }
-
-//void XBoxGamepad::setIndex(ULONG index)
-//{
-//	_index = index;
-//}
-//
-//ULONG XBoxGamepad::getIndex() const
-//{
-//	return _index;
-//}
-//
-//XINPUT_STATE XBoxGamepad::getState()
-//{
-//	return _currentState;
-//}
-
-//XINPUT_STATE XBoxGamepad::fetchXInputState()
-//{
-//	if (_isAlive && _index >= 0)
-//	{
-//		XInputGetState(_index, &_currentState);
-//	}
-//
-//	return _currentState;
-//}
-
-void XBoxGamepad::clearState()
-{
-	_keyboard.clear();
-	ZeroMemory(&_currentState, sizeof(XINPUT_STATE));
-	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
-}
-
-//XBoxGamepad::Keyboard& XBoxGamepad::getKeyboard()
-//{
-//	return _keyboard;
-//}
-//
-//void XBoxGamepad::setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard)
-//{
-//	owner.guest.copy(guest);
-//	owner.deviceID = deviceID;
-//	owner.isKeyboard = isKeyboard;
-//}
-//
-//void XBoxGamepad::copyOwner(XBoxGamepad pad)
-//{
-//	owner.copy(pad.owner);
-//}
-//
-//void XBoxGamepad::clearOwner()
-//{
-//	clearState();
-//	owner = GuestDevice();
-//}
-//
-//const bool XBoxGamepad::isOwned()
-//{
-//	return owner.guest.isValid();
-//}
-//
-//bool XBoxGamepad::isConnected() const
-//{
-//	return _isConnected;
-//}

@@ -14,11 +14,10 @@ AGamepad::AGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client)
 	: parsec(parsec)
 {
 	_client = client;
-	clearOwner();
-	refreshIndex();
+	_isAlive = false;
+	_index = GAMEPAD_INDEX_ERROR;
 	_isConnected = false;
-
-	alloc();
+	clearOwner();
 }
 
 //bool AGamepad::alloc()
@@ -196,7 +195,6 @@ void AGamepad::copyOwner(AGamepad* pad)
 
 void AGamepad::clearOwner()
 {
-	clearState();
 	owner = GuestDevice();
 }
 

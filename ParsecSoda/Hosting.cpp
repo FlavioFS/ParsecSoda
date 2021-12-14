@@ -210,7 +210,7 @@ BanList& Hosting::getBanList()
 	return _banList;
 }
 
-vector<AGamepad>& Hosting::getGamepads()
+vector<AGamepad*>& Hosting::getGamepads()
 {
 	return _gamepadClient.gamepads;
 }

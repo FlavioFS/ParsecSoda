@@ -27,7 +27,7 @@ using namespace std;
 class XBoxGamepad : public AGamepad
 {
 public:
-	const AGamepad::Type type() override { return AGamepad::Type::XBOX; }
+	const AGamepad::Type type() const override { return AGamepad::Type::XBOX; }
 
 	XBoxGamepad();
 	XBoxGamepad(ParsecDSO* parsec, PVIGEM_CLIENT client);
@@ -38,16 +38,17 @@ public:
 	//bool isAttached();
 	//void setIndex(ULONG index);
 	//ULONG getIndex() const;
-	bool refreshIndex() override;
+	virtual bool refreshIndex();
 	//XINPUT_STATE getState();
 	//Keyboard& getKeyboard();
 
 	// State mesages
-	bool alloc() override;
-	bool connect() override;
-	void clearState() override;
-	void setState(XINPUT_STATE state) override;
-	void setStateSafe(XINPUT_STATE state) override;
+	virtual bool alloc();
+	virtual bool connect();
+	virtual void clearState();
+	virtual void clearOwner();
+	virtual void setState(XINPUT_STATE state);
+	virtual void setStateSafe(XINPUT_STATE state);
 
 	//void setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard);
 	//void copyOwner(XBoxGamepad pad);

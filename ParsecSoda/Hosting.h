@@ -59,7 +59,7 @@ public:
 	vector<Guest>& getGuestList();
 	vector<GuestData>& getGuestHistory();
 	BanList& getBanList();
-	vector<AGamepad>& getGamepads();
+	vector<AGamepad*>& getGamepads();
 	GamepadClient& getGamepadClient();
 	MasterOfPuppets& getMasterOfPuppets();
 	const char** getGuestNames();

@@ -52,16 +52,16 @@ public:
 	~GamepadClient();
 	void setParsec(ParsecDSO* parsec);
 	bool init();
-	AGamepad createGamepad(uint16_t index);
+	AGamepad* createGamepad(uint16_t index, AGamepad::Type type = AGamepad::Type::DUALSHOCK);
 	void createMaximumGamepads();
 	void connectAllGamepads();
 	void disconnectAllGamepads();
 	void sortGamepads();
 	void resetAll();
 	void toggleLock();
-	AGamepad connectNextGamepad();
+	AGamepad* connectNextGamepad();
 	void release();
-	AGamepad getGamepad(int index);
+	AGamepad* getGamepad(int index);
 	int clearAFK(GuestList &guests);
 
 	bool disconnect(int gamepadIndex);
@@ -75,7 +75,7 @@ public:
 	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
 	
-	vector<AGamepad> gamepads;
+	vector<AGamepad*> gamepads;
 	vector<GuestPreferences> guestPreferences;
 
 	bool lock = false;
@@ -101,8 +101,8 @@ private:
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
 
-	void reduce(function<void(AGamepad&)> func);
-	bool reduceUntilFirst(function<bool(AGamepad&)> func);
+	void reduce(function<void(AGamepad*)> func);
+	bool reduceUntilFirst(function<bool(AGamepad*)> func);
 
 	PVIGEM_CLIENT _client;
 	ParsecDSO* _parsec;

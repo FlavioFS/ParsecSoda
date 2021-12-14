@@ -51,7 +51,7 @@ public:
 		bool RDown = false;
 	};
 
-	virtual const AGamepad::Type type() { return AGamepad::Type::INVALID; }
+	virtual const AGamepad::Type type() const { return AGamepad::Type::INVALID; }
 
 	AGamepad();
 	AGamepad(ParsecDSO * parsec, PVIGEM_CLIENT client);
@@ -67,7 +67,6 @@ public:
 
 	void setOwner(Guest& guest, uint32_t deviceID, bool isKeyboard);
 	void copyOwner(AGamepad* pad);
-	void clearOwner();
 	const bool isOwned();
 	bool isConnected() const;
 	GuestDevice owner = GuestDevice();
@@ -77,6 +76,7 @@ public:
 	virtual bool alloc() = 0;
 	virtual bool connect() = 0;
 	virtual void clearState() = 0;
+	virtual void clearOwner();
 	virtual void setState(XINPUT_STATE state) = 0;
 	virtual void setStateSafe(XINPUT_STATE state) = 0;
 

@@ -23,5 +23,5 @@ private:
 	
 	// Attributes
 	string _logBuffer;
-	vector<AGamepad>& _gamepads;
+	vector<AGamepad*>& _gamepads;
 };
