@@ -252,6 +252,9 @@
     <ClCompile Include="Widgets\VirtualGamepadWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DualshockGamepad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -621,6 +624,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Widgets\VirtualGamepadWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DualshockGamepad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

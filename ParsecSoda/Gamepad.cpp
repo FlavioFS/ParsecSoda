@@ -25,10 +25,10 @@ bool Gamepad::alloc()
 {
 	if (_client != nullptr)
 	{
-		pad = vigem_target_x360_alloc();
+		_pad = vigem_target_x360_alloc();
 
-		vigem_target_set_vid(pad, 0x045E);
-		vigem_target_set_pid(pad, 0x028E);
+		vigem_target_set_vid(_pad, 0x045E);
+		vigem_target_set_pid(_pad, 0x028E);
 		_isAlive = true;
 	}
 	else
@@ -49,7 +49,7 @@ bool Gamepad::connect()
 {
 	if (!_isAlive || _client == nullptr) { return false; }
 
-	VIGEM_ERROR err = vigem_target_add(_client, pad);
+	VIGEM_ERROR err = vigem_target_add(_client, _pad);
 
 	if (VIGEM_SUCCESS(err))
 	{
@@ -59,7 +59,7 @@ bool Gamepad::connect()
 		_isConnected = true;
 
 		const VIGEM_ERROR error = vigem_target_x360_register_notification(
-			_client, pad,
+			_client, _pad,
 			[](PVIGEM_CLIENT Client, PVIGEM_TARGET Target, UCHAR LargeMotor, UCHAR SmallMotor, UCHAR LedNumber, LPVOID UserData) {
 				Gamepad* gamepad = reinterpret_cast<Gamepad*>(UserData);
 				if (gamepad != nullptr)
@@ -92,7 +92,7 @@ bool Gamepad::disconnect()
 		return false;
 	}
 
-	if (!VIGEM_SUCCESS(vigem_target_remove(_client, pad)))
+	if (!VIGEM_SUCCESS(vigem_target_remove(_client, _pad)))
 	{
 		return false;
 	}
@@ -108,7 +108,7 @@ void Gamepad::release()
 	if (_isAlive)
 	{
 		disconnect();
-		vigem_target_free(pad);
+		vigem_target_free(_pad);
 		clearOwner();
 		_isAlive = false;
 		_isConnected = false;
@@ -119,7 +119,7 @@ bool Gamepad::isAttached()
 {
 	if (_isAlive)
 	{
-		return vigem_target_is_attached(pad);
+		return vigem_target_is_attached(_pad);
 	}
 
 	return false;
@@ -128,7 +128,7 @@ bool Gamepad::isAttached()
 void Gamepad::setState(XINPUT_STATE state)
 {
 	_currentState = state;
-	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
+	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
 }
 
 void Gamepad::setStateSafe(XINPUT_STATE state)
@@ -136,7 +136,7 @@ void Gamepad::setStateSafe(XINPUT_STATE state)
 	if (_isAlive && _isConnected && _client != nullptr)
 	{
 		_currentState = state;
-		vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
+		vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&state.Gamepad));
 	}
 }
 
@@ -201,7 +201,7 @@ void Gamepad::clearState()
 {
 	_keyboard.clear();
 	ZeroMemory(&_currentState, sizeof(XINPUT_STATE));
-	vigem_target_x360_update(_client, pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
+	vigem_target_x360_update(_client, _pad, *reinterpret_cast<XUSB_REPORT*>(&_currentState.Gamepad));
 }
 
 Gamepad::Keyboard& Gamepad::getKeyboard()

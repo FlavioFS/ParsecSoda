@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Commands\CommandBonk.cpp" />
+    <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
     <ClCompile Include="MasterOfPuppets.cpp" />
     <ClCompile Include="SDLGamepad.cpp" />
@@ -236,6 +237,7 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
     <ClInclude Include="MasterOfPuppets.h" />
     <ClInclude Include="SDLGamepad.h" />

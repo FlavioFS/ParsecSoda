@@ -71,11 +71,11 @@ public:
 	ParsecDSO * parsec;
 
 
-private:
+protected:
 	XINPUT_STATE fetchXInputState();
 	Keyboard _keyboard;
 	PVIGEM_CLIENT _client;
-	PVIGEM_TARGET pad;
+	PVIGEM_TARGET _pad;
 	ULONG _index = -1;
 	bool _isAlive = false;
 	bool _isConnected = false;
