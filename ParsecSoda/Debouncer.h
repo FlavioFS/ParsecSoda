@@ -8,10 +8,10 @@
 class Debouncer
 {
 public:
-	/** Debounces inputs by delaying the result until a specified idle time duration elapses. */
+	/* Debounces inputs by delaying the result until a specified idle time duration elapses. */
 	Debouncer(uint32_t delay, std::function<void()> callback);
 	
-	/** Resets time counter if debouncing has already started. */
+	/* Resets time counter if debouncing has already started. */
 	void start();
 	
 	void reset(uint32_t delay);
@@ -25,4 +25,3 @@ private:
 	std::function<void()> _callback;
 	std::thread _thread;
 };
-

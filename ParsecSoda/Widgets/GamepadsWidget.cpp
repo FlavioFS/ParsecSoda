@@ -388,7 +388,7 @@ bool GamepadsWidget::render()
         MetadataCache::preferences.ds4PuppetCount = ds4Count;
         _hosting.getGamepadClient().resize(xboxCount, ds4Count);
         resizeGamepadsDebouncer.start();
-        resizeGamepadsDebouncer.reset();
+        resizeGamepadsDebouncer.reset(500);
     }
     if (resizeGamepadsDebouncer.isRunning() && resizeGamepadsDebouncer.isFinished())
     {
