@@ -76,6 +76,8 @@ public:
 	bool toggleIgnoreDeviceID(uint32_t guestUserID);
 	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
+
+	bool isBusy();
 	
 	vector<AGamepad*> gamepads;
 	vector<GuestPreferences> guestPreferences;
@@ -85,6 +87,8 @@ public:
 
 
 private:
+	bool _isBusy = false;
+
 	bool sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());

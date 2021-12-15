@@ -66,19 +66,20 @@ AGamepad* GamepadClient::createGamepad(AGamepad::Type type)
 
 void GamepadClient::createAllGamepads()
 {
+	_isBusy = true;
+
 	for (uint16_t i = 0; i < MetadataCache::preferences.xboxPuppetCount; i++)
 	{
 		this->createGamepad(AGamepad::Type::XBOX);
-		Sleep(200);
 	}
 
 	for (uint16_t i = 0; i < MetadataCache::preferences.ds4PuppetCount; i++)
 	{
 		this->createGamepad(AGamepad::Type::DUALSHOCK);
-		Sleep(200);
 	}
 
 	sortGamepads();
+	_isBusy = false;
 	Sleep(200);
 }
 
@@ -114,10 +115,14 @@ void GamepadClient::sortGamepads()
 
 void GamepadClient::resize(size_t xboxCount, size_t dualshockCount)
 {
+	if (_isBusy) return;
+
 	size_t xi = 0, di = 0;
 	vector<AGamepad*> newGamepads;
 
 	lock = true;
+	_isBusy = true;
+
 	reduce([&xi, &di, &xboxCount, &dualshockCount, &newGamepads](AGamepad* pad) {
 		switch (pad->type())
 		{
@@ -163,6 +168,7 @@ void GamepadClient::resize(size_t xboxCount, size_t dualshockCount)
 	gamepads = newGamepads;
 	sortGamepads();
 
+	_isBusy = false;
 	lock = false;
 }
 
@@ -632,6 +638,11 @@ bool GamepadClient::findPreferences(uint32_t guestUserID, function<void(GamepadC
 	}
 
 	return false;
+}
+
+bool GamepadClient::isBusy()
+{
+	return _isBusy;
 }
 
 
