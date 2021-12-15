@@ -15,7 +15,7 @@ public:
 
 	bool run() override
 	{
-		int maxIndex = _gamepadClient.gamepads.size();
+		size_t maxIndex = _gamepadClient.gamepads.size();
 
 		if ( !ACommandIntegerArg::run() )
 		{

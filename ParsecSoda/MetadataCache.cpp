@@ -285,7 +285,7 @@ vector<GuestData> MetadataCache::loadBannedUsers()
 
             for (size_t i = 0; i < size; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
                 
                 char name [128] = "";
                 uint32_t userID = 0;
@@ -354,7 +354,7 @@ vector<GuestTier> MetadataCache::loadGuestTiers()
 
             for (size_t i = 0; i < size; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
 
                 char name[128] = "";
                 uint32_t userID, tier = 0;
@@ -434,7 +434,7 @@ vector<Thumbnail> MetadataCache::loadThumbnails()
 
             for (size_t i = 0; i < thumbnailCount; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
 
                 char name[256] = "", gameId[64] = "";
 
