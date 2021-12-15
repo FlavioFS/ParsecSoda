@@ -13,6 +13,7 @@
 #include "GuestData.h"
 #include "KeyboardMaps.h"
 #include "GuestList.h"
+#include "MetadataCache.h"
 
 using namespace std;
 
@@ -52,11 +53,12 @@ public:
 	~GamepadClient();
 	void setParsec(ParsecDSO* parsec);
 	bool init();
-	AGamepad* createGamepad(uint16_t index, AGamepad::Type type = AGamepad::Type::DUALSHOCK);
-	void createMaximumGamepads();
+	AGamepad* createGamepad(AGamepad::Type type = AGamepad::Type::XBOX);
+	void createAllGamepads();
 	void connectAllGamepads();
 	void disconnectAllGamepads();
 	void sortGamepads();
+	void resize(size_t xboxCount, size_t dualshockCount);
 	void resetAll();
 	void toggleLock();
 	AGamepad* connectNextGamepad();

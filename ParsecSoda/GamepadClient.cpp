@@ -39,7 +39,7 @@ bool GamepadClient::init()
 	return true;
 }
 
-AGamepad* GamepadClient::createGamepad(uint16_t index, AGamepad::Type type)
+AGamepad* GamepadClient::createGamepad(AGamepad::Type type)
 {
 	if (_client == nullptr)
 	{
@@ -64,13 +64,22 @@ AGamepad* GamepadClient::createGamepad(uint16_t index, AGamepad::Type type)
 	return gamepad;
 }
 
-void GamepadClient::createMaximumGamepads()
+void GamepadClient::createAllGamepads()
 {
-	for (uint16_t i = 0; i < 8; i++)
+	for (uint16_t i = 0; i < MetadataCache::preferences.xboxPuppetCount; i++)
 	{
-		this->createGamepad(i);
+		this->createGamepad(AGamepad::Type::XBOX);
 		Sleep(200);
 	}
+
+	for (uint16_t i = 0; i < MetadataCache::preferences.ds4PuppetCount; i++)
+	{
+		this->createGamepad(AGamepad::Type::DUALSHOCK);
+		Sleep(200);
+	}
+
+	sortGamepads();
+	Sleep(200);
 }
 
 void GamepadClient::connectAllGamepads()
@@ -96,10 +105,65 @@ void GamepadClient::sortGamepads()
 		sorted.end(),
 		[](const AGamepad* a, const AGamepad* b) {
 			if (a->type() == AGamepad::Type::DUALSHOCK && b->type() == AGamepad::Type::XBOX) return false;
+			if (a->type() == AGamepad::Type::XBOX && b->type() == AGamepad::Type::DUALSHOCK) return true;
 			return a->getIndex() < b->getIndex();
 		}
 	);
 	gamepads = sorted;
+}
+
+void GamepadClient::resize(size_t xboxCount, size_t dualshockCount)
+{
+	size_t xi = 0, di = 0;
+	vector<AGamepad*> newGamepads;
+
+	lock = true;
+	reduce([&xi, &di, &xboxCount, &dualshockCount, &newGamepads](AGamepad* pad) {
+		switch (pad->type())
+		{
+		case AGamepad::Type::XBOX:
+			if (xi < xboxCount) {
+				newGamepads.push_back(pad);
+				xi++;
+			}
+			else {
+				pad->release();
+			}
+			break;
+		case AGamepad::Type::DUALSHOCK:
+			if (di < dualshockCount) {
+				newGamepads.push_back(pad);
+				di++;
+			}
+			else {
+				pad->release();
+			}
+			break;
+		default:
+			break;
+		}
+	});
+
+	if (xi < xboxCount)
+	{
+		for (size_t i = 0; i < xboxCount-xi; i++)
+		{
+			newGamepads.push_back(this->createGamepad(AGamepad::Type::XBOX));
+		}
+	}
+	if (di < dualshockCount)
+	{
+		for (size_t i = 0; i < dualshockCount-di; i++)
+		{
+			newGamepads.push_back(this->createGamepad(AGamepad::Type::DUALSHOCK));
+		}
+	}
+
+	gamepads.clear();
+	gamepads = newGamepads;
+	sortGamepads();
+
+	lock = false;
 }
 
 void GamepadClient::resetAll()
@@ -108,7 +172,7 @@ void GamepadClient::resetAll()
 		lock = true;
 		release();
 		init();
-		createMaximumGamepads();
+		createAllGamepads();
 		connectAllGamepads();
 		lock = false;
 		_resetAllThread.detach();

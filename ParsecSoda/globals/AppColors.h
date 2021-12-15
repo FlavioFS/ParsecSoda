@@ -44,5 +44,7 @@ public:
 	static ImVec4 primary;
 	static ImVec4 secondary;
 
+	static ImVec4 backgroundIcon;
+
 	static ImVec4 disabled;
 };

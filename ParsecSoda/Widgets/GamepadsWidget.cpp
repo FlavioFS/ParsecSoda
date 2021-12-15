@@ -61,6 +61,7 @@ bool GamepadsWidget::render()
     else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
 
     ImGui::SameLine();
+
     cursor = ImGui::GetCursorPos();
     ImGui::SetCursorPosX(size.x - 25);
     if (IconButton::render(
@@ -76,7 +77,33 @@ bool GamepadsWidget::render()
 
     ImGui::Dummy(ImVec2(0, 5));
     ImGui::Separator();
-    ImGui::Dummy(ImVec2(0, 5));
+    ImGui::Dummy(ImVec2(0, 10));
+
+    static int
+        xboxCount = (int) MetadataCache::preferences.xboxPuppetCount,
+        lastXboxCount = (int) MetadataCache::preferences.xboxPuppetCount,
+        ds4Count = (int) MetadataCache::preferences.ds4PuppetCount,
+        lastDs4Count = (int) MetadataCache::preferences.ds4PuppetCount;
+
+    ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    ImGui::SameLine();
+    if (IntRangeWidget::render("xboxCounter", xboxCount, 0, 100))
+    {
+        TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
+    }
+    
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(20, 0));
+    ImGui::SameLine();
+    
+    ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    ImGui::SameLine();
+    if (IntRangeWidget::render("ds4Counter", ds4Count, 0, 100))
+    {
+        TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
+    }
+
+    ImGui::Dummy(ImVec2(0, 20));
 
     for (size_t i = 0; i < _gamepads.size(); ++i)
     {
@@ -98,32 +125,63 @@ bool GamepadsWidget::render()
         isIndexSuccess = gi->isConnected() && padIndex > 0 && padIndex <= 4;
 
         ImGui::BeginGroup();
-        if (isIndexSuccess)
         {
             static vector<ID3D11ShaderResourceView*> xboxIcons { AppIcons::xbox1, AppIcons::xbox2, AppIcons::xbox3, AppIcons::xbox4 };
-
             cursor = ImGui::GetCursorPos();
-            ImGui::Image(
-                AppIcons::xbox,
-                ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::white
-            );
 
-            ImGui::SetCursorPos(cursor);
-            ImGui::Image(
-                xboxIcons[xboxIndex],
-                ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary
-            );
-            TitleTooltipWidget::render(
-                ( string() + "XInput " + to_string(padIndex) ).c_str(),
-                (
-                    string("This controller is using XInput slot ") + to_string(padIndex) + ".\n\n" +
-                    "* Remember:\nYour physical controllers may also occupy XInput slots."
-                ).c_str()
-            );
-        }
-        else
-        {
-            ImGui::Dummy(ImVec2(45, 45));
+            switch (gi->type())
+            {
+            case AGamepad::Type::XBOX:
+                if (isIndexSuccess)
+                {
+                    ImGui::Image(
+                        AppIcons::xbox,
+                        ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::white
+                    );
+
+                    ImGui::SetCursorPos(cursor);
+                    ImGui::Image(
+                        xboxIcons[xboxIndex],
+                        ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary
+                    );
+                    TitleTooltipWidget::render(
+                        (string() + "XInput " + to_string(padIndex)).c_str(),
+                        (
+                            string("This controller is using XInput slot ") + to_string(padIndex) + ".\n\n" +
+                            "* Remember:\nYour physical controllers may also occupy XInput slots."
+                            ).c_str()
+                    );
+
+                }
+                else
+                {
+                    ImGui::Image(
+                        AppIcons::xinput,
+                        ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
+                    );
+                    TitleTooltipWidget::render(
+                        (string() + "XBox controller").c_str(),
+                        (
+                            string("This is an XBox controller out of XInput range.") + "\n\n" +
+                            "* It still works, but as a generic controller without XInput features."
+                            ).c_str()
+                    );
+                }
+                break;
+            case AGamepad::Type::DUALSHOCK:
+                ImGui::Image(
+                    AppIcons::dinput,
+                    ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
+                );
+                TitleTooltipWidget::render(
+                    (string() + "Dualshock controller").c_str(),
+                    (
+                        string("This is a Dualshock 4 controller.")).c_str()
+                );
+                break;
+            default:
+                break;
+            }
         }
         ImGui::EndGroup();
 
@@ -299,7 +357,7 @@ bool GamepadsWidget::render()
 
     ImGui::PopStyleVar();
 
-    static bool mustUpdateIndices = false;
+    static bool mustUpdateIndices = false, mustResizeGamepads = false;
     if (isConnectionButtonPressed)
     {
         isConnectionButtonPressed = false;
@@ -316,6 +374,25 @@ bool GamepadsWidget::render()
         {
             _gamepads[i]->refreshIndex();
         }
+    }
+
+    if (lastXboxCount != xboxCount || lastDs4Count != ds4Count)
+    {
+        lastXboxCount = xboxCount;
+        lastDs4Count = ds4Count;
+
+        static Debouncer debouncer(500, [&]() {
+            mustResizeGamepads = true;
+            MetadataCache::preferences.xboxPuppetCount = xboxCount;
+            MetadataCache::preferences.ds4PuppetCount = ds4Count;
+        });
+        debouncer.start();
+    }
+    if (mustResizeGamepads)
+    {
+        MetadataCache::savePreferences();
+        _hosting.getGamepadClient().resize(xboxCount, ds4Count);
+        mustResizeGamepads = false;
     }
 
     AppStyle::pop();

@@ -9,6 +9,7 @@
 #include "TitleTooltipWidget.h"
 #include "AnimatedGamepadWidget.h"
 #include "LoadingRingWidget.h"
+#include "IntRangeWidget.h"
 
 
 class GamepadsWidget

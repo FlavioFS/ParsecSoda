@@ -73,12 +73,12 @@ void Hosting::init()
 	_gamepadClient.setParsec(_parsec);
 	_gamepadClient.init();
 
+	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
+
 	_createGamepadsThread = thread([&]() {
-		_gamepadClient.createMaximumGamepads();
+		_gamepadClient.createAllGamepads();
 		_createGamepadsThread.detach();
 	});
-	
-	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
 
 	audioOut.fetchDevices();
 	vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
