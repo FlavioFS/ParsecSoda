@@ -27,9 +27,9 @@ bool InfoWidget::render()
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 15));
 
-    renderSugoiButton("linktr.ee/flafdraws", L"https://linktr.ee/flafdraws");
+    renderSugoiButton("linktr.ee/flafcodes", L"https://linktr.ee/flafcodes");
     ImGui::SetCursorPosX(25);
-    ImGui::TextWrapped("Parsec Soda was created by @flafdraws. Find me on social media.");
+    ImGui::TextWrapped("Parsec Soda was created by FlaF. You can find all my social media links there.");
 
     ImGui::Dummy(ImVec2(0, 15));
     ImGui::Separator();
@@ -42,16 +42,15 @@ bool InfoWidget::render()
 
     ImGui::Dummy(ImVec2(0, 10));
     
-    renderLinkButton("Ko-fi", L"https://ko-fi.com/flafdraws");
-    renderLinkButton("Paypal", L"https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72");
+    renderLinkButton("Paypal (click here)", L"https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72");
 
-    static char pix[] = "43.379.701/0001-96";
+    static char pix[] = "1194a8f0-ac1f-40f3-8f89-524697c072ea";
     AppFonts::pushInput();
     ImGui::SetCursorPosX(25);
     ImGui::Text("Pix (Brazil)");
     ImGui::SameLine();
     ImGui::SetCursorPosX(120);
-    ImGui::SetNextItemWidth(150);
+    ImGui::SetNextItemWidth(250);
     ImGui::InputText("### Donate Pix", pix, 64, ImGuiInputTextFlags_ReadOnly);
     ImGui::SameLine();
     ImGui::Text("   (Flavio Freitas)");

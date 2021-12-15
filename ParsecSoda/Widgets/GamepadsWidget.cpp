@@ -10,7 +10,7 @@ bool GamepadsWidget::render()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
 
     static ImVec2 cursor;
-    static bool isWindowLocked = true;
+    static bool isWindowLocked = false;
     static bool isConnectionButtonPressed = false;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
 
@@ -105,261 +105,273 @@ bool GamepadsWidget::render()
 
     ImGui::Dummy(ImVec2(0, 20));
 
-    //if (_hosting.getGamepadClient().isBusy())
-    //{
-    //    LoadingRingWidget::render();
-    //}
-    //else
+    for (size_t i = 0; i < _gamepads.size(); ++i)
     {
-        for (size_t i = 0; i < _gamepads.size(); ++i)
-        {
-            AGamepad* gi = _gamepads[i];
-            static uint32_t userID;
-            userID = gi->owner.guest.userID;
+        AGamepad* gi = _gamepads[i];
+        static uint32_t userID;
+        userID = gi->owner.guest.userID;
 
-            ImGui::BeginChild(
-                (string("##Gamepad " ) + to_string(i)).c_str(),
-                ImVec2(size.x, 50)
-            );
+        ImGui::BeginChild(
+            (string("##Gamepad " ) + to_string(i)).c_str(),
+            ImVec2(size.x, 50)
+        );
 
-            cursor = ImGui::GetCursorPos();
+        cursor = ImGui::GetCursorPos();
         
-            static int xboxIndex = 0, padIndex = 0;
-            xboxIndex = (int)gi->getIndex();
-            padIndex = xboxIndex + 1;
-            static bool isIndexSuccess = false;
-            isIndexSuccess = gi->isConnected() && padIndex > 0 && padIndex <= 4;
+        static int xboxIndex = 0, padIndex = 0;
+        xboxIndex = (int)gi->getIndex();
+        padIndex = xboxIndex + 1;
+        static bool isIndexSuccess = false;
+        isIndexSuccess = gi->isConnected() && padIndex > 0 && padIndex <= 4;
 
-            ImGui::BeginGroup();
+        ImGui::BeginGroup();
+        {
+            static vector<ID3D11ShaderResourceView*> xboxIcons { AppIcons::xbox1, AppIcons::xbox2, AppIcons::xbox3, AppIcons::xbox4 };
+            cursor = ImGui::GetCursorPos();
+
+            switch (gi->type())
             {
-                static vector<ID3D11ShaderResourceView*> xboxIcons { AppIcons::xbox1, AppIcons::xbox2, AppIcons::xbox3, AppIcons::xbox4 };
-                cursor = ImGui::GetCursorPos();
-
-                switch (gi->type())
+            case AGamepad::Type::XBOX:
+                if (isIndexSuccess)
                 {
-                case AGamepad::Type::XBOX:
-                    if (isIndexSuccess)
-                    {
-                        ImGui::Image(
-                            AppIcons::xbox,
-                            ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::white
-                        );
-
-                        ImGui::SetCursorPos(cursor);
-                        ImGui::Image(
-                            xboxIcons[xboxIndex],
-                            ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary
-                        );
-                        TitleTooltipWidget::render(
-                            (string() + "XInput " + to_string(padIndex)).c_str(),
-                            (
-                                string("This controller is using XInput slot ") + to_string(padIndex) + ".\n\n" +
-                                "* Remember:\nYour physical controllers may also occupy XInput slots."
-                                ).c_str()
-                        );
-
-                    }
-                    else
-                    {
-                        ImGui::Image(
-                            AppIcons::xinput,
-                            ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
-                        );
-                        TitleTooltipWidget::render(
-                            (string() + "XBox controller").c_str(),
-                            (
-                                string("This is an XBox controller out of XInput range.") + "\n\n" +
-                                "* It still works, but as a generic controller without XInput features."
-                                ).c_str()
-                        );
-                    }
-                    break;
-                case AGamepad::Type::DUALSHOCK:
                     ImGui::Image(
-                        AppIcons::dinput,
+                        AppIcons::xbox,
+                        ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::white
+                    );
+
+                    ImGui::SetCursorPos(cursor);
+                    ImGui::Image(
+                        xboxIcons[xboxIndex],
+                        ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary
+                    );
+                    TitleTooltipWidget::render(
+                        (string() + "XInput " + to_string(padIndex)).c_str(),
+                        (
+                            string("This controller is using XInput slot ") + to_string(padIndex) + ".\n\n" +
+                            "* Remember:\nYour physical controllers may also occupy XInput slots."
+                            ).c_str()
+                    );
+
+                }
+                else
+                {
+                    ImGui::Image(
+                        AppIcons::xinput,
                         ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
                     );
                     TitleTooltipWidget::render(
-                        (string() + "Dualshock controller").c_str(),
+                        (string() + "XBox controller").c_str(),
                         (
-                            string("This is a Dualshock 4 controller.")).c_str()
+                            string("This is an XBox controller out of XInput range.") + "\n\n" +
+                            "* It still works, but as a generic controller without XInput features."
+                            ).c_str()
                     );
-                    break;
-                default:
-                    break;
                 }
+                break;
+            case AGamepad::Type::DUALSHOCK:
+                ImGui::Image(
+                    AppIcons::dinput,
+                    ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
+                );
+                TitleTooltipWidget::render(
+                    (string() + "Dualshock controller").c_str(),
+                    (
+                        string("This is a Dualshock 4 controller.")).c_str()
+                );
+                break;
+            default:
+                break;
             }
-            ImGui::EndGroup();
+        }
+        ImGui::EndGroup();
 
-            ImGui::SameLine();
+        ImGui::SameLine();
 
-            if (IconButton::render(AppIcons::back, AppColors::primary))
+        if (IconButton::render(AppIcons::back, AppColors::primary))
+        {
+            gi->clearOwner();
+        }
+        TitleTooltipWidget::render("Strip gamepad", "Unlink current user from this gamepad.");
+
+        ImGui::SameLine();
+
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi->isConnected()))
+        {
+            if (gi->isConnected()) gi->disconnect();
+            else gi->connect();
+
+            isConnectionButtonPressed = true;
+        }
+        if (gi->isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
+        else                  TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
+    
+        ImGui::SameLine();
+
+        if (gi->isLocked())
+        {
+            if (IconButton::render(AppIcons::lock, AppColors::negative))
             {
-                gi->clearOwner();
+                gi->toggleLocked();
             }
-            TitleTooltipWidget::render("Strip gamepad", "Unlink current user from this gamepad.");
-
-            ImGui::SameLine();
-
-            if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi->isConnected()))
+            TitleTooltipWidget::render("Locked gamepad", "Lock this specific gamepad, preventing inputs or picking.");
+        }
+        else
+        {
+            if (IconButton::render(AppIcons::unlock, AppColors::positive))
             {
-                if (gi->isConnected()) gi->disconnect();
-                else gi->connect();
-
-                isConnectionButtonPressed = true;
+                gi->toggleLocked();
             }
-            if (gi->isConnected()) TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
-            else                  TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
+            TitleTooltipWidget::render("Unlocked gamepad", "Unlock this specific gamepad, allowing inputs and picking.");
+        }
 
-            ImGui::SameLine();
+        ImGui::SameLine();
         
-            static float gamepadLabelWidth;
-            gamepadLabelWidth = size.x - 180.0f;
+        static float gamepadLabelWidth;
+        gamepadLabelWidth = size.x - 230.0f;
         
-            ImGui::BeginChild(
-                (string("##name ") + to_string(i)).c_str(),
-                ImVec2(gamepadLabelWidth, 50.0f)
-            );
-            cursor = ImGui::GetCursorPos();
+        ImGui::BeginChild(
+            (string("##name ") + to_string(i)).c_str(),
+            ImVec2(gamepadLabelWidth, 50.0f)
+        );
+        cursor = ImGui::GetCursorPos();
 
-            ImGui::Dummy(ImVec2(0,8));
+        ImGui::Dummy(ImVec2(0,8));
 
 
-            static string name, id;
-            if (gi->owner.guest.isValid())
-            {
-                id = string() + "(# " + to_string(gi->owner.guest.userID) + ")\t";
-                name = gi->owner.guest.name;
-            }
-            else if (_hosting.getGamepadClient().isPuppetMaster && gi->isPuppet)
-            {
-                id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
-                name = _hosting.getHost().name;
-            }
-            else {
-                id = "    ";
-                name = gi->owner.guest.name;
-            }
+        static string name, id;
+        if (gi->owner.guest.isValid())
+        {
+            id = string() + "(# " + to_string(gi->owner.guest.userID) + ")\t";
+            name = gi->owner.guest.name;
+        }
+        else if (_hosting.getGamepadClient().isPuppetMaster && gi->isPuppet)
+        {
+            id = string() + "(# " + to_string(_hosting.getHost().userID) + ")\t";
+            name = _hosting.getHost().name;
+        }
+        else {
+            id = "    ";
+            name = gi->owner.guest.name;
+        }
 
-            AppStyle::pushLabel();
-            ImGui::TextWrapped(id.c_str());
-            AppStyle::pop();
+        AppStyle::pushLabel();
+        ImGui::TextWrapped(id.c_str());
+        AppStyle::pop();
+
+        AppFonts::pushInput();
+        AppColors::pushPrimary();
+        ImGui::SetNextItemWidth(gamepadLabelWidth);
+        ImGui::Text(name.c_str());
+        AppColors::pop();
+        AppFonts::pop();
+
+        static ImVec2 backupCursor;
+        backupCursor = ImGui::GetCursorPos();
+
+        ImGui::SetCursorPos(cursor);
+        ImGui::Button(
+            (string("##gamepad button") + to_string(i + 1)).c_str(),
+            ImVec2(gamepadLabelWidth, 50.0f)
+        );
+
+        if (ImGui::BeginDragDropSource())
+        {
+            ImGui::SetDragDropPayload("Gamepad", &i, sizeof(int));
 
             AppFonts::pushInput();
             AppColors::pushPrimary();
-            ImGui::SetNextItemWidth(gamepadLabelWidth);
-            ImGui::Text(name.c_str());
+            ImGui::Text("%s", (gi->owner.guest.isValid() ? gi->owner.guest.name.c_str() : "Empty gamepad"));
             AppColors::pop();
             AppFonts::pop();
 
-            static ImVec2 backupCursor;
-            backupCursor = ImGui::GetCursorPos();
+            AppStyle::pushLabel();
+            ImGui::Text("Drop into another Gamepad to swap.");
+            AppStyle::pop();
 
-            ImGui::SetCursorPos(cursor);
-            ImGui::Button(
-                (string("##gamepad button") + to_string(i + 1)).c_str(),
-                ImVec2(gamepadLabelWidth, 50.0f)
-            );
-
-            if (ImGui::BeginDragDropSource())
-            {
-                ImGui::SetDragDropPayload("Gamepad", &i, sizeof(int));
-
-                AppFonts::pushInput();
-                AppColors::pushPrimary();
-                ImGui::Text("%s", (gi->owner.guest.isValid() ? gi->owner.guest.name.c_str() : "Empty gamepad"));
-                AppColors::pop();
-                AppFonts::pop();
-
-                AppStyle::pushLabel();
-                ImGui::Text("Drop into another Gamepad to swap.");
-                AppStyle::pop();
-
-                ImGui::EndDragDropSource();
-            }
-            if (ImGui::BeginDragDropTarget())
-            {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Guest"))
-                {
-                    if (payload->DataSize == sizeof(int))
-                    {
-                        int guestIndex = *(const int*)payload->Data;
-                        if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
-                        {
-                            gi->owner.guest.copy(_hosting.getGuestList()[guestIndex]);
-                        }
-                    }
-                }
-                else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Gamepad"))
-                {
-                    if (payload->DataSize == sizeof(int))
-                    {
-                        int sourceIndex = *(const int*)payload->Data;
-                        if (sourceIndex >= 0 && sourceIndex < _gamepads.size())
-                        {
-                            static GuestDevice backupOwner;
-                            backupOwner.copy(_gamepads[i]->owner);
-                        
-                            _gamepads[i]->copyOwner(_gamepads[sourceIndex]);
-                            _gamepads[sourceIndex]->owner.copy(backupOwner);
-                            _gamepads[i]->clearState();
-                            _gamepads[sourceIndex]->clearState();
-                        }
-                    }
-                }
-
-                ImGui::EndDragDropTarget();
-            }
-
-            ImGui::SetCursorPos(backupCursor);
-
-            ImGui::EndChild();
-        
-            ImGui::SameLine();
-        
-            ImGui::BeginGroup();
-            if (_hosting.getGamepadClient().isPuppetMaster && gi->isPuppet)
-            {
-                ImGui::Dummy(ImVec2(0, 8));
-                ImGui::Image(AppIcons::puppet, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary);
-                TitleTooltipWidget::render("Puppet", "This gamepad is under control of Master of Puppets.");
-            }
-            else
-            {
-                static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-                ImGui::Dummy(ImVec2(0.0f, 12.0f));
-                ImGui::SetNextItemWidth(40);
-                deviceIndices[i] = gi->owner.deviceID;
-
-                AppFonts::pushTitle();
-                if (ImGui::DragInt(
-                    (string("##DeviceIndex") + to_string(i)).c_str(),
-                    &deviceIndices[i], 0.1f, -1, 65536
-                ))
-                {
-                    gi->owner.deviceID = deviceIndices[i];
-                }
-                if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-                AppFonts::pop();
-
-                TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
-            }
-            ImGui::EndGroup();
-            ImGui::EndChild();
-
-            ImGui::Dummy(ImVec2(0, 2));
-
-            ImGui::BeginGroup();
-            ImGui::Dummy(ImVec2(96, 0));
-        
-            ImGui::SameLine();
-
-            AnimatedGamepadWidget::render(gi->getState().Gamepad);
-
-            ImGui::EndGroup();
-
-            ImGui::Dummy(ImVec2(0, 5));
+            ImGui::EndDragDropSource();
         }
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Guest"))
+            {
+                if (payload->DataSize == sizeof(int))
+                {
+                    int guestIndex = *(const int*)payload->Data;
+                    if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
+                    {
+                        gi->owner.guest.copy(_hosting.getGuestList()[guestIndex]);
+                    }
+                }
+            }
+            else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Gamepad"))
+            {
+                if (payload->DataSize == sizeof(int))
+                {
+                    int sourceIndex = *(const int*)payload->Data;
+                    if (sourceIndex >= 0 && sourceIndex < _gamepads.size())
+                    {
+                        static GuestDevice backupOwner;
+                        backupOwner.copy(_gamepads[i]->owner);
+                        
+                        _gamepads[i]->copyOwner(_gamepads[sourceIndex]);
+                        _gamepads[sourceIndex]->owner.copy(backupOwner);
+                        _gamepads[i]->clearState();
+                        _gamepads[sourceIndex]->clearState();
+                    }
+                }
+            }
+
+            ImGui::EndDragDropTarget();
+        }
+
+        ImGui::SetCursorPos(backupCursor);
+
+        ImGui::EndChild();
+        
+        ImGui::SameLine();
+        
+        ImGui::BeginGroup();
+        if (_hosting.getGamepadClient().isPuppetMaster && gi->isPuppet)
+        {
+            ImGui::Dummy(ImVec2(0, 8));
+            ImGui::Image(AppIcons::puppet, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::primary);
+            TitleTooltipWidget::render("Puppet", "This gamepad is under control of Master of Puppets.");
+        }
+        else
+        {
+            static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+            ImGui::Dummy(ImVec2(0.0f, 12.0f));
+            ImGui::SetNextItemWidth(40);
+            deviceIndices[i] = gi->owner.deviceID;
+
+            AppFonts::pushTitle();
+            if (ImGui::DragInt(
+                (string("##DeviceIndex") + to_string(i)).c_str(),
+                &deviceIndices[i], 0.1f, -1, 65536
+            ))
+            {
+                gi->owner.deviceID = deviceIndices[i];
+            }
+            if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+            AppFonts::pop();
+
+            TitleTooltipWidget::render("Device index", "A guest may have multiple gamepads in the same machine.");
+        }
+        ImGui::EndGroup();
+        ImGui::EndChild();
+
+        ImGui::Dummy(ImVec2(0, 2));
+
+        ImGui::BeginGroup();
+        ImGui::Dummy(ImVec2(96, 0));
+        
+        ImGui::SameLine();
+
+        AnimatedGamepadWidget::render(gi->getState().Gamepad);
+
+        ImGui::EndGroup();
+
+        ImGui::Dummy(ImVec2(0, 5));
     }
 
     ImGui::PopStyleVar();

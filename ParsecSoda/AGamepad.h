@@ -67,8 +67,9 @@ public:
 	void copyOwner(AGamepad* pad);
 	const bool isOwned();
 	bool isConnected() const;
-	GuestDevice owner = GuestDevice();
-
+	const bool isLocked() const;
+	void setLocked(const bool value);
+	void toggleLocked();
 
 	// Child specific implementations
 	virtual bool alloc() = 0;
@@ -79,6 +80,7 @@ public:
 	virtual void setState(XINPUT_STATE state) = 0;
 	virtual void setStateSafe(XINPUT_STATE state) = 0;
 
+	GuestDevice owner = GuestDevice();
 	bool isPuppet = false;
 	ParsecDSO * parsec;
 
@@ -89,6 +91,7 @@ protected:
 	ULONG _index = -1;
 	bool _isAlive = false;
 	bool _isConnected = false;
+	bool _isLocked = false;
 
 	XINPUT_STATE _currentState;
 };

@@ -466,7 +466,7 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && (prefs.ignoreDeviceID || gamepadState.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadState.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadState, pad->getState(), prefs));
 				return true;
@@ -482,7 +482,7 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && (prefs.ignoreDeviceID || gamepadAxis.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadAxis.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadAxis, pad->getState(), prefs));
 				return true;
@@ -498,7 +498,7 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && (prefs.ignoreDeviceID || gamepadButton.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadButton.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadButton, pad->getState(), prefs));
 				return true;
@@ -514,14 +514,14 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && (prefs.ignoreDeviceID || pad->owner.isKeyboard))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || pad->owner.isKeyboard))
 			{
 				pad->setStateSafe(toXInput(keyboard, pad->getKeyboard(), pad->getState(), prefs));
 				return true;
 			}
 		}
 		return false;
-		});
+	});
 }
 
 bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int currentSlots, bool isKeyboard, GuestPreferences prefs)
@@ -532,7 +532,7 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 	}
 	
 	return reduceUntilFirst([&](AGamepad* gamepad) {
-		if (!(isPuppetMaster && gamepad->isPuppet) && (gamepad->isAttached() && !gamepad->owner.guest.isValid()))
+		if (!(isPuppetMaster && gamepad->isPuppet) && (!gamepad->isLocked() && gamepad->isAttached() && !gamepad->owner.guest.isValid()))
 		{
 			gamepad->setOwner(guest, deviceID, isKeyboard);
 			return true;
@@ -643,6 +643,14 @@ bool GamepadClient::findPreferences(uint32_t guestUserID, function<void(GamepadC
 bool GamepadClient::isBusy()
 {
 	return _isBusy;
+}
+
+void GamepadClient::toggleLockGamepad(int index)
+{
+	if (index >= 0 && index < gamepads.size())
+	{
+		gamepads[index]->toggleLocked();
+	}
 }
 
 

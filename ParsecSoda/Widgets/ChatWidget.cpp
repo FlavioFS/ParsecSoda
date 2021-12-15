@@ -11,7 +11,7 @@ bool ChatWidget::render()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
 
     static bool isClearChat = false;
-    static bool isWindowLocked = true;
+    static bool isWindowLocked = false;
     static Stopwatch stopwatch = Stopwatch(2000);
     stopwatch.start();
 

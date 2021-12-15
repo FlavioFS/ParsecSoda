@@ -113,3 +113,18 @@ bool AGamepad::isConnected() const
 {
 	return _isConnected;
 }
+
+const bool AGamepad::isLocked() const
+{
+	return _isLocked;
+}
+
+void AGamepad::setLocked(const bool value)
+{
+	_isLocked = value;
+}
+
+void AGamepad::toggleLocked()
+{
+	setLocked(!_isLocked);
+}
