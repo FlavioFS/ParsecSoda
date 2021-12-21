@@ -73,12 +73,12 @@ void Hosting::init()
 	_gamepadClient.setParsec(_parsec);
 	_gamepadClient.init();
 
+	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
+
 	_createGamepadsThread = thread([&]() {
-		_gamepadClient.createMaximumGamepads();
+		_gamepadClient.createAllGamepads();
 		_createGamepadsThread.detach();
 	});
-	
-	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
 
 	audioOut.fetchDevices();
 	vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
@@ -210,7 +210,7 @@ BanList& Hosting::getBanList()
 	return _banList;
 }
 
-vector<Gamepad>& Hosting::getGamepads()
+vector<AGamepad*>& Hosting::getGamepads()
 {
 	return _gamepadClient.gamepads;
 }
@@ -332,7 +332,7 @@ void Hosting::stripGamepad(int index)
 	_gamepadClient.clearOwner(index);
 }
 
-void Hosting::setOwner(Gamepad& gamepad, Guest newOwner, int padId)
+void Hosting::setOwner(AGamepad& gamepad, Guest newOwner, int padId)
 {
 	bool found = _gamepadClient.findPreferences(newOwner.userID, [&](GamepadClient::GuestPreferences& prefs) {
 		gamepad.setOwner(newOwner, padId, prefs.mirror);

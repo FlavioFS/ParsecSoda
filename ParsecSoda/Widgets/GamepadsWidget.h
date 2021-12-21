@@ -4,10 +4,12 @@
 #include "../Hosting.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
-#include "../Debouncer.h"
+#include "../Stopwatch.h"
 #include "ToggleIconButtonWidget.h"
 #include "TitleTooltipWidget.h"
 #include "AnimatedGamepadWidget.h"
+#include "LoadingRingWidget.h"
+#include "IntRangeWidget.h"
 #include "LoadingRingWidget.h"
 
 
@@ -23,5 +25,5 @@ private:
 	
 	// Attributes
 	string _logBuffer;
-	vector<Gamepad>& _gamepads;
+	vector<AGamepad*>& _gamepads;
 };

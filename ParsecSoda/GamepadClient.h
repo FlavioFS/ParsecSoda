@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Gamepad.h"
+#include "XBoxGamepad.h"
+#include "DualshockGamepad.h"
 #include <Windows.h>
 #include <Xinput.h>
 #include "ViGEm/Client.h"
@@ -12,6 +13,7 @@
 #include "GuestData.h"
 #include "KeyboardMaps.h"
 #include "GuestList.h"
+#include "MetadataCache.h"
 
 using namespace std;
 
@@ -51,16 +53,18 @@ public:
 	~GamepadClient();
 	void setParsec(ParsecDSO* parsec);
 	bool init();
-	Gamepad createGamepad(uint16_t index);
-	void createMaximumGamepads();
+	AGamepad* createGamepad(AGamepad::Type type = AGamepad::Type::XBOX);
+	void createAllGamepads();
 	void connectAllGamepads();
 	void disconnectAllGamepads();
 	void sortGamepads();
+	void resize(size_t xboxCount, size_t dualshockCount);
 	void resetAll();
 	void toggleLock();
-	Gamepad connectNextGamepad();
+	void toggleLockGamepad(int index);
+	AGamepad* connectNextGamepad();
 	void release();
-	Gamepad getGamepad(int index);
+	AGamepad* getGamepad(int index);
 	int clearAFK(GuestList &guests);
 
 	bool disconnect(int gamepadIndex);
@@ -73,8 +77,10 @@ public:
 	bool toggleIgnoreDeviceID(uint32_t guestUserID);
 	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
+
+	bool isBusy();
 	
-	vector<Gamepad> gamepads;
+	vector<AGamepad*> gamepads;
 	vector<GuestPreferences> guestPreferences;
 
 	bool lock = false;
@@ -82,15 +88,12 @@ public:
 
 
 private:
+	bool _isBusy = false;
+
 	bool sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 	bool sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
-
-	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs);
 
 	void releaseGamepads();
 	void setMirror(uint32_t guestUserID, bool mirror);
@@ -100,8 +103,14 @@ private:
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
 
-	void reduce(function<void(Gamepad&)> func);
-	bool reduceUntilFirst(function<bool(Gamepad&)> func);
+	void reduce(function<void(AGamepad*)> func);
+	bool reduceUntilFirst(function<bool(AGamepad*)> func);
+
+	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs);
+
 
 	PVIGEM_CLIENT _client;
 	ParsecDSO* _parsec;

@@ -39,53 +39,137 @@ bool GamepadClient::init()
 	return true;
 }
 
-Gamepad GamepadClient::createGamepad(uint16_t index)
+AGamepad* GamepadClient::createGamepad(AGamepad::Type type)
 {
 	if (_client == nullptr)
 	{
-		return Gamepad();
+		return nullptr;
 	}
 
-	Gamepad gamepad(_parsec, _client);
-	gamepads.push_back(gamepad);
+	AGamepad* gamepad = nullptr;
+	switch (type)
+	{
+	case AGamepad::Type::DUALSHOCK:
+		gamepad = new DualshockGamepad(_parsec, _client);
+		break;
+	default:
+	case AGamepad::Type::XBOX:
+		gamepad = new XBoxGamepad(_parsec, _client);
+		break;
+	}
+	
+	if (gamepad != nullptr)
+		gamepads.push_back(gamepad);
+
 	return gamepad;
 }
 
-void GamepadClient::createMaximumGamepads()
+void GamepadClient::createAllGamepads()
 {
-	for (uint16_t i = 0; i < 8; i++)
+	_isBusy = true;
+
+	for (uint16_t i = 0; i < MetadataCache::preferences.xboxPuppetCount; i++)
 	{
-		this->createGamepad(i);
-		Sleep(200);
+		this->createGamepad(AGamepad::Type::XBOX);
 	}
+
+	for (uint16_t i = 0; i < MetadataCache::preferences.ds4PuppetCount; i++)
+	{
+		this->createGamepad(AGamepad::Type::DUALSHOCK);
+	}
+
+	sortGamepads();
+	_isBusy = false;
+	Sleep(200);
 }
 
 void GamepadClient::connectAllGamepads()
 {
-	reduce([](Gamepad& pad) {
-		pad.connect();
+	reduce([](AGamepad* pad) {
+		pad->connect();
 		Sleep(200);
 	});
 }
 
 void GamepadClient::disconnectAllGamepads()
 {
-	reduce([](Gamepad& pad) {
-		pad.disconnect();
+	reduce([](AGamepad* pad) {
+		pad->disconnect();
 	});
 }
 
 void GamepadClient::sortGamepads()
 {
-	std::vector<Gamepad> sorted = gamepads;
+	std::vector<AGamepad*> sorted = gamepads;
 	std::sort(
 		sorted.begin(),
 		sorted.end(),
-		[](const Gamepad a, const Gamepad b) {
-			return a.getIndex() < b.getIndex();
+		[](const AGamepad* a, const AGamepad* b) {
+			if (a->type() == AGamepad::Type::DUALSHOCK && b->type() == AGamepad::Type::XBOX) return false;
+			if (a->type() == AGamepad::Type::XBOX && b->type() == AGamepad::Type::DUALSHOCK) return true;
+			return a->getIndex() < b->getIndex();
 		}
 	);
 	gamepads = sorted;
+}
+
+void GamepadClient::resize(size_t xboxCount, size_t dualshockCount)
+{
+	if (_isBusy) return;
+
+	size_t xi = 0, di = 0;
+	vector<AGamepad*> newGamepads;
+
+	lock = true;
+	_isBusy = true;
+
+	reduce([&xi, &di, &xboxCount, &dualshockCount, &newGamepads](AGamepad* pad) {
+		switch (pad->type())
+		{
+		case AGamepad::Type::XBOX:
+			if (xi < xboxCount) {
+				newGamepads.push_back(pad);
+				xi++;
+			}
+			else {
+				pad->release();
+			}
+			break;
+		case AGamepad::Type::DUALSHOCK:
+			if (di < dualshockCount) {
+				newGamepads.push_back(pad);
+				di++;
+			}
+			else {
+				pad->release();
+			}
+			break;
+		default:
+			break;
+		}
+	});
+
+	if (xi < xboxCount)
+	{
+		for (size_t i = 0; i < xboxCount-xi; i++)
+		{
+			newGamepads.push_back(this->createGamepad(AGamepad::Type::XBOX));
+		}
+	}
+	if (di < dualshockCount)
+	{
+		for (size_t i = 0; i < dualshockCount-di; i++)
+		{
+			newGamepads.push_back(this->createGamepad(AGamepad::Type::DUALSHOCK));
+		}
+	}
+
+	gamepads.clear();
+	gamepads = newGamepads;
+	sortGamepads();
+
+	_isBusy = false;
+	lock = false;
 }
 
 void GamepadClient::resetAll()
@@ -94,7 +178,7 @@ void GamepadClient::resetAll()
 		lock = true;
 		release();
 		init();
-		createMaximumGamepads();
+		createAllGamepads();
 		connectAllGamepads();
 		lock = false;
 		_resetAllThread.detach();
@@ -104,18 +188,18 @@ void GamepadClient::resetAll()
 void GamepadClient::toggleLock()
 {
 	lock = !lock;
-	reduce([&](Gamepad& pad) {
-		pad.clearState();
+	reduce([&](AGamepad* pad) {
+		pad->clearState();
 	});
 }
 
 
-Gamepad GamepadClient::connectNextGamepad()
+AGamepad* GamepadClient::connectNextGamepad()
 {
-	Gamepad rv;
+	AGamepad* rv;
 
-	bool success = reduceUntilFirst([&](Gamepad& pad) {
-		if (pad.connect())
+	bool success = reduceUntilFirst([&](AGamepad* pad) {
+		if (pad->connect())
 		{
 			rv = pad;
 			return true;
@@ -128,7 +212,7 @@ Gamepad GamepadClient::connectNextGamepad()
 		return rv;
 	}
 	
-	return Gamepad();
+	return nullptr;
 }
 
 bool GamepadClient::disconnect(int gamepadIndex)
@@ -137,7 +221,8 @@ bool GamepadClient::disconnect(int gamepadIndex)
 	{
 		return false;
 	}
-	bool rv = gamepads[gamepadIndex].disconnect();
+
+	bool rv = gamepads[gamepadIndex]->disconnect();
 	return rv;
 }
 
@@ -145,7 +230,7 @@ bool GamepadClient::clearOwner(int gamepadIndex)
 {
 	if (gamepadIndex >= 0 || gamepadIndex < gamepads.size())
 	{
-		gamepads[gamepadIndex].clearOwner();
+		gamepads[gamepadIndex]->clearOwner();
 		return true;
 	}
 	return false;
@@ -163,27 +248,27 @@ void GamepadClient::release()
 }
 
 
-Gamepad GamepadClient::getGamepad(int index)
+AGamepad* GamepadClient::getGamepad(int index)
 {
 	if (index >= 0 && index < gamepads.size())
 	{
 		return gamepads[index];
 	}
 
-	return Gamepad();
+	return nullptr;
 }
 
 int GamepadClient::clearAFK(GuestList &guests)
 {
 	int clearCount = 0;
 
-	reduce([&](Gamepad& pad) {
-		if (pad.isOwned())
+	reduce([&](AGamepad* pad) {
+		if (pad->isOwned())
 		{
 			Guest guest;
-			if (!guests.find(pad.owner.guest.userID, &guest))
+			if (!guests.find(pad->owner.guest.userID, &guest))
 			{
-				pad.clearOwner();
+				pad->clearOwner();
 				clearCount++;
 			}
 		}
@@ -196,10 +281,10 @@ int GamepadClient::onQuit(Guest& guest)
 {
 	int result = 0;
 
-	reduce([&](Gamepad& gamepad) {
-		if (gamepad.owner.guest.userID == guest.userID)
+	reduce([&](AGamepad* gamepad) {
+		if (gamepad->owner.guest.userID == guest.userID)
 		{
-			gamepad.clearOwner();
+			gamepad->clearOwner();
 			result++;
 		}
 	});
@@ -267,22 +352,23 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 		return PICK_REQUEST::OUT_OF_RANGE;
 	}
 
-	if (!gamepads[gamepadIndex].isConnected())
+	AGamepad* pad = gamepads[gamepadIndex];
+	if (!pad->isConnected())
 	{
 		return PICK_REQUEST::DISCONNECTED;
 	}
 
-	if (gamepads[gamepadIndex].owner.guest.userID == guest.userID)
+	if (pad->owner.guest.userID == guest.userID)
 	{
 		return PICK_REQUEST::SAME_USER;
 	}
 
-	if (gamepads[gamepadIndex].isOwned())
+	if (pad->isOwned())
 	{
 		return PICK_REQUEST::TAKEN;
 	}
 
-	if (isPuppetMaster && gamepads[gamepadIndex].isPuppet)
+	if (isPuppetMaster && pad->isPuppet)
 	{
 		return PICK_REQUEST::PUPPET;
 	}
@@ -298,12 +384,12 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 		return PICK_REQUEST::LIMIT_BLOCK;
 	}
 
-	bool success = reduceUntilFirst([&](Gamepad& gamepad) {
-		if (gamepad.owner.guest.userID == guest.userID)
+	bool success = reduceUntilFirst([&](AGamepad* gamepad) {
+		if (gamepad->owner.guest.userID == guest.userID)
 		{
-			gamepads[gamepadIndex].clearState();
-			gamepads[gamepadIndex].copyOwner(gamepad);
-			gamepad.clearOwner();
+			pad->clearState();
+			pad->copyOwner(gamepad);
+			gamepad->clearOwner();
 			return true;
 		}
 
@@ -376,13 +462,13 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 
 bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int &slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
-		if (guest.userID == pad.owner.guest.userID)
+	return reduceUntilFirst([&](AGamepad* pad) {
+		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadState.id == pad.owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadState.id == pad->owner.deviceID))
 			{
-				pad.setStateSafe(toXInput(gamepadState, pad.getState(), prefs));
+				pad->setStateSafe(toXInput(gamepadState, pad->getState(), prefs));
 				return true;
 			}
 		}
@@ -392,13 +478,13 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 
 bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
-		if (guest.userID == pad.owner.guest.userID)
+	return reduceUntilFirst([&](AGamepad* pad) {
+		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadAxis.id == pad.owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadAxis.id == pad->owner.deviceID))
 			{
-				pad.setStateSafe(toXInput(gamepadAxis, pad.getState(), prefs));
+				pad->setStateSafe(toXInput(gamepadAxis, pad->getState(), prefs));
 				return true;
 			}
 		}
@@ -408,13 +494,13 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 
 bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepadButton, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
-		if (guest.userID == pad.owner.guest.userID)
+	return reduceUntilFirst([&](AGamepad* pad) {
+		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || gamepadButton.id == pad.owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadButton.id == pad->owner.deviceID))
 			{
-				pad.setStateSafe(toXInput(gamepadButton, pad.getState(), prefs));
+				pad->setStateSafe(toXInput(gamepadButton, pad->getState(), prefs));
 				return true;
 			}
 		}
@@ -424,18 +510,18 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 
 bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs)
 {
-	return reduceUntilFirst([&](Gamepad& pad) {
-		if (guest.userID == pad.owner.guest.userID)
+	return reduceUntilFirst([&](AGamepad* pad) {
+		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad.isPuppet) && (prefs.ignoreDeviceID || pad.owner.isKeyboard))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || pad->owner.isKeyboard))
 			{
-				pad.setStateSafe(toXInput(keyboard, pad.getKeyboard(), pad.getState(), prefs));
+				pad->setStateSafe(toXInput(keyboard, pad->getKeyboard(), pad->getState(), prefs));
 				return true;
 			}
 		}
 		return false;
-		});
+	});
 }
 
 bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int currentSlots, bool isKeyboard, GuestPreferences prefs)
@@ -445,10 +531,10 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 		return false;
 	}
 	
-	return reduceUntilFirst([&](Gamepad& gamepad) {
-		if (!(isPuppetMaster && gamepad.isPuppet) && (gamepad.isAttached() && !gamepad.owner.guest.isValid()))
+	return reduceUntilFirst([&](AGamepad* gamepad) {
+		if (!(isPuppetMaster && gamepad->isPuppet) && (!gamepad->isLocked() && gamepad->isAttached() && !gamepad->owner.guest.isValid()))
 		{
-			gamepad.setOwner(guest, deviceID, isKeyboard);
+			gamepad->setOwner(guest, deviceID, isKeyboard);
 			return true;
 		}
 
@@ -458,8 +544,8 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 
 void GamepadClient::releaseGamepads()
 {
-	reduce([](Gamepad& pad) {
-		pad.release();
+	reduce([](AGamepad* pad) {
+		pad->release();
 	});
 
 	gamepads.clear();
@@ -516,18 +602,18 @@ bool GamepadClient::isRequestKeyboard(ParsecMessage message)
 	);
 }
 
-void GamepadClient::reduce(function<void(Gamepad&)> func)
+void GamepadClient::reduce(function<void(AGamepad*)> func)
 {
-	vector<Gamepad>::iterator gi = gamepads.begin();
+	vector<AGamepad*>::iterator gi = gamepads.begin();
 	for (; gi != gamepads.end(); ++gi)
 	{
 		func(*gi);
 	}
 }
 
-bool GamepadClient::reduceUntilFirst(function<bool(Gamepad&)> func)
+bool GamepadClient::reduceUntilFirst(function<bool(AGamepad*)> func)
 {
-	vector<Gamepad>::iterator gi = gamepads.begin();
+	vector<AGamepad*>::iterator gi = gamepads.begin();
 	for (; gi != gamepads.end(); ++gi)
 	{
 		if (func(*gi))
@@ -552,6 +638,19 @@ bool GamepadClient::findPreferences(uint32_t guestUserID, function<void(GamepadC
 	}
 
 	return false;
+}
+
+bool GamepadClient::isBusy()
+{
+	return _isBusy;
+}
+
+void GamepadClient::toggleLockGamepad(int index)
+{
+	if (index >= 0 && index < gamepads.size())
+	{
+		gamepads[index]->toggleLocked();
+	}
 }
 
 
@@ -682,39 +781,39 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STAT
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
 {
 	XINPUT_STATE result = previousState;
 
 	// Left Stick
 	if (key.code == _keyboardMap.LLeft)
 	{
-		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MIN;
-		else result.Gamepad.sThumbLX = keyboard.LRight ? GAMEPAD_STICK_MAX : 0;
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_SHORT_MIN;
+		else result.Gamepad.sThumbLX = keyboard.LRight ? GAMEPAD_SHORT_MAX : 0;
 		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, key.pressed);
 		keyboard.LLeft = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.LRight)
 	{
-		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_STICK_MAX;
-		else result.Gamepad.sThumbLX = keyboard.LLeft ? GAMEPAD_STICK_MIN : 0;
+		if (key.pressed) result.Gamepad.sThumbLX = GAMEPAD_SHORT_MAX;
+		else result.Gamepad.sThumbLX = keyboard.LLeft ? GAMEPAD_SHORT_MIN : 0;
 		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, key.pressed);
 		keyboard.LRight = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.LUp)
 	{
-		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MAX;
-		else result.Gamepad.sThumbLY = keyboard.LDown ? GAMEPAD_STICK_MIN : 0;
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_SHORT_MAX;
+		else result.Gamepad.sThumbLY = keyboard.LDown ? GAMEPAD_SHORT_MIN : 0;
 		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP, key.pressed);
 		keyboard.LUp = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.LDown)
 	{
-		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_STICK_MIN;
-		else result.Gamepad.sThumbLY = keyboard.LUp ? GAMEPAD_STICK_MAX : 0;
+		if (key.pressed) result.Gamepad.sThumbLY = GAMEPAD_SHORT_MIN;
+		else result.Gamepad.sThumbLY = keyboard.LUp ? GAMEPAD_SHORT_MAX : 0;
 		if (prefs.mirror) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, key.pressed);
 		keyboard.LDown = key.pressed;
 	}
@@ -722,29 +821,29 @@ XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboa
 	// Right Stick
 	if (key.code == _keyboardMap.RLeft)
 	{
-		if (key.pressed) result.Gamepad.sThumbRX = GAMEPAD_STICK_MIN;
-		else result.Gamepad.sThumbRX = keyboard.RRight ? GAMEPAD_STICK_MAX : 0;
+		if (key.pressed) result.Gamepad.sThumbRX = GAMEPAD_SHORT_MIN;
+		else result.Gamepad.sThumbRX = keyboard.RRight ? GAMEPAD_SHORT_MAX : 0;
 		keyboard.RLeft = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.RRight)
 	{
-		if (key.pressed) result.Gamepad.sThumbRX = GAMEPAD_STICK_MAX;
-		else result.Gamepad.sThumbRX = keyboard.RLeft ? GAMEPAD_STICK_MIN : 0;
+		if (key.pressed) result.Gamepad.sThumbRX = GAMEPAD_SHORT_MAX;
+		else result.Gamepad.sThumbRX = keyboard.RLeft ? GAMEPAD_SHORT_MIN : 0;
 		keyboard.RRight = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.RUp)
 	{
-		if (key.pressed) result.Gamepad.sThumbRY = GAMEPAD_STICK_MAX;
-		else result.Gamepad.sThumbRY = keyboard.RDown ? GAMEPAD_STICK_MIN : 0;
+		if (key.pressed) result.Gamepad.sThumbRY = GAMEPAD_SHORT_MAX;
+		else result.Gamepad.sThumbRY = keyboard.RDown ? GAMEPAD_SHORT_MIN : 0;
 		keyboard.RUp = key.pressed;
 	}
 
 	if (key.code == _keyboardMap.RDown)
 	{
-		if (key.pressed) result.Gamepad.sThumbRY = GAMEPAD_STICK_MIN;
-		else result.Gamepad.sThumbRY = keyboard.RUp ? GAMEPAD_STICK_MAX : 0;
+		if (key.pressed) result.Gamepad.sThumbRY = GAMEPAD_SHORT_MIN;
+		else result.Gamepad.sThumbRY = keyboard.RUp ? GAMEPAD_SHORT_MAX : 0;
 		keyboard.RDown = key.pressed;
 	}
 
@@ -769,8 +868,8 @@ XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, Gamepad::Keyboa
 	if (key.code == _keyboardMap.RB) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, key.pressed);
 
 	// Triggers
-	if (key.code == _keyboardMap.LT) result.Gamepad.bLeftTrigger = (key.pressed ? GAMEPAD_STICK_MAX : GAMEPAD_STICK_MIN);
-	if (key.code == _keyboardMap.RT) result.Gamepad.bRightTrigger = (key.pressed ? GAMEPAD_STICK_MAX : GAMEPAD_STICK_MIN);
+	if (key.code == _keyboardMap.LT) result.Gamepad.bLeftTrigger = (key.pressed ? GAMEPAD_SHORT_MAX : GAMEPAD_SHORT_MIN);
+	if (key.code == _keyboardMap.RT) result.Gamepad.bRightTrigger = (key.pressed ? GAMEPAD_SHORT_MAX : GAMEPAD_SHORT_MIN);
 
 	// Thumbs
 	if (key.code == _keyboardMap.LThumb) Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, key.pressed);

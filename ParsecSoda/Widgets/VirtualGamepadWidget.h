@@ -3,7 +3,7 @@
 #include <cmath>
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
-#include "../Gamepad.h"
+#include "../AGamepad.h"
 #include "../globals/AppColors.h"
 #include "../globals/AppIcons.h"
 #include "IconButton.h"

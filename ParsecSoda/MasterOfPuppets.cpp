@@ -120,13 +120,13 @@ void MasterOfPuppets::mapFromVirtualMaster()
 {
     if (_gamepadClient == nullptr) return;
 
-    vector<Gamepad>& puppets = _gamepadClient->gamepads;
+    vector<AGamepad*>& puppets = _gamepadClient->gamepads;
 
     for (size_t i = 0; i < puppets.size(); ++i)
     {
-        if (puppets[i].isPuppet)
+        if (puppets[i]->isPuppet)
         {
-            puppets[i].setState(_vMasterState);
+            puppets[i]->setState(_vMasterState);
         }
     }
 }
@@ -135,16 +135,16 @@ void MasterOfPuppets::mapFromSDL()
 {
     if (_gamepadClient == nullptr) return;
 
-    vector<Gamepad>& puppets = _gamepadClient->gamepads;
+    vector<AGamepad*>& puppets = _gamepadClient->gamepads;
     vector<SDLGamepad>& gamepads = _sdlReader.getGamepads();
 
     if (masterIndex >= 0 && masterIndex < gamepads.size())
     {
         for (size_t i = 0; i < puppets.size(); ++i)
         {
-            if (puppets[i].isPuppet)
+            if (puppets[i]->isPuppet)
             {
-                puppets[i].setState(gamepads[masterIndex].getGamepadState().state);
+                puppets[i]->setState(gamepads[masterIndex].getGamepadState().state);
             }
         }
     }
@@ -154,16 +154,16 @@ void MasterOfPuppets::mapFromXInput()
 {
     if (_gamepadClient == nullptr) return;
 
-    vector<Gamepad>& puppets = _gamepadClient->gamepads;
+    vector<AGamepad*>& puppets = _gamepadClient->gamepads;
     vector<GamepadState>& gamepads = _xinputReader.readInputs();
 
     if (masterIndex >= 0 && masterIndex < gamepads.size())
     {
         for (size_t i = 0; i < puppets.size(); ++i)
         {
-            if (puppets[i].isPuppet)
+            if (puppets[i]->isPuppet)
             {
-                puppets[i].setState(gamepads[masterIndex].state);
+                puppets[i]->setState(gamepads[masterIndex].state);
             }
         }
     }

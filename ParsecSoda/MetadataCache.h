@@ -60,6 +60,8 @@ public:
 		unsigned int windowH = 720;
 		unsigned int fps = 60;
 		unsigned int bandwidth = 20;
+		unsigned int xboxPuppetCount = 4;
+		unsigned int ds4PuppetCount = 0;
 	};
 
 	static SessionCache loadSessionCache();

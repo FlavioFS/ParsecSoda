@@ -24,10 +24,9 @@
 
 # :moneybag: Donate | Doações
 ## **Brazil**
-Pix  &nbsp; **43.379.701/0001-96** &nbsp; (Flávio Freitas)
+Pix  &nbsp; **1194a8f0-ac1f-40f3-8f89-524697c072ea** &nbsp; (Flávio Freitas)
 
 ## **Worldwide**
- + [**Ko-fi**](https://ko-fi.com/flafdraws)  
  + [**Paypal**](https://www.paypal.com/donate?hosted_button_id=28PBV9DFYQC72)
 
 |BTC|LTC|ETH|
@@ -72,7 +71,7 @@ Pix  &nbsp; **43.379.701/0001-96** &nbsp; (Flávio Freitas)
 
 # :mega: Social
 ### [**Discord Server** - Parsec Soda](https://discord.gg/6RjwckWUhk)
-### [**Linktree** - My personal networks](https://linktr.ee/flafdraws)
+### [**Linktree** - My personal networks](https://linktr.ee/flafcodes)
 
 <br>
 

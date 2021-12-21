@@ -19,28 +19,28 @@ public:
 		std::ostringstream reply;
 		reply << "[ChatBot] | Gamepad Holders:\n";
 
-		std::vector<Gamepad>::iterator gi = _gamepadClient.gamepads.begin();
+		std::vector<AGamepad*>::iterator gi = _gamepadClient.gamepads.begin();
 		uint16_t i = 1;
 		int onlineCount = 0;
 		for (; gi != _gamepadClient.gamepads.end(); ++gi)
 		{
-			if ((*gi).isConnected())
+			if ((*gi)->isConnected())
 			{
 				onlineCount++;
 
 				reply << "\t\t[" << i << "] \t";
 
-				if (_gamepadClient.isPuppetMaster && (*gi).isPuppet)
+				if (_gamepadClient.isPuppetMaster && (*gi)->isPuppet)
 				{
 					reply << "(Host) Puppet Master" << "\n";
 				}
-				else if (!(*gi).owner.guest.isValid())
+				else if (!(*gi)->owner.guest.isValid())
 				{
 					reply << "\n";
 				}
 				else
 				{
-					reply << "(" << (*gi).owner.guest.userID << ")\t" << (*gi).owner.guest.name << "\n";
+					reply << "(" << (*gi)->owner.guest.userID << ")\t" << (*gi)->owner.guest.name << "\n";
 				}
 			}
 

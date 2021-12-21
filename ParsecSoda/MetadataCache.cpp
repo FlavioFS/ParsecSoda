@@ -198,6 +198,14 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "bandwidth", &preferences.bandwidth)) {
                 preferences.bandwidth = 20;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "xboxPuppetCount", &preferences.xboxPuppetCount)) {
+                preferences.xboxPuppetCount = 4;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "ds4PuppetCount", &preferences.ds4PuppetCount)) {
+                preferences.ds4PuppetCount = 0;
+            }
             
             preferences.isValid = true;
 
@@ -244,6 +252,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "bandwidth", preferences.bandwidth);
         MTY_JSONObjSetUInt(json, "monitor", preferences.monitor);
         MTY_JSONObjSetUInt(json, "adapter", preferences.adapter);
+        MTY_JSONObjSetUInt(json, "xboxPuppetCount", preferences.xboxPuppetCount);
+        MTY_JSONObjSetUInt(json, "ds4PuppetCount", preferences.ds4PuppetCount);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);
@@ -275,7 +285,7 @@ vector<GuestData> MetadataCache::loadBannedUsers()
 
             for (size_t i = 0; i < size; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
                 
                 char name [128] = "";
                 uint32_t userID = 0;
@@ -344,7 +354,7 @@ vector<GuestTier> MetadataCache::loadGuestTiers()
 
             for (size_t i = 0; i < size; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
 
                 char name[128] = "";
                 uint32_t userID, tier = 0;
@@ -424,7 +434,7 @@ vector<Thumbnail> MetadataCache::loadThumbnails()
 
             for (size_t i = 0; i < thumbnailCount; i++)
             {
-                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, i);
+                const MTY_JSON* guest = MTY_JSONArrayGetItem(json, (uint32_t)i);
 
                 char name[256] = "", gameId[64] = "";
 
@@ -437,7 +447,7 @@ vector<Thumbnail> MetadataCache::loadThumbnails()
                     result.push_back(Thumbnail(gameId, name, true));
                 }
             }
-            delete originalText;
+            delete[] originalText;
 
             //std::sort(result.begin(), result.end(), [](const Thumbnail a, const Thumbnail b) {
             //    int compare = Stringer::toLower(a.name).compare(Stringer::toLower(b.name));
@@ -490,7 +500,7 @@ bool MetadataCache::saveThumbnails(vector<Thumbnail> thumbnails)
                 result = true;
             }
         }
-        delete encryptedJson;
+        delete[] encryptedJson;
 
         MTY_JSONDestroy(&json);
         MTY_AESGCMDestroy(&ctx);

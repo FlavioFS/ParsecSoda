@@ -298,20 +298,20 @@ void MasterOfPuppetsWidget::setMaster(int value)
 
 void MasterOfPuppetsWidget::clearPuppets()
 {
-    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+    vector<AGamepad*>& gamepads = _gamepadClient.gamepads;
 
     for (size_t i = 0; i < gamepads.size(); ++i)
     {
-        if (gamepads[i].isPuppet)
+        if (gamepads[i]->isPuppet)
         {
-            gamepads[i].clearState();
+            gamepads[i]->clearState();
         }
     }
 }
 
 void MasterOfPuppetsWidget::renderPuppets()
 {
-    vector<Gamepad>& gamepads = _gamepadClient.gamepads;
+    vector<AGamepad*>& gamepads = _gamepadClient.gamepads;
 
     static ImVec2 cursor;
 
@@ -344,13 +344,13 @@ void MasterOfPuppetsWidget::renderPuppets()
             (
                 string() + "### Puppet Gamepad " + to_string(i)
                 ).c_str(),
-            gamepads[i].isPuppet, 0, ImVec2(275, 40))
+            gamepads[i]->isPuppet, 0, ImVec2(275, 40))
             )
         {
-            gamepads[i].isPuppet = !gamepads[i].isPuppet;
-            if (!gamepads[i].isPuppet)
+            gamepads[i]->isPuppet = !gamepads[i]->isPuppet;
+            if (!gamepads[i]->isPuppet)
             {
-                gamepads[i].clearState();
+                gamepads[i]->clearState();
             }
         }
         TitleTooltipWidget::render("Puppets (Virtual Gamepads)", "Click to mark and control this Puppet.");
@@ -359,7 +359,7 @@ void MasterOfPuppetsWidget::renderPuppets()
         ImGui::SetCursorPosX(cursor.x + shift1 + shift2 + shift3);
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 
-        AnimatedGamepadWidget::render(gamepads[i].getState().Gamepad);
+        AnimatedGamepadWidget::render(gamepads[i]->getState().Gamepad);
         ImGui::PopStyleVar();
 
         ImGui::PopID();
