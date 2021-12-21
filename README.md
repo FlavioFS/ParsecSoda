@@ -71,7 +71,7 @@ Pix  &nbsp; **1194a8f0-ac1f-40f3-8f89-524697c072ea** &nbsp; (Flávio Freitas)
 
 # :mega: Social
 ### [**Discord Server** - Parsec Soda](https://discord.gg/6RjwckWUhk)
-### [**Linktree** - My personal networks](https://linktr.ee/flafdraws)
+### [**Linktree** - My personal networks](https://linktr.ee/flafcodes)
 
 <br>
 
