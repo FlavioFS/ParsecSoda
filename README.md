@@ -135,7 +135,7 @@ In order to share executables, you must set **USE_PARSEC_PERSONAL_API** to **FAL
  ![](https://i.postimg.cc/9fj3N0mL/chat.gif)  
  + Role tiers for chatbot commands. Guests have their own set of commands like "pick a specific gamepad", "drop gamepad" and "play sound effect". And admins can ban/unban guests from chat commands.  
  ![](https://i.postimg.cc/hv3v9Tqy/chat.png)  
- 
+
 <br>
 
 
@@ -158,16 +158,16 @@ You can also check my [Trello board here](https://trello.com/b/ysqWImSD/parsec-s
 # :construction_worker: Build Instructions
 The building process is not trivial, so I'll guide you through the process and prevent the major caveats.
 
-  1. Download [Visual Studio Community 2019](https://visualstudio.microsoft.com/pt-br/vs/community/).  
+  1. Download [Visual Studio Community 2019](https://visualstudio.microsoft.com/vs/community/).  
   2. Install the C++ development packages.  
-![](https://i.postimg.cc/R08yw13g/vs1.png)  
+![](https://i.postimg.cc/fbNpCmfZ/vs1.png)  
   3. Pay attention to the checkboxes at the right, you don't need all of them and you can save a lot of disk space by unchecking some of them. I can't tell for sure which ones are expressly required, but most of them are unimportant.
   4. You may need to install the C++/CLI build tools support package from the individual components tab.  
-![](https://i.postimg.cc/1R07z1KC/vs2.png)  
+![](https://i.postimg.cc/XJv218GM/vs2.png)  
   5. When applying the installation, I recommend that you pick the option to download all at once, and then install all at once. It seems faster that way.  
   6. Clone this repository to some folder of your preference. Visual Studio generally uses the path *{user folder}/source/*. You can clone it by download and unzipping from GitHub or by using some version control app (I particularly use [**Fork**](https://git-fork.com/)).
   7. Start Visual Studio 2019 and open the Project Solution.  
-![](https://i.postimg.cc/ht43QZGL/vs3.png)
+![](https://i.postimg.cc/7h1dpNMq/vs3.png)
   8. Now you must choose one of many paths, depending on the goals of your build. Your options are:  
 
    + Debug: intended for developers, creates a larger executable but that allows developers to inspect code flow.  
@@ -200,7 +200,7 @@ The building process is not trivial, so I'll guide you through the process and p
 
   11. This is how your final build folder should look like:  
   ![](https://i.postimg.cc/x81318YL/build.png)
-  
+
   12. Now, build the project one more time just to be sure (Ctrl + Shift + B) and your executable should be good to go. Enjoy ParsecSoda.
 
 <h3 align="center"><a href="#top">:back:</a></div>
