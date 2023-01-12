@@ -317,8 +317,6 @@ void Hosting::startHosting()
 		catch (const exception&)
 		{}
 	}
-
-	bool debug = true;
 }
 
 void Hosting::stopHosting()

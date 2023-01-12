@@ -253,4 +253,13 @@ typedef struct _DS4_REPORT_EX
 	};
 } DS4_REPORT_EX, *PDS4_REPORT_EX;
 
+typedef struct _DS4_OUTPUT_BUFFER
+{
+	//
+	// The output report buffer
+	// 
+	_Out_ UCHAR Buffer[64];
+	
+} DS4_OUTPUT_BUFFER, *PDS4_OUTPUT_BUFFER;
+
 #include <poppack.h>

@@ -29,6 +29,7 @@ bool DualshockGamepad::alloc()
 	return _isAlive;
 }
 
+#pragma warning(disable: 4996)
 bool DualshockGamepad::connect()
 {
 	if (!_isAlive || _client == nullptr) { return false; }
