@@ -36,6 +36,6 @@ private:
 	AudioIn& _audioIn;
 	AudioOut& _audioOut;
 
-	vector<AudioInDevice> _inputs;
-	vector<AudioOutDevice> _outputs;
+	vector<AudioSourceDevice> _inputs;
+	vector<AudioSourceDevice> _outputs;
 };

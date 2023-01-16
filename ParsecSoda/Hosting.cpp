@@ -81,21 +81,22 @@ void Hosting::init()
 	});
 
 	audioOut.fetchDevices();
-	vector<AudioOutDevice> audioOutDevices = audioOut.getDevices();
+	vector<AudioSourceDevice> audioOutDevices = audioOut.getDevices();
 	if (preferences.audioOutputDevice >= audioOutDevices.size()) {
 		preferences.audioOutputDevice = 0;
 	}
-	audioOut.setOutputDevice(preferences.audioOutputDevice);		// TODO Fix leak in setOutputDevice
+	audioOut.setDevice(preferences.audioOutputDevice);		// TODO Fix leak in setOutputDevice
 	audioOut.captureAudio();
 	audioOut.volume = 0.3f;
 	audioOut.setFrequency((Frequency)MetadataCache::preferences.speakersFrequency);
 
-	vector<AudioInDevice> audioInputDevices = audioIn.listInputDevices();
+	audioIn.fetchDevices();
+	vector<AudioSourceDevice> audioInputDevices = audioIn.getDevices();
 	if (preferences.audioInputDevice >= audioInputDevices.size()) {
 		preferences.audioInputDevice = 0;
 	}
-	AudioInDevice device = audioIn.selectInputDevice(preferences.audioInputDevice);
-	audioIn.init(device);
+	audioIn.setDevice(preferences.audioInputDevice);
+	audioIn.captureAudio();
 	audioIn.volume = 0.8f;
 	audioIn.setFrequency((Frequency)MetadataCache::preferences.micFrequency);
 

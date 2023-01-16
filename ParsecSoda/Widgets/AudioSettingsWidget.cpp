@@ -2,7 +2,7 @@
 
 AudioSettingsWidget::AudioSettingsWidget(Hosting& hosting)
     : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut),
-    _inputs(_hosting.audioIn.listInputDevices()), _outputs(_hosting.audioOut.getDevices())
+    _inputs(_hosting.audioIn.getDevices()), _outputs(_hosting.audioOut.getDevices())
 {
 }
 
@@ -11,10 +11,11 @@ bool AudioSettingsWidget::render()
     static float indentSize = 0;
     static ImVec2 dummySize = ImVec2(0.0f, 20.0f);
     static ImVec2 cursor;
+    static bool showPlot = false;
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 550), ImVec2(600, 700));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 550), ImVec2(600, 900));
     ImGui::Begin("Audio");
     AppStyle::pushLabel();
 
@@ -33,7 +34,7 @@ bool AudioSettingsWidget::render()
     // =============================================================
     //  Input devices
     // =============================================================
-    static UINT& currentInputDevice = _audioIn.currentDevice.id;
+    static size_t& currentInputDevice = _audioIn.currentDevice.index;
     ImGui::SetNextItemWidth(size.x);
 
     AppFonts::pushTitle();
@@ -57,7 +58,7 @@ bool AudioSettingsWidget::render()
             if (ImGui::Selectable(_inputs[i].name.c_str(), isSelected))
             {
                 currentInputDevice = i;
-                _audioIn.selectInputDevice(i);
+                _audioIn.setDevice(i);
                 MetadataCache::preferences.audioInputDevice = i;
                 MetadataCache::savePreferences();
             }
@@ -80,7 +81,7 @@ bool AudioSettingsWidget::render()
     ImGui::SetNextItemWidth(size.x);
     if (ImGui::Combo("###Mic Frequency", &micFrequencyIndex, " 44100 Hz\0 48000 Hz\0\0", 2))
     {
-        _audioIn.reinit(comboToFrequency(micFrequencyIndex));
+        _audioIn.setFrequency(comboToFrequency(micFrequencyIndex));
     }
     AppStyle::pop();
 
@@ -130,7 +131,7 @@ bool AudioSettingsWidget::render()
             if (ImGui::Selectable(_outputs[i].name.c_str(), isSelected))
             {
                 currentOutputDevice = i;
-                _audioOut.setOutputDevice(i);
+                _audioOut.setDevice(i);
                 MetadataCache::preferences.audioOutputDevice = i;
                 MetadataCache::savePreferences();
             }
@@ -173,6 +174,17 @@ bool AudioSettingsWidget::render()
         _audioOut.isEnabled = !_audioOut.isEnabled;
     }
     _audioOut.volume = (float)speakersVolume / 100.0f;
+
+    ImGui::Dummy(dummySize);
+
+    ImGui::Checkbox("Plot Audio (debug for devs)", &showPlot);
+    _audioIn.togglePlot(showPlot);
+    _audioOut.togglePlot(showPlot);
+    if (showPlot)
+    {
+        ImGui::PlotHistogram("Microphone", _audioIn.getPlot(), AUDIOSRC_BUFFER_SIZE >> 2, 0, NULL, -32768.0f, 32767.0f, ImVec2(0, 100));
+        ImGui::PlotHistogram("Speakers", _audioOut.getPlot(), AUDIOSRC_BUFFER_SIZE >> 2, 0, NULL, -32768.0f, 32767.0f, ImVec2(0, 100));
+    }
 
     AppStyle::pop();
     ImGui::End();
