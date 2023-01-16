@@ -186,9 +186,6 @@
     <ClCompile Include="TierList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Frequency.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Widgets\InfoWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -561,9 +558,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GuestTier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Frequency.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Widgets\InfoWidget.h">

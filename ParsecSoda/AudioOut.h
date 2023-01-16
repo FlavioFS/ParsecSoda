@@ -7,5 +7,5 @@ class AudioOut : public AudioSource
 public:
 	AudioOut();
 
-	void setFrequency(Frequency frequency) override;
+	void setFrequency(uint32_t frequency = 48000) override;
 };

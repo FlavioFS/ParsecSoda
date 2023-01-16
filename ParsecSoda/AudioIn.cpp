@@ -6,7 +6,7 @@ AudioIn::AudioIn()
 	this->setStreamFlags(0);
 }
 
-void AudioIn::setFrequency(Frequency frequency)
+void AudioIn::setFrequency(uint32_t frequency)
 {
 	AudioSource::setFrequency(frequency);
 	MetadataCache::preferences.micFrequency = m_frequency;

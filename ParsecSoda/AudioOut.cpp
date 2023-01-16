@@ -6,7 +6,7 @@ AudioOut::AudioOut()
 	this->setStreamFlags(AUDCLNT_STREAMFLAGS_LOOPBACK);
 }
 
-void AudioOut::setFrequency(Frequency frequency)
+void AudioOut::setFrequency(uint32_t frequency)
 {
 	AudioSource::setFrequency(frequency);
 	MetadataCache::preferences.speakersFrequency = m_frequency;

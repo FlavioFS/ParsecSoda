@@ -30,6 +30,8 @@ bool AudioSource::setDevice(int index)
 	LPWSTR pwszID = nullptr;
 	IPropertyStore* pProps = nullptr;
 
+	uint32_t freq = 1000;
+
 	auto releaseLocal = [&]()
 	{
 		CoTaskMemFree(pwszID);
@@ -80,6 +82,9 @@ bool AudioSource::setDevice(int index)
 
 	hr = pAudioClient->GetMixFormat(&pwfx);
 	FAIL_EXIT(hr);
+
+	freq = (uint32_t)pwfx->nSamplesPerSec;
+	setFrequency((uint32_t) pwfx->nSamplesPerSec);
 
 	hr = pAudioClient->Initialize(
 		AUDCLNT_SHAREMODE_SHARED,
@@ -289,11 +294,6 @@ const int AudioSource::popPreviewDecibel()
 	return AUDIOTOOLS_PREVIEW_MIN_DB;
 }
 
-const uint32_t AudioSource::getFrequencyHz() const
-{
-	return m_frequency;
-}
-
 const float* AudioSource::getPlot()
 {
 	return m_plotBuffer;
@@ -379,14 +379,14 @@ EXIT:
 	return;
 }
 
-void AudioSource::setFrequency(Frequency frequency)
+void AudioSource::setFrequency(uint32_t  frequency)
 {
-	m_frequency = (uint32_t)frequency;
+	m_frequency = frequency;
 }
 
-Frequency AudioSource::getFrequency()
+const uint32_t AudioSource::getFrequency() const
 {
-	return (Frequency)m_frequency;
+	return m_frequency;
 }
 
 

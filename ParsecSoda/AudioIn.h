@@ -6,5 +6,5 @@ class AudioIn : public AudioSource
 public:
 	AudioIn();
 
-	void setFrequency(Frequency frequency = Frequency::F44100) override;
+	void setFrequency(uint32_t frequency = 48000) override;
 };

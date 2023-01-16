@@ -179,7 +179,6 @@
     <ClCompile Include="Widgets\VideoWidget.cpp" />
     <ClCompile Include="Widgets\VersionWidget.cpp" />
     <ClCompile Include="Widgets\InfoWidget.cpp" />
-    <ClCompile Include="Frequency.cpp" />
     <ClCompile Include="globals\AppColors.cpp" />
     <ClCompile Include="globals\AppIcons.cpp" />
     <ClCompile Include="globals\AppStyle.cpp" />
@@ -268,7 +267,6 @@
     <ClInclude Include="Widgets\VideoWidget.h" />
     <ClInclude Include="Widgets\VersionWidget.h" />
     <ClInclude Include="Widgets\InfoWidget.h" />
-    <ClInclude Include="Frequency.h" />
     <ClInclude Include="globals\AppColors.h" />
     <ClInclude Include="globals\AppIcons.h" />
     <ClInclude Include="globals\AppStyle.h" />

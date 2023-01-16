@@ -71,18 +71,10 @@ bool AudioSettingsWidget::render()
     }
     AppFonts::pop();
 
-    ImGui::Dummy(ImVec2(0.0f, 2.0f));
-
-    static int micFrequencyIndex = frequencyToCombo(_audioIn.getFrequency());
+    static char infrequencyLabel[32];
+    snprintf(infrequencyLabel, sizeof(infrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
     AppStyle::pushLabel();
-    ImGui::Text("Frequency");
-    AppStyle::pop();
-    AppStyle::pushInput();
-    ImGui::SetNextItemWidth(size.x);
-    if (ImGui::Combo("###Mic Frequency", &micFrequencyIndex, " 44100 Hz\0 48000 Hz\0\0", 2))
-    {
-        _audioIn.setFrequency(comboToFrequency(micFrequencyIndex));
-    }
+    ImGui::Text(infrequencyLabel);
     AppStyle::pop();
 
     ImGui::Dummy(ImVec2(0.0f, 2.0f));
@@ -144,18 +136,10 @@ bool AudioSettingsWidget::render()
     }
     AppFonts::pop();
 
-    ImGui::Dummy(ImVec2(0.0f, 2.0f));
-
-    static int speakersFrequencyIndex = frequencyToCombo(_audioOut.getFrequency());
+    static char outfrequencyLabel[32];
+    snprintf(outfrequencyLabel, sizeof(outfrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
     AppStyle::pushLabel();
-    ImGui::Text("Frequency");
-    AppStyle::pop();
-    AppStyle::pushInput();
-    ImGui::SetNextItemWidth(size.x);
-    if (ImGui::Combo("###Speakers Frequency", &speakersFrequencyIndex, " 44100 Hz\0 48000 Hz\0\0", 2))
-    {
-        _audioOut.setFrequency(comboToFrequency(speakersFrequencyIndex));
-    }
+    ImGui::Text(outfrequencyLabel);
     AppStyle::pop();
 
     ImGui::Dummy(ImVec2(0.0f, 2.0f));
@@ -163,6 +147,8 @@ bool AudioSettingsWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("Volume");
     AppStyle::pop();
+
+    ImGui::Dummy(ImVec2(0.0f, 2.0f));
 
     static int speakersVolume;
     static float speakersPreview;
@@ -191,36 +177,6 @@ bool AudioSettingsWidget::render()
     AppStyle::pop();
 
     return true;
-}
-
-int AudioSettingsWidget::frequencyToCombo(Frequency frequency)
-{
-    switch (frequency)
-    {
-    case Frequency::F48000:
-        return 1;
-        break;
-    case Frequency::F44100:
-    default:
-        return 0;
-        break;
-    }
-    return 0;
-}
-
-Frequency AudioSettingsWidget::comboToFrequency(int index)
-{
-    switch (index)
-    {
-    case 1:
-        return Frequency::F48000;
-        break;
-    default:
-    case 0:
-        return Frequency::F44100;
-        break;
-    }
-    return Frequency::F44100;
 }
 
 float AudioSettingsWidget::lerp(float val1, float val2, float t)

@@ -11,7 +11,6 @@
 #include <initguid.h>
 #include "Stringer.h"
 #include "AudioTools.h"
-#include "Frequency.h"
 #include "MetadataCache.h"
 
 #define AUDIOSRC_BUFFER_SIZE 7056
@@ -48,15 +47,14 @@ class AudioSource
 public:
 	bool setDevice(int index = 0);
 	void fetchDevices();
-	virtual void setFrequency(Frequency frequency = Frequency::F44100);
-	Frequency getFrequency();
+	virtual void setFrequency(uint32_t frequency);
+	const uint32_t getFrequency() const;
 
 	bool isReady();
 	const vector<AudioSourceDevice> getDevices();
 	void captureAudio();
 	const vector<int16_t> popBuffer();
 	const int popPreviewDecibel();
-	const uint32_t getFrequencyHz() const;
 	const float* getPlot();
 	const void togglePlot(const bool enabled);
 

@@ -26,8 +26,6 @@ public:
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
 
 private:
-	int frequencyToCombo(Frequency frequency);
-	Frequency comboToFrequency(int index);
 	float lerp(float val1, float val2, float t = 0.11f);
 	float easing(float t);
 

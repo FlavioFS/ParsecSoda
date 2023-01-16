@@ -85,10 +85,10 @@ void Hosting::init()
 	if (preferences.audioOutputDevice >= audioOutDevices.size()) {
 		preferences.audioOutputDevice = 0;
 	}
-	audioOut.setDevice(preferences.audioOutputDevice);		// TODO Fix leak in setOutputDevice
+	audioOut.setDevice(preferences.audioOutputDevice);
 	audioOut.captureAudio();
 	audioOut.volume = 0.3f;
-	audioOut.setFrequency((Frequency)MetadataCache::preferences.speakersFrequency);
+	audioOut.setFrequency(MetadataCache::preferences.speakersFrequency);
 
 	audioIn.fetchDevices();
 	vector<AudioSourceDevice> audioInputDevices = audioIn.getDevices();
@@ -98,7 +98,7 @@ void Hosting::init()
 	audioIn.setDevice(preferences.audioInputDevice);
 	audioIn.captureAudio();
 	audioIn.volume = 0.8f;
-	audioIn.setFrequency((Frequency)MetadataCache::preferences.micFrequency);
+	audioIn.setFrequency(MetadataCache::preferences.micFrequency);
 
 	preferences.isValid = true;
 	MetadataCache::savePreferences(preferences);
@@ -423,7 +423,7 @@ void Hosting::liveStreamMedia()
 			if (audioIn.isReady() && audioOut.isReady())
 			{
 				vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
-				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
 			}
 		}
 		else if (audioOut.isEnabled)
@@ -432,16 +432,16 @@ void Hosting::liveStreamMedia()
 			if (audioOut.isReady())
 			{
 				vector<int16_t> buffer = audioOut.popBuffer();
-				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequencyHz(), buffer.data(), (uint32_t)buffer.size() / 2);
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
 			}
 		}
-		else
+		else if (audioIn.isEnabled)
 		{
 			audioIn.captureAudio();
 			if (audioIn.isReady())
 			{
 				vector<int16_t> buffer = audioIn.popBuffer();
-				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, (uint32_t)audioIn.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
+				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioIn.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
 			}
 		}
 
