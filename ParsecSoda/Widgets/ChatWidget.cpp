@@ -1,7 +1,7 @@
 #include "ChatWidget.h"
 
 ChatWidget::ChatWidget(Hosting& hosting, function<void(void)> onMessageCallback)
-    : _hosting(hosting), _chatLog(hosting.getMessageLog()), _messageCount(0), _onMessageCallback(onMessageCallback)
+    : _hosting(hosting), _chatLog(hosting.getChatLog()), _chatLogMessages(hosting.getMessageLog()), _messageCount(0), _onMessageCallback(onMessageCallback)
 {
     setSendBuffer("\0");
 }
@@ -28,14 +28,21 @@ bool ChatWidget::render()
     static size_t index;
     index = 0;
 
+
+    // ====================================================
+    // CHATLOG MUTEX LOCK
+    // ====================================================
+    _chatLog.messageMutex.lock();
+
+
     static vector<string>::iterator it;
-    it = _chatLog.begin();
+    it = _chatLogMessages.begin();
 
     renderTopBar(isWindowLocked, isClearChat);
     ImGui::Separator();
 
     ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 210));
-    for (; it != _chatLog.end(); ++it)
+    for (; it != _chatLogMessages.end(); ++it)
     {
         static float textHeight;
         cursor = ImGui::GetCursorPos();
@@ -54,13 +61,13 @@ bool ChatWidget::render()
         }
         ++index;
     }
-    if (_messageCount != _chatLog.size())
+    if (_messageCount != _chatLogMessages.size())
     {
         if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
         {
             ImGui::SetScrollHereY(1.0f);
         }
-        _messageCount = _chatLog.size();
+        _messageCount = _chatLogMessages.size();
 
         if (_onMessageCallback != nullptr)
         {
@@ -68,6 +75,12 @@ bool ChatWidget::render()
         }
     }
     ImGui::EndChild();
+
+
+    // ====================================================
+    // CHATLOG MUTEX UNLOCK
+    // ====================================================
+    _chatLog.messageMutex.unlock();
 
 
     ImGui::BeginChild("Message Preview", ImVec2(size.x, 60));
@@ -103,7 +116,7 @@ bool ChatWidget::render()
 
     cursor = ImGui::GetCursorPos();
     ImGui::Dummy(ImVec2(0, 5));
-    if (_chatLog.size() > 0 && stopwatch.getRemainingTime() > 0)
+    if (_chatLogMessages.size() > 0 && stopwatch.getRemainingTime() > 0)
     {
         static float fill = 1.0f;
         fill = (float)stopwatch.getRemainingTime() / stopwatch.getDuration();
@@ -130,7 +143,7 @@ bool ChatWidget::render()
 
     if (isClearChat)
     {
-        _chatLog.clear();
+        _chatLogMessages.clear();
         ChatBot* chatBot = _hosting.getChatBot();
         if (chatBot != nullptr) {
             chatBot->setLastUserId();

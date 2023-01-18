@@ -2,7 +2,8 @@
 
 LogWidget::LogWidget(Hosting& hosting)
     : _chatLog(hosting.getChatLog()), _commandLog(hosting.getCommandLog()), _messageCount(0)
-{}
+{
+}
 
 bool LogWidget::render()
 {
@@ -13,12 +14,10 @@ bool LogWidget::render()
 
     ImVec2 size = ImGui::GetContentRegionAvail();
 
-
     // ====================================================
     // CHATLOG MUTEX LOCK
     // ====================================================
     _chatLog.commandMutex.lock();
-
 
     static vector<string>::iterator it;
     it = _commandLog.begin();
@@ -52,12 +51,10 @@ bool LogWidget::render()
     }
     ImGui::EndChild();
 
-
     // ====================================================
     // CHATLOG MUTEX UNLOCK
     // ====================================================
     _chatLog.commandMutex.unlock();
-
 
     AppStyle::pop();
     ImGui::End();

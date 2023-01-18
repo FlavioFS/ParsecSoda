@@ -186,6 +186,11 @@ ChatBot* Hosting::getChatBot()
 	return _chatBot;
 }
 
+ChatLog& Hosting::getChatLog()
+{
+	return _chatLog;
+}
+
 vector<string>& Hosting::getMessageLog()
 {
 	return _chatLog.getMessageLog();

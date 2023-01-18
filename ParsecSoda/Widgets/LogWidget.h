@@ -13,6 +13,7 @@ public:
 
 private:
 	string _logBuffer;
+	ChatLog& _chatLog;
 	vector<string>& _commandLog;
 	size_t _messageCount;
 };

@@ -2,8 +2,12 @@
 
 void ChatLog::logCommand(string message)
 {
+	commandMutex.lock();
+
 	tryCleanOldCommands();
 	_commandLog.push_back(message);
+
+	commandMutex.unlock();
 }
 
 void ChatLog::logMessage(string message)
@@ -15,8 +19,12 @@ void ChatLog::logMessage(string message)
 		message[0] != '['
 	)
 	{
+		messageMutex.lock();
+
 		tryCleanOldMessages();
 		_messageLog.push_back(message);
+
+		messageMutex.unlock();
 	}
 	else
 	{

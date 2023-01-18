@@ -54,6 +54,7 @@ public:
 	ParsecHostConfig& getHostConfig();
 	DX11& getDX11();
 	ChatBot* getChatBot();
+	ChatLog& getChatLog();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
 	vector<Guest>& getGuestList();
