@@ -2,8 +2,28 @@
 
 #include <iostream>
 #include "parsec.h"
+#include "MovingAverage.h"
 
 using namespace std;
+
+class GuestMetrics {
+public:
+	enum CONGESTION { NONE, LOW, HIGH };
+
+	void updateMetrics(ParsecGuest guest);
+	const float getLatency() const;
+	const CONGESTION getCongestion() const;
+	const ParsecMetrics getMetrics() const;
+
+	const char* toString() const;
+
+private:
+	ParsecMetrics m_parsecMetrics;
+	CONGESTION m_congestion;
+	MovingAverage m_averageLatency;
+
+	void updateCongestion(ParsecGuest guest);
+};
 
 class Guest
 {
@@ -43,4 +63,5 @@ public:
 	uint32_t userID;
 	uint32_t id;
 	Status status;
+	GuestMetrics metrics;
 };

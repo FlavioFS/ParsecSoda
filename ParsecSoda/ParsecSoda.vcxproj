@@ -159,6 +159,7 @@
     <ClCompile Include="Commands\CommandBonk.cpp" />
     <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
+    <ClCompile Include="MovingAverage.cpp" />
     <ClCompile Include="XBoxGamepad.cpp" />
     <ClCompile Include="MasterOfPuppets.cpp" />
     <ClCompile Include="SDLGamepad.cpp" />
@@ -217,7 +218,6 @@
     <ClCompile Include="AGamepad.cpp" />
     <ClCompile Include="GamepadClient.cpp" />
     <ClCompile Include="Guest.cpp" />
-    <ClCompile Include="GuestData.cpp" />
     <ClCompile Include="GuestList.cpp" />
     <ClCompile Include="Hosting.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -241,6 +241,7 @@
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
+    <ClInclude Include="MovingAverage.h" />
     <ClInclude Include="XBoxGamepad.h" />
     <ClInclude Include="MasterOfPuppets.h" />
     <ClInclude Include="SDLGamepad.h" />

@@ -317,6 +317,7 @@ void Hosting::startHosting()
 				_mediaThread = thread ( [this]() {liveStreamMedia(); } );
 				_inputThread = thread ([this]() {pollInputs(); });
 				_eventThread = thread ([this]() {pollEvents(); });
+				//_metricsThread = thread([this]() { pollMetrics(); });
 				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
 			}
 		}
@@ -474,10 +475,12 @@ void Hosting::mainLoopControl()
 	_mediaMutex.lock();
 	_inputMutex.lock();
 	_eventMutex.lock();
+	//_metricsMutex.lock();
 
 	ParsecHostStop(_parsec);
 	_isRunning = false;
 
+	//_metricsMutex.unlock();
 	_mediaMutex.unlock();
 	_inputMutex.unlock();
 	_eventMutex.unlock();
@@ -554,6 +557,40 @@ void Hosting::pollInputs()
 	_isInputThreadRunning = false;
 	_inputMutex.unlock();
 	_inputThread.detach();
+}
+
+void Hosting::pollMetrics()
+{
+	_metricsMutex.lock();
+	_isMetricsThreadRunning = true;
+
+	ParsecGuest* parsecGuests = nullptr;
+	int guestCount = 0;
+
+	Stopwatch stopwatch;
+	stopwatch.setDuration(2000);
+	stopwatch.start();
+
+	while (_isRunning)
+	{
+		guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &parsecGuests);
+
+		for (size_t i = 0; i < guestCount; i++)
+		{
+			_guestList.find(parsecGuests[i].userID, [&](Guest* gi) {
+				gi->metrics.updateMetrics(parsecGuests[i]);
+			});
+		}
+
+		if (!stopwatch.isFinished())
+		{
+			Sleep(stopwatch.getRemainingTime());
+		}
+	}
+
+	_isMetricsThreadRunning = false;
+	_metricsMutex.unlock();
+	_metricsThread.detach();
 }
 
 bool Hosting::parsecArcadeStart()

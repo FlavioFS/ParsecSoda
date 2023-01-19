@@ -90,6 +90,7 @@ private:
 	void mainLoopControl();
 	void pollEvents();
 	void pollInputs();
+	void pollMetrics();
 	bool parsecArcadeStart();
 	bool isFilteredCommand(ACommand* command);
 	void onGuestStateChange(ParsecGuestState& state, Guest& guest);
@@ -116,6 +117,7 @@ private:
 	bool _isRunning = false;
 	bool _isMediaThreadRunning = false;
 	bool _isInputThreadRunning = false;
+	bool _isMetricsThreadRunning = false;
 	bool _isEventThreadRunning = false;
 
 	Stopwatch _mediaClock;
@@ -124,10 +126,12 @@ private:
 	thread _mediaThread;
 	thread _inputThread;
 	thread _eventThread;
+	thread _metricsThread;
 	thread _createGamepadsThread;
 	thread _connectGamepadsThread;
 
 	mutex _mediaMutex;
 	mutex _inputMutex;
 	mutex _eventMutex;
+	mutex _metricsMutex;
 };

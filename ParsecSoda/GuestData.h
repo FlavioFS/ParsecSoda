@@ -9,6 +9,12 @@ using namespace std;
  */
 class GuestData
 {
+	/*
+	*  This class is expected to hold constant guest data only,
+	*  for remembering accounts and populating persistent data lists.
+	*  Runtime data such as metrics should not be added here.
+	*/
+
 public:
 	/**
 	 *  Empty constructor.
