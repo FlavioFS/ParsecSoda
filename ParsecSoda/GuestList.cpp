@@ -2,9 +2,9 @@
 
 void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 {
-	stringstream comboStringStream;
-	_guests.clear();
+	_mutex.lock();
 
+	_guests.clear();
 	for (size_t i = 0; i < guestCount; i++)
 	{
 		_guests.push_back
@@ -16,32 +16,95 @@ void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 				guests[i].id
 			)
 		);
-
-		if (i < GUESTLIST_MAX_GUESTS)
-		{
-			guestNames[i] = guests[i].name;
-		}
 	}
+
+	_mutex.unlock();
 }
 
-vector<Guest>& GuestList::getGuests()
+void GuestList::getGuests(function<void(vector<Guest>& guests)> callback)
 {
-    return _guests;
+	if (callback)
+	{
+		_mutex.lock();
+		callback(_guests);
+		_mutex.unlock();
+	}
 }
 
 void GuestList::clear()
 {
+	_mutex.lock();
 	_guests.clear();
+	_mutex.unlock();
 }
 
-const bool GuestList::find(uint32_t targetGuestID, Guest* result)
+
+const bool GuestList::find(const char* targetName, function<void(Guest* result)> callback)
 {
-	vector<Guest>::iterator i;
-	for (i = _guests.begin(); i != _guests.end(); ++i)
-	{
-		if ((*i).userID == targetGuestID)
+	return find(string(targetName), callback);
+}
+
+
+const bool GuestList::find(string targetName, function<void(Guest* result)> callback)
+{
+	_mutex.lock();
+
+	bool found = findIterator(targetName, [&](vector<Guest>::iterator gi) {
+		if (callback)
 		{
-			*result = *i;
+			callback(&*gi);
+		}
+	});
+
+	_mutex.unlock();
+	return found;
+}
+
+
+
+const bool GuestList::find(uint32_t userID, function<void(Guest* result)> callback)
+{
+	_mutex.lock();
+
+	bool found = findIterator(userID, [&](vector<Guest>::iterator gi) {
+		if (callback)
+		{
+			callback(&*gi);
+		}
+	});
+
+	_mutex.unlock();
+	return found;
+}
+
+const bool GuestList::findByIndex(uint32_t index, function<void(Guest* result)> callback)
+{
+	_mutex.lock();
+
+	bool found = (index >= 0 && index < _guests.size());
+	
+	if (found && callback)
+	{
+		callback(&_guests[index]);
+	}
+
+	_mutex.unlock();
+	return found;
+}
+
+
+// ========================================================
+// PRIVATE
+// ========================================================
+const bool GuestList::findIterator(uint32_t userID, function<void(vector<Guest>::iterator)> callback)
+{
+	vector<Guest>::iterator gi = _guests.begin();
+
+	for (; gi != _guests.end(); gi++)
+	{
+		if ((*gi).userID == userID)
+		{
+			if (callback) { callback(gi); }
 			return true;
 		}
 	}
@@ -49,12 +112,7 @@ const bool GuestList::find(uint32_t targetGuestID, Guest* result)
 	return false;
 }
 
-const bool GuestList::find(const char* targetName, Guest* result)
-{
-	return find(string(targetName), result);
-}
-
-const bool GuestList::find(string targetName, Guest* result)
+const bool GuestList::findIterator(string targetName, function<void(vector<Guest>::iterator)> callback)
 {
 	static const uint64_t MINIMUM_MATCH = 3;
 	uint64_t closestDistance = STRINGER_MAX_DISTANCE;
@@ -66,6 +124,9 @@ const bool GuestList::find(string targetName, Guest* result)
 		return false;
 	}
 
+
+	string currentName = "";
+	vector<Guest>::iterator result = _guests.end();
 	vector<Guest>::iterator gi;
 	for (gi = _guests.begin(); gi != _guests.end(); ++gi)
 	{
@@ -76,7 +137,6 @@ const bool GuestList::find(string targetName, Guest* result)
 			if (distance == closestDistance)
 			{
 				std::string candidateName = (*gi).name;
-				std::string currentName = result->name;
 
 				// If search tag is shorter than both
 				if (targetName.length() < candidateName.length() && targetName.length() < currentName.length())
@@ -84,7 +144,8 @@ const bool GuestList::find(string targetName, Guest* result)
 					// Pick the shortest
 					if (candidateName.length() < currentName.length())
 					{
-						*result = *gi;
+						currentName = (*gi).name;
+						result = gi;
 					}
 				}
 				// If search tag is larger than any of them
@@ -93,18 +154,25 @@ const bool GuestList::find(string targetName, Guest* result)
 					// Pick the largest
 					if (candidateName.length() > currentName.length())
 					{
-						*result = *gi;
+						currentName = (*gi).name;
+						result = gi;
 					}
 				}
 			}
 			else
 			{
-				*result = *gi;
+				currentName = (*gi).name;
+				result = gi;
 			}
 
 			closestDistance = distance;
 			found = true;
 		}
+	}
+
+	if (found && callback && result != _guests.end())
+	{
+		callback(result);
 	}
 
 	return found;

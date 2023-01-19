@@ -57,13 +57,12 @@ public:
 	ChatLog& getChatLog();
 	vector<string>& getMessageLog();
 	vector<string>& getCommandLog();
-	vector<Guest>& getGuestList();
+	GuestList& getGuestList();
 	vector<GuestData>& getGuestHistory();
 	BanList& getBanList();
 	vector<AGamepad*>& getGamepads();
 	GamepadClient& getGamepadClient();
 	MasterOfPuppets& getMasterOfPuppets();
-	const char** getGuestNames();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
 	void setMaxGuests(uint8_t maxGuests);

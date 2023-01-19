@@ -57,13 +57,14 @@ void Hosting::applyHostConfig()
 
 void Hosting::broadcastChatMessage(string message)
 {
-	vector<Guest> guests = _guestList.getGuests();
-	vector<Guest>::iterator gi;
+	_guestList.getGuests([&](vector<Guest>& guests) {
+		vector<Guest>::iterator gi;
 
-	for (gi = guests.begin(); gi != guests.end(); ++gi)
-	{
-		ParsecHostSendUserData(_parsec, (*gi).id, HOSTING_CHAT_MSG_ID, message.c_str());
-	}
+		for (gi = guests.begin(); gi != guests.end(); ++gi)
+		{
+			ParsecHostSendUserData(_parsec, (*gi).id, HOSTING_CHAT_MSG_ID, message.c_str());
+		}
+	});
 }
 
 void Hosting::init()
@@ -201,9 +202,9 @@ vector<string>& Hosting::getCommandLog()
 	return _chatLog.getCommandLog();
 }
 
-vector<Guest>& Hosting::getGuestList()
+GuestList& Hosting::getGuestList()
 {
-	return _guestList.getGuests();
+	return _guestList;
 }
 
 vector<GuestData>& Hosting::getGuestHistory()
@@ -229,11 +230,6 @@ GamepadClient& Hosting::getGamepadClient()
 MasterOfPuppets& Hosting::getMasterOfPuppets()
 {
 	return _masterOfPuppets;
-}
-
-const char** Hosting::getGuestNames()
-{
-	return _guestList.guestNames;
 }
 
 void Hosting::toggleGamepadLock()

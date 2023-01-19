@@ -1,8 +1,7 @@
 #include "GuestListWidget.h"
 
 GuestListWidget::GuestListWidget(Hosting& hosting)
-    : _hosting(hosting), _guests(hosting.getGuestList()),
-    _banList(_hosting.getBanList()), _guestHistory(_hosting.getGuestHistory())
+    : _hosting(hosting), _banList(_hosting.getBanList()), _guestHistory(_hosting.getGuestHistory())
 {
 }
 
@@ -15,8 +14,6 @@ bool GuestListWidget::render()
 
     ImVec2 size = ImGui::GetContentRegionAvail();
 
-    static vector<Guest>::iterator it;
-    it = _guests.begin();
     ImGui::BeginChild("Guest List", ImVec2(size.x, size.y));
 
     AppStyle::pushLabel();
@@ -81,109 +78,123 @@ void GuestListWidget::renderOnlineGuests()
     static string banPopupTitle = "";
     static string filterTextStr;
     static bool filterSuccess = false;
-    for (size_t i = 0; i < _guests.size(); ++i)
-    {
-        name = _guests[i].name;
-        userID = _guests[i].userID;
 
-        filterTextStr = _filterText;
-        if (!filterTextStr.empty())
+    _hosting.getGuestList().getGuests([&](vector<Guest>& guests) {
+        
+        static vector<Guest>::iterator it;
+        static int i;
+
+        it = guests.begin();
+        i = 0;
+
+        for(; it != guests.end(); it++)
         {
-            filterSuccess = (Stringer::fuzzyDistance(_filterText, name) == 0);
-            if (!filterSuccess)
+            name = (*it).name;
+            userID = (*it).userID;
+
+            filterTextStr = _filterText;
+            if (!filterTextStr.empty())
             {
-                filterSuccess = (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0);
+                filterSuccess = (Stringer::fuzzyDistance(_filterText, name) == 0);
+                if (!filterSuccess)
+                {
+                    filterSuccess = (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0);
+                }
+
+                if (!filterSuccess)
+                {
+                    continue;
+                }
             }
 
-            if (!filterSuccess)
+            IconButton::render(AppIcons::kick, AppColors::primary, ImVec2(30, 30));
+            if (ImGui::IsItemActive())
             {
-                continue;
+                showKickPopup = true;
+                kickPopupTitle = string("Kick ") + name + "?" + "##Online Kick " + to_string(userID);
+                popupIndex = i;
+                ImGui::OpenPopup(kickPopupTitle.c_str());
             }
-        }
+            TitleTooltipWidget::render(
+                "Kick user",
+                (string("Press to kick ") + name + "").c_str()
+            );
 
-        IconButton::render(AppIcons::kick, AppColors::primary, ImVec2(30, 30));
-        if (ImGui::IsItemActive())
-        {
-            showKickPopup = true;
-            kickPopupTitle = string("Kick ") + name + "?" + "##Online Kick " + to_string(userID);
-            popupIndex = i;
-            ImGui::OpenPopup(kickPopupTitle.c_str());
-        }
-        TitleTooltipWidget::render(
-            "Kick user",
-            (string("Press to kick ") + name + "").c_str()
-        );
+            ImGui::SameLine();
 
-        ImGui::SameLine();
-
-        IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
-        if (ImGui::IsItemActive())
-        {
-            showBanPopup = true;
-            banPopupTitle = string("Ban ") + name + "?" + "##Online Ban " + to_string(userID);
-            popupIndex = i;
-            ImGui::OpenPopup(banPopupTitle.c_str());
-        }
-        TitleTooltipWidget::render(
-            "Ban user",
-            (string("Press to ban ") + name + "").c_str()
-        );
-
-        if (i == popupIndex)
-        {
-            if (ConfirmPopupWidget::render(
-                kickPopupTitle.c_str(),
-                showKickPopup
-            ))
+            IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
+            if (ImGui::IsItemActive())
             {
-                _hosting.sendHostMessage((
-                    string("!kick ") + to_string(userID)
-                ).c_str(), true);
+                showBanPopup = true;
+                banPopupTitle = string("Ban ") + name + "?" + "##Online Ban " + to_string(userID);
+                popupIndex = i;
+                ImGui::OpenPopup(banPopupTitle.c_str());
             }
+            TitleTooltipWidget::render(
+                "Ban user",
+                (string("Press to ban ") + name + "").c_str()
+            );
 
-            if (ConfirmPopupWidget::render(
-                banPopupTitle.c_str(),
-                showBanPopup
-            ))
+            if (i == popupIndex)
             {
-                _hosting.sendHostMessage((
-                    string("!ban ") + to_string(userID)
-                ).c_str(), true);
+                if (ConfirmPopupWidget::render(
+                    kickPopupTitle.c_str(),
+                    showKickPopup
+                ))
+                {
+                    _hosting.sendHostMessage((
+                        string("!kick ") + to_string(userID)
+                    ).c_str(), true);
+                }
+
+                if (ConfirmPopupWidget::render(
+                    banPopupTitle.c_str(),
+                    showBanPopup
+                ))
+                {
+                    _hosting.sendHostMessage((
+                        string("!ban ") + to_string(userID)
+                    ).c_str(), true);
+                }
             }
-        }
 
-        ImGui::SameLine();
+            ImGui::SameLine();
 
-        cursor = ImGui::GetCursorPos();
-        ImGui::BeginGroup();
-        AppStyle::pushLabel();
-        ImGui::TextWrapped("(# %d)\t", userID);
-        AppStyle::pop();
-        AppStyle::pushInput();
-        ImGui::TextWrapped(name.c_str());
-        AppStyle::pop();
-        ImGui::Dummy(ImVec2(0.0f, 5.0f));
-        ImGui::EndGroup();
-        ImGui::SetCursorPos(cursor);
-        ImGui::Button((string("##") + to_string(i + 1)).c_str(), ImVec2(size.x - 45, 40));
-
-        if (ImGui::BeginDragDropSource())
-        {
-            ImGui::SetDragDropPayload("Guest", &i, sizeof(int));
-
-            AppFonts::pushInput();
-            AppColors::pushPrimary();
-            ImGui::Text("%s", name.c_str());
-            AppColors::pop();
-            AppFonts::pop();
-
+            cursor = ImGui::GetCursorPos();
+            ImGui::BeginGroup();
             AppStyle::pushLabel();
-            ImGui::Text("Drop into a Gamepad to assign.");
+            ImGui::TextWrapped("(# %d)\t", userID);
             AppStyle::pop();
+            AppStyle::pushInput();
+            ImGui::TextWrapped(name.c_str());
+            AppStyle::pop();
+            ImGui::Dummy(ImVec2(0.0f, 5.0f));
+            ImGui::EndGroup();
+            ImGui::SetCursorPos(cursor);
+            ImGui::Button((string("##") + to_string(i + 1)).c_str(), ImVec2(size.x - 45, 40));
 
-            ImGui::EndDragDropSource();
+            if (ImGui::BeginDragDropSource())
+            {
+                ImGui::SetDragDropPayload("Guest", &i, sizeof(int));
+
+                AppFonts::pushInput();
+                AppColors::pushPrimary();
+                ImGui::Text("%s", name.c_str());
+                AppColors::pop();
+                AppFonts::pop();
+
+                AppStyle::pushLabel();
+                ImGui::Text("Drop into a Gamepad to assign.");
+                AppStyle::pop();
+
+                ImGui::EndDragDropSource();
+            }
+
+            //ImGui::Text("Stats: %", )
+
+            ++i;
         }
-    }
+    });
     
     ImGui::PopStyleVar();
 }

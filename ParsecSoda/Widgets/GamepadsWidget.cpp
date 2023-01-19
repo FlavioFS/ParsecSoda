@@ -297,10 +297,10 @@ bool GamepadsWidget::render()
                 if (payload->DataSize == sizeof(int))
                 {
                     int guestIndex = *(const int*)payload->Data;
-                    if (guestIndex >= 0 && guestIndex < _hosting.getGuestList().size())
-                    {
-                        gi->owner.guest.copy(_hosting.getGuestList()[guestIndex]);
-                    }
+
+                    _hosting.getGuestList().findByIndex(guestIndex, [&](Guest* guest) {
+                        gi->owner.guest.copy(*guest);
+                    });
                 }
             }
             else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Gamepad"))

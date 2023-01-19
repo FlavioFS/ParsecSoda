@@ -43,12 +43,12 @@ public:
 			{
 				uint32_t userID = stoul(_targetUsername);
 
-				found = _guests.find(userID, &_onlineGuest);
-				if (found)
-				{
+				found = _guests.find(userID, [&](Guest* guest) {
+					_onlineGuest = *guest;
 					_searchResult = SEARCH_USER_HISTORY_RESULT::ONLINE;
-				}
-				else
+				});
+
+				if (!found)
 				{
 					found = _guestHistory.find(userID, [&](GuestData& guest) { _offlineGuest = guest; });
 					_searchResult = found ? SEARCH_USER_HISTORY_RESULT::OFFLINE : SEARCH_USER_HISTORY_RESULT::NOT_FOUND;
@@ -58,12 +58,12 @@ public:
 
 			if (!found)
 			{
-				found = _guests.find(_targetUsername, &_onlineGuest);
-				if (found)
-				{
+				found = _guests.find(_targetUsername, [&](Guest* guest) {
+					_onlineGuest = *guest;
 					_searchResult = SEARCH_USER_HISTORY_RESULT::ONLINE;
-				}
-				else
+				});
+
+				if (!found)
 				{
 					found = _guestHistory.find(_targetUsername, [&](GuestData& guest) { _offlineGuest = guest; });
 					_searchResult = found ? SEARCH_USER_HISTORY_RESULT::OFFLINE : SEARCH_USER_HISTORY_RESULT::NOT_FOUND;
