@@ -44,6 +44,10 @@ bool Stopwatch::isRunning()
     return _isRunning;
 }
 
+/**
+ * Sets duration (in milliseconds).
+ * @param duration Time span in milliseconds.
+ */
 void Stopwatch::setDuration(uint32_t duration)
 {
 	_duration = duration;
@@ -54,6 +58,10 @@ uint32_t Stopwatch::getDuration()
 	return _duration;
 }
 
+/**
+ * Gets time left until finish (in milliseconds).
+ * @returns duration Remaining time (in milliseconds).
+ */
 uint32_t Stopwatch::getRemainingTime()
 {
 	return isFinished() ? 0 : _duration - (uint32_t)_elapsedDuration.count();
