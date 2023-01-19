@@ -1,7 +1,7 @@
 #include "ChatWidget.h"
 
 ChatWidget::ChatWidget(Hosting& hosting, function<void(void)> onMessageCallback)
-    : _hosting(hosting), _chatLog(hosting.getChatLog()), _chatLogMessages(hosting.getMessageLog()), _messageCount(0), _onMessageCallback(onMessageCallback)
+    : _hosting(hosting), _chatLog(hosting.getChatLog()), _messageCount(0), _onMessageCallback(onMessageCallback)
 {
     setSendBuffer("\0");
 }
@@ -28,59 +28,50 @@ bool ChatWidget::render()
     static size_t index;
     index = 0;
 
-
-    // ====================================================
-    // CHATLOG MUTEX LOCK
-    // ====================================================
-    _chatLog.messageMutex.lock();
-
-
     static vector<string>::iterator it;
-    it = _chatLogMessages.begin();
+    _chatLog.getMessageLog([&](vector<string>& messages) {
+    
+        it = messages.begin();
 
-    renderTopBar(isWindowLocked, isClearChat);
-    ImGui::Separator();
+        renderTopBar(isWindowLocked, isClearChat);
+        ImGui::Separator();
 
-    ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 210));
-    for (; it != _chatLogMessages.end(); ++it)
-    {
-        static float textHeight;
-        cursor = ImGui::GetCursorPos();
+        ImGui::BeginChild("Chat Log", ImVec2(size.x, size.y - 210));
+        for (; it != messages.end(); ++it)
+        {
+            static float textHeight;
+            cursor = ImGui::GetCursorPos();
         
-        ImGui::TextWrapped((*it).c_str());
-        textHeight = ImGui::GetCursorPosY() - cursor.y;
+            ImGui::TextWrapped((*it).c_str());
+            textHeight = ImGui::GetCursorPosY() - cursor.y;
 
-        ImGui::SetCursorPos(cursor);
-        if (ImGui::Button(
-            (string() + "### Chat Message " + to_string(index)).c_str(),
-            ImVec2(size.x, textHeight)
-        ))
-        {
-            toClipboard((*it));
-            stopwatch.reset();
+            ImGui::SetCursorPos(cursor);
+            if (ImGui::Button(
+                (string() + "### Chat Message " + to_string(index)).c_str(),
+                ImVec2(size.x, textHeight)
+            ))
+            {
+                toClipboard((*it));
+                stopwatch.reset();
+            }
+            ++index;
         }
-        ++index;
-    }
-    if (_messageCount != _chatLogMessages.size())
-    {
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
+        if (_messageCount != messages.size())
         {
-            ImGui::SetScrollHereY(1.0f);
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
+            {
+                ImGui::SetScrollHereY(1.0f);
+            }
+            _messageCount = messages.size();
+
+            if (_onMessageCallback != nullptr)
+            {
+                _onMessageCallback();
+            }
         }
-        _messageCount = _chatLogMessages.size();
+        ImGui::EndChild();
 
-        if (_onMessageCallback != nullptr)
-        {
-            _onMessageCallback();
-        }
-    }
-    ImGui::EndChild();
-
-
-    // ====================================================
-    // CHATLOG MUTEX UNLOCK
-    // ====================================================
-    _chatLog.messageMutex.unlock();
+    });
 
 
     ImGui::BeginChild("Message Preview", ImVec2(size.x, 60));
@@ -116,7 +107,7 @@ bool ChatWidget::render()
 
     cursor = ImGui::GetCursorPos();
     ImGui::Dummy(ImVec2(0, 5));
-    if (_chatLogMessages.size() > 0 && stopwatch.getRemainingTime() > 0)
+    if (stopwatch.getRemainingTime() > 0)
     {
         static float fill = 1.0f;
         fill = (float)stopwatch.getRemainingTime() / stopwatch.getDuration();
@@ -143,7 +134,7 @@ bool ChatWidget::render()
 
     if (isClearChat)
     {
-        _chatLogMessages.clear();
+        _chatLog.clearMessages();
         ChatBot* chatBot = _hosting.getChatBot();
         if (chatBot != nullptr) {
             chatBot->setLastUserId();

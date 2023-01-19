@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <functional>
 #include <mutex>
 
 #define CHATLOG_COMMAND_LENGTH 200
@@ -17,17 +18,20 @@ public:
 	void logCommand(string message);
 	void logMessage(string message);
 
-	vector<string>& getCommandLog();
-	vector<string>& getMessageLog();
+	void clearCommands();
+	void clearMessages();
 
-	mutex commandMutex;
-	mutex messageMutex;
+	void getCommandLog(function<void(vector<string>&)> callback);
+	void getMessageLog(function<void(vector<string>&)> callback);
 
 private:
 	void tryCleanOldCommands();
 	void tryCleanOldMessages();
 
-	vector<string> _commandLog;
-	vector<string> _messageLog;
+	vector<string> m_commandLog;
+	vector<string> m_messageLog;
+
+	mutex m_commandMutex;
+	mutex m_messageMutex;
 };
 

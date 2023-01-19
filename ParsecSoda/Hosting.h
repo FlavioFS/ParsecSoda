@@ -55,8 +55,6 @@ public:
 	DX11& getDX11();
 	ChatBot* getChatBot();
 	ChatLog& getChatLog();
-	vector<string>& getMessageLog();
-	vector<string>& getCommandLog();
 	GuestList& getGuestList();
 	vector<GuestData>& getGuestHistory();
 	BanList& getBanList();

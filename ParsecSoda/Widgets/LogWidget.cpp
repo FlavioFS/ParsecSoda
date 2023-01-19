@@ -1,7 +1,7 @@
 #include "LogWidget.h"
 
 LogWidget::LogWidget(Hosting& hosting)
-    : _chatLog(hosting.getChatLog()), _commandLog(hosting.getCommandLog()), _messageCount(0)
+    : _chatLog(hosting.getChatLog()), _messageCount(0)
 {}
 
 bool LogWidget::render()
@@ -13,51 +13,41 @@ bool LogWidget::render()
 
     ImVec2 size = ImGui::GetContentRegionAvail();
 
-
-    // ====================================================
-    // CHATLOG MUTEX LOCK
-    // ====================================================
-    _chatLog.commandMutex.lock();
-
-
     static vector<string>::iterator it;
-    it = _commandLog.begin();
-    ImGui::BeginChild("Log text", ImVec2(size.x, size.y));
-    for (; it != _commandLog.end(); ++it)
-    {
-        if ((*it)[0] == '@')
+    _chatLog.getCommandLog([&](vector<string>& commands) {
+        
+        it = commands.begin();
+        ImGui::BeginChild("Log text", ImVec2(size.x, size.y));
+        for (; it != commands.end(); ++it)
         {
-            AppStyle::pushPositive();
-            ImGui::TextWrapped((*it).c_str());
-            AppStyle::pop();
+            if ((*it)[0] == '@')
+            {
+                AppStyle::pushPositive();
+                ImGui::TextWrapped((*it).c_str());
+                AppStyle::pop();
+            }
+            else if ((*it)[0] == '!')
+            {
+                AppStyle::pushNegative();
+                ImGui::TextWrapped((*it).c_str());
+                AppStyle::pop();
+            }
+            else
+            {
+                ImGui::TextWrapped((*it).c_str());
+            }
         }
-        else if ((*it)[0] == '!')
+        if (_messageCount != commands.size())
         {
-            AppStyle::pushNegative();
-            ImGui::TextWrapped((*it).c_str());
-            AppStyle::pop();
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
+            {
+                ImGui::SetScrollHereY(1.0f);
+            }
+            _messageCount = commands.size();
         }
-        else
-        {
-            ImGui::TextWrapped((*it).c_str());
-        }
-    }
-    if (_messageCount != _commandLog.size())
-    {
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 10)
-        {
-            ImGui::SetScrollHereY(1.0f);
-        }
-        _messageCount = _commandLog.size();
-    }
-    ImGui::EndChild();
+        ImGui::EndChild();
 
-
-    // ====================================================
-    // CHATLOG MUTEX UNLOCK
-    // ====================================================
-    _chatLog.commandMutex.unlock();
-
+    });
 
     AppStyle::pop();
     ImGui::End();

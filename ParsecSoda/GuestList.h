@@ -14,7 +14,7 @@ using namespace std;
 
 /**
 * A concrete and in-depth guest list.
-* Contains ONLINE guests and must be fetched directly from Parsec SDK.
+* Contains real-time ONLINE guests and must be fetched directly from Parsec SDK.
 */
 class GuestList
 {

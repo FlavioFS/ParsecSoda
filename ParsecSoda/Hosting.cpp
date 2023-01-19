@@ -192,16 +192,6 @@ ChatLog& Hosting::getChatLog()
 	return _chatLog;
 }
 
-vector<string>& Hosting::getMessageLog()
-{
-	return _chatLog.getMessageLog();
-}
-
-vector<string>& Hosting::getCommandLog()
-{
-	return _chatLog.getCommandLog();
-}
-
 GuestList& Hosting::getGuestList()
 {
 	return _guestList;

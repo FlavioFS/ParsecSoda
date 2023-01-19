@@ -37,7 +37,6 @@ private:
 	char _lastBuffer[SEND_BUFFER_LEN];
 	char _previewBuffer[SEND_BUFFER_LEN];
 	ChatLog& _chatLog;
-	vector<string>& _chatLogMessages;
 	size_t _messageCount;
 	function<void(void)> _onMessageCallback;
 };

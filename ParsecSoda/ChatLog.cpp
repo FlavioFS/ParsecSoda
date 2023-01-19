@@ -2,12 +2,12 @@
 
 void ChatLog::logCommand(string message)
 {
-	commandMutex.lock();
+	m_commandMutex.lock();
 
 	tryCleanOldCommands();
-	_commandLog.push_back(message);
+	m_commandLog.push_back(message);
 
-	commandMutex.unlock();
+	m_commandMutex.unlock();
 }
 
 void ChatLog::logMessage(string message)
@@ -19,12 +19,12 @@ void ChatLog::logMessage(string message)
 		message[0] != '['
 	)
 	{
-		messageMutex.lock();
+		m_messageMutex.lock();
 
 		tryCleanOldMessages();
-		_messageLog.push_back(message);
+		m_messageLog.push_back(message);
 
-		messageMutex.unlock();
+		m_messageMutex.unlock();
 	}
 	else
 	{
@@ -32,30 +32,58 @@ void ChatLog::logMessage(string message)
 	}
 }
 
-vector<string>& ChatLog::getCommandLog()
+void ChatLog::clearCommands()
 {
-	return _commandLog;
+	m_commandMutex.lock();
+	m_commandLog.clear();
+	m_commandMutex.unlock();
 }
 
-vector<string>& ChatLog::getMessageLog()
+void ChatLog::clearMessages()
 {
-	return _messageLog;
+	m_messageMutex.lock();
+	m_messageLog.clear();
+	m_messageMutex.unlock();
+}
+
+void ChatLog::getCommandLog(function<void(vector<string>&)> callback)
+{
+	m_commandMutex.lock();
+
+	if (callback)
+	{
+		callback(m_commandLog);
+	}
+
+	m_commandMutex.unlock();
+}
+
+void ChatLog::getMessageLog(function<void(vector<string>&)> callback)
+{
+	m_messageMutex.lock();
+
+	if (callback)
+	{
+		callback(m_messageLog);
+	}
+
+	m_messageMutex.unlock();
 }
 
 void ChatLog::tryCleanOldCommands()
 {
-	if (_commandLog.size() > CHATLOG_COMMAND_LENGTH)
+	if (m_commandLog.size() > CHATLOG_COMMAND_LENGTH)
 	{
-		vector<string>::iterator it = _commandLog.begin();
-		_commandLog.erase(it, it + _commandLog.size() / 2);
+		vector<string>::iterator it = m_commandLog.begin();
+		m_commandLog.erase(it, it + m_commandLog.size() / 2);
 	}
 }
 
 void ChatLog::tryCleanOldMessages()
 {
-	if (_messageLog.size() > CHATLOG_MESSAGE_LENGTH)
+	if (m_messageLog.size() > CHATLOG_MESSAGE_LENGTH)
 	{
-		vector<string>::iterator it = _messageLog.begin();
-		_messageLog.erase(it, it + _messageLog.size() / 2);
+		vector<string>::iterator it = m_messageLog.begin();
+		m_messageLog.erase(it, it + m_messageLog.size() / 2);
 	}
 }
