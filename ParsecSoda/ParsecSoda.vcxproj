@@ -155,7 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AsyncCall.cpp" />
     <ClCompile Include="AudioSource.cpp" />
+    <ClCompile Include="ActionQueue.cpp" />
     <ClCompile Include="Commands\CommandBonk.cpp" />
     <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
@@ -238,7 +240,9 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AsyncCall.h" />
     <ClInclude Include="AudioSource.h" />
+    <ClInclude Include="ActionQueue.h" />
     <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
     <ClInclude Include="MovingAverage.h" />

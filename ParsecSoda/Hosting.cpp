@@ -38,7 +38,7 @@ Hosting::Hosting()
 	_tierList.saveTiers();
 
 	vector<GuestData> banned = MetadataCache::loadBannedUsers();
-	_banList = BanList(banned);
+	_banList.init(banned);
 
 	_parsec = nullptr;
 
@@ -197,9 +197,9 @@ GuestList& Hosting::getGuestList()
 	return _guestList;
 }
 
-vector<GuestData>& Hosting::getGuestHistory()
+GuestDataList& Hosting::getGuestHistory()
 {
-	return _guestHistory.getGuests();
+	return _guestHistory;
 }
 
 BanList& Hosting::getBanList()

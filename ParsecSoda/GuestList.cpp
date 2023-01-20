@@ -2,7 +2,7 @@
 
 void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 {
-	_mutex.lock();
+	const std::lock_guard<std::mutex> lock(_mutex);
 
 	_guests.clear();
 	for (size_t i = 0; i < guestCount; i++)
@@ -17,25 +17,21 @@ void GuestList::setGuests(ParsecGuest* guests, int guestCount)
 			)
 		);
 	}
-
-	_mutex.unlock();
 }
 
 void GuestList::getGuests(function<void(vector<Guest>& guests)> callback)
 {
 	if (callback)
 	{
-		_mutex.lock();
+		const std::lock_guard<std::mutex> lock(_mutex);
 		callback(_guests);
-		_mutex.unlock();
 	}
 }
 
 void GuestList::clear()
 {
-	_mutex.lock();
+	const std::lock_guard<std::mutex> lock(_mutex);
 	_guests.clear();
-	_mutex.unlock();
 }
 
 
@@ -47,7 +43,7 @@ const bool GuestList::find(const char* targetName, function<void(Guest* result)>
 
 const bool GuestList::find(string targetName, function<void(Guest* result)> callback)
 {
-	_mutex.lock();
+	const std::lock_guard<std::mutex> lock(_mutex);
 
 	bool found = findIterator(targetName, [&](vector<Guest>::iterator gi) {
 		if (callback)
@@ -56,7 +52,6 @@ const bool GuestList::find(string targetName, function<void(Guest* result)> call
 		}
 	});
 
-	_mutex.unlock();
 	return found;
 }
 
@@ -64,7 +59,7 @@ const bool GuestList::find(string targetName, function<void(Guest* result)> call
 
 const bool GuestList::find(uint32_t userID, function<void(Guest* result)> callback)
 {
-	_mutex.lock();
+	const std::lock_guard<std::mutex> lock(_mutex);
 
 	bool found = findIterator(userID, [&](vector<Guest>::iterator gi) {
 		if (callback)
@@ -73,13 +68,12 @@ const bool GuestList::find(uint32_t userID, function<void(Guest* result)> callba
 		}
 	});
 
-	_mutex.unlock();
 	return found;
 }
 
 const bool GuestList::findByIndex(uint32_t index, function<void(Guest* result)> callback)
 {
-	_mutex.lock();
+	const std::lock_guard<std::mutex> lock(_mutex);
 
 	bool found = (index >= 0 && index < _guests.size());
 	
@@ -88,7 +82,6 @@ const bool GuestList::findByIndex(uint32_t index, function<void(Guest* result)> 
 		callback(&_guests[index]);
 	}
 
-	_mutex.unlock();
 	return found;
 }
 

@@ -56,7 +56,7 @@ public:
 	ChatBot* getChatBot();
 	ChatLog& getChatLog();
 	GuestList& getGuestList();
-	vector<GuestData>& getGuestHistory();
+	GuestDataList& getGuestHistory();
 	BanList& getBanList();
 	vector<AGamepad*>& getGamepads();
 	GamepadClient& getGamepadClient();

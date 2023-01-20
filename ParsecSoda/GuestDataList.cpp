@@ -6,23 +6,29 @@ GuestDataList::GuestDataList()
 
 GuestDataList::GuestDataList(const std::vector<GuestData> guests)
 {
-	_guests = guests;
+	init(guests);
+}
+
+void GuestDataList::init(const std::vector<GuestData> guests)
+{
+	m_guests = guests;
 }
 
 bool GuestDataList::add(GuestData guest)
 {
-	bool found = find(guest.userID);
-	if (!found)
-	{
-		_guests.push_back(guest);
-		return true;
-	}
+	const std::lock_guard<std::mutex> lock(m_mutex);
 
-	return false;
+	bool found = findIterator(guest.userID);
+
+	if (!found) m_guests.push_back(guest);
+
+	return !found;
 }
 
 bool GuestDataList::find(uint32_t userID, function<void(GuestData& guest)> callback)
 {
+	const std::lock_guard<std::mutex> lock(m_mutex);
+
 	bool found = findIterator(userID, [&](vector<GuestData>::iterator gi) {
 		if (callback != nullptr)
 		{
@@ -35,6 +41,8 @@ bool GuestDataList::find(uint32_t userID, function<void(GuestData& guest)> callb
 
 bool GuestDataList::find(string guestName, function<void(GuestData& guest)> callback)
 {
+	const std::lock_guard<std::mutex> lock(m_mutex);
+
 	bool found = findIterator(guestName, [&](vector<GuestData>::iterator gi) {
 		if (callback != nullptr)
 		{
@@ -47,12 +55,14 @@ bool GuestDataList::find(string guestName, function<void(GuestData& guest)> call
 
 bool GuestDataList::pop(uint32_t userID, function<void(GuestData& guest)> callback)
 {
+	const std::lock_guard<std::mutex> lock(m_mutex);
+
 	bool found = findIterator(userID, [&](vector<GuestData>::iterator gi) {
 		if (callback != nullptr)
 		{
 			callback(*gi);
 		}
-		_guests.erase(gi);
+		m_guests.erase(gi);
 	});
 
 	return found;
@@ -60,20 +70,28 @@ bool GuestDataList::pop(uint32_t userID, function<void(GuestData& guest)> callba
 
 bool GuestDataList::pop(string guestName, function<void(GuestData& guest)> callback)
 {
+	const std::lock_guard<std::mutex> lock(m_mutex);
+
 	bool found = findIterator(guestName, [&](vector<GuestData>::iterator gi) {
 		if (callback != nullptr)
 		{
 			callback(*gi);
 		}
-		_guests.erase(gi);
+
+		m_guests.erase(gi);
 	});
 
 	return found;
 }
 
-vector<GuestData>& GuestDataList::getGuests()
+void GuestDataList::getGuests(function<void(vector<GuestData>&)> callback)
 {
-	return _guests;
+	const std::lock_guard<std::mutex> lock(m_mutex);
+
+	if (callback)
+	{
+		callback(m_guests);
+	}
 }
 
 
@@ -84,9 +102,9 @@ vector<GuestData>& GuestDataList::getGuests()
 // =============================================================
 bool GuestDataList::findIterator(uint32_t userID, function<void(vector<GuestData>::iterator guest)> callback)
 {
-	vector<GuestData>::iterator it = _guests.begin();
+	vector<GuestData>::iterator it = m_guests.begin();
 
-	for (; it != _guests.end(); ++it)
+	for (; it != m_guests.end(); ++it)
 	{
 		if (userID == (*it).userID)
 		{
@@ -103,9 +121,9 @@ bool GuestDataList::findIterator(uint32_t userID, function<void(vector<GuestData
 
 bool GuestDataList::findIterator(string guestName, function<void(vector<GuestData>::iterator guest)> callback)
 {
-	vector<GuestData>::iterator it = _guests.begin();
+	vector<GuestData>::iterator it = m_guests.begin();
 
-	for (; it != _guests.end(); ++it)
+	for (; it != m_guests.end(); ++it)
 	{
 		if (Stringer::isCloseEnough((*it).name.c_str(), guestName))
 		{
