@@ -169,7 +169,12 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
         ImGui::EndDragDropSource();
     }
 
-    //ImGui::Text("Stats: %", )
+    ImGui::Dummy(ImVec2(10.0f, 0.0f));
+    ImGui::SameLine();
+
+    AppStyle::pushLabel();
+    ImGui::Text(guest.metrics.toString().c_str());
+    AppStyle::pop();
 
     ImGui::PopStyleVar();
 }

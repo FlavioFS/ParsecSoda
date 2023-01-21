@@ -15,10 +15,10 @@ public:
 	const CONGESTION getCongestion() const;
 	const ParsecMetrics getMetrics() const;
 
-	const char* toString() const;
+	std::string toString() const;
 
 private:
-	ParsecMetrics m_parsecMetrics;
+	ParsecMetrics m_parsecMetrics { 0, 0, 0, 0, 0, 0, 0, 0 };
 	CONGESTION m_congestion;
 	MovingAverage m_averageLatency;
 

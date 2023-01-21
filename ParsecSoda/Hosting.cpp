@@ -303,7 +303,7 @@ void Hosting::startHosting()
 				_mediaThread = thread ( [this]() {liveStreamMedia(); } );
 				_inputThread = thread ([this]() {pollInputs(); });
 				_eventThread = thread ([this]() {pollEvents(); });
-				//_metricsThread = thread([this]() { pollMetrics(); });
+				_metricsThread = thread([this]() { pollMetrics(); });
 				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
 			}
 		}
@@ -395,7 +395,7 @@ void Hosting::initAllModules()
 
 void Hosting::liveStreamMedia()
 {
-	_mediaMutex.lock();
+	const std::lock_guard<mutex> lock(_mediaMutex);
 	_isMediaThreadRunning = true;
 
 	static uint32_t sleepTimeMs = 4;
@@ -445,7 +445,6 @@ void Hosting::liveStreamMedia()
 	}
 
 	_isMediaThreadRunning = false;
-	_mediaMutex.unlock();
 	_mediaThread.detach();
 }
 
@@ -458,25 +457,20 @@ void Hosting::mainLoopControl()
 
 	_isRunning = true;
 
-	_mediaMutex.lock();
-	_inputMutex.lock();
-	_eventMutex.lock();
-	//_metricsMutex.lock();
-
+	const std::lock_guard<mutex> lockMedia(_mediaMutex);
+	const std::lock_guard<mutex> lockInput(_inputMutex);
+	const std::lock_guard<mutex> lockEvent(_eventMutex);
+	const std::lock_guard<mutex> lockMetrics(_metricsMutex);
+	 
 	ParsecHostStop(_parsec);
 	_isRunning = false;
-
-	//_metricsMutex.unlock();
-	_mediaMutex.unlock();
-	_inputMutex.unlock();
-	_eventMutex.unlock();
 
 	_mainLoopControlThread.detach();
 }
 
 void Hosting::pollEvents()
 {
-	_eventMutex.lock();
+	const std::lock_guard<mutex> lock(_eventMutex);
 	_isEventThreadRunning = true;
 
 	string chatBotReply;
@@ -517,13 +511,12 @@ void Hosting::pollEvents()
 
 	ParsecFree(_parsec, guests);
 	_isEventThreadRunning = false;
-	_eventMutex.unlock();
 	_eventThread.detach();
 }
 
 void Hosting::pollInputs()
 {
-	_inputMutex.lock();
+	const std::lock_guard<mutex> lock(_inputMutex);
 	_isInputThreadRunning = true;
 
 	ParsecGuest inputGuest;
@@ -541,13 +534,12 @@ void Hosting::pollInputs()
 	}
 
 	_isInputThreadRunning = false;
-	_inputMutex.unlock();
 	_inputThread.detach();
 }
 
 void Hosting::pollMetrics()
 {
-	_metricsMutex.lock();
+	const std::lock_guard<mutex> lock(_metricsMutex);
 	_isMetricsThreadRunning = true;
 
 	ParsecGuest* parsecGuests = nullptr;
@@ -568,14 +560,17 @@ void Hosting::pollMetrics()
 			});
 		}
 
-		if (!stopwatch.isFinished())
+		if (stopwatch.isFinished())
+		{
+			stopwatch.reset();
+		}
+		else
 		{
 			Sleep(stopwatch.getRemainingTime());
 		}
 	}
 
 	_isMetricsThreadRunning = false;
-	_metricsMutex.unlock();
 	_metricsThread.detach();
 }
 
