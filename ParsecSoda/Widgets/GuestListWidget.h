@@ -28,10 +28,10 @@ private:
 	void renderAnyGuestList(GuestList& guestList, function<void(Guest&, size_t index)> renderOneGuest);
 	void renderAnyGuestDataList(GuestDataList& guestDataList, function<void(GuestData&, size_t index)> renderOneGuest);
 
-
-	bool isGuestFilterMatch(string name, uint32_t userID, string filterTextStr);
-
-	void sendHostMessage(const char* command, uint32_t userID);
+	bool isGuestFilterMatch(const string name, const uint32_t userID, const string filterTextStr);
+	void sendHostMessage(const string command, const uint32_t userID);
+	ImVec4 getLatencyColor(float latency);
+	void renderPopupButton(const string title, const string command, const GuestData guest, bool& showPopup, string& popupTitle, Icon btnIcon, Action action);
 
 	// Dependency injection
 	Hosting& _hosting;

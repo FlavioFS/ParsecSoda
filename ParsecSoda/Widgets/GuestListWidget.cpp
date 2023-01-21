@@ -78,67 +78,30 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
 {
     static ImVec2 size;
     size = ImGui::GetContentRegionAvail();
-    static size_t popupIndex;
     static ImVec2 cursor;
 
-    // Guests
     static bool showKickPopup = false;
     static string kickPopupTitle = "";
     static bool showBanPopup = false;
     static string banPopupTitle = "";
-    static string filterTextStr;
-    static bool filterSuccess = false;
 
-    IconButton::render(AppIcons::kick, AppColors::primary, ImVec2(30, 30));
-    if (ImGui::IsItemActive())
-    {
-        showKickPopup = true;
-        kickPopupTitle = string("Kick ") + guest.name + "?" + "##Online Kick " + to_string(guest.userID);
-        popupIndex = index;
-        ImGui::OpenPopup(kickPopupTitle.c_str());
-    }
-    TitleTooltipWidget::render(
-        "Kick user",
-        (string("Press to kick ") + guest.name + "").c_str()
-    );
+    static GuestData guestData = GuestData(guest.name, guest.userID);
 
+    Action enqueueKickAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); }); };
+    renderPopupButton("Kick", "!kick", guestData, showKickPopup, kickPopupTitle, AppIcons::kick, enqueueKickAction);
+    
     ImGui::SameLine();
+    
+    Action enqueueBanAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!ban", guest.userID); }); };
+    renderPopupButton("Ban", "!ban", guestData, showBanPopup, banPopupTitle, AppIcons::block, enqueueBanAction);
 
-    IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
-    if (ImGui::IsItemActive())
-    {
-        showBanPopup = true;
-        banPopupTitle = string("Ban ") + guest.name + "?" + "##Online Ban " + to_string(guest.userID);
-        popupIndex = index;
-        ImGui::OpenPopup(banPopupTitle.c_str());
-    }
-    TitleTooltipWidget::render(
-        "Ban user",
-        (string("Press to ban ") + guest.name + "").c_str()
-    );
-
-    if (index == popupIndex)
-    {
-        if (ConfirmPopupWidget::render(
-            kickPopupTitle.c_str(),
-            showKickPopup
-        ))
-        {
-            _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); });
-        }
-
-        if (ConfirmPopupWidget::render(
-            banPopupTitle.c_str(),
-            showBanPopup
-        ))
-        {
-            _actionQueue.add([&]() {sendHostMessage("!ban", guest.userID); });
-        }
-    }
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
     ImGui::SameLine();
 
+    // ===================
+    // Name and userID
+    // ===================
     cursor = ImGui::GetCursorPos();
     ImGui::BeginGroup();
     AppStyle::pushLabel();
@@ -172,8 +135,15 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     ImGui::Dummy(ImVec2(10.0f, 0.0f));
     ImGui::SameLine();
 
-    AppStyle::pushLabel();
-    ImGui::Text(guest.metrics.toString().c_str());
+    // ===================
+    // Latency
+    // ===================
+    static ImVec4 latencyColor;
+    latencyColor = getLatencyColor(guest.metrics.getLatency());
+    AppStyle::pushInput();
+    AppColors::pushColor(latencyColor);
+    ImGui::Text("%.0f ms", guest.metrics.getLatency());
+    AppColors::pop();
     AppStyle::pop();
 
     ImGui::PopStyleVar();
@@ -322,7 +292,7 @@ void GuestListWidget::renderAnyGuestDataList(GuestDataList& guestDataList, funct
     _actionQueue.runAll();
 }
 
-bool GuestListWidget::isGuestFilterMatch(string name, uint32_t userID, string filterTextStr)
+bool GuestListWidget::isGuestFilterMatch(const string name, const uint32_t userID, const string filterTextStr)
 {
     if (!filterTextStr.empty()) return true;
     if (Stringer::fuzzyDistance(_filterText, name) == 0) return true;
@@ -331,9 +301,41 @@ bool GuestListWidget::isGuestFilterMatch(string name, uint32_t userID, string fi
     return false;
 }
 
-void GuestListWidget::sendHostMessage(const char* command, uint32_t userID)
+void GuestListWidget::sendHostMessage(const string command, const uint32_t userID)
 {
     _hosting.sendHostMessage((
-        string(command) + string(" ") + to_string(userID)
+        command + string(" ") + to_string(userID)
     ).c_str(), true);
+}
+
+ImVec4 GuestListWidget::getLatencyColor(float latency)
+{
+    if (latency < 80) return AppColors::positive;
+    if (latency >= 150) return AppColors::negative;
+    return AppColors::warning;
+}
+
+void GuestListWidget::renderPopupButton(const string title, const string command, const GuestData guest, bool& showPopup, string& popupTitle, Icon btnIcon, Action action)
+{
+    IconButton::render(btnIcon, AppColors::primary, ImVec2(30, 30));
+    if (ImGui::IsItemActive())
+    {
+        showPopup = true;
+        popupTitle = title + " " + guest.name + "?" + "##Online " + title + to_string(guest.userID);
+        ImGui::OpenPopup(popupTitle.c_str());
+    }
+    TitleTooltipWidget::render(
+        (title + " user").c_str(),
+        (string("Press to ") + title + " " + guest.name).c_str()
+    );
+    if (showPopup)
+    {
+        if (ConfirmPopupWidget::render(
+            popupTitle.c_str(),
+            showPopup
+        ))
+        {
+            if (action) action();
+        }
+    }
 }
