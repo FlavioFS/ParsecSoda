@@ -6,6 +6,7 @@
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx11.h"
 #include "imgui/imgui_colors.h"
+#include "imgui/implot.h"
 #include <d3d11.h>
 #include <tchar.h>
 #include <Windows.h>
@@ -94,6 +95,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -228,6 +230,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         //if (showStyles)         StylePickerWidget::render();
 
         //ImGui::ShowDemoWindow();
+        //ImPlot::ShowDemoWindow();
 
         // =====================================================================
 
@@ -245,6 +248,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     // Cleanup
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     CleanupDeviceD3D();

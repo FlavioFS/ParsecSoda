@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../imgui/imgui.h"
+#include "../imgui/implot.h"
 #include "../Hosting.h"
 #include "../AudioTools.h"
 #include "../globals/AppIcons.h"

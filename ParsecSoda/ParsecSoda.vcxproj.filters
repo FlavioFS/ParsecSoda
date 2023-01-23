@@ -264,6 +264,15 @@
     <ClCompile Include="ActionQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\implot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\implot_demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\implot_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -648,6 +657,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ActionQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\implot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\implot_internal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

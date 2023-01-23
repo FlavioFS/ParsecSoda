@@ -13,6 +13,11 @@ bool AudioSettingsWidget::render()
     static ImVec2 cursor;
     static bool showPlot = false;
 
+    // Implot
+    static const int COUNT = AUDIOSRC_BUFFER_SIZE >> 2;
+    static const ImPlotRange RANGE(0, COUNT);
+    static const double SCALE = 32768.0;
+
     AppStyle::pushTitle();
 
     ImGui::SetNextWindowSizeConstraints(ImVec2(300, 550), ImVec2(600, 900));
@@ -94,6 +99,17 @@ bool AudioSettingsWidget::render()
     }
     _audioIn.volume = (float)micVolume / 100.0f;
 
+    if (showPlot)
+    {
+        if (ImPlot::BeginPlot("Microphone"))
+        {
+            ImPlot::SetupAxes(NULL, NULL, ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
+            ImPlot::SetupAxesLimits(0, COUNT, -SCALE, SCALE);
+            ImPlot::PlotBars("Input levels", _audioIn.getPlot(), COUNT);
+            ImPlot::EndPlot();
+        }
+    }
+
 
     ImGui::Dummy(dummySize);
 
@@ -161,16 +177,22 @@ bool AudioSettingsWidget::render()
     }
     _audioOut.volume = (float)speakersVolume / 100.0f;
 
+    if (showPlot)
+    {
+        if (ImPlot::BeginPlot("Speakers"))
+        {
+            ImPlot::SetupAxes(NULL, NULL, ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
+            ImPlot::SetupAxesLimits(0, COUNT, -SCALE, SCALE);
+            ImPlot::PlotBars("Output levels", _audioOut.getPlot(), COUNT);
+            ImPlot::EndPlot();
+        }
+    }
+
     ImGui::Dummy(dummySize);
 
     ImGui::Checkbox("Plot Audio (debug for devs)", &showPlot);
     _audioIn.togglePlot(showPlot);
     _audioOut.togglePlot(showPlot);
-    if (showPlot)
-    {
-        ImGui::PlotHistogram("Microphone", _audioIn.getPlot(), AUDIOSRC_BUFFER_SIZE >> 2, 0, NULL, -32768.0f, 32767.0f, ImVec2(0, 100));
-        ImGui::PlotHistogram("Speakers", _audioOut.getPlot(), AUDIOSRC_BUFFER_SIZE >> 2, 0, NULL, -32768.0f, 32767.0f, ImVec2(0, 100));
-    }
 
     AppStyle::pop();
     ImGui::End();

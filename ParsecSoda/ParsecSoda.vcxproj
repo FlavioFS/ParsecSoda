@@ -161,6 +161,9 @@
     <ClCompile Include="Commands\CommandBonk.cpp" />
     <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
+    <ClCompile Include="imgui\implot.cpp" />
+    <ClCompile Include="imgui\implot_demo.cpp" />
+    <ClCompile Include="imgui\implot_items.cpp" />
     <ClCompile Include="MovingAverage.cpp" />
     <ClCompile Include="XBoxGamepad.cpp" />
     <ClCompile Include="MasterOfPuppets.cpp" />
@@ -245,6 +248,8 @@
     <ClInclude Include="ActionQueue.h" />
     <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
+    <ClInclude Include="imgui\implot.h" />
+    <ClInclude Include="imgui\implot_internal.h" />
     <ClInclude Include="MovingAverage.h" />
     <ClInclude Include="XBoxGamepad.h" />
     <ClInclude Include="MasterOfPuppets.h" />
