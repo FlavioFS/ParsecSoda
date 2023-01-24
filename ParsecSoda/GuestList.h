@@ -3,10 +3,10 @@
 #include <vector>
 #include <sstream>
 #include <mutex>
+#include <functional>
 #include "parsec.h"
 #include "Guest.h"
 #include "Stringer.h"
-#include <functional>
 
 using namespace std;
 
@@ -18,20 +18,34 @@ using namespace std;
 */
 class GuestList
 {
+	typedef vector<Guest>::iterator Iterator;
+	typedef function<void(void)> Action;
+	typedef function<void(Guest*)> ItemCallback;
+	typedef function<void(vector<Guest>&)> ListCallback;
+	typedef function<void(vector<Guest>::iterator)> IteratorCallback;
+
 public:
-	void setGuests(ParsecGuest* guests, int guestCount);
-	void getGuests(function<void(vector<Guest>& guests)> callback);
-	void clear();
+	void setGuestsSafe(ParsecGuest* guests, int guestCount);
+	void setGuestsUnsafe(ParsecGuest* guests, int guestCount);
+	void getGuestsSafe(GuestList::ListCallback callback);
+	void getGuestsUnsafe(GuestList::ListCallback callback);
+	void clearSafe();
+	void clearUnsafe();
 
-	const bool find(const char* targetName, function<void(Guest* result)> callback = nullptr);
-	const bool find(string targetName, function<void(Guest* result)> callback = nullptr);
+	const bool findSafe(const char* targetName, GuestList::ItemCallback callback = nullptr);
+	const bool findUnsafe(const char* targetName, GuestList::ItemCallback callback = nullptr);
+	const bool findSafe(string targetName, GuestList::ItemCallback callback = nullptr);
+	const bool findUnsafe(string targetName, GuestList::ItemCallback callback = nullptr);
 
-	const bool find(uint32_t userID, function<void(Guest* result)> callback = nullptr);
-	const bool findByIndex(uint32_t index, function<void(Guest* result)> callback = nullptr);
+	const bool findSafe(uint32_t userID, GuestList::ItemCallback callback = nullptr);
+	const bool findUnsafe(uint32_t userID, GuestList::ItemCallback callback = nullptr);
+	const bool findByIndexSafe(uint32_t index, GuestList::ItemCallback callback = nullptr);
+
+	void getMutexLockContext(GuestList::Action callback);
 
 private:
-	const bool findIterator(uint32_t userID, function<void(vector<Guest>::iterator)> callback);
-	const bool findIterator(string targetName, function<void(vector<Guest>::iterator)> callback);
+	const bool findIteratorUnsafe(uint32_t userID, GuestList::IteratorCallback callback);
+	const bool findIteratorUnsafe(string targetName, GuestList::IteratorCallback callback);
 
 	vector<Guest> _guests;
 

@@ -57,7 +57,7 @@ void Hosting::applyHostConfig()
 
 void Hosting::broadcastChatMessage(string message)
 {
-	_guestList.getGuests([&](vector<Guest>& guests) {
+	_guestList.getGuestsSafe([&](vector<Guest>& guests) {
 		vector<Guest>::iterator gi;
 
 		for (gi = guests.begin(); gi != guests.end(); ++gi)
@@ -202,6 +202,11 @@ GuestDataList& Hosting::getGuestHistory()
 	return _guestHistory;
 }
 
+GuestMetricsHistory& Hosting::getGuestMetricsHistory()
+{
+	return _guestMetricsHistory;
+}
+
 BanList& Hosting::getBanList()
 {
 	return _banList;
@@ -315,7 +320,7 @@ void Hosting::startHosting()
 void Hosting::stopHosting()
 {
 	_isRunning = false;
-	_guestList.clear();
+	_guestList.clearSafe();
 }
 
 void Hosting::stripGamepad(int index)
@@ -487,7 +492,7 @@ void Hosting::pollEvents()
 			ParsecGuestState state = parsecGuest.state;
 			Guest guest = Guest(parsecGuest.name, parsecGuest.userID, parsecGuest.id);
 			guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &guests);
-			_guestList.setGuests(guests, guestCount);
+			_guestList.setGuestsSafe(guests, guestCount);
 
 			switch (event.type)
 			{
@@ -546,19 +551,24 @@ void Hosting::pollMetrics()
 	int guestCount = 0;
 
 	Stopwatch stopwatch;
-	stopwatch.setDuration(2000);
+	stopwatch.setDuration(1000);
 	stopwatch.start();
 
 	while (_isRunning)
 	{
 		guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &parsecGuests);
 
-		for (size_t i = 0; i < guestCount; i++)
-		{
-			_guestList.find(parsecGuests[i].userID, [&](Guest* gi) {
-				gi->metrics.updateMetrics(parsecGuests[i]);
+		_guestList.getMutexLockContext([&]() {
+			_guestMetricsHistory.getMutexLockContext([&]() {
+				for (size_t i = 0; i < guestCount; i++)
+				{
+					_guestList.findUnsafe(parsecGuests[i].userID, [&](Guest* gi) {
+						gi->metrics.updateMetrics(parsecGuests[i]);
+						_guestMetricsHistory.pushUnsafe(*gi);
+					});
+				}
 			});
-		}
+		});
 
 		if (stopwatch.isFinished())
 		{

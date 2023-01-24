@@ -43,7 +43,7 @@ public:
 			{
 				uint32_t userID = stoul(_targetUsername);
 
-				found = _guests.find(userID, [&](Guest* guest) {
+				found = _guests.findSafe(userID, [&](Guest* guest) {
 					_onlineGuest = *guest;
 					_searchResult = SEARCH_USER_HISTORY_RESULT::ONLINE;
 				});
@@ -58,7 +58,7 @@ public:
 
 			if (!found)
 			{
-				found = _guests.find(_targetUsername, [&](Guest* guest) {
+				found = _guests.findSafe(_targetUsername, [&](Guest* guest) {
 					_onlineGuest = *guest;
 					_searchResult = SEARCH_USER_HISTORY_RESULT::ONLINE;
 				});

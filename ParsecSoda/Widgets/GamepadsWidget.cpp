@@ -298,7 +298,7 @@ bool GamepadsWidget::render()
                 {
                     int guestIndex = *(const int*)payload->Data;
 
-                    _hosting.getGuestList().findByIndex(guestIndex, [&](Guest* guest) {
+                    _hosting.getGuestList().findByIndexSafe(guestIndex, [&](Guest* guest) {
                         gi->owner.guest.copy(*guest);
                     });
                 }

@@ -105,7 +105,7 @@ bool AudioSettingsWidget::render()
         {
             ImPlot::SetupAxes(NULL, NULL, ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
             ImPlot::SetupAxesLimits(0, COUNT, -SCALE, SCALE);
-            ImPlot::PlotBars("Input levels", _audioIn.getPlot(), COUNT);
+            ImPlot::PlotShaded("Input levels", _audioIn.getPlot(), COUNT);
             ImPlot::EndPlot();
         }
     }
@@ -183,7 +183,7 @@ bool AudioSettingsWidget::render()
         {
             ImPlot::SetupAxes(NULL, NULL, ImPlotAxisFlags_Lock, ImPlotAxisFlags_Lock);
             ImPlot::SetupAxesLimits(0, COUNT, -SCALE, SCALE);
-            ImPlot::PlotBars("Output levels", _audioOut.getPlot(), COUNT);
+            ImPlot::PlotShaded("Output levels", _audioOut.getPlot(), COUNT);
             ImPlot::EndPlot();
         }
     }
@@ -193,6 +193,7 @@ bool AudioSettingsWidget::render()
     ImGui::Checkbox("Plot Audio (debug for devs)", &showPlot);
     _audioIn.togglePlot(showPlot);
     _audioOut.togglePlot(showPlot);
+
 
     AppStyle::pop();
     ImGui::End();

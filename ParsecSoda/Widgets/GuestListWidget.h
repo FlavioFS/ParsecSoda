@@ -1,14 +1,18 @@
 #pragma once
 
 #include "../imgui/imgui.h"
+#include "../imgui/implot.h"
 #include "../Hosting.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
 #include "../ActionQueue.h"
+#include "../CircularList.h"
 #include <functional>
 #include "IconButton.h"
 #include "TitleTooltipWidget.h"
+#include "AbstractTooltipWidget.h"
 #include "ConfirmPopupWidget.h"
+#include "GuestMetricsHistoryGraphWidget.h"
 
 class GuestListWidget
 {
@@ -33,10 +37,13 @@ private:
 	ImVec4 getLatencyColor(float latency);
 	void renderPopupButton(const string title, const string command, const GuestData guest, bool& showPopup, string& popupTitle, Icon btnIcon, Action action);
 
+	void renderGuestMetricsTooltip(GuestData guest);
+
 	// Dependency injection
 	Hosting& _hosting;
 	BanList& _banList;
 	GuestDataList& _historyList;
+	GuestMetricsHistory& _metricsHistory;
 	
 	// Attributes
 	char _filterText[256] = "";

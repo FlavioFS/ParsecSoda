@@ -28,6 +28,7 @@
 #include "CompilerDirectives.h"
 #include "Stopwatch.h"
 #include "MasterOfPuppets.h"
+#include "GuestMetricsHistory.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -57,6 +58,7 @@ public:
 	ChatLog& getChatLog();
 	GuestList& getGuestList();
 	GuestDataList& getGuestHistory();
+	GuestMetricsHistory& getGuestMetricsHistory();
 	BanList& getBanList();
 	vector<AGamepad*>& getGamepads();
 	GamepadClient& getGamepadClient();
@@ -96,11 +98,13 @@ private:
 	AudioMix _audioMix;
 	DX11 _dx11;
 	BanList _banList;
+	GuestList _guestList;
 	GuestDataList _guestHistory;
+	GuestMetricsHistory _guestMetricsHistory;
+
 	ChatBot *_chatBot;
 	ChatLog _chatLog;
 	GamepadClient _gamepadClient;
-	GuestList _guestList;
 	MasterOfPuppets _masterOfPuppets;
 	
 	ParsecDSO* _parsec;

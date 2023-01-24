@@ -37,13 +37,13 @@ public:
 			bool found = false;
 			try
 			{
-				found = _guests.find(stoul(_targetUsername), [&](Guest* guest) { _targetGuest = *guest; });
+				found = _guests.findSafe(stoul(_targetUsername), [&](Guest* guest) { _targetGuest = *guest; });
 			}
 			catch (const std::exception&) {}
 
 			if (!found)
 			{
-				found = _guests.find(_targetUsername, [&](Guest* guest) { _targetGuest = *guest; });
+				found = _guests.findSafe(_targetUsername, [&](Guest* guest) { _targetGuest = *guest; });
 			}
 			
 			_searchResult = found ? SEARCH_USER_RESULT::FOUND : SEARCH_USER_RESULT::NOT_FOUND;

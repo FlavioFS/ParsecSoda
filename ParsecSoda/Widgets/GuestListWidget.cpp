@@ -1,7 +1,7 @@
 #include "GuestListWidget.h"
 
 GuestListWidget::GuestListWidget(Hosting& hosting)
-    : _hosting(hosting), _banList(hosting.getBanList()), _historyList(hosting.getGuestHistory())
+    : _hosting(hosting), _banList(hosting.getBanList()), _historyList(hosting.getGuestHistory()), _metricsHistory(hosting.getGuestMetricsHistory())
 {
 }
 
@@ -242,7 +242,7 @@ void GuestListWidget::renderAnyGuestList(GuestList& guestList, function<void(Gue
 {
     static size_t index;
 
-    guestList.getGuests([&](vector<Guest>& guests) {
+    guestList.getGuestsSafe([&](vector<Guest>& guests) {
 
         index = 0;
         for (size_t i = 0; i < guests.size(); ++i)
@@ -338,4 +338,13 @@ void GuestListWidget::renderPopupButton(const string title, const string command
             if (action) action();
         }
     }
+}
+
+void GuestListWidget::renderGuestMetricsTooltip(GuestData guest)
+{
+    _metricsHistory.findSafe(guest.userID, [&](CircularList<GuestMetrics>& guestMetricsLog) {
+        AbstractTooltipWidget::render(guest.name.c_str(), [&]() {
+            GuestMetricsHistoryGraphWidget::render(guest, guestMetricsLog);
+        });
+    });
 }

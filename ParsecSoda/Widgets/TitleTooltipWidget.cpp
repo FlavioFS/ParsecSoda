@@ -28,4 +28,6 @@ bool TitleTooltipWidget::render(const char* title, const char* description, bool
 
 		return true;
 	}
+
+	return false;
 }
