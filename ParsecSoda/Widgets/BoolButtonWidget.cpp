@@ -5,10 +5,19 @@ bool BoolButtonWidget::render(const char* label, bool& value)
     static float width;
 
     ImGui::BeginGroup();
-    ImGui::Text(label);
-    width = ImGui::GetItemRectSize().x;
-    ImGui::Dummy(ImVec2(0.5f * width - 29.0f, 0.0f));
-    ImGui::SameLine();
+
+    if (label && sizeof(label) > 0)
+    {
+        ImGui::Text(label);
+        width = ImGui::GetItemRectSize().x;
+        ImGui::Dummy(ImVec2(0.5f * width - 29.0f, 0.0f));
+        ImGui::SameLine();
+    }
+    else
+    {
+        bool debug = true;
+    }
+
     if (ToggleIconButtonWidget::render(AppIcons::yes, AppIcons::no, value))
     {
         value = !value;

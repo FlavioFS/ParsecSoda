@@ -1,6 +1,7 @@
 #include "IntRangeWidget.h"
 
-bool IntRangeWidget::render(const char* id, int& value, int minimum, int maximum, float speed)
+template<typename T>
+bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, float speed, IntRangeWidget::Action releaseDragCallback)
 {
     static bool isDragHover;
     static string idUp, idDown, idDrag;
@@ -35,12 +36,20 @@ bool IntRangeWidget::render(const char* id, int& value, int minimum, int maximum
 
     AppFonts::pushSugoiDekai();
     ImGui::SetNextItemWidth(75.0f);
-    ImGui::DragInt(idDrag.c_str(), &value, 0.05f, minimum, maximum);
+    static int temp;
+    temp = value;
+    ImGui::DragInt(idDrag.c_str(), &temp, 0.05f, minimum, maximum);
+    value = temp;
     if (ImGui::IsItemHovered())
     {
         isDragHover = true;
         ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     }
+    if (releaseDragCallback && ImGui::IsItemDeactivatedAfterEdit())
+    {
+        releaseDragCallback();
+    }
+
     AppFonts::pop();
 
 
@@ -50,3 +59,15 @@ bool IntRangeWidget::render(const char* id, int& value, int minimum, int maximum
 
     return isDragHover;
 }
+
+template bool IntRangeWidget::render<uint32_t>(const char* id, uint32_t& value, uint32_t minimum, uint32_t maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<uint64_t>(const char* id, uint64_t& value, uint64_t minimum, uint64_t maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<int32_t>(const char* id, int32_t& value, int32_t minimum, int32_t maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<int64_t>(const char* id, int64_t& value, int64_t minimum, int64_t maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<size_t>(const char* id, size_t& value, size_t minimum, size_t maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<int>(const char* id, int& value, int minimum, int maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<unsigned int>(const char* id, unsigned int& value, unsigned int minimum, unsigned int maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<long>(const char* id, long& value, long minimum, long maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<unsigned long>(const char* id, unsigned long& value, unsigned long minimum, unsigned long maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<long long>(const char* id, long long& value, long long minimum, long long maximum, float speed, IntRangeWidget::Action releaseDragCallback);
+template bool IntRangeWidget::render<unsigned long long>(const char* id, unsigned long long& value, unsigned long long minimum, unsigned long long maximum, float speed, IntRangeWidget::Action releaseDragCallback);

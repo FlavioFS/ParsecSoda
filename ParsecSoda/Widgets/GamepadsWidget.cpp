@@ -79,15 +79,15 @@ bool GamepadsWidget::render()
     ImGui::Separator();
     ImGui::Dummy(ImVec2(0, 10));
 
-    static int
-        xboxCount = (int) MetadataCache::preferences.xboxPuppetCount,
-        lastXboxCount = (int) MetadataCache::preferences.xboxPuppetCount,
-        ds4Count = (int) MetadataCache::preferences.ds4PuppetCount,
-        lastDs4Count = (int) MetadataCache::preferences.ds4PuppetCount;
+    static uint32_t
+        xboxCount = MetadataCache::preferences.xboxPuppetCount,
+        lastXboxCount = MetadataCache::preferences.xboxPuppetCount,
+        ds4Count = MetadataCache::preferences.ds4PuppetCount,
+        lastDs4Count = MetadataCache::preferences.ds4PuppetCount;
 
     ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
-    if (IntRangeWidget::render("xboxCounter", xboxCount, 0, 100))
+    if (IntRangeWidget::render<uint32_t>("xboxCounter", xboxCount, 0, 100))
     {
         TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }
@@ -98,7 +98,7 @@ bool GamepadsWidget::render()
     
     ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
-    if (IntRangeWidget::render("ds4Counter", ds4Count, 0, 100))
+    if (IntRangeWidget::render<uint32_t>("ds4Counter", ds4Count, 0, 100))
     {
         TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }

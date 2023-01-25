@@ -40,7 +40,7 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting, function<void(bool)> on
     updateSecretLink();
 }
 
-bool HostSettingsWidget::render(HWND& hwnd)
+bool HostSettingsWidget::render()
 {
     static float indentSize = 0;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
@@ -57,6 +57,10 @@ bool HostSettingsWidget::render(HWND& hwnd)
     size = ImGui::GetContentRegionAvail();
     pos = ImGui::GetWindowPos();
 
+
+    // ====================================================
+    // Edit Button
+    // ====================================================
     if (_hosting.isRunning() && isDirty())
     {
         cursor = ImGui::GetCursorPos();
@@ -75,6 +79,10 @@ bool HostSettingsWidget::render(HWND& hwnd)
     
     ImGui::Dummy(ImVec2(0, 10.0f));
 
+
+    // ====================================================
+    // Name
+    // ====================================================
     ImGui::Text("Room name");
     AppStyle::pushInput();
     ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
@@ -83,6 +91,10 @@ bool HostSettingsWidget::render(HWND& hwnd)
 
     ImGui::Dummy(dummySize);
 
+
+    // ====================================================
+    // Thumbnail
+    // ====================================================
     ImGui::Text("Thumbnail");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
@@ -118,6 +130,10 @@ bool HostSettingsWidget::render(HWND& hwnd)
 
     ImGui::Dummy(dummySize);
 
+
+    // ====================================================
+    // Room Link
+    // ====================================================
     ImGui::Text("Room link");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
@@ -138,16 +154,51 @@ bool HostSettingsWidget::render(HWND& hwnd)
 
     cursor = ImGui::GetCursorPos();
 
-    ImGui::BeginChild("##Public room child", ImVec2(120.0f, 75.0f));
+
+    // ====================================================
+    // Guest Slots
+    // ====================================================
+    ImGui::BeginChild("##Guest Slots child", ImVec2(100.0f, 75.0f));
     ImGui::Text("Guest slots");
-    if (IntRangeWidget::render("guest count", _maxGuests, 0, 64, 0.025f))
+    if (IntRangeWidget::render<uint32_t>("guest count", _maxGuests, 0, 64, 0.025f))
     {
         TitleTooltipWidget::render("Room Slots", "How many guests do you want in this room?");
     }
     ImGui::EndChild();
 
     ImGui::SameLine();
+    ImGui::Dummy(ImVec2(2.0,0.0));
+    ImGui::SameLine();
 
+
+    // ====================================================
+    // Latency Limiter
+    // ====================================================
+    ImGui::BeginChild("##Latency limiter child", ImVec2(170.0f, 75.0f));
+    ImGui::Text("Latency Limit");
+
+    BoolButtonWidget::render(nullptr, MetadataCache::preferences.latencyLimiterEnabled);
+    if (MetadataCache::preferences.latencyLimiterEnabled)   TitleTooltipWidget::render("Enabled", "Guests kicked if ping exceeds maximum limit.");
+    else                                                    TitleTooltipWidget::render("Disabled", "Ping does not matter.");
+
+    ImGui::SameLine();
+
+    if (IntRangeWidget::render<uint32_t>("Latency Limit intrange", MetadataCache::preferences.maxLatencyMs, 0, 999, 0.025f))
+    {
+        TitleTooltipWidget::render("Latency Limit (ms)", "Any guest whose ping is higher than this value (ms)\nwill be kicked automatically.");
+    }
+    ImGui::EndChild();
+
+    ImGui::Dummy(dummySize);
+
+
+    // ====================================================
+    // Public / Private
+    // ====================================================
+    if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+    {
+        bool debug = true;
+    }
     ImGui::SetCursorPos(ImVec2(cursor.x + size.x - 90.0f, cursor.y));
     BoolButtonWidget::render("Public room", _publicGame);
 
@@ -156,6 +207,10 @@ bool HostSettingsWidget::render(HWND& hwnd)
 
     ImGui::Dummy(dummySize);
 
+
+    // ====================================================
+    // Start / Stop
+    // ====================================================
     static bool showPopup = false;
     static string popupTitle = "";
     popupTitle = (_hosting.isRunning() ? "Stop hosting?" : "Start hosting?");
@@ -202,6 +257,11 @@ bool HostSettingsWidget::render(HWND& hwnd)
 
     ImGui::Dummy(ImVec2(0.0f, size.y - 548.0f));
 
+
+
+    // ====================================================
+    // Audio
+    // ====================================================
     if (!_hosting.isRunning() && _hosting.isReady())
     {
         _audioIn.captureAudio();
@@ -213,33 +273,38 @@ bool HostSettingsWidget::render(HWND& hwnd)
     previousMicVolume = _micVolume;
     previousSpeakersVolume = _speakersVolume;
 
+    // ====================================================
+    // Microphone
+    // ====================================================
     static float micPreview, targetPreview;
     _micVolume = (int)(100.0f * _audioIn.volume);
     targetPreview = AudioTools::decibelToFloat(_audioIn.popPreviewDecibel());
     micPreview = lerp(micPreview, targetPreview, easing(targetPreview - micPreview));
-    if (AudioControlWidget::render("Microphone", &_micVolume, _audioIn.isEnabled, micPreview, AppIcons::micOn, AppIcons::micOff))
+
+    const static auto volumeReleaseCallback = [&]() {
+        savePreferences();
+    };
+
+    if (AudioControlWidget::render("Microphone", &_micVolume, _audioIn.isEnabled, micPreview, AppIcons::micOn, AppIcons::micOff, volumeReleaseCallback))
     {
         _audioIn.isEnabled = !_audioIn.isEnabled;
         savePreferences();
     }
     _audioIn.volume = (float)_micVolume / 100.0f;
 
+    // ====================================================
+    // Speakers
+    // ====================================================
     static float speakersPreview;
     _speakersVolume = (int)(100.0f *_audioOut.volume);
     targetPreview = AudioTools::decibelToFloat(_audioOut.popPreviewDecibel());
     speakersPreview = lerp(speakersPreview, targetPreview, easing(targetPreview - speakersPreview));
-    if (AudioControlWidget::render("Speakers", &_speakersVolume, _audioOut.isEnabled, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff))
+    if (AudioControlWidget::render("Speakers", &_speakersVolume, _audioOut.isEnabled, speakersPreview, AppIcons::speakersOn, AppIcons::speakersOff, volumeReleaseCallback))
     {
         _audioOut.isEnabled = !_audioOut.isEnabled;
         savePreferences();
     }
     _audioOut.volume = (float)_speakersVolume / 100.0f;
-
-    static Debouncer debouncer(DEBOUNCE_TIME_MS, [&]() { savePreferences(); });
-    if (_micVolume != previousMicVolume || _speakersVolume != previousSpeakersVolume)
-    {
-        debouncer.start();
-    }
 
     AppStyle::pop();
     ImGui::End();

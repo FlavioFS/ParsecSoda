@@ -580,9 +580,33 @@ void Hosting::pollMetrics()
 						gi->metrics.updateMetrics(parsecGuests[i]);
 						_guestMetricsHistory.pushUnsafe(*gi);
 					});
+
+
 				}
 			});
 		});
+
+		if (MetadataCache::preferences.latencyLimiterEnabled)
+		{
+			static vector<string> hostMessageQueue;
+
+			_guestList.getGuestsSafe([&](vector<Guest>& guests) {
+				for (int i = guests.size()-1; i >= 0; --i)
+				{
+					if (guests[i].metrics.getLatency() > MetadataCache::preferences.maxLatencyMs)
+					{
+						hostMessageQueue.push_back((string("!kick ") + to_string(guests[i].userID)));
+					}
+				}
+			});
+
+			for (int i = hostMessageQueue.size()-1; i >= 0; --i)
+			{
+				sendHostMessage(hostMessageQueue[i].c_str(), true);
+				hostMessageQueue.pop_back();
+			}
+		}
+
 
 		if (stopwatch.isFinished())
 		{

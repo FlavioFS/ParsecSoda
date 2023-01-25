@@ -24,6 +24,6 @@ private:
 	DX11& _dx11;
 	uint32_t DEBOUNCER_TIME_MS = 1000;
 
-	int _fps = 60;
-	int _bandwidth = 20;
+	uint32_t _fps = 60;
+	uint32_t _bandwidth = 20;
 };

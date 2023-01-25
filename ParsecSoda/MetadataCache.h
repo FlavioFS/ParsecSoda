@@ -38,30 +38,32 @@ public:
 	class Preferences
 	{
 	public:
-		unsigned int audioInputDevice = 0;
-		unsigned int audioOutputDevice = 0;
-		unsigned int micFrequency = 44100;
-		unsigned int micVolume = 80;
+		uint32_t audioInputDevice = 0;
+		uint32_t audioOutputDevice = 0;
+		uint32_t micFrequency = 44100;
+		uint32_t micVolume = 80;
 		bool micEnabled = true;
-		unsigned int speakersFrequency = 44100;
-		unsigned int speakersVolume = 30;
+		uint32_t speakersFrequency = 44100;
+		uint32_t speakersVolume = 30;
 		bool speakersEnabled = true;
-		unsigned int monitor = 0;
-		unsigned int adapter = 0;
+		uint32_t monitor = 0;
+		uint32_t adapter = 0;
 		string roomName = "";
 		string gameID = "";
 		string secret = "";
-		unsigned int guestCount = 1;
+		uint32_t guestCount = 1;
 		bool publicRoom = false;
 		bool isValid = false;
 		int windowX = 0;
 		int windowY = 0;
-		unsigned int windowW = 1280;
-		unsigned int windowH = 720;
-		unsigned int fps = 60;
-		unsigned int bandwidth = 20;
-		unsigned int xboxPuppetCount = 4;
-		unsigned int ds4PuppetCount = 0;
+		uint32_t windowW = 1280;
+		uint32_t windowH = 720;
+		uint32_t fps = 60;
+		uint32_t bandwidth = 20;
+		uint32_t xboxPuppetCount = 4;
+		uint32_t ds4PuppetCount = 0;
+		bool latencyLimiterEnabled = false;
+		uint32_t maxLatencyMs = 100;
 	};
 
 	static SessionCache loadSessionCache();

@@ -1,6 +1,9 @@
 #include "AudioControlWidget.h"
 
-bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, float preview, Icon iconOn, Icon iconOff)
+bool AudioControlWidget::render(
+	const char* id, int* volume, bool isEnabled, float preview, Icon iconOn, Icon iconOff,
+	AudioControlWidget::Action releaseVolumeCallback
+)
 {
 	static bool wasClicked = false;
 	wasClicked = false;
@@ -31,6 +34,11 @@ bool AudioControlWidget::render(const char* id, int* volume, bool isEnabled, flo
 		volume, 0, 100, "%d%%"
 	);
 	if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+	if (releaseVolumeCallback && ImGui::IsItemDeactivatedAfterEdit())
+	{
+		releaseVolumeCallback();
+	}
 	
 	// Preview bar
 	if (preview > 0.65f) ImGui::PushStyleColor(ImGuiCol_PlotHistogram, AppColors::negative);

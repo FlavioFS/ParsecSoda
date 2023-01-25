@@ -29,6 +29,7 @@
 #include "Stopwatch.h"
 #include "MasterOfPuppets.h"
 #include "GuestMetricsHistory.h"
+#include "ActionQueue.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0

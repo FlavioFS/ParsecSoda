@@ -206,6 +206,14 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "ds4PuppetCount", &preferences.ds4PuppetCount)) {
                 preferences.ds4PuppetCount = 0;
             }
+
+            if (!MTY_JSONObjGetBool(json, "latencyLimiterEnabled", &preferences.latencyLimiterEnabled)) {
+                preferences.latencyLimiterEnabled = false;
+            }
+
+            if (!MTY_JSONObjGetUInt(json, "maxLatencyMs", &preferences.maxLatencyMs)) {
+                preferences.maxLatencyMs = 100;
+            }
             
             preferences.isValid = true;
 
@@ -254,6 +262,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "adapter", preferences.adapter);
         MTY_JSONObjSetUInt(json, "xboxPuppetCount", preferences.xboxPuppetCount);
         MTY_JSONObjSetUInt(json, "ds4PuppetCount", preferences.ds4PuppetCount);
+        MTY_JSONObjSetBool(json, "isLatencyLimited", preferences.latencyLimiterEnabled);
+        MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

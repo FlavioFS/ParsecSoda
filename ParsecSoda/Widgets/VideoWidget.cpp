@@ -117,8 +117,8 @@ bool VideoWidget::render()
     // =========================================================
     // Bandwidth
     // =========================================================
-    static int previousBandwidth;
-    static int previousFps;
+    static uint32_t previousBandwidth;
+    static uint32_t previousFps;
     previousBandwidth = _bandwidth;
     previousFps = _fps;
 
@@ -128,7 +128,14 @@ bool VideoWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("Bandwidth (Mbps)");
     AppStyle::pop();
-    if (IntRangeWidget::render("Bandwidth (Mbps)", _bandwidth, 1, 1000, 1))
+
+    const static auto intRangeReleaseCallback = [&]() {
+        _hosting.setHostVideoConfig(_fps, _bandwidth);
+        _hosting.applyHostConfig();
+        MetadataCache::savePreferences();
+    };
+
+    if (IntRangeWidget::render<uint32_t>("Bandwidth (Mbps)", _bandwidth, 1, 1000, 1, intRangeReleaseCallback))
     {
         TitleTooltipWidget::render("Encoder Bandwidth", "Limits the encoder bandwidth usage.\n(This value is split between guests.)");
     }
@@ -143,7 +150,7 @@ bool VideoWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("FPS");
     AppStyle::pop();
-    if (IntRangeWidget::render("Encoder FPS", _fps, 10, 250, 0.5f))
+    if (IntRangeWidget::render<uint32_t>("Encoder FPS", _fps, 10, 250, 0.5f, intRangeReleaseCallback))
     {
         TitleTooltipWidget::render("Encoder FPS", "Limits the amount of frames per second.");
     }
@@ -153,15 +160,15 @@ bool VideoWidget::render()
     ImGui::End();
     AppStyle::pop();
 
-    static Debouncer debouncer(DEBOUNCER_TIME_MS, [&]() {
-        _hosting.setHostVideoConfig(_fps, _bandwidth);
-        _hosting.applyHostConfig();
-        MetadataCache::savePreferences();
-    });
-    if (previousFps != _fps || previousBandwidth != _bandwidth)
-    {
-        debouncer.start();
-    }
+    //static Debouncer debouncer(DEBOUNCER_TIME_MS, [&]() {
+    //    _hosting.setHostVideoConfig(_fps, _bandwidth);
+    //    _hosting.applyHostConfig();
+    //    MetadataCache::savePreferences();
+    //});
+    //if (previousFps != _fps || previousBandwidth != _bandwidth)
+    //{
+    //    debouncer.start();
+    //}
 
     return true;
 }

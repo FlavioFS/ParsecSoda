@@ -208,7 +208,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         }
         else
         {
-            if (showHostSettings)       hostSettingsWindow.render(hwnd);
+            if (showHostSettings)       hostSettingsWindow.render();
             if (showChat)               chatWindow.render();
             if (showLog)                logWindow.render();
             if (showGuests)             guestsWindow.render();

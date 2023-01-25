@@ -3,7 +3,6 @@
 #include "../imgui/imgui.h"
 #include "../Hosting.h"
 #include "../AudioTools.h"
-#include "../Debouncer.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppFonts.h"
 #include "../globals/AppColors.h"
@@ -23,7 +22,7 @@ class HostSettingsWidget
 {
 public:
 	HostSettingsWidget(Hosting& hosting, function<void(bool)> onHostRunningStatusCallback);
-	bool render(HWND& hwnd);
+	bool render();
 	void updateSecretLink();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
@@ -48,14 +47,11 @@ private:
 	char _gameID[GAME_ID_LEN];
 	char _secret[HOST_SECRET_LEN];
 	char _secretLink[128];
-	int32_t _maxGuests;
+	uint32_t _maxGuests;
 	bool _publicGame;
 
 	int _micVolume = 80;
 	int _speakersVolume = 30;
-
-
-	const unsigned int DEBOUNCE_TIME_MS = 1000;
 
 	string _thumbnailName = "Please select thumbnail.";
 	function<void(bool)> _onHostRunningStatusCallback;
