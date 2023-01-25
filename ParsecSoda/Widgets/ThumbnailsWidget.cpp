@@ -1,6 +1,6 @@
 #include "ThumbnailsWidget.h"
 
-bool ThumbnailsWidget::render(ParsecSession& session, vector<Thumbnail>& _thumbnails)
+bool ThumbnailsWidget::render(ParsecSession& session)
 {
     ImGui::SetNextWindowSizeConstraints(ImVec2(200, 200), ImVec2(800, 1000));
     AppStyle::pushTitle();
@@ -49,106 +49,111 @@ bool ThumbnailsWidget::render(ParsecSession& session, vector<Thumbnail>& _thumbn
     vector<Thumbnail>::iterator it;
     static uint32_t index = 0;
     index = 0;
-    for (it = _thumbnails.begin(); it != _thumbnails.end(); ++it)
-    {
-        ImGui::PushID((string("### Thumb Save button") + to_string(index)).c_str());
-        if (IconButton::render(
-            (*it).saved ? AppIcons::saveOn : AppIcons::saveOff,
-            (*it).saved ? AppColors::positive : AppColors::negative,
-            ImVec2(25, 25)
-        ))
+
+    session.getThumbnails([&](vector<Thumbnail>& thumbnails) {
+        for (it = thumbnails.begin(); it != thumbnails.end(); ++it)
         {
-            (*it).saved = !(*it).saved;
-            static Debouncer saveDebouncer = Debouncer(1000, [&]() {
-                session.saveThumbnails();
-            });
-            saveDebouncer.start();
-        }
-        ImGui::PopID();
-        ImGui::SameLine();
-        ImGui::PushID((string("### Thumb Edit button") + to_string(index)).c_str());
-        if (IconButton::render(
-            AppIcons::edit,
-            (*it).edit ? AppColors::primary : AppColors::disabled,
-            ImVec2(25, 25)
-        ))
-        {
-            (*it).edit = !(*it).edit;
-            if ((*it).edit)
+            ImGui::PushID((string("### Thumb Save button") + to_string(index)).c_str());
+            if (IconButton::render(
+                (*it).saved ? AppIcons::saveOn : AppIcons::saveOff,
+                (*it).saved ? AppColors::positive : AppColors::negative,
+                ImVec2(25, 25)
+            ))
             {
-                popupIndex = index;
-                popupGameid = (*it).gameId;
-                showPopup = true;
-                try
-                {
-                    strcpy_s(thumbEditName, 256, _thumbnails[popupIndex].name.c_str());
-                }
-                catch (const std::exception&) {}
+                (*it).saved = !(*it).saved;
+                static Debouncer saveDebouncer = Debouncer(1000, [&]() {
+                    session.saveThumbnails();
+                });
+                saveDebouncer.start();
             }
-        }
-        ImGui::PopID();
-        ImGui::SameLine();
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5);
-        ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
-        ImGui::TextWrapped((*it).name.c_str());
-
-        index++;
-    }
-    ImGui::PopStyleVar();
-
-    if (showPopup)
-    {
-        ImGui::OpenPopup(thumbPopup);
-    }
-    ImGui::SetNextWindowSize(ImVec2(300, 200));
-    AppStyle::pushTitle();
-    if (ImGui::BeginPopupModal(thumbPopup, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-    {
-        static int width = ImGui::GetWindowContentRegionWidth();
-        static bool apply, cancel;
-
-        ImGui::Dummy(ImVec2(0, 5));
-
-        ImGui::SetNextItemWidth(width);
-        AppStyle::pushInput();
-        apply = ImGui::InputText("### Thumb Edit Input", thumbEditName, 256, ImGuiInputTextFlags_EnterReturnsTrue);
-        AppStyle::pop();
-        
-        ImGui::Dummy(ImVec2(0, 20));
-        apply = apply || IconButton::render(AppIcons::yes, AppColors::positive, ImVec2(50, 50));
-        
-        ImGui::SameLine();
-        ImGui::SetCursorPosX(width - 40);
-        cancel = IconButton::render(AppIcons::no, AppColors::negative, ImVec2(50, 50));
-
-        if (apply || cancel)
-        {
-            static vector<Thumbnail>::iterator it2;
-            for (it2 = _thumbnails.begin(); it2 != _thumbnails.end(); ++it2)
+            ImGui::PopID();
+            ImGui::SameLine();
+            ImGui::PushID((string("### Thumb Edit button") + to_string(index)).c_str());
+            if (IconButton::render(
+                AppIcons::edit,
+                (*it).edit ? AppColors::primary : AppColors::disabled,
+                ImVec2(25, 25)
+            ))
             {
-                if ((*it2).gameId.compare(popupGameid) == 0)
+                (*it).edit = !(*it).edit;
+                if ((*it).edit)
                 {
-                    (*it2).edit = false;
-
-                    if (apply)
+                    popupIndex = index;
+                    popupGameid = (*it).gameId;
+                    showPopup = true;
+                    try
                     {
-                        (*it2).name = thumbEditName;
-                        static Debouncer saveDebouncer = Debouncer(1000, [&]() {
-                            session.saveThumbnails();
-                        });
-                        saveDebouncer.start();
-                        break;
+                        strcpy_s(thumbEditName, 256, thumbnails[popupIndex].name.c_str());
+                    }
+                    catch (const std::exception&) {}
+                }
+            }
+            ImGui::PopID();
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + 5);
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6);
+            ImGui::TextWrapped((*it).name.c_str());
+
+            index++;
+        }
+    
+
+        ImGui::PopStyleVar();
+
+        if (showPopup)
+        {
+            ImGui::OpenPopup(thumbPopup);
+        }
+        ImGui::SetNextWindowSize(ImVec2(300, 200));
+        AppStyle::pushTitle();
+        if (ImGui::BeginPopupModal(thumbPopup, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+        {
+            static int width = ImGui::GetWindowContentRegionWidth();
+            static bool apply, cancel;
+
+            ImGui::Dummy(ImVec2(0, 5));
+
+            ImGui::SetNextItemWidth(width);
+            AppStyle::pushInput();
+            apply = ImGui::InputText("### Thumb Edit Input", thumbEditName, 256, ImGuiInputTextFlags_EnterReturnsTrue);
+            AppStyle::pop();
+        
+            ImGui::Dummy(ImVec2(0, 20));
+            apply = apply || IconButton::render(AppIcons::yes, AppColors::positive, ImVec2(50, 50));
+        
+            ImGui::SameLine();
+            ImGui::SetCursorPosX(width - 40);
+            cancel = IconButton::render(AppIcons::no, AppColors::negative, ImVec2(50, 50));
+
+            if (apply || cancel)
+            {
+                static vector<Thumbnail>::iterator it2;
+                for (it2 = thumbnails.begin(); it2 != thumbnails.end(); ++it2)
+                {
+                    if ((*it2).gameId.compare(popupGameid) == 0)
+                    {
+                        (*it2).edit = false;
+
+                        if (apply)
+                        {
+                            (*it2).name = thumbEditName;
+                            static Debouncer saveDebouncer = Debouncer(1000, [&]() {
+                                session.saveThumbnails();
+                            });
+                            saveDebouncer.start();
+                            break;
+                        }
                     }
                 }
+
+                showPopup = false;
+                ImGui::CloseCurrentPopup();
             }
 
-            showPopup = false;
-            ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
         }
-
-        ImGui::EndPopup();
-    }
-    AppStyle::pop();
+        AppStyle::pop();
+    });
 
     AppStyle::pop();
     ImGui::End();

@@ -442,9 +442,14 @@ const uint32_t ParsecSession::getLifespan()
 	return _expiry - _start;
 }
 
-vector<Thumbnail>& ParsecSession::getThumbnails()
+void ParsecSession::getThumbnails(ThumbnailList::ListCallback callback)
 {
-	return _thumbnailList.getThumbnails();
+	return _thumbnailList.getThumbnails(callback);
+}
+
+bool ParsecSession::findThumbnail(string gameId, ThumbnailList::ItemCallback callback)
+{
+	return _thumbnailList.find(gameId, callback);
 }
 
 void ParsecSession::loadThumbnails()

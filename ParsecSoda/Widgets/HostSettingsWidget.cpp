@@ -1,8 +1,7 @@
 ﻿#include "HostSettingsWidget.h"
 
 HostSettingsWidget::HostSettingsWidget(Hosting& hosting, function<void(bool)> onHostRunningStatusCallback)
-    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut),
-    _thumbnails(_hosting.getSession().getThumbnails()), _onHostRunningStatusCallback(onHostRunningStatusCallback)
+    : _hosting(hosting), _audioIn(_hosting.audioIn), _audioOut(_hosting.audioOut), _onHostRunningStatusCallback(onHostRunningStatusCallback)
 {
     ParsecHostConfig cfg = hosting.getHostConfig();
     try
@@ -32,14 +31,11 @@ HostSettingsWidget::HostSettingsWidget(Hosting& hosting, function<void(bool)> on
     _audioIn.isEnabled = MetadataCache::preferences.micEnabled;
     _audioOut.isEnabled = MetadataCache::preferences.speakersEnabled;
 
+
     vector<Thumbnail>::iterator it;
-    for (it = _thumbnails.begin(); it != _thumbnails.end(); ++it)
-    {
-        if ((*it).gameId.compare(_gameID) == 0)
-        {
-            _thumbnailName = (*it).name;
-        }
-    }
+    _hosting.getSession().findThumbnail(_gameID, [&](Thumbnail& thumb) {
+        _thumbnailName = thumb.name;
+    });
 
     updateSecretLink();
 }
@@ -90,28 +86,34 @@ bool HostSettingsWidget::render(HWND& hwnd)
     ImGui::Text("Thumbnail");
     ImGui::SetNextItemWidth(size.x);
     AppStyle::pushInput();
-    if (ImGui::BeginCombo("### Thumbnail picker combo", _thumbnailName.c_str(), ImGuiComboFlags_HeightLarge))
-    {
-        for (size_t i = 0; i < _thumbnails.size(); ++i)
+
+    static vector<Thumbnail>::iterator it;
+    _hosting.getSession().getThumbnails([&](vector<Thumbnail>& thumbnails) {
+        if (ImGui::BeginCombo("### Thumbnail picker combo", _thumbnailName.c_str(), ImGuiComboFlags_HeightLarge))
         {
-            bool isSelected = (_thumbnails[i].gameId.compare(_gameID) == 0);
-            if (ImGui::Selectable(_thumbnails[i].name.c_str(), isSelected))
+            it = thumbnails.begin();
+            for (; it != thumbnails.end(); ++it)
             {
-                _thumbnailName = _thumbnails[i].name;
-                try
+                bool isSelected = (it->gameId.compare(_gameID) == 0);
+                if (ImGui::Selectable(it->name.c_str(), isSelected))
                 {
-                    strcpy_s(_gameID, GAME_ID_LEN, _thumbnails[i].gameId.c_str());
+                    _thumbnailName = it->name;
+                    try
+                    {
+                        strcpy_s(_gameID, GAME_ID_LEN, it->gameId.c_str());
+                    }
+                    catch (const std::exception&) {}
                 }
-                catch (const std::exception&) {}
+                if (isSelected)
+                {
+                    ImGui::SetItemDefaultFocus();
+                }
             }
-            if (isSelected)
-            {
-                ImGui::SetItemDefaultFocus();
-            }
+            ImGui::EndCombo();
         }
-        ImGui::EndCombo();
-    }
-    TitleTooltipWidget::render("Thumbnail Picker", "To find new thumbnails, go to the Arcade Thumbnails window.");
+        TitleTooltipWidget::render("Thumbnail Picker", "To find new thumbnails, go to the Arcade Thumbnails window.");
+    });
+    
     AppStyle::pop();
 
     ImGui::Dummy(dummySize);

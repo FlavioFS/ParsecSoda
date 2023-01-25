@@ -57,7 +57,6 @@ private:
 
 	const unsigned int DEBOUNCE_TIME_MS = 1000;
 
-	vector<Thumbnail>& _thumbnails;
 	string _thumbnailName = "Please select thumbnail.";
 	function<void(bool)> _onHostRunningStatusCallback;
 };

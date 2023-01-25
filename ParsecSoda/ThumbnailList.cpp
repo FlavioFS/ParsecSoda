@@ -1,17 +1,52 @@
 #include "ThumbnailList.h"
 
-vector<Thumbnail>& ThumbnailList::getThumbnails()
+void ThumbnailList::getThumbnails(ThumbnailList::ListCallback callback)
 {
-    return _thumbnails;
+    if (callback)
+    {
+        lock_guard<mutex> lock(_mutex);
+        callback(_thumbnails);
+    }
 }
 
 bool ThumbnailList::add(Thumbnail thumb)
 {
+    lock_guard<mutex> lock(_mutex);
+    return addUnsafe(thumb);
+}
+
+bool ThumbnailList::find(string gameId, ThumbnailList::ItemCallback callback)
+{
+    lock_guard<mutex> lock(_mutex);
+    return findUnsafe(gameId, callback);
+}
+
+void ThumbnailList::load()
+{
+    lock_guard<mutex> lock(_mutex);
+
+    vector<Thumbnail> thumbs = MetadataCache::loadThumbnails();
+    vector<Thumbnail>::iterator it;
+
+    for (it = thumbs.begin(); it != thumbs.end(); ++it)
+    {
+        addUnsafe(*it);
+    }
+}
+
+void ThumbnailList::save()
+{
+    lock_guard<mutex> lock(_mutex);
+
+    MetadataCache::saveThumbnails(_thumbnails);
+}
+
+bool ThumbnailList::addUnsafe(Thumbnail thumb)
+{
     if (thumb.isValid())
     {
-
         vector<Thumbnail>::iterator it;
-        bool found = find(thumb.gameId);
+        bool found = findUnsafe(thumb.gameId);
         if (found)
         {
             return false;
@@ -34,7 +69,7 @@ bool ThumbnailList::add(Thumbnail thumb)
     return false;
 }
 
-bool ThumbnailList::find(string gameId, function<void(Thumbnail&)> callback)
+bool ThumbnailList::findUnsafe(string gameId, ThumbnailList::ItemCallback callback)
 {
     vector<Thumbnail>::iterator it;
     for (it = _thumbnails.begin(); it != _thumbnails.end(); ++it)
@@ -50,20 +85,4 @@ bool ThumbnailList::find(string gameId, function<void(Thumbnail&)> callback)
     }
 
     return false;
-}
-
-void ThumbnailList::load()
-{
-    vector<Thumbnail> thumbs = MetadataCache::loadThumbnails();
-    vector<Thumbnail>::iterator it;
-
-    for (it = thumbs.begin(); it != thumbs.end(); ++it)
-    {
-        add(*it);
-    }
-}
-
-void ThumbnailList::save()
-{
-    MetadataCache::saveThumbnails(_thumbnails);
 }

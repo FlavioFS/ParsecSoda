@@ -77,7 +77,8 @@ public:
 	const int getSessionStatus();
 	const uint32_t getRemainingTime();
 	const uint32_t getLifespan();
-	vector<Thumbnail>& getThumbnails();
+	void getThumbnails(ThumbnailList::ListCallback callback);
+	bool findThumbnail(string gameId, ThumbnailList::ItemCallback callback = nullptr);
 	void loadThumbnails();
 	void saveThumbnails();
 

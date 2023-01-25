@@ -14,6 +14,6 @@
 class ThumbnailsWidget
 {
 public:
-	static bool render(ParsecSession& session, vector<Thumbnail>& _thumbnails);
+	static bool render(ParsecSession& session);
 };
 

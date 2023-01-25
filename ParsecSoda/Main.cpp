@@ -157,7 +157,6 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showThumbs = false;
 
     ParsecSession& g_session = g_hosting.getSession();
-    vector<Thumbnail>& g_thumbnails = g_session.getThumbnails();
 
     thread t;
     t = thread([&]() {
@@ -218,7 +217,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showAudio)              audioSettingswidget.render();
             if (showVideo)              videoWidget.render();
             if (showInfo)               InfoWidget::render();
-            if (showThumbs)             ThumbnailsWidget::render(g_session, g_thumbnails);
+            if (showThumbs)             ThumbnailsWidget::render(g_session);
             NavBar::render(
                 g_hosting,
                 showLogin, showHostSettings, showGamepads, showMasterOfPuppets, showChat,
