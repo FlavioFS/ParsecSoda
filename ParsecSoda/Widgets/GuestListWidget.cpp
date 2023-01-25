@@ -85,7 +85,8 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     static bool showBanPopup = false;
     static string banPopupTitle = "";
 
-    static GuestData guestData = GuestData(guest.name, guest.userID);
+    static GuestData guestData;
+    guestData = GuestData(guest.name, guest.userID);
 
     Action enqueueKickAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); }); };
     renderPopupButton("Kick", "!kick", guestData, showKickPopup, kickPopupTitle, AppIcons::kick, enqueueKickAction);
@@ -143,6 +144,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     AppStyle::pushInput();
     AppColors::pushColor(latencyColor);
     ImGui::Text("%.0f ms", guest.metrics.getLatency());
+    renderGuestMetricsTooltip(guestData);
     AppColors::pop();
     AppStyle::pop();
 
@@ -342,8 +344,8 @@ void GuestListWidget::renderPopupButton(const string title, const string command
 
 void GuestListWidget::renderGuestMetricsTooltip(GuestData guest)
 {
-    _metricsHistory.findSafe(guest.userID, [&](CircularList<GuestMetrics>& guestMetricsLog) {
-        AbstractTooltipWidget::render(guest.name.c_str(), [&]() {
+    AbstractTooltipWidget::render(guest.name.c_str(), "Network Stats", [&]() {
+        _metricsHistory.findSafe(guest.userID, [&](CircularMetrics& guestMetricsLog) {
             GuestMetricsHistoryGraphWidget::render(guest, guestMetricsLog);
         });
     });

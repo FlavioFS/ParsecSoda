@@ -32,9 +32,7 @@ void GuestMetricsHistory::pushSafe(uint32_t userID, GuestMetrics metrics)
 }
 void GuestMetricsHistory::pushUnsafe(uint32_t userID, GuestMetrics metrics)
 {
-	findUnsafe(userID, [&](CircularList<GuestMetrics>& history) {
-		history.push(metrics);
-	});
+	m_map[userID].push(metrics);
 }
 
 void GuestMetricsHistory::eraseSafe(uint32_t userID)
@@ -44,7 +42,7 @@ void GuestMetricsHistory::eraseSafe(uint32_t userID)
 }
 void GuestMetricsHistory::eraseUnsafe(uint32_t userID)
 {
-	findUnsafe(userID, [&](CircularList<GuestMetrics>& history) {
+	findUnsafe(userID, [&](CircularMetrics& history) {
 		history.clear();
 		m_map.erase(userID);
 	});

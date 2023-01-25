@@ -44,4 +44,3 @@ public:
 	std::string name;
 	uint32_t userID;
 };
-

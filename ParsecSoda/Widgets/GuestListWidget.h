@@ -6,7 +6,7 @@
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
 #include "../ActionQueue.h"
-#include "../CircularList.h"
+#include "../CircularMetrics.h"
 #include <functional>
 #include "IconButton.h"
 #include "TitleTooltipWidget.h"

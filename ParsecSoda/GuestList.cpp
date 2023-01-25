@@ -31,7 +31,6 @@ void GuestList::getGuestsUnsafe(GuestList::ListCallback callback)
 {
 	if (callback)
 	{
-		const std::lock_guard<std::mutex> lock(_mutex);
 		callback(_guests);
 	}
 }

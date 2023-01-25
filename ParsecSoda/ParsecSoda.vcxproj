@@ -155,13 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CircularMetrics.cpp" />
     <ClCompile Include="Widgets\GuestMetricsHistoryGraphWidget.cpp" />
     <ClCompile Include="Widgets\AbstractTooltipWidget.cpp" />
     <ClCompile Include="AsyncCall.cpp" />
     <ClCompile Include="AudioSource.cpp" />
     <ClCompile Include="ActionQueue.cpp" />
     <ClCompile Include="GuestMetricsHistory.cpp" />
-    <ClCompile Include="Widgets\CircularListWidget.cpp" />
     <ClCompile Include="Commands\CommandBonk.cpp" />
     <ClCompile Include="DualshockGamepad.cpp" />
     <ClCompile Include="GamepadState.cpp" />
@@ -252,9 +252,8 @@
     <ClInclude Include="AsyncCall.h" />
     <ClInclude Include="AudioSource.h" />
     <ClInclude Include="ActionQueue.h" />
-    <ClInclude Include="CircularList.h" />
+    <ClInclude Include="CircularMetrics.h" />
     <ClInclude Include="GuestMetricsHistory.h" />
-    <ClInclude Include="Widgets\CircularListWidget.h" />
     <ClInclude Include="DualshockGamepad.h" />
     <ClInclude Include="GamepadState.h" />
     <ClInclude Include="imgui\implot.h" />

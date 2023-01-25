@@ -1,6 +1,6 @@
 #include "AbstractTooltipWidget.h"
 
-bool AbstractTooltipWidget::render(const char* title, AbstractTooltipWidget::Action callback, bool forceShow)
+bool AbstractTooltipWidget::render(const char* title, const char* description, AbstractTooltipWidget::Action callback, bool forceShow)
 {
 	if (callback)
 	{
@@ -11,6 +11,19 @@ bool AbstractTooltipWidget::render(const char* title, AbstractTooltipWidget::Act
 
 			ImGui::BeginTooltip();
 			
+			// Title
+			AppColors::pushPrimary();
+			ImGui::Text(title);
+			AppColors::pop();
+
+			// Description
+			AppStyle::pushLabel();
+			ImGui::Text(description);
+			AppStyle::pop();
+			
+			ImGui::Dummy(ImVec2(0, 5));
+
+			// Content
 			callback();
 
 			ImGui::EndTooltip();
