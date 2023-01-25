@@ -413,6 +413,16 @@ void Hosting::liveStreamMedia()
 
 		_dx11.captureScreen(_parsec);
 
+		/**
+		 * This lambda is a workaround to a ParsecSDK bug.
+		 * When using a virtual device (e.g.: VBAudio Cable),
+		 * ParsecSDK crashes if an already started audio stream
+		 * stops sending audio.
+		 */
+		static const auto submitSilence = [&]() {
+			ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), nullptr, 0);
+		};
+
 		if (audioIn.isEnabled && audioOut.isEnabled)
 		{
 			audioIn.captureAudio();
@@ -422,6 +432,7 @@ void Hosting::liveStreamMedia()
 				vector<int16_t> mixBuffer = _audioMix.mix(audioIn.popBuffer(), audioOut.popBuffer());
 				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), mixBuffer.data(), (uint32_t)mixBuffer.size() / 2);
 			}
+			else { submitSilence(); }
 		}
 		else if (audioOut.isEnabled)
 		{
@@ -431,6 +442,7 @@ void Hosting::liveStreamMedia()
 				vector<int16_t> buffer = audioOut.popBuffer();
 				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioOut.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
 			}
+			else { submitSilence(); }
 		}
 		else if (audioIn.isEnabled)
 		{
@@ -440,7 +452,9 @@ void Hosting::liveStreamMedia()
 				vector<int16_t> buffer = audioIn.popBuffer();
 				ParsecHostSubmitAudio(_parsec, PCM_FORMAT_INT16, audioIn.getFrequency(), buffer.data(), (uint32_t)buffer.size() / 2);
 			}
+			else { submitSilence(); }
 		}
+		else { submitSilence(); }
 
 		sleepTimeMs = _mediaClock.getRemainingTime();
 		if (sleepTimeMs > 0)
