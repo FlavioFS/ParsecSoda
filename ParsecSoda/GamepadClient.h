@@ -15,8 +15,6 @@
 #include "GuestList.h"
 #include "MetadataCache.h"
 
-class HotseatManager;
-
 using namespace std;
 
 #define GAMEPAD_LIMIT_NOT_FOUND -1
@@ -54,7 +52,6 @@ public:
 
 	~GamepadClient();
 	void setParsec(ParsecDSO* parsec);
-	void setHotseatManager(HotseatManager* hotSeatManager);
 	bool init();
 	AGamepad* createGamepad(AGamepad::Type type = AGamepad::Type::XBOX);
 	void createAllGamepads();
@@ -69,7 +66,6 @@ public:
 	void release();
 	AGamepad* getGamepad(int index);
 	int clearAFK(GuestList &guests);
-	void updateFromHotseats(GuestList& guests);
 
 	bool disconnect(int gamepadIndex);
 	bool clearOwner(int gamepadIndex);
@@ -102,16 +98,13 @@ private:
 	void releaseGamepads();
 	void setMirror(uint32_t guestUserID, bool mirror);
 	void setIgnoreDeviceID(uint32_t guestUserID, bool ignoreDeviceID);
-	bool tryAssignGamepad(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
-	bool enqueueHotseatRequest(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
+	bool tryAssignGamepad(Guest guest, uint32_t padId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
 
 	void reduce(function<void(AGamepad*)> func);
 	bool reduceUntilFirst(function<bool(AGamepad*)> func);
-
-	bool isHotseatsActive();
 
 	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
 	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
@@ -121,7 +114,6 @@ private:
 
 	PVIGEM_CLIENT _client;
 	ParsecDSO* _parsec;
-	HotseatManager* _hotseatManager;
 
 	thread _resetAllThread;
 

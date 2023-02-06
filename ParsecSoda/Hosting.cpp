@@ -72,7 +72,6 @@ void Hosting::init()
 	_parsecStatus = ParsecInit(NULL, NULL, (char *)SDK_PATH, &_parsec);
 	_dx11.init();
 	_gamepadClient.setParsec(_parsec);
-	_gamepadClient.setHotseatManager(&_hotseatManager);
 	_gamepadClient.init();
 
 	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();

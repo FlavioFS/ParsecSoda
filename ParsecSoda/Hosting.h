@@ -29,7 +29,7 @@
 #include "Stopwatch.h"
 #include "MasterOfPuppets.h"
 #include "GuestMetricsHistory.h"
-#include "HotseatManager.h"
+#include "ActionQueue.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -107,7 +107,6 @@ private:
 	ChatLog _chatLog;
 	GamepadClient _gamepadClient;
 	MasterOfPuppets _masterOfPuppets;
-	HotseatManager _hotseatManager;
 	
 	ParsecDSO* _parsec;
 	ParsecHostConfig _hostConfig;

@@ -228,10 +228,10 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         }
 
 
-        HotseatWidget::render();
+        //HotseatWidget::render();
         //if (showStyles)         StylePickerWidget::render();
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
         //ImPlot::ShowDemoWindow();
 
         // =====================================================================
