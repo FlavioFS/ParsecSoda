@@ -8,6 +8,8 @@ string MetadataCache::_nonce = "ParsecSoda**";
 MetadataCache::Preferences MetadataCache::preferences = MetadataCache::Preferences();
 mutex MetadataCache::_mutex;
 
+GuestData MetadataCache::host = GuestData();
+
 MetadataCache::SessionCache MetadataCache::loadSessionCache()
 {
     SessionCache result = SessionCache();

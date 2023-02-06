@@ -61,6 +61,7 @@ public:
 	static ID3D11ShaderResourceView* ds4;
 	static ID3D11ShaderResourceView* windows;
 	static ID3D11ShaderResourceView* sdl;
+	static ID3D11ShaderResourceView* seat;
 
 	static ID3D11ShaderResourceView* xbox;
 	static ID3D11ShaderResourceView* xbox1;
@@ -127,6 +128,7 @@ private:
 	static Texture _ds4;
 	static Texture _windows;
 	static Texture _sdl;
+	static Texture _seat;
 
 	static Texture _xbox;
 	static Texture _xbox1;

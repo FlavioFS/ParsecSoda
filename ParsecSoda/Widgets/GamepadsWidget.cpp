@@ -402,7 +402,7 @@ bool GamepadsWidget::render()
         resizeGamepadsDebouncer.start();
         resizeGamepadsDebouncer.reset(500);
     }
-    if (resizeGamepadsDebouncer.isRunning() && resizeGamepadsDebouncer.isFinished())
+    if (resizeGamepadsDebouncer.isRunComplete())
     {
         resizeGamepadsDebouncer.stop();
         MetadataCache::savePreferences();

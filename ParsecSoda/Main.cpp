@@ -34,6 +34,7 @@
 #include "Widgets/VersionWidget.h"
 #include "Widgets/ThumbnailsWidget.h"
 #include "Widgets/MasterOfPuppetsWidget.h"
+#include "Widgets/HotseatWidget.h"
 
 using namespace std;
 
@@ -226,9 +227,11 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             hostInfoWidget.render();
         }
 
+
+        HotseatWidget::render();
         //if (showStyles)         StylePickerWidget::render();
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
         //ImPlot::ShowDemoWindow();
 
         // =====================================================================

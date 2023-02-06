@@ -77,7 +77,8 @@ bool AudioSettingsWidget::render()
     AppFonts::pop();
 
     static char infrequencyLabel[32];
-    snprintf(infrequencyLabel, sizeof(infrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
+    
+    (infrequencyLabel, sizeof(infrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
     AppStyle::pushLabel();
     ImGui::Text(infrequencyLabel);
     AppStyle::pop();

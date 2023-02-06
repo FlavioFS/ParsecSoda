@@ -26,7 +26,7 @@ public:
 			THIRD = 1,
 			ENTERPRISE = 2
 		};
-
+		
 		string sessionID = "";
 		string peerID = "";
 		SessionType type = SessionType::THIRD;
@@ -83,6 +83,8 @@ public:
 	static bool saveThumbnails(vector<Thumbnail> thumbnails);
 
 	static Preferences preferences;
+
+	static GuestData host;
 
 private:
 	static string getUserDir();

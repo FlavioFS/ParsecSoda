@@ -248,6 +248,8 @@ struct ImVec2
     ImVec2(float _x, float _y)              { x = _x; y = _y; }
     float  operator[] (size_t idx) const    { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
     float& operator[] (size_t idx)          { IM_ASSERT(idx <= 1); return (&x)[idx]; }    // We very rarely use this [] operator, the assert overhead is fine.
+    ImVec2 operator*(float v) { return ImVec2(x * v, y * v); }
+    ImVec2 operator+(ImVec2 v) { return ImVec2(x + v.x, y + v.y); }
 #ifdef IM_VEC2_CLASS_EXTRA
     IM_VEC2_CLASS_EXTRA     // Define additional constructors and implicit cast operators in imconfig.h to convert back and forth between your math types and ImVec2.
 #endif
@@ -259,6 +261,8 @@ struct ImVec4
     float                                           x, y, z, w;
     ImVec4()                                        { x = y = z = w = 0.0f; }
     ImVec4(float _x, float _y, float _z, float _w)  { x = _x; y = _y; z = _z; w = _w; }
+    ImVec4 operator*(float v) { return ImVec4(x * v, y * v, z * v, w * v); }
+    ImVec4 operator+(ImVec4 v) { return ImVec4(x + v.x, y + v.y, z + v.z, w + v.w); }
 #ifdef IM_VEC4_CLASS_EXTRA
     IM_VEC4_CLASS_EXTRA     // Define additional constructors and implicit cast operators in imconfig.h to convert back and forth between your math types and ImVec4.
 #endif

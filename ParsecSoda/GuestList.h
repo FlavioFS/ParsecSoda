@@ -41,7 +41,7 @@ public:
 	const bool findUnsafe(uint32_t userID, GuestList::ItemCallback callback = nullptr);
 	const bool findByIndexSafe(uint32_t index, GuestList::ItemCallback callback = nullptr);
 
-	void getMutexLockContext(GuestList::Action callback);
+	void runThreadSafe(GuestList::Action callback);
 
 private:
 	const bool findIteratorUnsafe(uint32_t userID, GuestList::IteratorCallback callback);

@@ -33,10 +33,9 @@ void Stopwatch::stop()
 	_isRunning = false;
 }
 
-bool Stopwatch::isFinished()
+bool Stopwatch::isRunComplete()
 {
-	fetchTimer();
-	return _elapsedDuration.count() >= _duration;
+	return isRunning() && isTimeout();
 }
 
 bool Stopwatch::isRunning()
@@ -44,13 +43,14 @@ bool Stopwatch::isRunning()
     return _isRunning;
 }
 
-/**
- * Sets duration (in milliseconds).
- * @param duration Time span in milliseconds.
- */
-void Stopwatch::setDuration(uint32_t duration)
+void Stopwatch::setDuration(uint32_t durationMs)
 {
-	_duration = duration;
+	_duration = durationMs;
+}
+
+void Stopwatch::setDurationSec(uint32_t durationSec)
+{
+	setDuration(durationSec * MS_PER_SEC);
 }
 
 uint32_t Stopwatch::getDuration()
@@ -58,16 +58,18 @@ uint32_t Stopwatch::getDuration()
 	return _duration;
 }
 
-/**
- * Gets time left until finish (in milliseconds).
- * @returns duration Remaining time (in milliseconds).
- */
 uint32_t Stopwatch::getRemainingTime()
 {
-	return isFinished() ? 0 : _duration - (uint32_t)_elapsedDuration.count();
+	return isTimeout() ? 0 : _duration - (uint32_t)_elapsedDuration.count();
 }
 
 void Stopwatch::fetchTimer()
 {
 	_elapsedDuration = std::chrono::system_clock::now() - _timeStart;
+}
+
+bool Stopwatch::isTimeout()
+{
+	fetchTimer();
+	return _elapsedDuration.count() >= _duration;
 }

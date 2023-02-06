@@ -4,6 +4,6 @@ Stopwatch CommandBonk::_stopwatch;
 
 void CommandBonk::init()
 {
-	_stopwatch.setDuration(5000);
+	_stopwatch.setDurationSec(5);
 	_stopwatch.start();
 }

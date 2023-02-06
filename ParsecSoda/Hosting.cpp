@@ -72,6 +72,7 @@ void Hosting::init()
 	_parsecStatus = ParsecInit(NULL, NULL, (char *)SDK_PATH, &_parsec);
 	_dx11.init();
 	_gamepadClient.setParsec(_parsec);
+	_gamepadClient.setHotseatManager(&_hotseatManager);
 	_gamepadClient.init();
 
 	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
@@ -565,14 +566,14 @@ void Hosting::pollMetrics()
 	int guestCount = 0;
 
 	Stopwatch stopwatch;
-	stopwatch.setDuration(1000);
+	stopwatch.setDurationSec(1);
 	stopwatch.start();
 
 	while (_isRunning)
 	{
 		guestCount = ParsecHostGetGuests(_parsec, GUEST_CONNECTED, &parsecGuests);
 
-		_guestList.getMutexLockContext([&]() {
+		_guestList.runThreadSafe([&]() {
 			_guestMetricsHistory.getMutexLockContext([&]() {
 				for (size_t i = 0; i < guestCount; i++)
 				{
@@ -608,7 +609,7 @@ void Hosting::pollMetrics()
 		}
 
 
-		if (stopwatch.isFinished())
+		if (stopwatch.isRunComplete())
 		{
 			stopwatch.reset();
 		}

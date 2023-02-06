@@ -1,7 +1,7 @@
 #include "MasterOfPuppets.h"
 
 MasterOfPuppets::MasterOfPuppets()
-    : _gamepadClient(nullptr), masterIndex(-1), isSDLEngine(true)
+    : _gamepadClient(nullptr), masterIndex(-1), isSDLEngine(true), _vMasterState({0, 0})
 {
     stopwatch = Stopwatch(5000);
 }
@@ -24,7 +24,7 @@ void MasterOfPuppets::start()
         {
             inputMutex.lock();
             if (isSDLEngine) {
-                if (stopwatch.isFinished())
+                if (stopwatch.isRunComplete())
                 {
                     internalFetchSDLGamepads();
                     stopwatch.reset();

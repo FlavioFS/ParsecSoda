@@ -106,7 +106,7 @@ const bool GuestList::findByIndexSafe(uint32_t index, GuestList::ItemCallback ca
 	return found;
 }
 
-void GuestList::getMutexLockContext(GuestList::Action callback)
+void GuestList::runThreadSafe(GuestList::Action callback)
 {
 	if (callback)
 	{

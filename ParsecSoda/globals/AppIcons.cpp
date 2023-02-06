@@ -53,6 +53,7 @@ ID3D11ShaderResourceView* AppIcons::dinput;
 ID3D11ShaderResourceView* AppIcons::ds4;
 ID3D11ShaderResourceView* AppIcons::windows;
 ID3D11ShaderResourceView* AppIcons::sdl;
+ID3D11ShaderResourceView* AppIcons::seat;
 
 ID3D11ShaderResourceView* AppIcons::xbox;
 ID3D11ShaderResourceView* AppIcons::xbox1;
@@ -118,6 +119,7 @@ Texture AppIcons::_dinput;
 Texture AppIcons::_ds4;
 Texture AppIcons::_windows;
 Texture AppIcons::_sdl;
+Texture AppIcons::_seat;
 
 Texture AppIcons::_xbox;
 Texture AppIcons::_xbox1;
@@ -186,6 +188,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _ds4.loadFromFile(pd3dDevice, "./icons/ds4.png");
     _windows.loadFromFile(pd3dDevice, "./icons/windows.png");
     _sdl.loadFromFile(pd3dDevice, "./icons/sdl.png");
+    _seat.loadFromFile(pd3dDevice, "./icons/seat.png");
 
     _xbox.loadFromFile(pd3dDevice, "./icons/xbox.png");
     _xbox1.loadFromFile(pd3dDevice, "./icons/xbox1.png");
@@ -251,6 +254,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     ds4 = _ds4.texture;
     windows = _windows.texture;
     sdl = _sdl.texture;
+    seat = _seat.texture;
 
     xbox = _xbox.texture;
     xbox1 = _xbox1.texture;

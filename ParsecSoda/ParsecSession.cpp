@@ -372,12 +372,14 @@ void ParsecSession::fetchAccountDataSync(Guest* user)
 			if (MTY_JSONObjGetString(data, "name", name, GUEST_NAME_LEN))
 			{
 				user->name = name;
+				MetadataCache::host.name = name;
 			}
 
 			uint32_t userID = 0;
 			if (MTY_JSONObjGetUInt(data, "id", &userID))
 			{
 				user->userID = userID;
+				MetadataCache::host.userID = userID;
 			}
 
 			if (_expiry < Clock::now())

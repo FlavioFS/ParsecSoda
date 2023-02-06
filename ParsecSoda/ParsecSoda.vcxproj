@@ -156,6 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CircularMetrics.cpp" />
+    <ClCompile Include="Widgets\GradientProgressBar.cpp" />
+    <ClCompile Include="HotseatManager.cpp" />
+    <ClCompile Include="Widgets\HotseatWidget.cpp" />
     <ClCompile Include="Widgets\GuestMetricsHistoryGraphWidget.cpp" />
     <ClCompile Include="Widgets\AbstractTooltipWidget.cpp" />
     <ClCompile Include="AsyncCall.cpp" />
@@ -247,6 +250,9 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Widgets\GradientProgressBar.h" />
+    <ClInclude Include="HotseatManager.h" />
+    <ClInclude Include="Widgets\HotseatWidget.h" />
     <ClInclude Include="Widgets\GuestMetricsHistoryGraphWidget.h" />
     <ClInclude Include="Widgets\AbstractTooltipWidget.h" />
     <ClInclude Include="AsyncCall.h" />

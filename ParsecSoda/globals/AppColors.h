@@ -36,6 +36,7 @@ public:
 	static ImVec4 positive;
 	static ImVec4 negative;
 	static ImVec4 warning;
+	static ImVec4 warning2;
 
 	static ImVec4 white;
 	static ImVec4 black;

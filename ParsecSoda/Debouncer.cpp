@@ -15,7 +15,7 @@ void Debouncer::start()
 
 			uint32_t sleepTime = _stopwatch.getRemainingTime();
 
-			while (!_stopwatch.isFinished() && sleepTime > 0)
+			while (!_stopwatch.isRunComplete() && sleepTime > 0)
 			{
 				Sleep(sleepTime);
 				sleepTime = _stopwatch.getRemainingTime();

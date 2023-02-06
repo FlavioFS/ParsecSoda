@@ -1,4 +1,5 @@
 #include "GamepadClient.h"
+#include "HotseatManager.h"
 
 // =============================================================
 //
@@ -13,6 +14,11 @@ GamepadClient::~GamepadClient()
 void GamepadClient::setParsec(ParsecDSO* parsec)
 {
 	this->_parsec = parsec;
+}
+
+void GamepadClient::setHotseatManager(HotseatManager* hotSeatManager)
+{
+	this->_hotseatManager = hotSeatManager;
 }
 
 bool GamepadClient::init()
@@ -276,6 +282,33 @@ int GamepadClient::clearAFK(GuestList &guests)
 	return clearCount;
 }
 
+void GamepadClient::updateFromHotseats(GuestList& guests)
+{
+	if (!isHotseatsActive()) return;
+
+	const vector<Hotseat> seats = _hotseatManager->getSeats();
+	vector<Hotseat>::const_iterator iSeat = seats.begin();
+
+	_hotseatManager->runThreadSafe([&]() {
+		//guests.runThreadSafe
+		//for (; iSeat != seats.end(); ++iSeat)
+		//{
+		//	guests.
+
+
+		//	reduceUntilFirst([&](AGamepad* pad) {
+		//		if (pad == iSeat->gamepad)
+		//		{
+		//			pad->setOwner(iSeat);
+		//			return true;
+		//		}
+
+		//		return false;
+		//	});
+		//}
+	});
+}
+
 int GamepadClient::onQuit(Guest& guest)
 {
 	int result = 0;
@@ -453,7 +486,14 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 
 	if (!success && isGamepadRequest)
 	{
-		success = tryAssignGamepad(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
+		if (isHotseatsActive())
+		{
+			success = enqueueHotseatRequest(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
+		}
+		else
+		{
+			success = tryAssignGamepad(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
+		}
 	}
 
 	return success;
@@ -541,6 +581,16 @@ bool GamepadClient::tryAssignGamepad(Guest guest, uint32_t deviceID, int current
 	});
 }
 
+bool GamepadClient::enqueueHotseatRequest(Guest guest, uint32_t deviceID, int currentSlots, bool isKeyboard, GuestPreferences prefs)
+{
+	if (currentSlots >= prefs.padLimit)
+	{
+		return false;
+	}
+
+	_hotseatManager->enqueue(HotseatGuest(guest, deviceID, isKeyboard, false, true));
+}
+
 void GamepadClient::releaseGamepads()
 {
 	reduce([](AGamepad* pad) {
@@ -622,6 +672,11 @@ bool GamepadClient::reduceUntilFirst(function<bool(AGamepad*)> func)
 	}
 
 	return false;
+}
+
+bool GamepadClient::isHotseatsActive()
+{
+	return _hotseatManager != nullptr && _hotseatManager->isEnabled();
 }
 
 bool GamepadClient::findPreferences(uint32_t guestUserID, function<void(GamepadClient::GuestPreferences&)> callback)

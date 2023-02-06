@@ -20,7 +20,7 @@ public:
 
 	bool run() override
 	{
-		if (!_stopwatch.isFinished())
+		if (!_stopwatch.isRunComplete())
 		{
 			_replyMessage = std::string() +
 				"[ChatBot] | Bonk command is on cooldown: " +
