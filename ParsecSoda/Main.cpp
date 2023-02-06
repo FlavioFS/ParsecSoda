@@ -150,6 +150,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showGuests = true;
     bool showGamepads = true;
     bool showMasterOfPuppets = false;
+    bool showHotseats = true;
     bool showAudio = false;
     bool showVideo = false;
     bool showStyles = true;
@@ -215,13 +216,14 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showGuests)             guestsWindow.render();
             if (showGamepads)           gamepadsWindow.render();
             if (showMasterOfPuppets)    masterOfPuppets.render();
+            if (showHotseats)           HotseatWidget::render(g_hosting);
             if (showAudio)              audioSettingswidget.render();
             if (showVideo)              videoWidget.render();
             if (showInfo)               InfoWidget::render();
             if (showThumbs)             ThumbnailsWidget::render(g_session);
             NavBar::render(
                 g_hosting,
-                showLogin, showHostSettings, showGamepads, showMasterOfPuppets, showChat,
+                showLogin, showHostSettings, showGamepads, showMasterOfPuppets, showHotseats, showChat,
                 showGuests, showThumbs, showLog, showAudio, showVideo, showInfo
             );
             hostInfoWidget.render();
@@ -231,7 +233,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
         //HotseatWidget::render();
         //if (showStyles)         StylePickerWidget::render();
 
-        //ImGui::ShowDemoWindow();
+        ImGui::ShowDemoWindow();
         //ImPlot::ShowDemoWindow();
 
         // =====================================================================

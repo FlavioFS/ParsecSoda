@@ -9,14 +9,21 @@ class AppIcons
 public:
 	static void init(ID3D11Device* pd3dDevice);
 
+	static ID3D11ShaderResourceView* switchOn;
+	static ID3D11ShaderResourceView* switchOff;
+	static ID3D11ShaderResourceView* wifiOn;
+	static ID3D11ShaderResourceView* wifiOff;
+
 	static ID3D11ShaderResourceView* play;
 	static ID3D11ShaderResourceView* stop;
+	static ID3D11ShaderResourceView* skip;
 
 	static ID3D11ShaderResourceView* yes;
 	static ID3D11ShaderResourceView* no;
 
 	static ID3D11ShaderResourceView* send;
 	static ID3D11ShaderResourceView* back;
+	static ID3D11ShaderResourceView* sendTop;
 
 	static ID3D11ShaderResourceView* lock;
 	static ID3D11ShaderResourceView* unlock;
@@ -33,6 +40,7 @@ public:
 	static ID3D11ShaderResourceView* video;
 
 	static ID3D11ShaderResourceView* refresh;
+	static ID3D11ShaderResourceView* timerRefresh;
 	static ID3D11ShaderResourceView* sort;
 	static ID3D11ShaderResourceView* submit;
 	static ID3D11ShaderResourceView* saveOn;
@@ -76,14 +84,21 @@ public:
 	static ID3D11ShaderResourceView* eth;
 
 private:
+	static Texture _switchOn;
+	static Texture _switchOff;
+	static Texture _wifiOn;
+	static Texture _wifiOff;
+
 	static Texture _play;
 	static Texture _stop;
+	static Texture _skip;
 
 	static Texture _yes;
 	static Texture _no;
 	
 	static Texture _send;
 	static Texture _back;
+	static Texture _sendTop;
 
 	static Texture _padOn;
 	static Texture _padOff;
@@ -100,6 +115,7 @@ private:
 	static Texture _video;
 	
 	static Texture _refresh;
+	static Texture _timerRefresh;
 	static Texture _sort;
 	static Texture _submit;
 	static Texture _saveOn;

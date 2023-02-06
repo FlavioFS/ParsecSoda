@@ -64,6 +64,7 @@ public:
 		uint32_t ds4PuppetCount = 0;
 		bool latencyLimiterEnabled = false;
 		uint32_t maxLatencyMs = 100;
+		uint32_t hotseatDurationSeconds = 300;
 	};
 
 	static SessionCache loadSessionCache();

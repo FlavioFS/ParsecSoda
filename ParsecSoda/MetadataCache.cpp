@@ -216,6 +216,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "maxLatencyMs", &preferences.maxLatencyMs)) {
                 preferences.maxLatencyMs = 100;
             }
+
+            if (!MTY_JSONObjGetUInt(json, "hotseatDurationSeconds", &preferences.hotseatDurationSeconds)) {
+                preferences.maxLatencyMs = 300;
+            }
             
             preferences.isValid = true;
 
@@ -266,6 +270,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "ds4PuppetCount", preferences.ds4PuppetCount);
         MTY_JSONObjSetBool(json, "isLatencyLimited", preferences.latencyLimiterEnabled);
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
+        MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

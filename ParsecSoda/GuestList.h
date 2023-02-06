@@ -41,6 +41,10 @@ public:
 	const bool findUnsafe(uint32_t userID, GuestList::ItemCallback callback = nullptr);
 	const bool findByIndexSafe(uint32_t index, GuestList::ItemCallback callback = nullptr);
 
+	/**
+	 * Run a procedure in a thread-safe context (mutex-locked).
+	 * @param callback Procedure to run.
+	 */
 	void runThreadSafe(GuestList::Action callback);
 
 private:

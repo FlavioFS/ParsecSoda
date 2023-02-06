@@ -1,14 +1,20 @@
 #include "AppIcons.h"
 
+ID3D11ShaderResourceView* AppIcons::switchOn;
+ID3D11ShaderResourceView* AppIcons::switchOff;
+ID3D11ShaderResourceView* AppIcons::wifiOn;
+ID3D11ShaderResourceView* AppIcons::wifiOff;
 
 ID3D11ShaderResourceView* AppIcons::play;
 ID3D11ShaderResourceView* AppIcons::stop;
+ID3D11ShaderResourceView* AppIcons::skip;
 
 ID3D11ShaderResourceView* AppIcons::yes;
 ID3D11ShaderResourceView* AppIcons::no;
 
 ID3D11ShaderResourceView* AppIcons::send;
 ID3D11ShaderResourceView* AppIcons::back;
+ID3D11ShaderResourceView* AppIcons::sendTop;
 
 ID3D11ShaderResourceView* AppIcons::lock;
 ID3D11ShaderResourceView* AppIcons::unlock;
@@ -25,6 +31,7 @@ ID3D11ShaderResourceView* AppIcons::speakersOff;
 ID3D11ShaderResourceView* AppIcons::video;
 
 ID3D11ShaderResourceView* AppIcons::refresh;
+ID3D11ShaderResourceView* AppIcons::timerRefresh;
 ID3D11ShaderResourceView* AppIcons::sort;
 ID3D11ShaderResourceView* AppIcons::submit;
 ID3D11ShaderResourceView* AppIcons::saveOn;
@@ -67,14 +74,21 @@ ID3D11ShaderResourceView* AppIcons::btc;
 ID3D11ShaderResourceView* AppIcons::ltc;
 ID3D11ShaderResourceView* AppIcons::eth;
 
+Texture AppIcons::_switchOn;
+Texture AppIcons::_switchOff;
+Texture AppIcons::_wifiOn;
+Texture AppIcons::_wifiOff;
+
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
+Texture AppIcons::_skip;
 
 Texture AppIcons::_yes;
 Texture AppIcons::_no;
 
 Texture AppIcons::_send;
 Texture AppIcons::_back;
+Texture AppIcons::_sendTop;
 
 Texture AppIcons::_padOn;
 Texture AppIcons::_padOff;
@@ -91,6 +105,7 @@ Texture AppIcons::_speakersOff;
 Texture AppIcons::_video;
 
 Texture AppIcons::_refresh;
+Texture AppIcons::_timerRefresh;
 Texture AppIcons::_sort;
 Texture AppIcons::_submit;
 Texture AppIcons::_saveOn;
@@ -136,8 +151,14 @@ Texture AppIcons::_eth;
 
 void AppIcons::init(ID3D11Device* pd3dDevice)
 {
+    _switchOn.loadFromFile(pd3dDevice, "./icons/switch-on.png");
+    _switchOff.loadFromFile(pd3dDevice, "./icons/switch-off.png");
+    _wifiOn.loadFromFile(pd3dDevice, "./icons/wifi-on.png");
+    _wifiOff.loadFromFile(pd3dDevice, "./icons/wifi-off.png");
+
     _play.loadFromFile(pd3dDevice, "./icons/play.png");
     _stop.loadFromFile(pd3dDevice, "./icons/stop.png");
+    _skip.loadFromFile(pd3dDevice, "./icons/skip.png");
 
     _yes.loadFromFile(pd3dDevice, "./icons/check-on.png");
     _no.loadFromFile(pd3dDevice, "./icons/close-circle.png");
@@ -151,6 +172,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
 
     _send.loadFromFile(pd3dDevice, "./icons/send.png");
     _back.loadFromFile(pd3dDevice, "./icons/back.png");
+    _sendTop.loadFromFile(pd3dDevice, "./icons/send-top.png");
 
     _micOn.loadFromFile(pd3dDevice, "./icons/microphone-on.png");
     _micOff.loadFromFile(pd3dDevice, "./icons/microphone-off.png");
@@ -160,6 +182,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _video.loadFromFile(pd3dDevice, "./icons/video.png");
 
     _refresh.loadFromFile(pd3dDevice, "./icons/refresh.png");
+    _timerRefresh.loadFromFile(pd3dDevice, "./icons/timer-refresh.png");
     _sort.loadFromFile(pd3dDevice, "./icons/sort.png");
     _submit.loadFromFile(pd3dDevice, "./icons/submit.png");
     _saveOn.loadFromFile(pd3dDevice, "./icons/save-on.png");
@@ -202,8 +225,14 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
     _eth.loadFromFile(pd3dDevice, "./icons/eth.png");
 
+    switchOn = _switchOn.texture;
+    switchOff = _switchOff.texture;
+    wifiOn = _wifiOn.texture;
+    wifiOff = _wifiOff.texture;
+
     play = _play.texture;
     stop = _stop.texture;
+    skip = _skip.texture;
     
     yes = _yes.texture;
     no = _no.texture;
@@ -217,6 +246,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     
     send = _send.texture;
     back = _back.texture;
+    sendTop = _sendTop.texture;
     
     micOn = _micOn.texture;
     micOff = _micOff.texture;
@@ -226,6 +256,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     video = _video.texture;
 
     refresh = _refresh.texture;
+    timerRefresh = _timerRefresh.texture;
     sort = _sort.texture;
     submit = _submit.texture;
     saveOn = _saveOn.texture;

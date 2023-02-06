@@ -45,6 +45,8 @@ Hosting::Hosting()
 	SDL_Init(SDL_INIT_JOYSTICK);
 	_masterOfPuppets.init(_gamepadClient);
 	_masterOfPuppets.start();
+
+	_hotseatManager.setTimer(MetadataCache::preferences.hotseatDurationSeconds);
 }
 
 void Hosting::applyHostConfig()
@@ -72,6 +74,7 @@ void Hosting::init()
 	_parsecStatus = ParsecInit(NULL, NULL, (char *)SDK_PATH, &_parsec);
 	_dx11.init();
 	_gamepadClient.setParsec(_parsec);
+	_gamepadClient.setHotseatManager(&_hotseatManager);
 	_gamepadClient.init();
 
 	MetadataCache::Preferences preferences = MetadataCache::loadPreferences();
@@ -227,6 +230,11 @@ MasterOfPuppets& Hosting::getMasterOfPuppets()
 	return _masterOfPuppets;
 }
 
+HotseatManager& Hosting::getHotseatManager()
+{
+	return _hotseatManager;
+}
+
 void Hosting::toggleGamepadLock()
 {
 	_gamepadClient.toggleLock();
@@ -309,6 +317,7 @@ void Hosting::startHosting()
 				_inputThread = thread ([this]() {pollInputs(); });
 				_eventThread = thread ([this]() {pollEvents(); });
 				_metricsThread = thread([this]() { pollMetrics(); });
+				_hotseatsThread = thread([this]() { pollHotseats(); });
 				_mainLoopControlThread = thread ([this]() {mainLoopControl(); });
 			}
 		}
@@ -480,6 +489,7 @@ void Hosting::mainLoopControl()
 	const std::lock_guard<mutex> lockInput(_inputMutex);
 	const std::lock_guard<mutex> lockEvent(_eventMutex);
 	const std::lock_guard<mutex> lockMetrics(_metricsMutex);
+	const std::lock_guard<mutex> lockHotseats(_hotSeatsMutex);
 	 
 	ParsecHostStop(_parsec);
 	_isRunning = false;
@@ -620,6 +630,54 @@ void Hosting::pollMetrics()
 
 	_isMetricsThreadRunning = false;
 	_metricsThread.detach();
+}
+
+void Hosting::pollHotseats()
+{
+	const std::lock_guard<mutex> lock(_hotSeatsMutex);
+	_isHotseatsThreadRunning = true;
+
+	Stopwatch stopwatch;
+	stopwatch.setDurationSec(1);
+	stopwatch.start();
+
+	const static HotseatManager::GuestToBoolAction isGuestOnline = [&](const GuestData& guest) { return _guestList.findUnsafe(guest.userID); };
+	const static HotseatManager::GuestToBoolAction isGuestMultitap = [&](const GuestData& guest) {
+		bool isMultitap = false;
+
+		_gamepadClient.findPreferences(guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
+			isMultitap = (!prefs.ignoreDeviceID && prefs.padLimit > 1);
+		});
+		
+		return isMultitap;
+	};
+
+	while (_isRunning)
+	{
+		if (_hotseatManager.isEnabled())
+		{
+			_hotseatManager.runThreadSafe([&]() {
+				_guestList.runThreadSafe([&]() {
+
+					_hotseatManager.updateAndRotate(_gamepadClient.gamepads, isGuestOnline, isGuestMultitap);
+					_gamepadClient.loadFromHotseats(_guestList);
+
+				});
+			});
+		}
+
+		if (stopwatch.isRunComplete())
+		{
+			stopwatch.reset();
+		}
+		else
+		{
+			Sleep(stopwatch.getRemainingTime());
+		}
+	}
+
+	_isHotseatsThreadRunning = false;
+	_hotseatsThread.detach();
 }
 
 bool Hosting::parsecArcadeStart()

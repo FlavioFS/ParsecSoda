@@ -45,3 +45,5 @@ COPY .\ParsecSoda\sfx\ .\x64\Debug\sfx\
 COPY .\ParsecSoda\sfx\ .\x64\Release\sfx\
 COPY .\ParsecSoda\sfx\ .\Debug\sfx\
 COPY .\ParsecSoda\sfx\ .\Release\sfx\
+
+pause

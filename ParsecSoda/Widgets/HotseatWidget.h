@@ -2,15 +2,29 @@
 
 #include "../imgui/imgui.h"
 #include "../globals/AppStyle.h"
-#include <string>
-#include "GradientProgressBar.h"
 #include "../Stopwatch.h"
+#include "../Hosting.h"
+#include <string>
+#include "IconButton.h"
+#include "BoolButtonWidget.h"
+#include "ToggleIconButtonWidget.h"
+#include "TitleTooltipWidget.h"
+#include "IntRangeWidget.h"
+#include "GradientProgressBar.h"
 
 using namespace std;
 
 class HotseatWidget
 {
 public:
-	static void render();
+	static void render(Hosting& hosting);
+
+private:
+	static void renderTopBar(HotseatManager& hotseatManager, bool& isWindowLocked);
+	static void renderTimePickers(HotseatManager& hotseatManager);
+	static void renderHotseats(HotseatManager& hotseatManager);
+	static void renderWaitingGuests(HotseatManager& hotseatManager);
+	static void renderDummy(float x = 2, float y = 2);
+	static void renderSeparator();
 };
 

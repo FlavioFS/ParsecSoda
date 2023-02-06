@@ -60,7 +60,8 @@ uint32_t Stopwatch::getDuration()
 
 uint32_t Stopwatch::getRemainingTime()
 {
-	return isTimeout() ? 0 : _duration - (uint32_t)_elapsedDuration.count();
+	if (!isRunning() || isTimeout()) return 0;
+	return _duration - (uint32_t)_elapsedDuration.count();
 }
 
 void Stopwatch::fetchTimer()

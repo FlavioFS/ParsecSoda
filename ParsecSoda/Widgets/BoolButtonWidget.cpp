@@ -13,10 +13,6 @@ bool BoolButtonWidget::render(const char* label, bool& value)
         ImGui::Dummy(ImVec2(0.5f * width - 29.0f, 0.0f));
         ImGui::SameLine();
     }
-    else
-    {
-        bool debug = true;
-    }
 
     if (ToggleIconButtonWidget::render(AppIcons::yes, AppIcons::no, value))
     {

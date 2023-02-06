@@ -6,7 +6,13 @@
 class GradientProgressBar
 {
 public:
-	static void render(
+	static void renderSingle(
+		const float fraction, const ImVec2& size = ImVec2(200, 30),
+		const char* overlay = "",
+		const ImVec4 colorFinal = AppColors::positive
+	);
+
+	static void renderGradient(
 		const float fraction, const ImVec2& size = ImVec2(200, 30),
 		const char* overlay = "",
 		const ImVec4 colorFull = AppColors::positive,
@@ -14,20 +20,20 @@ public:
 		const ImVec4 colorEmpty = AppColors::negative
 	);
 
-private:
-	inline static ImVec4 lerpColors3(ImVec4 colorFull, ImVec4 colorHalf, ImVec4 colorEmpty, float t)
+	static ImVec4 lerpColors3(float t, ImVec4 colorFull = AppColors::positive, ImVec4 colorHalf = AppColors::warning2, ImVec4 colorEmpty = AppColors::negative)
 	{
 		if (t >= 0.5f)
 		{
-			return lerpColors2(colorFull, colorHalf, 2.0f * (t - 0.5f));
+			return lerpColors2(2.0f * (t - 0.5f), colorFull, colorHalf);
 		}
 		else
 		{
-			return lerpColors2(colorHalf, colorEmpty, 2.0f * t);
+			return lerpColors2(2.0f * t, colorHalf, colorEmpty);
 		}
 	}
+private:
 
-	inline static ImVec4 lerpColors2(ImVec4 colorFull, ImVec4 colorEmpty, float t)
+	static ImVec4 lerpColors2(float t, ImVec4 colorFull, ImVec4 colorEmpty)
 	{
 		return colorFull * t + colorEmpty * (1 - t);
 	}

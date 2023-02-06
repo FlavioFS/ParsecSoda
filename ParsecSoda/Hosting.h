@@ -29,7 +29,7 @@
 #include "Stopwatch.h"
 #include "MasterOfPuppets.h"
 #include "GuestMetricsHistory.h"
-#include "ActionQueue.h"
+#include "HotseatManager.h"
 
 #define PARSEC_APP_CHAT_MSG 0
 #define HOSTING_CHAT_MSG_ID 0
@@ -64,6 +64,7 @@ public:
 	vector<AGamepad*>& getGamepads();
 	GamepadClient& getGamepadClient();
 	MasterOfPuppets& getMasterOfPuppets();
+	HotseatManager& getHotseatManager();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
 	void setMaxGuests(uint8_t maxGuests);
@@ -91,6 +92,7 @@ private:
 	void pollEvents();
 	void pollInputs();
 	void pollMetrics();
+	void pollHotseats();
 	bool parsecArcadeStart();
 	bool isFilteredCommand(ACommand* command);
 	void onGuestStateChange(ParsecGuestState& state, Guest& guest);
@@ -107,6 +109,7 @@ private:
 	ChatLog _chatLog;
 	GamepadClient _gamepadClient;
 	MasterOfPuppets _masterOfPuppets;
+	HotseatManager _hotseatManager;
 	
 	ParsecDSO* _parsec;
 	ParsecHostConfig _hostConfig;
@@ -121,6 +124,7 @@ private:
 	bool _isInputThreadRunning = false;
 	bool _isMetricsThreadRunning = false;
 	bool _isEventThreadRunning = false;
+	bool _isHotseatsThreadRunning = false;
 
 	Stopwatch _mediaClock;
 
@@ -129,6 +133,7 @@ private:
 	thread _inputThread;
 	thread _eventThread;
 	thread _metricsThread;
+	thread _hotseatsThread;
 	thread _createGamepadsThread;
 	thread _connectGamepadsThread;
 
@@ -136,4 +141,5 @@ private:
 	mutex _inputMutex;
 	mutex _eventMutex;
 	mutex _metricsMutex;
+	mutex _hotSeatsMutex;
 };

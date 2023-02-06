@@ -17,6 +17,7 @@ public:
         bool& showHostSettings,
         bool& showGamepads,
         bool& showMasterOfPuppets,
+        bool& showHotseats,
         bool& showChat,
         bool& showGuests,
         bool& showThumbnails,
@@ -27,6 +28,7 @@ public:
     );
 
 private:
-    static void renderNavtooltip(const char* title, bool& show);
+    static void renderNavItem(Icon onIcon, Icon offIcon, bool& toggle, ImVec2 size, const char* tooltip);
+    static void renderNavTooltip(const char* title, bool& show);
 };
 
