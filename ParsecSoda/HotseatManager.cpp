@@ -16,11 +16,20 @@ bool HotseatManager::enqueue(const HotseatGuest guest)
 	return found;
 }
 
-void HotseatManager::spectateIndex(const size_t guestIndex)
+void HotseatManager::spectateGuest(const size_t guestIndex)
 {
 	if (!isGuestIndexInRange(guestIndex)) return;
 
 	m_waitingGuests.erase(m_waitingGuests.begin() + guestIndex);
+}
+
+void HotseatManager::spectateSeat(const size_t seatIndex)
+{
+	if (!isSeatIndexInRange(seatIndex)) return;
+
+	m_seats[seatIndex].guest = HotseatGuest();
+	m_seats[seatIndex].isEmpty = true;
+	m_seats[seatIndex].timer.stop();
 }
 
 void HotseatManager::next(const size_t seatIndex)
@@ -103,7 +112,7 @@ void HotseatManager::updateAndRotate(
 )
 {
 	updateSeats(gamepads);
-	updateWaitingGuests(isGuestOnlineCallback, isMultitapGuestCallback);
+	updateGuests(isGuestOnlineCallback, isMultitapGuestCallback);
 	rotate();
 }
 
@@ -167,13 +176,21 @@ void HotseatManager::rotate()
 	if (!m_isEnabled) return;
 
 	vector<Hotseat>::iterator iSeat = m_seats.begin();
+	size_t index = 0;
 
 	for (; iSeat != m_seats.end(); ++iSeat)
 	{
+		if (!iSeat->guest.isOnline)
+		{
+			spectateSeat(index);
+		}
+
 		if (iSeat->isEmpty || iSeat->timer.isRunComplete())
 		{
 			next(*iSeat);
 		}
+
+		++index;
 	}
 }
 
@@ -214,18 +231,27 @@ void HotseatManager::updateSeats(const vector<AGamepad*>& gamepads)
 
 	if (m_seats.size() > connectedCount)
 	{
-		m_seats.erase(m_seats.begin() + connectedCount-1, m_seats.end() - 1);
+		m_seats.erase(m_seats.begin() + connectedCount, m_seats.end());
 	}
 }
 
-void HotseatManager::updateWaitingGuests(GuestToBoolAction isGuestOnlineCallback, GuestToBoolAction isMultitapGuestCallback)
+void HotseatManager::updateGuests(GuestToBoolAction isGuestOnlineCallback, GuestToBoolAction isMultitapGuestCallback)
 {
 	vector<HotseatGuest>::iterator iGuest = m_waitingGuests.begin();
 
 	for (; iGuest != m_waitingGuests.end(); ++iGuest)
 	{
-		iGuest->isOnline = isGuestOnlineCallback ? isGuestOnlineCallback(iGuest->guest) : false;
+		iGuest->isOnline = iGuest->isMaster || (isGuestOnlineCallback ? isGuestOnlineCallback(iGuest->guest) : false);
 		iGuest->isMultitap = isMultitapGuestCallback ? isMultitapGuestCallback(iGuest->guest) : false;
+	}
+
+	// Seated guests
+	HotseatGuest* guest;
+	for (size_t i = 0; i < m_seats.size(); i++)
+	{
+		guest = &m_seats[i].guest;
+		guest->isOnline = guest->isMaster || (isGuestOnlineCallback ? isGuestOnlineCallback(guest->guest) : false);
+		guest->isMultitap = isMultitapGuestCallback ? isMultitapGuestCallback(guest->guest) : false;
 	}
 }
 
@@ -269,6 +295,9 @@ void HotseatManager::findSeatIteratorWithShortestCooldown(HotseatAction callback
 {
 	vector<Hotseat>::iterator iSeat = m_seats.begin();
 	vector<Hotseat>::iterator iShortest = iSeat;
+
+	if (iSeat == m_seats.end()) return;
+
 	uint32_t minimumCooldown = iShortest->timer.getRemainingTime();
 	uint32_t cooldown;
 

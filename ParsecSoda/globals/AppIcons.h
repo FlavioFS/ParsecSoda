@@ -17,6 +17,7 @@ public:
 	static ID3D11ShaderResourceView* play;
 	static ID3D11ShaderResourceView* stop;
 	static ID3D11ShaderResourceView* skip;
+	static ID3D11ShaderResourceView* remove;
 
 	static ID3D11ShaderResourceView* yes;
 	static ID3D11ShaderResourceView* no;
@@ -64,6 +65,7 @@ public:
 	static ID3D11ShaderResourceView* logo;
 
 	static ID3D11ShaderResourceView* puppet;
+	static ID3D11ShaderResourceView* puppetAdd;
 	static ID3D11ShaderResourceView* xinput;
 	static ID3D11ShaderResourceView* dinput;
 	static ID3D11ShaderResourceView* ds4;
@@ -78,6 +80,7 @@ public:
 	static ID3D11ShaderResourceView* xbox4;
 
 	static ID3D11ShaderResourceView* vpad;
+	static ID3D11ShaderResourceView* multitap;
 
 	static ID3D11ShaderResourceView* btc;
 	static ID3D11ShaderResourceView* ltc;
@@ -92,6 +95,7 @@ private:
 	static Texture _play;
 	static Texture _stop;
 	static Texture _skip;
+	static Texture _remove;
 
 	static Texture _yes;
 	static Texture _no;
@@ -139,6 +143,7 @@ private:
 	static Texture _logo;
 
 	static Texture _puppet;
+	static Texture _puppetAdd;
 	static Texture _xinput;
 	static Texture _dinput;
 	static Texture _ds4;
@@ -153,6 +158,7 @@ private:
 	static Texture _xbox4;
 
 	static Texture _vpad;
+	static Texture _multitap;
 
 	static Texture _btc;
 	static Texture _ltc;

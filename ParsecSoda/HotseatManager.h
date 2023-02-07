@@ -76,7 +76,13 @@ public:
 	 * Turn target into spectator (remove guest from queue).
 	 * @param guestIndex Waiting queue index.
 	 */
-	void spectateIndex(const size_t guestIndex);
+	void spectateGuest(const size_t guestIndex);
+
+	/**
+	 * Turn seating guest into spectator (remove guest from seat and waiting line).
+	 * @param seatIndex Seat index.
+	 */
+	void spectateSeat(const size_t seatIndex);
 	
 	/** 
 	 * Skip a seating guest to next in line - pick specific seat.
@@ -189,7 +195,7 @@ private:
 	 * @param isGuestOnlineCallback Callback to check if a guest is still online and update its HotseatGuest.isOnline status.
 	 * @param isMultitapGuestCallback Callback to check if a guest preferences and update its HotseatGuest.isMultitap status.
 	 */
-	void updateWaitingGuests(GuestToBoolAction isGuestOnlineCallback, GuestToBoolAction isMultitapGuestCallback);
+	void updateGuests(GuestToBoolAction isGuestOnlineCallback, GuestToBoolAction isMultitapGuestCallback);
 
 	/**
 	 * Find a guest's vector::iterator from it's userID and run a callback if found.

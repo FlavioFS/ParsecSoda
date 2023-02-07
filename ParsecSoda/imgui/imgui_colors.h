@@ -17,7 +17,7 @@ namespace ImGui
 		style->ScrollbarSize = 20;
 		style->GrabMinSize = 20;
 		
-		style->WindowRounding = 8;
+		style->WindowRounding = 0;
 		style->FrameRounding = 4;
 		style->PopupRounding = 4;
 		style->ScrollbarRounding = 4;

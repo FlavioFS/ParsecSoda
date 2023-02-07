@@ -8,6 +8,7 @@ ID3D11ShaderResourceView* AppIcons::wifiOff;
 ID3D11ShaderResourceView* AppIcons::play;
 ID3D11ShaderResourceView* AppIcons::stop;
 ID3D11ShaderResourceView* AppIcons::skip;
+ID3D11ShaderResourceView* AppIcons::remove;
 
 ID3D11ShaderResourceView* AppIcons::yes;
 ID3D11ShaderResourceView* AppIcons::no;
@@ -55,6 +56,7 @@ ID3D11ShaderResourceView* AppIcons::info;
 ID3D11ShaderResourceView* AppIcons::logo;
 
 ID3D11ShaderResourceView* AppIcons::puppet;
+ID3D11ShaderResourceView* AppIcons::puppetAdd;
 ID3D11ShaderResourceView* AppIcons::xinput;
 ID3D11ShaderResourceView* AppIcons::dinput;
 ID3D11ShaderResourceView* AppIcons::ds4;
@@ -69,6 +71,7 @@ ID3D11ShaderResourceView* AppIcons::xbox3;
 ID3D11ShaderResourceView* AppIcons::xbox4;
 
 ID3D11ShaderResourceView* AppIcons::vpad;
+ID3D11ShaderResourceView* AppIcons::multitap;
 
 ID3D11ShaderResourceView* AppIcons::btc;
 ID3D11ShaderResourceView* AppIcons::ltc;
@@ -82,6 +85,7 @@ Texture AppIcons::_wifiOff;
 Texture AppIcons::_play;
 Texture AppIcons::_stop;
 Texture AppIcons::_skip;
+Texture AppIcons::_remove;
 
 Texture AppIcons::_yes;
 Texture AppIcons::_no;
@@ -129,6 +133,7 @@ Texture AppIcons::_info;
 Texture AppIcons::_logo;
 
 Texture AppIcons::_puppet;
+Texture AppIcons::_puppetAdd;
 Texture AppIcons::_xinput;
 Texture AppIcons::_dinput;
 Texture AppIcons::_ds4;
@@ -143,6 +148,7 @@ Texture AppIcons::_xbox3;
 Texture AppIcons::_xbox4;
 
 Texture AppIcons::_vpad;
+Texture AppIcons::_multitap;
 
 Texture AppIcons::_btc;
 Texture AppIcons::_ltc;
@@ -159,6 +165,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _play.loadFromFile(pd3dDevice, "./icons/play.png");
     _stop.loadFromFile(pd3dDevice, "./icons/stop.png");
     _skip.loadFromFile(pd3dDevice, "./icons/skip.png");
+    _remove.loadFromFile(pd3dDevice, "./icons/remove.png");
 
     _yes.loadFromFile(pd3dDevice, "./icons/check-on.png");
     _no.loadFromFile(pd3dDevice, "./icons/close-circle.png");
@@ -206,6 +213,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _logo.loadFromFile(pd3dDevice, "./icons/logo.png");
 
     _puppet.loadFromFile(pd3dDevice, "./icons/puppet.png");
+    _puppetAdd.loadFromFile(pd3dDevice, "./icons/puppet-add.png");
     _xinput.loadFromFile(pd3dDevice, "./icons/xinput.png");
     _dinput.loadFromFile(pd3dDevice, "./icons/dinput.png");
     _ds4.loadFromFile(pd3dDevice, "./icons/ds4.png");
@@ -220,6 +228,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
 
     _vpad.loadFromFile(pd3dDevice, "./icons/vpad.png");
+    _multitap.loadFromFile(pd3dDevice, "./icons/multitap.png");
 
     _btc.loadFromFile(pd3dDevice, "./icons/btc.png");
     _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
@@ -233,6 +242,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     play = _play.texture;
     stop = _stop.texture;
     skip = _skip.texture;
+    remove = _remove.texture;
     
     yes = _yes.texture;
     no = _no.texture;
@@ -280,6 +290,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     logo = _logo.texture;
 
     puppet = _puppet.texture;
+    puppetAdd = _puppetAdd.texture;
     xinput = _xinput.texture;
     dinput = _dinput.texture;
     ds4 = _ds4.texture;
@@ -294,6 +305,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     xbox4 = _xbox4.texture;
 
     vpad = _vpad.texture;
+    multitap = _multitap.texture;
 
     btc = _btc.texture;
     ltc = _ltc.texture;

@@ -290,9 +290,19 @@ void GamepadClient::loadFromHotseats(GuestList& guests)
 
 	for (; iSeat != seats.end(); ++iSeat)
 	{
-		guests.findUnsafe(iSeat->guest.guest.userID, [&](Guest* iGuest) {
-			iSeat->gamepad->setOwner(*iGuest, iSeat->guest.deviceID, iSeat->guest.isKeyboard);
-		});
+		if (iSeat->guest.isMaster)
+		{
+			iSeat->gamepad->clearOwner();
+			iSeat->gamepad->isPuppet = true;
+		}
+		else
+		{
+			guests.findUnsafe(iSeat->guest.guest.userID, [&](Guest* iGuest) {
+				iSeat->gamepad->setOwner(*iGuest, iSeat->guest.deviceID, iSeat->guest.isKeyboard);
+				iSeat->gamepad->isPuppet = false;
+			});
+		}
+
 	}
 }
 
