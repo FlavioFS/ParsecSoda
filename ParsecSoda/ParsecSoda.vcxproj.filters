@@ -294,6 +294,9 @@
     <ClCompile Include="Widgets\GradientProgressBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\TextCenteredWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -705,6 +708,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Widgets\GradientProgressBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\TextCenteredWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands\CommandTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

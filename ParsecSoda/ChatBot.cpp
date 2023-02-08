@@ -9,7 +9,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 
 	// Pleb commands
 	//if (msgIsEqual(msg, CommandAFK::prefixes()))		return new CommandAFK(_guests, _gamepadClient);
-	if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandFF::prefixes()))			return new CommandFF(sender, _gamepadClient, _hotseatManager);
 	if (msgIsEqual(msg, CommandHelp::prefixes()))		return new CommandHelp(sender, _tierList);
 	//if (CommandIpFilter::containsIp(msg))				return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
 	if (msgIsEqual(msg, CommandJoin::prefixes()))		return new CommandJoin();
@@ -17,6 +17,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	if (msgIsEqual(msg, CommandOne::prefixes()))		return new CommandOne(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandPads::prefixes()))		return new CommandPads(_gamepadClient);
 	if (msgStartsWith(msg, CommandSwap::prefixes()))	return new CommandSwap(msg, sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandTime::prefixes()))		return new CommandTime(sender, _hotseatManager);
 
 #if !BASIC_VERSION
 	//if (msgStartsWith(msg, CommandSFX::prefixes()))		return new CommandSFX(msg, _sfxList);

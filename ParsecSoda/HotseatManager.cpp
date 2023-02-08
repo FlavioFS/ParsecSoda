@@ -23,13 +23,35 @@ void HotseatManager::spectateGuest(const size_t guestIndex)
 	m_waitingGuests.erase(m_waitingGuests.begin() + guestIndex);
 }
 
+bool HotseatManager::spectateGuestID(const uint32_t userID)
+{
+	bool found = false;
+
+	found = findSeatByGuest(userID, [&](Hotseat& seat) {
+		spectateSeat(seat);
+	});
+
+	found = found || findGuestIndex(userID, [&](size_t guestIndex) {
+		spectateGuest(guestIndex);
+	});
+
+	return found;
+}
+
 void HotseatManager::spectateSeat(const size_t seatIndex)
 {
 	if (!isSeatIndexInRange(seatIndex)) return;
 
-	m_seats[seatIndex].guest = HotseatGuest();
-	m_seats[seatIndex].isEmpty = true;
-	m_seats[seatIndex].timer.stop();
+	spectateSeat(m_seats[seatIndex]);
+}
+
+void HotseatManager::spectateSeat(Hotseat& seat)
+{
+	seat.guest = HotseatGuest();
+	seat.isEmpty = true;
+	seat.timer.stop();
+	seat.gamepad->clearOwner();
+	seat.gamepad->isPuppet = false;
 }
 
 void HotseatManager::next(const size_t seatIndex)
@@ -84,7 +106,21 @@ void HotseatManager::refresh(const size_t seatIndex)
 {
 	if (!isSeatIndexInRange(seatIndex)) return;
 
-	m_seats[seatIndex].timer.reset();
+	refresh(m_seats[seatIndex]);
+}
+
+void HotseatManager::refresh(Hotseat& seat)
+{
+	seat.timer.reset();
+}
+
+void HotseatManager::refreshAll()
+{
+	auto iSeat = m_seats.begin();
+	for (; iSeat != m_seats.end(); ++iSeat)
+	{
+		refresh(*iSeat);
+	}
 }
 
 void HotseatManager::reverse(const uint32_t seatIndex)
@@ -146,6 +182,11 @@ const vector<Hotseat>& HotseatManager::getSeats() const
 const vector<HotseatGuest>& HotseatManager::getWaitingGuests() const
 {
 	return m_waitingGuests;
+}
+
+const bool HotseatManager::isQueueEmpty() const
+{
+	return m_waitingGuests.size() <= 0;
 }
 
 const bool HotseatManager::isEnabled() const
@@ -231,7 +272,12 @@ void HotseatManager::updateSeats(const vector<AGamepad*>& gamepads)
 
 	if (m_seats.size() > connectedCount)
 	{
-		m_seats.erase(m_seats.begin() + connectedCount, m_seats.end());
+		auto iSeat = m_seats.begin() + connectedCount;
+		if (!iSeat->isEmpty)
+		{
+			m_waitingGuests.insert(m_waitingGuests.begin(), iSeat->guest);
+		}
+		m_seats.erase(iSeat, m_seats.end());
 	}
 }
 
@@ -255,6 +301,25 @@ void HotseatManager::updateGuests(GuestToBoolAction isGuestOnlineCallback, Guest
 	}
 }
 
+bool HotseatManager::findSeatByGuest(uint32_t userID, HotseatAction callback)
+{
+	vector<Hotseat>::iterator it = m_seats.begin();
+
+	for (; it != m_seats.end(); ++it)
+	{
+		if (it->guest.guest.userID == userID)
+		{
+			if (callback)
+			{
+				callback(*it);
+			}
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool HotseatManager::findGuestIterator(uint32_t userID, HotseatGuestAction callback)
 {
 	vector<HotseatGuest>::iterator it = m_waitingGuests.begin();
@@ -269,6 +334,28 @@ bool HotseatManager::findGuestIterator(uint32_t userID, HotseatGuestAction callb
 			}
 			return true;
 		}
+	}
+
+	return false;
+}
+
+bool HotseatManager::findGuestIndex(const uint32_t userID, IndexAction callback)
+{
+	vector<HotseatGuest>::iterator it = m_waitingGuests.begin();
+	size_t index = 0;
+
+	for (; it != m_waitingGuests.end(); ++it)
+	{
+		if (it->guest.userID == userID)
+		{
+			if (callback)
+			{
+				callback(index);
+			}
+			return true;
+		}
+
+		index++;
 	}
 
 	return false;

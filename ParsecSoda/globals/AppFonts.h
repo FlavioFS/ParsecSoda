@@ -18,15 +18,20 @@ class AppFonts
 public:
 	static void init(ImGuiIO& io);
 
+	static void pushCaption();
 	static void pushLabel();
 	static void pushTitle();
 	static void pushInput();
+	static void pushBigHeader();
 	static void pushSugoiDekai();
+	static void pushFont(ImFont* font);
 	static void pop();
 
+	static ImFont* caption;
 	static ImFont* label;
 	static ImFont* title;
 	static ImFont* input;
+	static ImFont* bigheader;
 	static ImFont* sugoidekai;
 };
 

@@ -13,6 +13,7 @@ enum class COMMAND_TYPE
 	BONK,
 	DC,
 	FF,
+	HOTSEATTIME,
 	GAMEID,
 	GUESTS,
 	HELP,

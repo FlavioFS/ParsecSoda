@@ -1,8 +1,10 @@
 #include "AppFonts.h"
 
+ImFont* AppFonts::caption;
 ImFont* AppFonts::label;
 ImFont* AppFonts::title;
 ImFont* AppFonts::input;
+ImFont* AppFonts::bigheader;
 ImFont* AppFonts::sugoidekai;
 
 void AppFonts::init(ImGuiIO& io)
@@ -10,29 +12,46 @@ void AppFonts::init(ImGuiIO& io)
 	// Default
 	label = io.Fonts->AddFontFromFileTTF(APPFONTS_REGULAR, 16.0f);
 
+	caption = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 14.0f);
 	title = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 20.0f);
 	input = io.Fonts->AddFontFromFileTTF(APPFONTS_SEMI_BOLD, 16.0f);
+	bigheader = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 24.0f);
 	sugoidekai = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 39.0f);
+}
+
+void AppFonts::pushCaption()
+{
+	pushFont(caption);
 }
 
 void AppFonts::pushLabel()
 {
-	ImGui::PushFont(label);
+	pushFont(label);
 }
 
 void AppFonts::pushTitle()
 {
-	ImGui::PushFont(title);
+	pushFont(title);
 }
 
 void AppFonts::pushInput()
 {
-	ImGui::PushFont(input);
+	pushFont(input);
+}
+
+void AppFonts::pushBigHeader()
+{
+	pushFont(bigheader);
 }
 
 void AppFonts::pushSugoiDekai()
 {
-	ImGui::PushFont(sugoidekai);
+	pushFont(sugoidekai);
+}
+
+void AppFonts::pushFont(ImFont* font)
+{
+	ImGui::PushFont(font);
 }
 
 void AppFonts::pop()

@@ -24,7 +24,8 @@ public:
 			+ "\n  " + "!bonk\t\t\t\t |\tBonk another user."
 #endif
 			+ "\n  " + "!help\t\t\t\t  |\tShow command list."
-			+ "\n  " + "!ff\t\t\t\t\t\t |\tDrop your gamepads."
+			+ "\n  " + "!ff\t\t\t\t\t\t |\tDrop your gamepads / Spectate."
+			+ "\n  " + "!time\t\t\t\t  |\tRefresh hotseat timer (conditions: empty line, <25% timer)."
 			+ "\n  " + "!mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
 			+ "\n  " + "!one\t\t\t\t    |\tMaps all of your devices to the same gamepad."
 			+ "\n  " + "!pads\t\t\t\t  |\tShow who's holding each gamepad."

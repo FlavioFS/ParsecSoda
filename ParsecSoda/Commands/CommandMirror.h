@@ -25,7 +25,7 @@ public:
 
 	static vector<const char*> prefixes()
 	{
-		return vector<const char*> { "!mirror" };
+		return vector<const char*> { "!mirror", "!dpad" };
 	}
 
 protected:

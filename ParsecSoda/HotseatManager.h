@@ -59,6 +59,7 @@ class HotseatManager
 {
 public:
 	typedef function<void(void)> Action;
+	typedef function<void(size_t)> IndexAction;
 	typedef function<void(Hotseat&)> HotseatAction;
 	typedef function<void(HotseatGuest&)> HotseatGuestAction;
 	typedef function<const bool(const GuestData&)> GuestToBoolAction;
@@ -79,10 +80,22 @@ public:
 	void spectateGuest(const size_t guestIndex);
 
 	/**
+	 * Turn target into spectator (remove guest from queue).
+	 * @param userID Guest's userID.
+	 */
+	bool spectateGuestID(const uint32_t userID);
+
+	/**
 	 * Turn seating guest into spectator (remove guest from seat and waiting line).
 	 * @param seatIndex Seat index.
 	 */
 	void spectateSeat(const size_t seatIndex);
+
+	/**
+	 * Turn seating guest into spectator (remove guest from seat and waiting line).
+	 * @param seat Seat reference.
+	 */
+	void spectateSeat(Hotseat& seat);
 	
 	/** 
 	 * Skip a seating guest to next in line - pick specific seat.
@@ -106,6 +119,17 @@ public:
 	 * @param seatIndex Seat index.
 	 */
 	void refresh(const size_t seatIndex);
+
+	/**
+	 * Restart cooldown of a specific seat.
+	 * @param seat Seat reference.
+	 */
+	void refresh(Hotseat& seat);
+
+	/**
+	 * Restart cooldown of all seats.
+	 */
+	void refreshAll();
 
 	/**
 	 * Make an already seating guest go back to the front of line (useful for seat count changes).
@@ -159,6 +183,19 @@ public:
 	const vector<HotseatGuest>& getWaitingGuests() const;
 
 	/**
+	 * Find the Hotseat in which a specific guest is seating.
+	 * @param userID The guest to seatch for.
+	 * @param callback Functional procedure to run on retrieved Hotseat.
+	 */
+	bool findSeatByGuest(uint32_t userID, HotseatAction callback);
+	
+	/**
+	 * Check if waiting line contains any guests.
+	 * @return True if queue is empty. False otherwise.
+	 */
+	const bool isQueueEmpty() const;
+	
+	/**
 	 * Is Hotseats module running?
 	 * @return True if HotseatManager is active. False otherwise.
 	 */
@@ -198,12 +235,20 @@ private:
 	void updateGuests(GuestToBoolAction isGuestOnlineCallback, GuestToBoolAction isMultitapGuestCallback);
 
 	/**
-	 * Find a guest's vector::iterator from it's userID and run a callback if found.
-	 * @param userID The guest ID to serach for.
+	 * Find a guest in waiting line by it's userID and run a callback if found.
+	 * @param userID The guest ID to search for.
 	 * @param callback Functional procedure to run on found guest.
 	 * @return True if guest was found (callback invoked). False otherwise (callback ignored).
 	 */
 	bool findGuestIterator(const uint32_t userID, HotseatGuestAction callback = nullptr);
+
+	/**
+	 * Find a guest index from it's userID and run a callback if found.
+	 * @param userID The guest ID to search for.
+	 * @param callback Functional procedure to run on found guest.
+	 * @return True if guest was found (callback invoked). False otherwise (callback ignored).
+	 */
+	bool findGuestIndex(const uint32_t userID, IndexAction callback = nullptr);
 
 	/**
 	 * Search in waiting queue for the next online guest and removes it from queue.

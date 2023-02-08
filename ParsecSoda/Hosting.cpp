@@ -113,7 +113,7 @@ void Hosting::init()
 
 	_chatBot = new ChatBot(
 		audioIn, audioOut, _banList, _dx11,
-		_gamepadClient, _guestList, _guestHistory, _parsec,
+		_gamepadClient, _hotseatManager, _guestList, _guestHistory, _parsec,
 		_hostConfig, _parsecSession, _sfxList, _tierList,
 		_isRunning, _host
 	);
@@ -734,7 +734,7 @@ void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
 		else
 		{
 			int droppedPads = 0;
-			CommandFF command(guest, _gamepadClient);
+			CommandFF command(guest, _gamepadClient, _hotseatManager);
 			command.run();
 			if (droppedPads > 0)
 			{

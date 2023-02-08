@@ -10,6 +10,8 @@ ImVec4 AppColors::warning2;
 
 ImVec4 AppColors::white;
 ImVec4 AppColors::black;
+ImVec4 AppColors::gray25;
+ImVec4 AppColors::gray40;
 ImVec4 AppColors::invisible;
 
 ImVec4 AppColors::primary;
@@ -31,6 +33,8 @@ void AppColors::init()
 
 	white = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	black = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
+	gray25 = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+	gray40 = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
 	invisible = ImVec4(1.00f, 1.00f, 1.00f, 0.00f);
 
 	primary = ImVec4(0.00f, 0.47f, 0.80f, 1.00f);

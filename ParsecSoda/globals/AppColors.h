@@ -40,6 +40,8 @@ public:
 
 	static ImVec4 white;
 	static ImVec4 black;
+	static ImVec4 gray25;
+	static ImVec4 gray40;
 	static ImVec4 invisible;
 
 	static ImVec4 primary;
