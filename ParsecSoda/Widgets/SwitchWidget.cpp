@@ -32,6 +32,7 @@ bool SwitchWidget::render(
 	ImGui::BeginGroup();
 
 	isPressed = ToggleIconButtonWidget::render(AppIcons::switchOn, AppIcons::switchOff, isEnabled, id.c_str(), colorOn, colorOff, size);
+	TitleTooltipWidget::render(title.c_str(), description.c_str());
 	if (isPressed)
 	{
 		isEnabled = !isEnabled;
@@ -42,6 +43,7 @@ bool SwitchWidget::render(
 		ImGui::SameLine();
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (ImGui::GetFrameHeight() - ImGui::GetTextLineHeight() + 1));
 		ImGui::Text(text.c_str());
+		TitleTooltipWidget::render(title.c_str(), description.c_str());
 	}
 	ImGui::EndGroup();
 

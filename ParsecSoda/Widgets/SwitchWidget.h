@@ -4,6 +4,7 @@
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
 #include "ToggleIconButtonWidget.h"
+#include "TitleTooltipWidget.h"
 #include <string>
 
 using namespace std;
