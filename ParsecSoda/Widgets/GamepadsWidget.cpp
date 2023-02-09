@@ -27,85 +27,9 @@ bool GamepadsWidget::render()
 
     static float indentDistance;
 
-    if (IconButton::render(AppIcons::refresh, AppColors::primary, ImVec2(30, 30)))
-    {
-        _hosting.getGamepadClient().resetAll();
-    }
-    TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
-    
-    ImGui::SameLine();
-
-    if (IconButton::render(AppIcons::padOff, AppColors::primary, ImVec2(30, 30)))
-    {
-        _hosting.getGamepadClient().disconnectAllGamepads();
-    }
-    TitleTooltipWidget::render("Disconnect all gamepads", "Disconnects all of the gamepads currently enabled.");
-
-    ImGui::SameLine();
-    
-    if (IconButton::render(AppIcons::sort, AppColors::primary, ImVec2(30, 30)))
-    {
-        _hosting.getGamepadClient().sortGamepads();
-    }
-    TitleTooltipWidget::render("Sort gamepads", "Re-sort all gamepads by index.");
-
-    ImGui::SameLine();
-
-    if (ToggleIconButtonWidget::render(
-        AppIcons::lock, AppIcons::unlock, _hosting.isGamepadLock(),
-        AppColors::negative, AppColors::positive, ImVec2(30, 30)
-    ))
-    {
-        _hosting.toggleGamepadLock();
-    }
-    if (_hosting.isGamepadLock())   TitleTooltipWidget::render("Unlock guest inputs", "Guests will be able to control gamepads again.");
-    else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
-
-    ImGui::SameLine();
-
-    cursor = ImGui::GetCursorPos();
-    ImGui::SetCursorPosX(size.x - 25);
-    if (IconButton::render(
-        AppIcons::move,
-        isWindowLocked ? AppColors::negative : AppColors::positive,
-        ImVec2(30, 30)
-    ))
-    {
-        isWindowLocked = !isWindowLocked;
-    }
-    if (isWindowLocked) TitleTooltipWidget::render("Window Locked", "This window cannot move or resize.");
-    else TitleTooltipWidget::render("Window Unlocked", "This window can move and resize.");
-
-    ImGui::Dummy(ImVec2(0, 5));
-    ImGui::Separator();
-    ImGui::Dummy(ImVec2(0, 10));
-
-    static uint32_t
-        xboxCount = MetadataCache::preferences.xboxPuppetCount,
-        lastXboxCount = MetadataCache::preferences.xboxPuppetCount,
-        ds4Count = MetadataCache::preferences.ds4PuppetCount,
-        lastDs4Count = MetadataCache::preferences.ds4PuppetCount;
-
-    ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
-    ImGui::SameLine();
-    if (IntRangeWidget::render<uint32_t>("xboxCounter", xboxCount, 0, 100))
-    {
-        TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
-    }
-    
-    ImGui::SameLine();
-    ImGui::Dummy(ImVec2(20, 0));
-    ImGui::SameLine();
-    
-    ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
-    ImGui::SameLine();
-    if (IntRangeWidget::render<uint32_t>("ds4Counter", ds4Count, 0, 100))
-    {
-        TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
-    }
+    renderTopBar(isWindowLocked, size);
 
     ImGui::Dummy(ImVec2(0, 20));
-
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
@@ -269,24 +193,41 @@ bool GamepadsWidget::render()
         }
         else
         {
+            static bool isMultitap;
             static ImVec4 iconColor;
             tooltipTitle = "Multitap (disabled)";
             tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
             iconColor = AppColors::negative;
 
-            _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
-                if (prefs.isMultitap())
-                {
-                    tooltipTitle = "Multitap (enabled)";
-                    tooltipDescription = "DeviceID is active.\nA guest may have multiple gamepads\nin the same account.";
-                    iconColor = AppColors::positive;
-                }
-            });
+            isMultitap = MetadataCache::preferences.defaultMultitapValue;
+            if (gi->owner.guest.isValid())
+            {
+                _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
+                    isMultitap = prefs.isMultitap();
+                });
+            }
+
+            if (isMultitap)
+            {
+                tooltipTitle = "Multitap (enabled)";
+                tooltipDescription = "DeviceID is active.\nA guest may have multiple gamepads\nin the same account.";
+                iconColor = AppColors::positive;
+            }
+            else
+            {
+                tooltipTitle = "Multitap (disabled)";
+                tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
+                iconColor = AppColors::negative;
+            }
 
             id = "###Guest multitap " + to_string(i);
             if (BadgeButtonWidget::render(AppIcons::multitap, tooltipTitle, tooltipDescription, id, ImVec2(25,25), iconColor))
             {
-                _hosting.getGamepadClient().toggleMultitap(gi->owner.guest.userID);
+                if (gi->owner.guest.isValid())
+                {
+                    _hosting.getGamepadClient().toggleMultitap(gi->owner.guest.userID);
+                    MetadataCache::savePreferences();
+                }
             }
             ImGui::SameLine();
 
@@ -325,7 +266,6 @@ bool GamepadsWidget::render()
 
     ImGui::PopStyleVar();
 
-    static Stopwatch resizeGamepadsDebouncer = Stopwatch(500);
 
     if (isConnectionButtonPressed)
     {
@@ -336,23 +276,113 @@ bool GamepadsWidget::render()
         }
     }
 
-    if (lastXboxCount != xboxCount || lastDs4Count != ds4Count)
+    return true;
+}
+
+void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize)
+{
+    static ImVec2 buttonSize = ImVec2(30, 30);
+
+    if (IconButton::render(AppIcons::refresh, AppColors::primary, buttonSize))
     {
-        lastXboxCount = xboxCount;
-        lastDs4Count = ds4Count;
-        MetadataCache::preferences.xboxPuppetCount = xboxCount;
-        MetadataCache::preferences.ds4PuppetCount = ds4Count;
-        _hosting.getGamepadClient().resize(xboxCount, ds4Count);
-        resizeGamepadsDebouncer.start();
-        resizeGamepadsDebouncer.reset(500);
+        _hosting.getGamepadClient().resetAll();
     }
-    if (resizeGamepadsDebouncer.isRunComplete())
+    TitleTooltipWidget::render("Reset gamepad engine", "If all else fails, try this button.\nPress in dire situations.");
+
+    ImGui::SameLine();
+
+    if (IconButton::render(AppIcons::padOff, AppColors::primary, buttonSize))
     {
-        resizeGamepadsDebouncer.stop();
+        _hosting.getGamepadClient().disconnectAllGamepads();
+    }
+    TitleTooltipWidget::render("Disconnect all gamepads", "Disconnects all of the gamepads currently enabled.");
+
+    ImGui::SameLine();
+
+    if (IconButton::render(AppIcons::sort, AppColors::primary, buttonSize))
+    {
+        _hosting.getGamepadClient().sortGamepads();
+    }
+    TitleTooltipWidget::render("Sort gamepads", "Re-sort all gamepads by index.");
+
+    ImGui::SameLine();
+
+    if (ToggleIconButtonWidget::render(
+        AppIcons::lock, AppIcons::unlock, _hosting.isGamepadLock(),
+        AppColors::negative, AppColors::positive, buttonSize
+    ))
+    {
+        _hosting.toggleGamepadLock();
+    }
+    if (_hosting.isGamepadLock())   TitleTooltipWidget::render("Unlock guest inputs", "Guests will be able to control gamepads again.");
+    else                            TitleTooltipWidget::render("Lock guest inputs", "Guest inputs will be locked out of gamepads.");
+
+    ImGui::SameLine();
+
+    ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonRight);
+
+    static string title, description;
+    if (MetadataCache::preferences.defaultMultitapValue)
+    {
+        title = "Multitap [ON]";
+        description = "Default behaviour: enabled.\n\nDeviceID active.\nA guest may have multiple gamepads\nin the same account.";
+    }
+    else
+    {
+        title = "Multitap [OFF]";
+        description = "Default behaviour: disabled.\n\nDeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
+    }
+    if (ToggleIconButtonWidget::render(
+        AppIcons::multitap, AppIcons::multitap, MetadataCache::preferences.defaultMultitapValue,
+        AppColors::positive, AppColors::negative, buttonSize
+    ))
+    {
+        MetadataCache::preferences.defaultMultitapValue = !MetadataCache::preferences.defaultMultitapValue;
         MetadataCache::savePreferences();
     }
+    TitleTooltipWidget::render(title.c_str(), description.c_str());
 
-    return true;
+
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(windowSize.x - 25);
+    if (IconButton::render(
+        AppIcons::move,
+        isWindowLocked ? AppColors::negative : AppColors::positive,
+        buttonSize
+    ))
+    {
+        isWindowLocked = !isWindowLocked;
+    }
+    if (isWindowLocked) TitleTooltipWidget::render("Window Locked", "This window cannot move or resize.");
+    else TitleTooltipWidget::render("Window Unlocked", "This window can move and resize.");
+
+    ImGui::Dummy(ImVec2(0, 5));
+    ImGui::Separator();
+    ImGui::Dummy(ImVec2(0, 10));
+
+    static const function<void(void)> releaseDragCallback = [&]() {
+        _hosting.getGamepadClient().resize(MetadataCache::preferences.xboxPuppetCount, MetadataCache::preferences.ds4PuppetCount);
+        MetadataCache::savePreferences();
+    };
+
+    ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    ImGui::SameLine();
+    if (IntRangeWidget::render<uint32_t>("xboxCounter", MetadataCache::preferences.xboxPuppetCount, 0, 100, 0.05f, 75.0f, releaseDragCallback))
+    {
+        TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
+    }
+
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(20, 0));
+    ImGui::SameLine();
+
+    ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    ImGui::SameLine();
+    if (IntRangeWidget::render<uint32_t>("ds4Counter", MetadataCache::preferences.ds4PuppetCount, 0, 100, 0.05f, 75.0f, releaseDragCallback))
+    {
+        TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
+    }
 }
 
 void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad)

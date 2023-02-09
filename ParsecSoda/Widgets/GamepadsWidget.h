@@ -21,6 +21,7 @@ public:
 	bool render();
 
 private:
+	void renderTopBar(bool& isWindowLocked, const ImVec2& windowSize);
 	void renderPadInputTypeIcon(AGamepad* pad);
 
 	// Dependency injection

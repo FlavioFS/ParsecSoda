@@ -46,7 +46,7 @@ public:
 		{}
 
 		uint32_t userID = 0;
-		int padLimit = 1;
+		int padLimit = 4;
 		bool mirror = false;
 		
 		const bool& isMultitap() const {

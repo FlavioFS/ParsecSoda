@@ -403,7 +403,7 @@ const GamepadClient::PICK_REQUEST GamepadClient::pick(Guest guest, int gamepadIn
 	}
 
 	GuestPreferences prefs = GuestPreferences(guest.userID);
-	int limit = 1;
+	int limit = 4;
 	bool found = findPreferences(guest.userID, [&limit](GuestPreferences& prefs) {
 		limit = prefs.padLimit;
 	});
