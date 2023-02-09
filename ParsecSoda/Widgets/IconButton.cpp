@@ -1,6 +1,24 @@
 #include "IconButton.h"
 
-bool IconButton::render(Icon icon, ImVec4 tint, ImVec2 size)
+bool IconButton::render(Icon icon, ImVec4 tint, ImVec2 size, const char* id)
+{
+    static bool isPressed = false;
+
+    if (id)
+    {
+        ImGui::PushID(id);
+        isPressed = renderButton(icon, tint, size);
+        ImGui::PopID();
+    }
+    else
+    {
+        isPressed= renderButton(icon, tint, size);;
+    }
+
+    return isPressed;
+}
+
+bool IconButton::renderButton(Icon icon, ImVec4 tint, ImVec2 size)
 {
     static bool isPressed = false;
 

@@ -12,6 +12,8 @@
 #include "TitleTooltipWidget.h"
 #include "IntRangeWidget.h"
 #include "GradientProgressBar.h"
+#include "BadgeIconWidget.h"
+#include "BadgeButtonWidget.h"
 
 using namespace std;
 
@@ -25,14 +27,6 @@ private:
 	static void renderTimePickers(HotseatManager& hotseatManager);
 	static void renderHotseats(HotseatManager& hotseatManager);
 	static void renderWaitingGuests(HotseatManager& hotseatManager);
-	static void renderBadgeIcon(
-		Icon icon, const char* tooltipTitle, const char* tooltipDescription,
-		ImVec4 tint = AppColors::primary, ImVec2 size = ImVec2(25, 25)
-	);
-	static bool renderBadgeButton(
-		Icon icon, const char* tooltipTitle, const char* tooltipDescription,
-		const char* id = nullptr, ImVec2 size = ImVec2(25, 25), ImVec4 tint = AppColors::primary
-	);
 	static void renderDummy(float x = 2, float y = 2);
 	static void renderSeparator();
 };

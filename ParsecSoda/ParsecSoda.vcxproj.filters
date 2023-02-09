@@ -297,6 +297,12 @@
     <ClCompile Include="Widgets\TextCenteredWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Widgets\BadgeButtonWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets\BadgeIconWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioIn.h">
@@ -714,6 +720,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Commands\CommandTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\BadgeButtonWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets\BadgeIconWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

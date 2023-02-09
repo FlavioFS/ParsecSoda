@@ -151,7 +151,7 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 	ImGui::BeginGroup();	
 	badgeTooltip = "Press to refresh cooldown timer for all seats.";
 	id = "###Hotseats refresh all cooldowns";
-	if (renderBadgeButton(AppIcons::timerRefresh, "Restart all cooldowns", badgeTooltip.c_str(), id.c_str()))
+	if (BadgeButtonWidget::render(AppIcons::timerRefresh, "Restart all cooldowns", badgeTooltip, id))
 	{
 		hotseatManager.refreshAll();
 	}
@@ -163,7 +163,7 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 		+ "Seating guest will be sent back to the end of waiting line.\n"
 		+ "Next guest will take over the seat.";
 	id = "###Hotseats skip shortest cooldown";
-	if (renderBadgeButton(AppIcons::skip, "Skip (first)", badgeTooltip.c_str(), id.c_str()))
+	if (BadgeButtonWidget::render(AppIcons::skip, "Skip (first)", badgeTooltip, id))
 	{
 		hotseatManager.next();
 	}
@@ -201,19 +201,19 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 
 		badgeTooltip = "Press to refresh cooldown timer for this seat.";
 		id = "###Hotseats cooldown refresh " + to_string(index);
-		if (renderBadgeButton(AppIcons::timerRefresh, "Restart cooldown", badgeTooltip.c_str(), id.c_str()))
+		if (BadgeButtonWidget::render(AppIcons::timerRefresh, "Restart cooldown", badgeTooltip, id))
 		{
 			hotseatManager.refresh(index);
 		}
-		
+
 		ImGui::SameLine();
-		
+
 		badgeTooltip = string("")
 			+ "Press to skip timer.\n"
 			+ "Seating guest will be sent back to the end of waiting line.\n"
 			+ "Next guest will take over the seat.";
 		id = "###Hotseats skip seat " + to_string(index);
-		if (renderBadgeButton(AppIcons::skip, "Skip", badgeTooltip.c_str(), id.c_str()))
+		if (BadgeButtonWidget::render(AppIcons::skip, "Skip", badgeTooltip, id))
 		{
 			hotseatManager.next(index);
 		}
@@ -222,7 +222,7 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 
 		badgeTooltip = "Press to remove this guest from seat AND waiting line.";
 		id = "###Hotseats spectate seat " + to_string(index);
-		if (renderBadgeButton(AppIcons::remove, "Force spectate", badgeTooltip.c_str(), id.c_str()))
+		if (BadgeButtonWidget::render(AppIcons::remove, "Force spectate", badgeTooltip, id))
 		{
 			hotseatManager.spectateSeat(index);
 		}
@@ -233,14 +233,14 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 			badgeTooltip = string("")
 				+ "Multiple gamepad support is enabled for this guest (deviceID is active).\n"
 				+ "They may plug multiple inputs in their machine and pick more than one puppet.";
-			renderBadgeIcon(AppIcons::multitap, "Multitap", badgeTooltip.c_str());
+			BadgeIconWidget::render(AppIcons::multitap, "Multitap", badgeTooltip);
 		}
 
 		if (iSeat->guest.isMaster)
 		{
 			ImGui::SameLine();
 			badgeTooltip = "Host playing through master of puppets.";
-			renderBadgeIcon(AppIcons::puppet, "Master of Puppets", badgeTooltip.c_str());
+			BadgeIconWidget::render(AppIcons::puppet, "Master of Puppets", badgeTooltip);
 		}
 
 		renderDummy(1, 4);
@@ -368,7 +368,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 
 		badgeTooltip = "Instantly send " + iGuest->guest.name + " to a seat?";
 		id = "###Hotseats cut line " + to_string(index);
-		if (renderBadgeButton(AppIcons::sendTop, "Cut Line", badgeTooltip.c_str(), id.c_str()))
+		if (BadgeButtonWidget::render(AppIcons::sendTop, "Cut Line", badgeTooltip, id))
 		{
 			hotseatManager.cutLine(index);
 		}
@@ -377,7 +377,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 
 		badgeTooltip = "Press to remove this guest from waiting line.";
 		id = "###Hotseats spectate queue " + to_string(index);
-		if (renderBadgeButton(AppIcons::remove, "Force spectate", badgeTooltip.c_str(), id.c_str()))
+		if (BadgeButtonWidget::render(AppIcons::remove, "Force spectate", badgeTooltip, id))
 		{
 			hotseatManager.spectateGuest(index);
 		}
@@ -389,16 +389,16 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 				+ "Guest has left the room while in line.\n"
 				+ "Offline guests remain in line until their turn (in case they return).\n" 
 				+ "If still offline when receiving the seat, they are removed from waiting line.";
-			renderBadgeIcon(AppIcons::wifiOff, "Offline", badgeTooltip.c_str(), AppColors::negative);
+			BadgeIconWidget::render(AppIcons::wifiOff, "Offline", badgeTooltip, AppColors::negative);
 		}
 
 		if (iGuest->isMultitap)
 		{
 			ImGui::SameLine();
 			badgeTooltip = string("")
-				+ "Multiple gamepad support is enabled for this guest (deviceID is active).\n" 
+				+ "Multiple gamepad support is enabled for this guest (deviceID is active).\n"
 				+ "They may plug multiple inputs in their machine and pick more than one puppet.";
-			renderBadgeIcon(AppIcons::multitap, "Multitap", badgeTooltip.c_str());
+			BadgeIconWidget::render(AppIcons::multitap, "Multitap", badgeTooltip);
 		}
 
 		if (iGuest->isMaster)
@@ -406,7 +406,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 			containsMaster = true;
 			ImGui::SameLine();
 			badgeTooltip = "Host playing through master of puppets.";
-			renderBadgeIcon(AppIcons::puppet, "Master of Puppets", badgeTooltip.c_str());
+			BadgeIconWidget::render(AppIcons::puppet, "Master of Puppets", badgeTooltip);
 		}
 		ImGui::EndGroup();
 
@@ -475,46 +475,6 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	ImGui::SetCursorPos(cursor);
 
 	ImGui::Unindent();
-}
-
-void HotseatWidget::renderBadgeIcon(
-	Icon icon, const char* tooltipTitle, const char* tooltipDescription,
-	ImVec4 tint, ImVec2 size
-)
-{
-	ImGui::Image(icon, size, ImVec2(0, 0), ImVec2(1, 1), tint);
-	TitleTooltipWidget::render(tooltipTitle, tooltipDescription);
-}
-
-bool HotseatWidget::renderBadgeButton(
-	Icon icon,
-	const char* tooltipTitle, const char* tooltipDescription, const char* id,
-	ImVec2 size, ImVec4 tint
-)
-{
-	static bool result;
-	result = false;
-
-	function<void(void)> renderButtonAndTooltip = [&]() {
-		if (IconButton::render(icon, tint, size))
-		{
-			result = true;
-		}
-		TitleTooltipWidget::render(tooltipTitle, tooltipDescription);
-	};
-
-	if (id)
-	{
-		ImGui::PushID(id);
-		renderButtonAndTooltip();
-		ImGui::PopID();
-	}
-	else
-	{
-		renderButtonAndTooltip();
-	}
-
-	return result;
 }
 
 void HotseatWidget::renderDummy(float x, float y)

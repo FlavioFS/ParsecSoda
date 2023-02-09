@@ -11,7 +11,8 @@
 #include "LoadingRingWidget.h"
 #include "IntRangeWidget.h"
 #include "LoadingRingWidget.h"
-
+#include "BadgeIconWidget.h"
+#include "BadgeButtonWidget.h"
 
 class GamepadsWidget
 {
@@ -20,6 +21,8 @@ public:
 	bool render();
 
 private:
+	void renderPadInputTypeIcon(AGamepad* pad);
+
 	// Dependency injection
 	Hosting& _hosting;
 	

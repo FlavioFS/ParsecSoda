@@ -18,7 +18,7 @@ bool AudioControlWidget::render(
 	);
 	
 	// Mute button
-	if (ToggleIconButtonWidget::render(iconOn, iconOff, isEnabled, AppColors::positive, AppColors::negative))
+	if (ToggleIconButtonWidget::render(iconOn, iconOff, isEnabled))
 	{
 		wasClicked = true;
 	}
