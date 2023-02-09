@@ -6,7 +6,6 @@
 #include "MetadataCache.h"
 #include <vector>
 #include <mutex>
-#include <algorithm>
 #include <functional>
 
 using namespace std;
@@ -157,12 +156,12 @@ public:
 	);
 
 	/** 
-	 * Try to swap the positions of two waiting guests.
-	 * @param i Index of first guest.
-	 * @param j Index of second guest.
+	 * Try to reorder guests. Remove SOURCE guest and insert before TARGET guest.
+	 * @param sourceIndex Index of guest to be moved.
+	 * @param j targetIndex of position to insert in front.
 	 * @return True if swap was successfull. False otherwise (e.g.: invalid index range).
 	 */
-	bool swapGuests(const size_t i, const size_t j);
+	void moveGuestTo(const size_t sourceIndex, const size_t targetIndex);
 
 	/**
 	 * Make waiting guest cut line and go instantly to a seat.

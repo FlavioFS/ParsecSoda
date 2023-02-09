@@ -152,14 +152,19 @@ void HotseatManager::updateAndRotate(
 	rotate();
 }
 
-bool HotseatManager::swapGuests(const size_t i, const size_t j)
+void HotseatManager::moveGuestTo(const size_t sourceIndex, const size_t targetIndex)
 {
-	if (isGuestIndexInRange(i) && isGuestIndexInRange(j))
+	if (targetIndex == sourceIndex || targetIndex == sourceIndex + 1) return;
+
+	if (isGuestIndexInRange(sourceIndex) && targetIndex <= m_waitingGuests.size())
 	{
-		iter_swap(m_waitingGuests.begin() + i, m_waitingGuests.begin() + j);
-		return true;
+		HotseatGuest sourceGuest = m_waitingGuests[sourceIndex];
+		m_waitingGuests.erase(m_waitingGuests.begin() + sourceIndex);
+		
+		const size_t finaltargetIndex = (sourceIndex < targetIndex) ? targetIndex - 1: targetIndex;
+
+		m_waitingGuests.insert(m_waitingGuests.begin() + finaltargetIndex, sourceGuest);
 	}
-	return false;
 }
 
 void HotseatManager::cutLine(const size_t guestIndex)

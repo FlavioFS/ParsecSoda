@@ -144,6 +144,8 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 	ImGui::SetCursorPosY(cursor.y + 1);
 	ImGui::Text("Seats");
 	ImGui::SameLine();
+	renderDummy(2, 1);
+	ImGui::SameLine();
 	ImGui::SetCursorPosY(cursor.y);
 	
 	ImGui::BeginGroup();	
@@ -161,7 +163,7 @@ void HotseatWidget::renderHotseats(HotseatManager& hotseatManager)
 		+ "Seating guest will be sent back to the end of waiting line.\n"
 		+ "Next guest will take over the seat.";
 	id = "###Hotseats skip shortest cooldown";
-	if (renderBadgeButton(AppIcons::skip, "Skip", badgeTooltip.c_str(), id.c_str()))
+	if (renderBadgeButton(AppIcons::skip, "Skip (first)", badgeTooltip.c_str(), id.c_str()))
 	{
 		hotseatManager.next();
 	}
@@ -260,9 +262,6 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	const vector<HotseatGuest> guests = hotseatManager.getWaitingGuests();
 	vector<HotseatGuest>::const_iterator iGuest = guests.begin();
 
-	const vector<Hotseat> seats = hotseatManager.getSeats();
-	vector<Hotseat>::const_iterator iSeat = seats.begin();
-
 	static size_t index;
 	static ImVec2 badgeSize(25, 25);
 	static ImVec2 windowSize;
@@ -278,12 +277,13 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	AppColors::pushLabel();
 	ImGui::Text("Waiting Line");
 	ImGui::SameLine();
+	renderDummy(2, 1);
+	ImGui::SameLine();
 	masterButtonPosition = ImGui::GetCursorPos();
-	renderDummy(0, 0);
+	renderDummy();
 	AppColors::pop();
 	AppFonts::pop();
 
-	renderDummy(2, 8);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(3, 1));
 
@@ -291,6 +291,25 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	index = 0;
 	for (; iGuest != guests.end(); ++iGuest)
 	{
+		// ========================
+		// Drag-and-drop Target
+		// ========================
+		renderDummy(windowSize.x - 40.0f, 10.0f);
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HotseatGuest"))
+			{
+				if (payload->DataSize == sizeof(size_t))
+				{
+					size_t sourceIndex = *(const size_t*)payload->Data;
+					hotseatManager.moveGuestTo(sourceIndex, index);
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
+		cursor = ImGui::GetCursorPos();
 		AppFonts::pushSugoiDekai();
 		AppColors::pushLabel();
 		ImGui::AlignTextToFramePadding();
@@ -306,6 +325,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 
 		ImGui::BeginGroup();
 		renderDummy(1, 2);
+
 		AppStyle::pushLabel();
 		ImGui::Text((string("#") + to_string(iGuest->guest.userID)).c_str());
 		AppStyle::pop();
@@ -313,6 +333,38 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		AppStyle::pushInput();
 		ImGui::Text(iGuest->guest.name.c_str());
 		AppStyle::pop();
+
+
+		// ========================
+		// Drag-and-drop Source
+		// ========================
+		static ImVec2 backupCursor;
+		backupCursor = ImGui::GetCursorPos();
+
+		ImGui::SetCursorPos(ImVec2(cursor.x - 10, cursor.y));
+		ImGui::Button(
+			(string("##Hotseat drag-and-drop source ") + to_string(index)).c_str(),
+			ImVec2(windowSize.x - 40.0f, 40.0f)
+		);
+		if (ImGui::BeginDragDropSource())
+		{
+			ImGui::SetDragDropPayload("HotseatGuest", &index, sizeof(size_t));
+
+			AppFonts::pushInput();
+			AppColors::pushPrimary();
+			ImGui::Text("%s", iGuest->guest.name.c_str());
+			AppColors::pop();
+			AppFonts::pop();
+
+			AppStyle::pushLabel();
+			ImGui::Text("Drop between Waiting Guests\nto reorder the Waiting List.");
+			AppStyle::pop();
+
+			ImGui::EndDragDropSource();
+		}
+
+
+		ImGui::SetCursorPos(backupCursor);
 
 		badgeTooltip = "Instantly send " + iGuest->guest.name + " to a seat?";
 		id = "###Hotseats cut line " + to_string(index);
@@ -358,12 +410,33 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		}
 		ImGui::EndGroup();
 
-		renderDummy(2, 5);
-
 		++index;
 	}
 	ImGui::PopStyleVar();
 
+
+	// ========================
+	// Drag-and-drop Target (end)
+	// ========================
+	static size_t queueSize;
+	queueSize = hotseatManager.getWaitingGuests().size();
+	renderDummy(windowSize.x - 40.0f, 10.0f);
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HotseatGuest"))
+		{
+			if (payload->DataSize == sizeof(size_t))
+			{
+				size_t sourceIndex = *(const size_t*)payload->Data;
+				hotseatManager.moveGuestTo(sourceIndex, queueSize);
+			}
+		}
+
+		ImGui::EndDragDropTarget();
+	}
+
+	const vector<Hotseat> seats = hotseatManager.getSeats();
+	vector<Hotseat>::const_iterator iSeat = seats.begin();
 	for (; iSeat != seats.end(); ++iSeat)
 	{
 		if (iSeat->guest.isMaster)
@@ -373,7 +446,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		}
 	}
 
-	renderDummy(2, 5);
+	renderDummy(2, 10);
 
 	ImGui::BeginGroup();
 	AppColors::pushColor(AppColors::gray40);
