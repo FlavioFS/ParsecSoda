@@ -14,6 +14,7 @@
 #include "GradientProgressBar.h"
 #include "BadgeIconWidget.h"
 #include "BadgeButtonWidget.h"
+#include "SwitchWidget.h"
 
 using namespace std;
 

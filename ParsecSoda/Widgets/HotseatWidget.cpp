@@ -48,14 +48,14 @@ void HotseatWidget::renderTopBar(HotseatManager& hotseatManager, bool& isWindowL
 	// Buttons
 	// ======================
 	static bool isActive = hotseatManager.isEnabled();
-	if (ToggleIconButtonWidget::render(AppIcons::switchOn, AppIcons::switchOff, isActive, AppColors::positive, AppColors::negative, ImVec2(30, 30)))
+	if (SwitchWidget::render(
+		isActive, "###Hotseats switch", "",
+		"Hotseats Enabled", "Module is active.\nGamepads automatically assigned to guests.",
+		"Hotseats Disabled", "Module is inactive.\nYou must assign gamepads manually."
+	))
 	{
-		isActive = !isActive;
 		hotseatManager.setEnabled(isActive);
 	}
-	if (isActive)	TitleTooltipWidget::render("Hotseats Enabled", "Module is active.\nGamepads automatically assigned to guests.");
-	else			TitleTooltipWidget::render("Hotseats Disabled", "Module is inactive.\nYou must assign gamepads manually.");
-
 
 	// ======================
 	// Cursor

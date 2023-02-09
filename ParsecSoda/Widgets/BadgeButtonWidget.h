@@ -12,12 +12,12 @@ class BadgeButtonWidget
 {
 public:
 	static bool render(
-		Icon icon, const char* tooltipTitle, const char* tooltipDescription,
+		Icon icon, const char* tooltipTitle = nullptr, const char* tooltipDescription = nullptr,
 		const char* id = nullptr, ImVec2 size = ImVec2(25, 25), ImVec4 tint = AppColors::primary
 	);
 
 	static bool render(
-		Icon icon, string tooltipTitle, string tooltipDescription,
+		Icon icon, string tooltipTitle = nullptr, string tooltipDescription = nullptr,
 		string id = nullptr, ImVec2 size = ImVec2(25, 25), ImVec4 tint = AppColors::primary
 	);
 

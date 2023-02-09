@@ -696,6 +696,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, XINPUT_ST
 {
 	XINPUT_STATE result = previousState;
 
+
 	//if (_isAlive && _isConnected && _client != nullptr)
 	result.Gamepad.wButtons = state.buttons;
 	result.Gamepad.bLeftTrigger = state.leftTrigger;
@@ -704,6 +705,9 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, XINPUT_ST
 	result.Gamepad.sThumbLY = state.thumbLY;
 	result.Gamepad.sThumbRX = state.thumbRX;
 	result.Gamepad.sThumbRY = state.thumbRY;
+
+	// Block guide button
+	Bitwise::setValue(&result.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, 0);
 
 	if (prefs.mirror)
 	{
@@ -739,8 +743,8 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, XINPUT_
 	case GAMEPAD_BUTTON_BACK:
 		buttonCode = XUSB_GAMEPAD_BACK;
 		break;
-	case GAMEPAD_BUTTON_GUIDE:
-		buttonCode = XUSB_GAMEPAD_GUIDE;
+	//case GAMEPAD_BUTTON_GUIDE:
+	//	buttonCode = XUSB_GAMEPAD_GUIDE;
 		break;
 	case GAMEPAD_BUTTON_START:
 		buttonCode = XUSB_GAMEPAD_START;

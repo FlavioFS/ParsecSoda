@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Widgets\SwitchWidget.cpp" />
     <ClCompile Include="Widgets\BadgeButtonWidget.cpp" />
     <ClCompile Include="Widgets\BadgeIconWidget.cpp" />
     <ClCompile Include="CircularMetrics.cpp" />
@@ -253,6 +254,7 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Widgets\SwitchWidget.h" />
     <ClInclude Include="Widgets\BadgeButtonWidget.h" />
     <ClInclude Include="Widgets\BadgeIconWidget.h" />
     <ClInclude Include="HotseatManager.h" />

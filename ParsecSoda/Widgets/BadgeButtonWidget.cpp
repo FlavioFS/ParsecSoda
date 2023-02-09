@@ -37,7 +37,11 @@ bool BadgeButtonWidget::renderButtonAndTooltip(Icon icon, const char* tooltipTit
 	{
 		result = true;
 	}
-	TitleTooltipWidget::render(tooltipTitle, tooltipDescription);
+
+	if (tooltipTitle && tooltipDescription)
+	{
+		TitleTooltipWidget::render(tooltipTitle, tooltipDescription);
+	}
 
 	return result;
 }
