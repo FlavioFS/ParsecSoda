@@ -14,7 +14,7 @@ ACommand * ChatBot::identifyUserDataMessage(const char* msg, Guest &sender, bool
 	//if (CommandIpFilter::containsIp(msg))				return new CommandIpFilter(msg, sender, _parsec, _ban, isHost);
 	if (msgIsEqual(msg, CommandJoin::prefixes()))		return new CommandJoin();
 	if (msgIsEqual(msg, CommandMirror::prefixes()))		return new CommandMirror(sender, _gamepadClient);
-	if (msgIsEqual(msg, CommandOne::prefixes()))		return new CommandOne(sender, _gamepadClient);
+	if (msgIsEqual(msg, CommandMultitap::prefixes()))		return new CommandMultitap(sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandPads::prefixes()))		return new CommandPads(_gamepadClient);
 	if (msgStartsWith(msg, CommandSwap::prefixes()))	return new CommandSwap(msg, sender, _gamepadClient);
 	if (msgIsEqual(msg, CommandTime::prefixes()))		return new CommandTime(sender, _hotseatManager);

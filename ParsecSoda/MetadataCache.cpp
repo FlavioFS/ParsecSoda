@@ -220,6 +220,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetUInt(json, "hotseatDurationSeconds", &preferences.hotseatDurationSeconds)) {
                 preferences.maxLatencyMs = 300;
             }
+
+            if (!MTY_JSONObjGetBool(json, "defaultMultitapValue", &preferences.defaultMultitapValue)) {
+                preferences.defaultMultitapValue = false;
+            }
             
             preferences.isValid = true;
 
@@ -271,6 +275,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetBool(json, "isLatencyLimited", preferences.latencyLimiterEnabled);
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
         MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
+        MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

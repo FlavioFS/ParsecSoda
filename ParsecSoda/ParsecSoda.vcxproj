@@ -286,7 +286,7 @@
     <ClInclude Include="AudioTools.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Commands\CommandSFX.h" />
-    <ClInclude Include="Commands\CommandOne.h" />
+    <ClInclude Include="Commands\CommandMultitap.h" />
     <ClInclude Include="Commands\ACommandSearchUserHistory.h" />
     <ClInclude Include="CompilerDirectives.h" />
     <ClInclude Include="Debouncer.h" />

@@ -39,16 +39,26 @@ public:
 	{
 	public:
 		GuestPreferences()
-			: userID(0), padLimit(1), mirror(false), ignoreDeviceID(true)
+			: userID(0), padLimit(1), mirror(false), _isDefaultMultitap(true)
 		{}
-		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false, bool ignoreDeviceID = true)
-			: userID(userID), padLimit(padLimit), mirror(mirror), ignoreDeviceID(ignoreDeviceID)
+		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false, bool isDefaultMultitap = true)
+			: userID(userID), padLimit(padLimit), mirror(mirror), _isDefaultMultitap(isDefaultMultitap)
 		{}
 
 		uint32_t userID = 0;
 		int padLimit = 1;
 		bool mirror = false;
-		bool ignoreDeviceID = true;
+		
+		const bool& isMultitap() const {
+			return _isDefaultMultitap ?
+				MetadataCache::preferences.defaultMultitapValue :
+				!MetadataCache::preferences.defaultMultitapValue;
+		}
+
+		void toggleMultitap() { _isDefaultMultitap = !_isDefaultMultitap; }
+
+	private:
+		bool _isDefaultMultitap = true;
 	};
 
 	~GamepadClient();
@@ -77,7 +87,7 @@ public:
 	int onQuit(Guest &guest);
 	void setLimit(uint32_t guestUserId, uint8_t padLimit);
 	bool toggleMirror(uint32_t guestUserID);
-	bool toggleIgnoreDeviceID(uint32_t guestUserID);
+	bool toggleMultitap(uint32_t guestUserID);
 	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
 
@@ -100,7 +110,7 @@ private:
 
 	void releaseGamepads();
 	void setMirror(uint32_t guestUserID, bool mirror);
-	void setIgnoreDeviceID(uint32_t guestUserID, bool ignoreDeviceID);
+	void setMultitap(uint32_t guestUserID, bool ignoreDeviceID);
 	bool tryAssignGamepad(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
 	bool enqueueHotseatRequest(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
 	bool isRequestState(ParsecMessage message);

@@ -354,20 +354,20 @@ bool GamepadClient::toggleMirror(uint32_t guestUserID)
 	return currentValue;
 }
 
-bool GamepadClient::toggleIgnoreDeviceID(uint32_t guestUserID)
+bool GamepadClient::toggleMultitap(uint32_t guestUserID)
 {
 	bool currentValue = false;
 
 	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
-		prefs.ignoreDeviceID = !prefs.ignoreDeviceID;
-		currentValue = prefs.ignoreDeviceID;
+		prefs.toggleMultitap();
+		currentValue = prefs.isMultitap();
 	});
 
 	if (!found)
 	{
 		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, false);
 		guestPreferences.push_back(prefs);
-		currentValue = prefs.ignoreDeviceID;
+		currentValue = prefs.isMultitap();
 	}
 
 	return currentValue;
@@ -502,7 +502,7 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadState.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (!prefs.isMultitap() || gamepadState.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadState, pad->getState(), prefs));
 				return true;
@@ -518,7 +518,7 @@ bool GamepadClient::sendGamepadAxisMessage(ParsecGamepadAxisMessage& gamepadAxis
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadAxis.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (!prefs.isMultitap() || gamepadAxis.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadAxis, pad->getState(), prefs));
 				return true;
@@ -534,14 +534,14 @@ bool GamepadClient::sendGamepadButtonMessage(ParsecGamepadButtonMessage& gamepad
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || gamepadButton.id == pad->owner.deviceID))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (!prefs.isMultitap() || gamepadButton.id == pad->owner.deviceID))
 			{
 				pad->setStateSafe(toXInput(gamepadButton, pad->getState(), prefs));
 				return true;
 			}
 		}
-		return false;
-	});
+	return false;
+		});
 }
 
 bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs)
@@ -550,7 +550,7 @@ bool GamepadClient::sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& 
 		if (guest.userID == pad->owner.guest.userID)
 		{
 			slots++;
-			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (prefs.ignoreDeviceID || pad->owner.isKeyboard))
+			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (!prefs.isMultitap() || pad->owner.isKeyboard))
 			{
 				pad->setStateSafe(toXInput(keyboard, pad->getKeyboard(), pad->getState(), prefs));
 				return true;
@@ -606,19 +606,6 @@ void GamepadClient::setMirror(uint32_t guestUserID, bool mirror)
 	if (!found)
 	{
 		GuestPreferences prefs = GuestPreferences(guestUserID, 1, mirror);
-		guestPreferences.push_back(prefs);
-	}
-}
-
-void GamepadClient::setIgnoreDeviceID(uint32_t guestUserID, bool ignoreDeviceID)
-{
-	bool found = findPreferences(guestUserID, [&ignoreDeviceID](GuestPreferences& prefs) {
-		prefs.ignoreDeviceID = ignoreDeviceID;
-	});
-
-	if (!found)
-	{
-		GuestPreferences prefs = GuestPreferences(guestUserID, 1, false, ignoreDeviceID);
 		guestPreferences.push_back(prefs);
 	}
 }

@@ -584,7 +584,7 @@
     <ClInclude Include="Widgets\AudioSettingsWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Commands\CommandOne.h">
+    <ClInclude Include="Commands\CommandMultitap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GuestDataList.h">

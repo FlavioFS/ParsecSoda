@@ -646,7 +646,7 @@ void Hosting::pollHotseats()
 		bool isMultitap = false;
 
 		_gamepadClient.findPreferences(guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
-			isMultitap = (!prefs.ignoreDeviceID && prefs.padLimit > 1);
+			isMultitap = prefs.isMultitap();
 		});
 		
 		return isMultitap;

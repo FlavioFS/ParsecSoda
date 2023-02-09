@@ -4,28 +4,28 @@
 #include "ACommand.h"
 #include "../GamepadClient.h"
 
-class CommandOne : public ACommand
+class CommandMultitap : public ACommand
 {
 public:
-	const COMMAND_TYPE type() override { return COMMAND_TYPE::ONE; }
+	const COMMAND_TYPE type() override { return COMMAND_TYPE::MULTITAP; }
 
-	CommandOne(Guest &sender, GamepadClient &gamepadClient)
+	CommandMultitap(Guest &sender, GamepadClient &gamepadClient)
 		: _sender(sender), _gamepadClient(gamepadClient)
 	{}
 
 	bool run() override
 	{
-		bool isOne = _gamepadClient.toggleIgnoreDeviceID(_sender.userID);
+		bool isMultitap = _gamepadClient.toggleMultitap(_sender.userID);
 		_replyMessage = std::string()
 			+ "[ChatBot] | " + _sender.name
-			+ " toggled ignore device ID mode:\t" + (isOne ? "ON" : "OFF")
+			+ " toggled multitap:\t" + (isMultitap ? "ON" : "OFF")
 			+ "\0";
 		return true;
 	}
 
 	static vector<const char*> prefixes()
 	{
-		return vector<const char*> { "!one" };
+		return vector<const char*> { "!multitap", "!one" };
 	}
 
 protected:

@@ -269,17 +269,26 @@ bool GamepadsWidget::render()
         }
         else
         {
+            static ImVec4 iconColor;
             tooltipTitle = "Multitap (disabled)";
             tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
+            iconColor = AppColors::negative;
 
             _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
-                if (!prefs.ignoreDeviceID)
+                if (prefs.isMultitap())
                 {
-                    tooltipDescription = "DeviceID is active.\nA guest may have multiple gamepads in the same machine.";
-                    BadgeIconWidget::render(AppIcons::multitap, "Multitap (enabled)", tooltipDescription);
-                    ImGui::SameLine();
+                    tooltipTitle = "Multitap (enabled)";
+                    tooltipDescription = "DeviceID is active.\nA guest may have multiple gamepads\nin the same account.";
+                    iconColor = AppColors::positive;
                 }
             });
+
+            id = "###Guest multitap " + to_string(i);
+            if (BadgeButtonWidget::render(AppIcons::multitap, tooltipTitle, tooltipDescription, id, ImVec2(25,25), iconColor))
+            {
+                _hosting.getGamepadClient().toggleMultitap(gi->owner.guest.userID);
+            }
+            ImGui::SameLine();
 
             static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
             ImGui::BeginGroup();
