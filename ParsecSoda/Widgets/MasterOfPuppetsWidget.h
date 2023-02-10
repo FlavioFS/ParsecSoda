@@ -34,6 +34,8 @@ private:
 
 	MasterOfPuppets& _masterOfPuppets;
 	GamepadClient& _gamepadClient;
+	vector<AnimatedGamepadWidget> _masterGamepadAnimations;
+	vector<AnimatedGamepadWidget> _puppetGamepadAnimations;
 
 	// ==========================================
 	// Tooltips

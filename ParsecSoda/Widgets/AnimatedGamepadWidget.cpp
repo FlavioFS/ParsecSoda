@@ -1,7 +1,20 @@
 #include "AnimatedGamepadWidget.h"
 
+void AnimatedGamepadWidget::updatePressed(const size_t pressId)
+{
+	m_lastPress[pressId] = m_currentTime;
+}
+
+const bool AnimatedGamepadWidget::isActive(const size_t pressId)
+{
+	if (difftime(m_currentTime, m_lastPress[pressId]) <= FADING_TIME) return true;
+	return false;
+}
+
 void AnimatedGamepadWidget::render(XINPUT_GAMEPAD gamepad, float height, ImU32 activeColor)
 {
+	m_currentTime = time(NULL);
+
 	float lDistance = 0, rDistance = 0;
 	ImVec2 lStick = stickShortToFloat(gamepad.sThumbLX, gamepad.sThumbLY, lDistance);
 	ImVec2 rStick = stickShortToFloat(gamepad.sThumbRX, gamepad.sThumbRY, rDistance);
@@ -12,20 +25,20 @@ void AnimatedGamepadWidget::render(XINPUT_GAMEPAD gamepad, float height, ImU32 a
 	bool isThumbL = (gamepad.wButtons & XUSB_GAMEPAD_LEFT_THUMB) != 0;
 
 	float radius = height / 2;
-	renderAnalog(lStick, isThumbL, radius, lDistance <= deadzone, activeColor);
+	renderAnalog(lStick, isThumbL, radius, lDistance <= deadzone, activeColor, PRESS_ID::LSTICK);
 	renderHSpace();
-	renderAnalog(rStick, isThumbR, radius, rDistance <= deadzone, activeColor);
+	renderAnalog(rStick, isThumbR, radius, rDistance <= deadzone, activeColor, PRESS_ID::RSTICK);
 	renderHSpace();
 	renderDpad(gamepad.wButtons, height);
 	renderHSpace();
 	renderFaceButtons(gamepad.wButtons, height);
 	renderHSpace();
-	renderTrigger(gamepad, false, height, activeColor);
+	renderTrigger(gamepad, false, height, activeColor, PRESS_ID::LTRIGGER);
 	renderHSpace();
-	renderTrigger(gamepad, true, height, activeColor);
+	renderTrigger(gamepad, true, height, activeColor, PRESS_ID::RTRIGGER);
 }
 
-void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float radius, bool deadzoned, ImU32 activeColor)
+void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float radius, bool deadzoned, ImU32 activeColor, size_t pressId)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
 	drawList = ImGui::GetWindowDrawList();
@@ -36,7 +49,14 @@ void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + 2 * radius, p0.y + 2 * radius);
 	ImVec2 center = (p0 + p1) * 0.5f;
-	drawList->AddCircleFilled(center, radius, ANIMGAMEPAD_COL_BG);
+
+	static ImU32 color;
+	color = ANIMGAMEPAD_COL_BG;
+	if (m_fading) {
+		if (!deadzoned) updatePressed(pressId);
+		color = isActive(pressId) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+	}
+	drawList->AddCircleFilled(center, radius, color);
 
 	static ImU32 disabled = ImGui::GetColorU32(IM_COL32(25, 25, 25, 255));
 
@@ -46,7 +66,19 @@ void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float 
 	dotCenter.y = center.y - stick.y * radius * (1.0f - dotRatio);
 	drawList->AddCircleFilled(dotCenter, dotRatio * radius, deadzoned ? disabled : activeColor);
 
-	if (isThumbPress)
+	if (m_fading)
+	{
+		if (isThumbPress)
+		{
+			updatePressed(pressId + 1);
+			drawList->AddCircle(center, radius, activeColor, 0, 0.25f * dotRatio * radius);
+		}
+		else if (isActive(pressId + 1))
+		{
+			drawList->AddCircle(center, radius, ANIMGAMEPAD_ACTIVE_BG, 0, 0.25f * dotRatio * radius);
+		}
+	}
+	else if (isThumbPress)
 	{
 		drawList->AddCircle(center, radius, activeColor, 0, 0.25f * dotRatio * radius);
 	}
@@ -74,10 +106,26 @@ void AnimatedGamepadWidget::renderDpad(WORD wButtons, float height, ImU32 active
 	ImVec2 pLeft  = ImVec2(center.x - height * 0.5f * (1.0f - dotRatio), center.y);
 	ImVec2 pRight = ImVec2(center.x + height * 0.5f * (1.0f - dotRatio), center.y);
 
-	renderSquare(drawList, pUp,    dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_UP)    != 0 ? activeColor : ANIMGAMEPAD_COL_BG);
-	renderSquare(drawList, pDown,  dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_DOWN)  != 0 ? activeColor : ANIMGAMEPAD_COL_BG);
-	renderSquare(drawList, pLeft,  dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_LEFT)  != 0 ? activeColor : ANIMGAMEPAD_COL_BG);
-	renderSquare(drawList, pRight, dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_RIGHT) != 0 ? activeColor : ANIMGAMEPAD_COL_BG);
+
+	static ImU32 upColor, downColor, leftColor, rightColor;
+	upColor = downColor = leftColor = rightColor = ANIMGAMEPAD_COL_BG;
+	if (m_fading) {
+		auto updateColor = [&](ImU32& color, XUSB_BUTTON button, PRESS_ID prid)
+		{
+			if ((wButtons & button)) updatePressed(prid);
+			color = isActive(prid) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+		};
+
+		updateColor(upColor, XUSB_GAMEPAD_DPAD_UP, PRESS_ID::UP);
+		updateColor(downColor, XUSB_GAMEPAD_DPAD_DOWN, PRESS_ID::DOWN);
+		updateColor(leftColor, XUSB_GAMEPAD_DPAD_LEFT, PRESS_ID::LEFT);
+		updateColor(rightColor, XUSB_GAMEPAD_DPAD_RIGHT, PRESS_ID::RIGHT);
+	}
+
+	renderSquare(drawList, pUp,    dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_UP)    != 0 ? activeColor : upColor);
+	renderSquare(drawList, pDown,  dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_DOWN)  != 0 ? activeColor : downColor);
+	renderSquare(drawList, pLeft,  dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_LEFT)  != 0 ? activeColor : leftColor);
+	renderSquare(drawList, pRight, dotEdge, (wButtons & XUSB_GAMEPAD_DPAD_RIGHT) != 0 ? activeColor : rightColor);
 	
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(height, height));
@@ -102,16 +150,31 @@ void AnimatedGamepadWidget::renderFaceButtons(WORD wButtons, float height)
 	ImVec2 pX = ImVec2(center.x - height * 0.5f * (1.0f - dotRatio), center.y);
 	ImVec2 pY = ImVec2(center.x, center.y - height * 0.5f * (1.0f - dotRatio));
 
-	drawList->AddCircleFilled(pA, dotRadius, (wButtons & XUSB_GAMEPAD_A) != 0 ? ANIMGAMEPAD_COL_A : ANIMGAMEPAD_COL_BG);
-	drawList->AddCircleFilled(pB, dotRadius, (wButtons & XUSB_GAMEPAD_B) != 0 ? ANIMGAMEPAD_COL_B : ANIMGAMEPAD_COL_BG);
-	drawList->AddCircleFilled(pX, dotRadius, (wButtons & XUSB_GAMEPAD_X) != 0 ? ANIMGAMEPAD_COL_X : ANIMGAMEPAD_COL_BG);
-	drawList->AddCircleFilled(pY, dotRadius, (wButtons & XUSB_GAMEPAD_Y) != 0 ? ANIMGAMEPAD_COL_Y : ANIMGAMEPAD_COL_BG);
+	static ImU32 aColor, bColor, xColor, yColor;
+	aColor = bColor = xColor = yColor = ANIMGAMEPAD_COL_BG;
+	if (m_fading) {
+		auto updateColor = [&](ImU32& color, XUSB_BUTTON button, PRESS_ID prid)
+		{
+			if ((wButtons & button)) updatePressed(prid);
+			color = isActive(prid) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+		};
+
+		updateColor(aColor, XUSB_GAMEPAD_A, PRESS_ID::A);
+		updateColor(bColor, XUSB_GAMEPAD_B, PRESS_ID::B);
+		updateColor(xColor, XUSB_GAMEPAD_X, PRESS_ID::X);
+		updateColor(yColor, XUSB_GAMEPAD_Y, PRESS_ID::Y);
+	}
+
+	drawList->AddCircleFilled(pA, dotRadius, (wButtons & XUSB_GAMEPAD_A) != 0 ? ANIMGAMEPAD_COL_A : aColor);
+	drawList->AddCircleFilled(pB, dotRadius, (wButtons & XUSB_GAMEPAD_B) != 0 ? ANIMGAMEPAD_COL_B : bColor);
+	drawList->AddCircleFilled(pX, dotRadius, (wButtons & XUSB_GAMEPAD_X) != 0 ? ANIMGAMEPAD_COL_X : xColor);
+	drawList->AddCircleFilled(pY, dotRadius, (wButtons & XUSB_GAMEPAD_Y) != 0 ? ANIMGAMEPAD_COL_Y : yColor);
 
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(height, height));
 }
 
-void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTrigger, float height, ImU32 activeColor)
+void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTrigger, float height, ImU32 activeColor, size_t pressId)
 {
 	static ImDrawList* drawList = ImGui::GetWindowDrawList();
 	drawList = ImGui::GetWindowDrawList();
@@ -130,16 +193,44 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 	float t = (float)(isRightTrigger ? gamepad.bRightTrigger : gamepad.bLeftTrigger) / 255;
 	float minAngle = isRightTrigger ? -IM_PI : 0;
 	float maxAngle = isRightTrigger ? 0 : -IM_PI;
+
+
+	static ImU32 color;
+	static XUSB_BUTTON button;
+
+
+	auto updateColor = [&](size_t prid)
+	{
+		color = ANIMGAMEPAD_COL_BG;
+		if (m_fading)
+		{
+			if ((gamepad.wButtons & button)) updatePressed(prid);
+			color = isActive(prid) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+		}
+		color = (gamepad.wButtons & button) != 0 ? activeColor : color;
+	};
+
+
+	// ===============
+	// Trigger
+	// ===============
+	color = ANIMGAMEPAD_COL_BG;
+	if (m_fading) {
+		if (t > 0) updatePressed(pressId);
+		color = isActive(pressId) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+	}
+
 	drawList->PathArcTo(center, height * 0.5f * (1.0f - 0.5f * dotRatio), minAngle, maxAngle, 20);
-	drawList->PathStroke(ANIMGAMEPAD_COL_BG, 0, dotRadius);
+	drawList->PathStroke(color, 0, dotRadius);
 	drawList->PathArcTo(center, height * 0.5f * (1.0f - 0.5f * dotRatio), minAngle, minAngle * (1-t) + t * maxAngle, 20);
 	drawList->PathStroke(activeColor, 0, dotRadius);
 	
-	ImU32 color = ANIMGAMEPAD_COL_BG;
-	if (isRightTrigger)
-		color = (gamepad.wButtons & XUSB_GAMEPAD_RIGHT_SHOULDER) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
-	else
-		color = (gamepad.wButtons & XUSB_GAMEPAD_LEFT_SHOULDER) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
+
+	// ===============
+	// Shoulder
+	// ===============
+	button = isRightTrigger ? XUSB_GAMEPAD_RIGHT_SHOULDER : XUSB_GAMEPAD_LEFT_SHOULDER;
+	updateColor(pressId + 1);
 
 	float shoulderRadius = dotRadius * 0.6;
 	renderSquare(drawList, center, 2.0f * shoulderRadius, color);
@@ -147,36 +238,64 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 	drawList->AddCircleFilled(ImVec2(center.x - shoulderRadius, center.y), shoulderRadius, color);
 
 
+	// ===============
+	// Start / Back
+	// ===============
 	ImVec2 pMiddle = ImVec2(center.x, center.y + height * 0.5f * (1.0f - dotRatio));
 	ImVec2 pMiddle0, pMiddle1, pMiddle2;
-
 	if (isRightTrigger)
 	{
+		button = XUSB_GAMEPAD_START;
 		pMiddle0 = pMiddle + (ImVec2(-1.0f, -1.0f) * shoulderRadius);
 		pMiddle1 = pMiddle + (ImVec2(-1.0f, +1.0f) * shoulderRadius);
 		pMiddle2 = ImVec2(pMiddle.x + shoulderRadius, pMiddle.y);
-		color = (gamepad.wButtons & XUSB_GAMEPAD_START) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
-		drawList->AddTriangleFilled(pMiddle0, pMiddle1, pMiddle2, color);
 	}
 	else
 	{
+		button = XUSB_GAMEPAD_BACK;
 		pMiddle0 = pMiddle + (ImVec2(1.0f, -1.0f) * shoulderRadius);
 		pMiddle1 = pMiddle + (ImVec2(1.0f, +1.0f) * shoulderRadius);
 		pMiddle2 = ImVec2(pMiddle.x - shoulderRadius, pMiddle.y);
-		color = (gamepad.wButtons & XUSB_GAMEPAD_BACK) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
-		drawList->AddTriangleFilled(pMiddle0, pMiddle1, pMiddle2, color);
-
-		//ImU32 pGuideColor = ANIMGAMEPAD_COL_BG;
-		//if (useFading) {
-		//	if ((gamepad.wButtons & XUSB_GAMEPAD_GUIDE)) updatePressed(pressId + 3);
-		//	pGuideColor = isActive(pressId + 3) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
-		//}
-		//ImU32 guideColor = (gamepad.wButtons & XUSB_GAMEPAD_GUIDE) != 0 ? activeColor : pGuideColor;
-		//drawList->AddCircleFilled(ImVec2(pMiddle1.x + 2.5f + (pMiddle1.y - pMiddle0.y) / 1.5, pMiddle2.y), (pMiddle1.y - pMiddle0.y) / 2, guideColor);
 	}
+
+	updateColor(pressId + 2);
+	drawList->AddTriangleFilled(pMiddle0, pMiddle1, pMiddle2, color);
+
+
+	// ===============
+	// Guide
+	// ===============
+	button = XUSB_GAMEPAD_GUIDE;
+	updateColor(pressId + 3);
+	drawList->AddCircleFilled(ImVec2(pMiddle1.x + 2.5f + (pMiddle1.y - pMiddle0.y) / 1.5, pMiddle2.y), (pMiddle1.y - pMiddle0.y) / 2, color);
+
 
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(height, height));
+}
+
+void AnimatedGamepadWidget::tryResizeAnimations(vector<AnimatedGamepadWidget>& animations, const size_t size, const bool fading)
+{
+	if (animations.size() != size)
+	{
+		int diff = (int)size - (int)animations.size();
+
+		if (diff > 0)
+		{
+			for (size_t i = 0; i < diff; i++)
+			{
+				animations.push_back(AnimatedGamepadWidget(fading));
+			}
+		}
+		else
+		{
+			diff = -diff;
+			for (size_t i = 0; i < diff; i++)
+			{
+				animations.pop_back();
+			}
+		}
+	}
 }
 
 void AnimatedGamepadWidget::renderHSpace(float distance)

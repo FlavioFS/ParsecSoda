@@ -151,6 +151,8 @@ void MasterOfPuppetsWidget::renderMasterSDL()
     AppFonts::pop();
 
     ImGui::Dummy(ImVec2(380, 0));
+    
+    AnimatedGamepadWidget::tryResizeAnimations(_masterGamepadAnimations, sdlGamepads.size(), false);
 
     for (int i = 0; i < sdlGamepads.size(); ++i)
     {
@@ -217,7 +219,7 @@ void MasterOfPuppetsWidget::renderMasterSDL()
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 
         XINPUT_GAMEPAD gg = sdlGamepads[i].getGamepadState().state.Gamepad;
-        AnimatedGamepadWidget::render(sdlGamepads[i].getGamepadState().state.Gamepad);
+        _masterGamepadAnimations[i].render(sdlGamepads[i].getGamepadState().state.Gamepad);
         ImGui::PopStyleVar();
 
         ImGui::PopID();
@@ -240,6 +242,8 @@ void MasterOfPuppetsWidget::renderMasterXInput()
     AppFonts::pop();
 
     ImGui::Dummy(ImVec2(380, 0));
+
+    AnimatedGamepadWidget::tryResizeAnimations(_masterGamepadAnimations, xinputGamepads.size(), false);
 
     for (int i = 0; i < xinputGamepads.size(); ++i)
     {
@@ -274,7 +278,7 @@ void MasterOfPuppetsWidget::renderMasterXInput()
         ImGui::SetCursorPosX(shift1 + shift3);
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 
-        AnimatedGamepadWidget::render(xinputGamepads[i].state.Gamepad);
+        _masterGamepadAnimations[i].render(xinputGamepads[i].state.Gamepad);
         ImGui::PopStyleVar();
 
         ImGui::PopID();
@@ -323,6 +327,8 @@ void MasterOfPuppetsWidget::renderPuppets()
 
     ImGui::Dummy(ImVec2(0, 0));
 
+    AnimatedGamepadWidget::tryResizeAnimations(_puppetGamepadAnimations, gamepads.size(), false);
+
     for (int i = 0; i < gamepads.size(); ++i)
     {
         static float shift1 = 30.0f, shift2 = 20.0f, shift3 = 5.0f;
@@ -359,7 +365,7 @@ void MasterOfPuppetsWidget::renderPuppets()
         ImGui::SetCursorPosX(cursor.x + shift1 + shift2 + shift3);
         ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 
-        AnimatedGamepadWidget::render(gamepads[i]->getState().Gamepad);
+        _puppetGamepadAnimations[i].render(gamepads[i]->getState().Gamepad);
         ImGui::PopStyleVar();
 
         ImGui::PopID();

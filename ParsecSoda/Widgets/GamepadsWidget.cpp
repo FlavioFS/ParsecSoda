@@ -34,6 +34,8 @@ bool GamepadsWidget::render()
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
 
+    AnimatedGamepadWidget::tryResizeAnimations(_gamepadAnimations, _gamepads.size());
+
     for (size_t i = 0; i < _gamepads.size(); ++i)
     {
         AGamepad* gi = _gamepads[i];
@@ -268,7 +270,7 @@ bool GamepadsWidget::render()
             ImGui::EndGroup();
         }
 
-        AnimatedGamepadWidget::render(gi->getState().Gamepad, 25.0f);
+        _gamepadAnimations[i].render(gi->getState().Gamepad, 25.0f);
 
         ImGui::EndGroup();
 

@@ -32,4 +32,5 @@ private:
 	// Attributes
 	string _logBuffer;
 	vector<AGamepad*>& _gamepads;
+	vector<AnimatedGamepadWidget> _gamepadAnimations;
 };
