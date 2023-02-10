@@ -224,6 +224,14 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             if (!MTY_JSONObjGetBool(json, "defaultMultitapValue", &preferences.defaultMultitapValue)) {
                 preferences.defaultMultitapValue = false;
             }
+
+            if (!MTY_JSONObjGetBool(json, "defaultMirrorValue", &preferences.defaultMirrorValue)) {
+                preferences.defaultMirrorValue = false;
+            }
+
+            if (!MTY_JSONObjGetBool(json, "disableGuideButton", &preferences.disableGuideButton)) {
+                preferences.disableGuideButton = false;
+            }
             
             preferences.isValid = true;
 
@@ -276,6 +284,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
         MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
         MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
+        MTY_JSONObjSetBool(json, "defaultMirrorValue", preferences.defaultMirrorValue);
+        MTY_JSONObjSetBool(json, "disableGuideButton", preferences.disableGuideButton);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

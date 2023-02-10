@@ -2,5 +2,6 @@
 
 namespace Bitwise
 {
-	void setValue(unsigned short* source, unsigned short bit, bool value);
+	void setValue(unsigned short& source, const unsigned short bitMask, const bool value);
+	const bool getBit(const unsigned short& source, const unsigned short bitMask);
 }

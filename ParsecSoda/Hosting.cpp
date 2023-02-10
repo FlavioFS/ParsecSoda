@@ -337,17 +337,6 @@ void Hosting::stripGamepad(int index)
 	_gamepadClient.clearOwner(index);
 }
 
-void Hosting::setOwner(AGamepad& gamepad, Guest newOwner, int padId)
-{
-	bool found = _gamepadClient.findPreferences(newOwner.userID, [&](GamepadClient::GuestPreferences& prefs) {
-		gamepad.setOwner(newOwner, padId, prefs.mirror);
-	});
-
-	if (!found)
-	{
-		gamepad.setOwner(newOwner, padId, false);
-	}
-}
 
 void Hosting::handleMessage(const char* message, Guest& guest, bool isHost, bool isHidden)
 {

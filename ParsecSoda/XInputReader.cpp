@@ -115,5 +115,5 @@ bool XInputReader::isButtonPressed(Input::GamepadReading& reading, Input::Gamepa
 
 void XInputReader::setButton(GamepadState& padState, unsigned short bit, Input::GamepadReading& reading, Input::GamepadButtons button)
 {
-	Bitwise::setValue(&padState.state.Gamepad.wButtons, bit, isButtonPressed(reading, button));
+	Bitwise::setValue(padState.state.Gamepad.wButtons, bit, isButtonPressed(reading, button));
 }

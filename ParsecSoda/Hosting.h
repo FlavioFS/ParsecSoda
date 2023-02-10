@@ -77,7 +77,6 @@ public:
 	void startHosting();
 	void stopHosting();
 	void stripGamepad(int index);
-	void setOwner(AGamepad& gamepad, Guest newOwner, int padId);
 
 	void handleMessage(const char* message, Guest& guest, bool isHost = false, bool isHidden = false);
 	void sendHostMessage(const char* message, bool isHidden = false);

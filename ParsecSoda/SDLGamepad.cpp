@@ -35,22 +35,22 @@ GamepadState SDLGamepad::getGamepadState()
     // =====================================================
     if (type == Type::XBox)
     {
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_UP, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_UP) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_DOWN) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_LEFT) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_RIGHT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_UP, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_UP) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_DOWN) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_LEFT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_RIGHT) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (Uint8)XInput::A) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (Uint8)XInput::B) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (Uint8)XInput::X) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (Uint8)XInput::Y) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (Uint8)XInput::A) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (Uint8)XInput::B) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (Uint8)XInput::X) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (Uint8)XInput::Y) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)XInput::LB) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)XInput::RB) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (Uint8)XInput::BACK) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (Uint8)XInput::START) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)XInput::L3) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)XInput::R3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)XInput::LB) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)XInput::RB) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (Uint8)XInput::BACK) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (Uint8)XInput::START) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)XInput::L3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)XInput::R3) != 0);
 
         pad.bLeftTrigger = axisToByte(SDL_JoystickGetAxis(joystick, 4));
         pad.bRightTrigger = axisToByte(SDL_JoystickGetAxis(joystick, 5));
@@ -61,22 +61,22 @@ GamepadState SDLGamepad::getGamepadState()
     // =====================================================
     else if (type == Type::DS)
     {
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_UP, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_UP) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_DOWN) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_LEFT) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_RIGHT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_UP, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_UP) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_DOWN) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_LEFT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, (SDL_JoystickGetHat(joystick, 0) & SDL_HAT_RIGHT) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (Uint8)DInput::X) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (Uint8)DInput::Circle) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (Uint8)DInput::Square) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (Uint8)DInput::Triangle) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (Uint8)DInput::X) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (Uint8)DInput::Circle) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (Uint8)DInput::Square) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (Uint8)DInput::Triangle) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)DInput::L1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)DInput::R1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (Uint8)DInput::SELECT) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (Uint8)DInput::START) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)DInput::L3) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)DInput::R3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)DInput::L1) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (Uint8)DInput::R1) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (Uint8)DInput::SELECT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (Uint8)DInput::START) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)DInput::L3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (Uint8)DInput::R3) != 0);
 
         pad.bLeftTrigger = (SDL_JoystickGetButton(joystick, (Uint8)DInput::L2) != 0) ? 255 : 0;
         pad.bRightTrigger = (SDL_JoystickGetButton(joystick, (Uint8)DInput::R2) != 0) ? 255 : 0;
@@ -87,22 +87,22 @@ GamepadState SDLGamepad::getGamepadState()
     // =====================================================
     else
     {
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_UP, SDL_JoystickGetButton(joystick, (int)DS4::DUp) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, SDL_JoystickGetButton(joystick, (int)DS4::DDown) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, SDL_JoystickGetButton(joystick, (int)DS4::DLeft) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, SDL_JoystickGetButton(joystick, (int)DS4::DRight) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_UP, SDL_JoystickGetButton(joystick, (int)DS4::DUp) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_DOWN, SDL_JoystickGetButton(joystick, (int)DS4::DDown) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_LEFT, SDL_JoystickGetButton(joystick, (int)DS4::DLeft) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, SDL_JoystickGetButton(joystick, (int)DS4::DRight) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (int)DS4::X) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (int)DS4::Circle) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (int)DS4::Square) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (int)DS4::Triangle) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_A, SDL_JoystickGetButton(joystick, (int)DS4::X) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_B, SDL_JoystickGetButton(joystick, (int)DS4::Circle) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_X, SDL_JoystickGetButton(joystick, (int)DS4::Square) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_Y, SDL_JoystickGetButton(joystick, (int)DS4::Triangle) != 0);
 
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (int)DS4::L1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (int)DS4::R1) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (int)DS4::SELECT) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (int)DS4::START) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (int)DS4::L3) != 0);
-        Bitwise::setValue(&pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (int)DS4::R3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, SDL_JoystickGetButton(joystick, (int)DS4::L1) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_SHOULDER, SDL_JoystickGetButton(joystick, (int)DS4::R1) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_BACK, SDL_JoystickGetButton(joystick, (int)DS4::SELECT) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_START, SDL_JoystickGetButton(joystick, (int)DS4::START) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, SDL_JoystickGetButton(joystick, (int)DS4::L3) != 0);
+        Bitwise::setValue(pad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, SDL_JoystickGetButton(joystick, (int)DS4::R3) != 0);
 
         pad.bLeftTrigger = axisToByte(SDL_JoystickGetAxis(joystick, 4));
         pad.bRightTrigger = axisToByte(SDL_JoystickGetAxis(joystick, 5));

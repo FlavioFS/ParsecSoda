@@ -9,6 +9,7 @@ ID3D11ShaderResourceView* AppIcons::play;
 ID3D11ShaderResourceView* AppIcons::stop;
 ID3D11ShaderResourceView* AppIcons::skip;
 ID3D11ShaderResourceView* AppIcons::remove;
+ID3D11ShaderResourceView* AppIcons::cog;
 
 ID3D11ShaderResourceView* AppIcons::yes;
 ID3D11ShaderResourceView* AppIcons::no;
@@ -72,6 +73,7 @@ ID3D11ShaderResourceView* AppIcons::xbox4;
 
 ID3D11ShaderResourceView* AppIcons::vpad;
 ID3D11ShaderResourceView* AppIcons::multitap;
+ID3D11ShaderResourceView* AppIcons::mirror;
 
 ID3D11ShaderResourceView* AppIcons::btc;
 ID3D11ShaderResourceView* AppIcons::ltc;
@@ -86,6 +88,7 @@ Texture AppIcons::_play;
 Texture AppIcons::_stop;
 Texture AppIcons::_skip;
 Texture AppIcons::_remove;
+Texture AppIcons::_cog;
 
 Texture AppIcons::_yes;
 Texture AppIcons::_no;
@@ -149,6 +152,7 @@ Texture AppIcons::_xbox4;
 
 Texture AppIcons::_vpad;
 Texture AppIcons::_multitap;
+Texture AppIcons::_mirror;
 
 Texture AppIcons::_btc;
 Texture AppIcons::_ltc;
@@ -166,6 +170,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _stop.loadFromFile(pd3dDevice, "./icons/stop.png");
     _skip.loadFromFile(pd3dDevice, "./icons/skip.png");
     _remove.loadFromFile(pd3dDevice, "./icons/remove.png");
+    _cog.loadFromFile(pd3dDevice, "./icons/cog.png");
 
     _yes.loadFromFile(pd3dDevice, "./icons/check-on.png");
     _no.loadFromFile(pd3dDevice, "./icons/close-circle.png");
@@ -229,6 +234,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
 
     _vpad.loadFromFile(pd3dDevice, "./icons/vpad.png");
     _multitap.loadFromFile(pd3dDevice, "./icons/multitap.png");
+    _mirror.loadFromFile(pd3dDevice, "./icons/mirror.png");
 
     _btc.loadFromFile(pd3dDevice, "./icons/btc.png");
     _ltc.loadFromFile(pd3dDevice, "./icons/ltc.png");
@@ -243,6 +249,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     stop = _stop.texture;
     skip = _skip.texture;
     remove = _remove.texture;
+    cog = _cog.texture;
     
     yes = _yes.texture;
     no = _no.texture;
@@ -306,6 +313,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
 
     vpad = _vpad.texture;
     multitap = _multitap.texture;
+    mirror = _mirror.texture;
 
     btc = _btc.texture;
     ltc = _ltc.texture;

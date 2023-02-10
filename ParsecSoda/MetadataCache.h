@@ -66,6 +66,8 @@ public:
 		uint32_t maxLatencyMs = 100;
 		uint32_t hotseatDurationSeconds = 300;
 		bool defaultMultitapValue = false;
+		bool defaultMirrorValue = false;
+		bool disableGuideButton = false;
 	};
 
 	static SessionCache loadSessionCache();

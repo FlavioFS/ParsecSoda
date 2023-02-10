@@ -39,26 +39,32 @@ public:
 	{
 	public:
 		GuestPreferences()
-			: userID(0), padLimit(1), mirror(false), _isDefaultMultitap(true)
+			: userID(0), padLimit(1), _isDefaultMirror(true), _isDefaultMultitap(true)
 		{}
-		GuestPreferences(uint32_t userID, int padLimit = 1, bool mirror = false, bool isDefaultMultitap = true)
-			: userID(userID), padLimit(padLimit), mirror(mirror), _isDefaultMultitap(isDefaultMultitap)
+		GuestPreferences(uint32_t userID, int padLimit = 1, bool isDefaultMirror = true, bool isDefaultMultitap = true)
+			: userID(userID), padLimit(padLimit), _isDefaultMirror(isDefaultMirror), _isDefaultMultitap(isDefaultMultitap)
 		{}
 
 		uint32_t userID = 0;
 		int padLimit = 4;
-		bool mirror = false;
 		
 		const bool& isMultitap() const {
 			return _isDefaultMultitap ?
 				MetadataCache::preferences.defaultMultitapValue :
 				!MetadataCache::preferences.defaultMultitapValue;
 		}
+		const bool& isMirror() const {
+			return _isDefaultMirror ?
+				MetadataCache::preferences.defaultMirrorValue :
+				!MetadataCache::preferences.defaultMirrorValue;
+		}
 
 		void toggleMultitap() { _isDefaultMultitap = !_isDefaultMultitap; }
+		void toggleMirror() { _isDefaultMirror = !_isDefaultMirror; }
 
 	private:
 		bool _isDefaultMultitap = true;
+		bool _isDefaultMirror = true;
 	};
 
 	~GamepadClient();
@@ -126,6 +132,20 @@ private:
 	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
 	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
 	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs);
+	
+	int getDpadSignX(const WORD& wButtons);
+	int getDpadSignY(const WORD& wButtons);
+	int getDpadSign(const WORD& wButtons, const WORD padDirPositive, const WORD padDirNegative);
+	void setAxisFromSign(SHORT& axis, int sign);
+	void setDpadFromAxis(WORD& wButtons, const WORD padDirPositive, const WORD padDirNegative, const SHORT& axis);
+	void fetchDpadFromAxisX(XINPUT_STATE& state);
+	void fetchDpadFromAxisY(XINPUT_STATE& state);
+	void fecthAxisFromDpadX(XINPUT_STATE& state);
+	void fecthAxisFromDpadY(XINPUT_STATE& state);
+	XINPUT_STATE dpadToStick(XINPUT_STATE state);
+	XINPUT_STATE stickToDpad(XINPUT_STATE state);
+	bool isDpadEqual(XINPUT_STATE before, XINPUT_STATE now);
+	bool isStickAsDpadEqual(XINPUT_STATE before, XINPUT_STATE now);
 
 
 	PVIGEM_CLIENT _client;

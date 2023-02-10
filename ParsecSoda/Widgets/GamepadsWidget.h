@@ -13,6 +13,7 @@
 #include "LoadingRingWidget.h"
 #include "BadgeIconWidget.h"
 #include "BadgeButtonWidget.h"
+#include "SwitchWidget.h"
 
 class GamepadsWidget
 {
@@ -22,6 +23,7 @@ public:
 
 private:
 	void renderTopBar(bool& isWindowLocked, const ImVec2& windowSize);
+	void renderOptionsMenu();
 	void renderPadInputTypeIcon(AGamepad* pad);
 
 	// Dependency injection

@@ -18,6 +18,7 @@ public:
 	static ID3D11ShaderResourceView* stop;
 	static ID3D11ShaderResourceView* skip;
 	static ID3D11ShaderResourceView* remove;
+	static ID3D11ShaderResourceView* cog;
 
 	static ID3D11ShaderResourceView* yes;
 	static ID3D11ShaderResourceView* no;
@@ -81,6 +82,7 @@ public:
 
 	static ID3D11ShaderResourceView* vpad;
 	static ID3D11ShaderResourceView* multitap;
+	static ID3D11ShaderResourceView* mirror;
 
 	static ID3D11ShaderResourceView* btc;
 	static ID3D11ShaderResourceView* ltc;
@@ -96,6 +98,7 @@ private:
 	static Texture _stop;
 	static Texture _skip;
 	static Texture _remove;
+	static Texture _cog;
 
 	static Texture _yes;
 	static Texture _no;
@@ -159,6 +162,7 @@ private:
 
 	static Texture _vpad;
 	static Texture _multitap;
+	static Texture _mirror;
 
 	static Texture _btc;
 	static Texture _ltc;

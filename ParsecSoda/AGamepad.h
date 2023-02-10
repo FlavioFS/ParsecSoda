@@ -38,7 +38,7 @@ public:
 	{
 	public:
 		void clear() {
-			LLeft = LRight = LUp = LDown = RLeft = RRight = RUp = RDown = false;
+			LLeft = LRight = LUp = LDown = RLeft = RRight = RUp = RDown = DLeft = DRight = DUp = DDown = false;
 		};
 		bool LLeft = false;
 		bool LRight = false;
@@ -48,6 +48,10 @@ public:
 		bool RRight = false;
 		bool RUp = false;
 		bool RDown = false;
+		bool DLeft = false;
+		bool DRight = false;
+		bool DUp = false;
+		bool DDown = false;
 	};
 
 	virtual const AGamepad::Type type() const { return AGamepad::Type::INVALID; }

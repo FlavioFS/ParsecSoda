@@ -81,7 +81,7 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 	drawList->AddCircleFilled(dotCenter, dotRatio * radius, isStickTilt ? activeColor : disabled);
 
 	bool isThumbPress = checkCirclePress(center, radius, MouseButton::RIGHT);
-	Bitwise::setValue(&_gamepad.wButtons, isLeftStick ? XUSB_GAMEPAD_LEFT_THUMB : XUSB_GAMEPAD_RIGHT_THUMB, isThumbPress);
+	Bitwise::setValue(_gamepad.wButtons, isLeftStick ? XUSB_GAMEPAD_LEFT_THUMB : XUSB_GAMEPAD_RIGHT_THUMB, isThumbPress);
 
 	if (isThumbPress)
 	{
@@ -118,10 +118,10 @@ void VirtualGamepadWidget::renderDpad(float height, ImU32 activeColor)
 	left  = renderSquare(drawList, pLeft,  dotEdge, (_gamepad.wButtons & XUSB_GAMEPAD_DPAD_LEFT) != 0 ? activeColor : VGAMEPAD_COL_BG);
 	right = renderSquare(drawList, pRight, dotEdge, (_gamepad.wButtons & XUSB_GAMEPAD_DPAD_RIGHT) != 0 ? activeColor : VGAMEPAD_COL_BG);
 
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP,    up);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN,  down);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT,  left);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, right);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_DPAD_UP,    up);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_DPAD_DOWN,  down);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_DPAD_LEFT,  left);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_DPAD_RIGHT, right);
 	
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(height, height));
@@ -157,10 +157,10 @@ void VirtualGamepadWidget::renderFaceButtons(float height)
 	X = checkCirclePress(pX, dotRadius);
 	Y = checkCirclePress(pY, dotRadius);
 
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_A, A);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_B, B);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_X, X);
-	Bitwise::setValue(&_gamepad.wButtons, XUSB_GAMEPAD_Y, Y);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_A, A);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_B, B);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_X, X);
+	Bitwise::setValue(_gamepad.wButtons, XUSB_GAMEPAD_Y, Y);
 
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(height, height));
@@ -263,8 +263,8 @@ void VirtualGamepadWidget::renderMenuAndBumper(bool isLeftSide, float height, Im
 	// ===============================================
 	// Update Gamepad
 	// ===============================================
-	Bitwise::setValue(&_gamepad.wButtons, isLeftSide ? XUSB_GAMEPAD_LEFT_SHOULDER : XUSB_GAMEPAD_RIGHT_SHOULDER, isBumperPressed);
-	Bitwise::setValue(&_gamepad.wButtons, isLeftSide ? XUSB_GAMEPAD_BACK : XUSB_GAMEPAD_START, isMenuPressed);
+	Bitwise::setValue(_gamepad.wButtons, isLeftSide ? XUSB_GAMEPAD_LEFT_SHOULDER : XUSB_GAMEPAD_RIGHT_SHOULDER, isBumperPressed);
+	Bitwise::setValue(_gamepad.wButtons, isLeftSide ? XUSB_GAMEPAD_BACK : XUSB_GAMEPAD_START, isMenuPressed);
 
 	ImGui::SetCursorPos(cursor);
 	ImGui::Dummy(ImVec2(2 * height / 3.0f, height));

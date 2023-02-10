@@ -40,7 +40,20 @@ bool GamepadsWidget::render()
         static uint32_t userID;
         userID = gi->owner.guest.userID;
 
+        ImGui::BeginGroup();
         renderPadInputTypeIcon(gi);
+
+        id = "###Connect gamepad" + to_string(i);
+        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi->isConnected(), id.c_str()))
+        {
+            if (gi->isConnected()) gi->disconnect();
+            else gi->connect();
+
+            isConnectionButtonPressed = true; // Refresh index UI - XInput workaround
+        }
+        if (gi->isConnected())  TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
+        else                    TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
+        ImGui::EndGroup();
 
         ImGui::SameLine();
         ImGui::Dummy(ImVec2(5, 1));
@@ -153,19 +166,6 @@ bool GamepadsWidget::render()
         // ==================
         // Badge Buttons
         // ==================
-        id = "###Connect gamepad" + to_string(i);
-        if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi->isConnected(), id.c_str(), ImVec2(25, 25)))
-        {
-            if (gi->isConnected()) gi->disconnect();
-            else gi->connect();
-            
-            isConnectionButtonPressed = true; // Refresh index UI - XInput workaround
-        }
-        if (gi->isConnected())  TitleTooltipWidget::render("Connected gamepad", "Press to \"physically\" disconnect\nthis gamepad (at O.S. level).");
-        else                    TitleTooltipWidget::render("Disconnected gamepad", "Press to \"physically\" connect\nthis gamepad (at O.S. level).");
-
-        ImGui::SameLine();
-
         tooltipTitle = "Strip gamepad";
         tooltipDescription = "Unlink current user from this gamepad.";
         id = "###Strip gamepad " + to_string(i);
@@ -173,7 +173,6 @@ bool GamepadsWidget::render()
         {
             gi->clearOwner();
         }
-
 
         ImGui::SameLine();
 
@@ -193,42 +192,64 @@ bool GamepadsWidget::render()
         }
         else
         {
-            static bool isMultitap;
+            static bool isMultitap, isMirror;
             static ImVec4 iconColor;
+            static GamepadClient::GuestPreferences* pprefs;
             tooltipTitle = "Multitap (disabled)";
             tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
             iconColor = AppColors::negative;
+            pprefs = nullptr;
 
             isMultitap = MetadataCache::preferences.defaultMultitapValue;
+            isMirror = MetadataCache::preferences.defaultMirrorValue;
             if (gi->owner.guest.isValid())
             {
                 _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
                     isMultitap = prefs.isMultitap();
+                    isMirror = prefs.isMirror();
+                    pprefs = &prefs;
                 });
             }
 
+            if (isMirror)
+            {
+                tooltipTitle = "Mirror enabled (Left Stick to DPad)";
+                tooltipDescription = "Left Analog inputs are copied to the DPad.";
+                iconColor = AppColors::positive;
+            }
+            else
+            {
+                tooltipTitle = "Mirror disabled (Left Stick to DPad)";
+                tooltipDescription = "DPad and Left Analog are independent.";
+                iconColor = AppColors::negative;
+            }
+            id = "###Mirror dpad " + to_string(i);
+            if (BadgeButtonWidget::render(AppIcons::mirror, tooltipTitle, tooltipDescription, id, ImVec2(25, 25), iconColor))
+            {
+                if (gi->owner.guest.isValid() && pprefs) pprefs->toggleMirror();
+            }
+
+            ImGui::SameLine();
+
+
             if (isMultitap)
             {
-                tooltipTitle = "Multitap (enabled)";
+                tooltipTitle = "Multitap enabled";
                 tooltipDescription = "DeviceID is active.\nA guest may have multiple gamepads\nin the same account.";
                 iconColor = AppColors::positive;
             }
             else
             {
-                tooltipTitle = "Multitap (disabled)";
+                tooltipTitle = "Multitap disabled";
                 tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
                 iconColor = AppColors::negative;
             }
-
             id = "###Guest multitap " + to_string(i);
             if (BadgeButtonWidget::render(AppIcons::multitap, tooltipTitle, tooltipDescription, id, ImVec2(25,25), iconColor))
             {
-                if (gi->owner.guest.isValid())
-                {
-                    _hosting.getGamepadClient().toggleMultitap(gi->owner.guest.userID);
-                    MetadataCache::savePreferences();
-                }
+                if (gi->owner.guest.isValid() && pprefs) pprefs->toggleMultitap();
             }
+
             ImGui::SameLine();
 
             static int deviceIndices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -321,26 +342,12 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
 
     ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonRight);
 
-    static string title, description;
-    if (MetadataCache::preferences.defaultMultitapValue)
-    {
-        title = "Multitap [ON]";
-        description = "Default behaviour: enabled.\n\nDeviceID active.\nA guest may have multiple gamepads\nin the same account.";
-    }
-    else
-    {
-        title = "Multitap [OFF]";
-        description = "Default behaviour: disabled.\n\nDeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
-    }
-    if (ToggleIconButtonWidget::render(
-        AppIcons::multitap, AppIcons::multitap, MetadataCache::preferences.defaultMultitapValue,
-        AppColors::positive, AppColors::negative, buttonSize
-    ))
-    {
-        MetadataCache::preferences.defaultMultitapValue = !MetadataCache::preferences.defaultMultitapValue;
-        MetadataCache::savePreferences();
-    }
-    TitleTooltipWidget::render(title.c_str(), description.c_str());
+    ImGui::SameLine();
+
+
+    IconButton::render(AppIcons::cog, AppColors::primary, buttonSize, "###Gamepad settings button");
+    TitleTooltipWidget::render("Gamepad Settings", "Press to open Gamepad Settings menu.");
+    renderOptionsMenu();
 
 
     ImGui::SameLine();
@@ -383,6 +390,38 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
     {
         TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }
+}
+
+void GamepadsWidget::renderOptionsMenu()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+
+    if (ImGui::BeginPopupContextItem("Gamepad Options", ImGuiPopupFlags_MouseButtonLeft))
+    {
+        if (SwitchWidget::render(
+            MetadataCache::preferences.defaultMirrorValue,
+            "###Mirror default", "Default mirror (LStick to DPad)",
+            "Mirror [ON]", "Default behaviour: enabled.\n\nLeft Stick inputs are copied to DPad.\nUse this if you need to choose between\nDPad and Analog.",
+            "Mirror [OFF]", "Default behaviour: disabled.\n\nLeft Stick and Left Stick are independent.\nUse this if you need to choose between\nDPad and Analog."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        if (SwitchWidget::render(
+            MetadataCache::preferences.defaultMultitapValue,
+            "###Multitap default", "Default multitap",
+            "Multitap [ON]", "Default behaviour: enabled.\n\nDeviceID active.\nA guest may have multiple gamepads\nin the same account.",
+            "Multitap [OFF]", "Default behaviour: disabled.\n\nDeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::PopStyleVar();
 }
 
 void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad)
