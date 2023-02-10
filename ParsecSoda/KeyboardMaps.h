@@ -42,6 +42,7 @@ public:
 	// Menu
 	uint16_t Back = KEY_BACKSPACE;
 	uint16_t Start = KEY_ENTER;
+	uint16_t Guide = KEY_BACKTICK;
 
 	// Stick Buttons
 	uint16_t LThumb = KEY_C;

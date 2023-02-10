@@ -694,7 +694,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, AGamepad*
 	rawState.Gamepad.sThumbRY = state.thumbRY;
 
 	// Block guide button
-	if (!MetadataCache::preferences.enableGuideButton)
+	if (MetadataCache::preferences.enableGuideButton)
 	{
 		Bitwise::setValue(rawState.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, false);
 	}
@@ -929,6 +929,9 @@ XINPUT_STATE GamepadClient::toXInput(
 	// Center
 	if (key.code == _keyboardMap.Back)  Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_BACK, key.pressed);
 	if (key.code == _keyboardMap.Start) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_START, key.pressed);
+	if (MetadataCache::preferences.enableGuideButton) {
+		if (key.code == _keyboardMap.Guide) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, key.pressed);
+	}
 
 	// Shoulders
 	if (key.code == _keyboardMap.LB) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, key.pressed);
