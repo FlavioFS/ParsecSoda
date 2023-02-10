@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../imgui/imgui.h"
+#include "../imgui/ImVecExtensions.h"
 #include "../globals/AppStyle.h"
 
 class GradientProgressBar
@@ -20,7 +21,7 @@ public:
 		const ImVec4 colorEmpty = AppColors::negative
 	);
 
-	static ImVec4 lerpColors3(float t, ImVec4 colorFull = AppColors::positive, ImVec4 colorHalf = AppColors::warning2, ImVec4 colorEmpty = AppColors::negative)
+	static ImVec4 lerpColors3(const float t, ImVec4 colorFull = AppColors::positive, ImVec4 colorHalf = AppColors::warning2, ImVec4 colorEmpty = AppColors::negative)
 	{
 		if (t >= 0.5f)
 		{
@@ -33,9 +34,9 @@ public:
 	}
 private:
 
-	static ImVec4 lerpColors2(float t, ImVec4 colorFull, ImVec4 colorEmpty)
+	static ImVec4 lerpColors2(const float t, ImVec4 colorFull, ImVec4 colorEmpty)
 	{
-		return colorFull * t + colorEmpty * (1 - t);
+		return (colorFull * t) + (colorEmpty * (1 - t));
 	}
 };
 

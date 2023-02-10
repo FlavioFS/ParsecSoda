@@ -67,7 +67,7 @@ public:
 		uint32_t hotseatDurationSeconds = 300;
 		bool defaultMultitapValue = false;
 		bool defaultMirrorValue = false;
-		bool disableGuideButton = false;
+		bool enableGuideButton = false;
 	};
 
 	static SessionCache loadSessionCache();

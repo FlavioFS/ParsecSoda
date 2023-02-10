@@ -35,7 +35,7 @@ void AnimatedGamepadWidget::renderAnalog(ImVec2 stick, bool isThumbPress, float 
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + 2 * radius, p0.y + 2 * radius);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 	drawList->AddCircleFilled(center, radius, ANIMGAMEPAD_COL_BG);
 
 	static ImU32 disabled = ImGui::GetColorU32(IM_COL32(25, 25, 25, 255));
@@ -64,7 +64,7 @@ void AnimatedGamepadWidget::renderDpad(WORD wButtons, float height, ImU32 active
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;
 	float dotEdge = height * dotRatio;
@@ -92,7 +92,7 @@ void AnimatedGamepadWidget::renderFaceButtons(WORD wButtons, float height)
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;
 	float dotRadius = height * dotRatio * 0.5f;
@@ -120,7 +120,7 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;
 	float dotRadius = height * dotRatio * 0.5f;
@@ -152,19 +152,27 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 
 	if (isRightTrigger)
 	{
-		pMiddle0 = sum(pMiddle, mul(ImVec2(-1.0f, -1.0f), shoulderRadius));
-		pMiddle1 = sum(pMiddle, mul(ImVec2(-1.0f, +1.0f), shoulderRadius));
+		pMiddle0 = pMiddle + (ImVec2(-1.0f, -1.0f) * shoulderRadius);
+		pMiddle1 = pMiddle + (ImVec2(-1.0f, +1.0f) * shoulderRadius);
 		pMiddle2 = ImVec2(pMiddle.x + shoulderRadius, pMiddle.y);
 		color = (gamepad.wButtons & XUSB_GAMEPAD_START) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
 		drawList->AddTriangleFilled(pMiddle0, pMiddle1, pMiddle2, color);
 	}
 	else
 	{
-		pMiddle0 = sum(pMiddle, mul(ImVec2(1.0f, -1.0f), shoulderRadius));
-		pMiddle1 = sum(pMiddle, mul(ImVec2(1.0f, +1.0f), shoulderRadius));
+		pMiddle0 = pMiddle + (ImVec2(1.0f, -1.0f) * shoulderRadius);
+		pMiddle1 = pMiddle + (ImVec2(1.0f, +1.0f) * shoulderRadius);
 		pMiddle2 = ImVec2(pMiddle.x - shoulderRadius, pMiddle.y);
 		color = (gamepad.wButtons & XUSB_GAMEPAD_BACK) != 0 ? activeColor : ANIMGAMEPAD_COL_BG;
 		drawList->AddTriangleFilled(pMiddle0, pMiddle1, pMiddle2, color);
+
+		//ImU32 pGuideColor = ANIMGAMEPAD_COL_BG;
+		//if (useFading) {
+		//	if ((gamepad.wButtons & XUSB_GAMEPAD_GUIDE)) updatePressed(pressId + 3);
+		//	pGuideColor = isActive(pressId + 3) ? ANIMGAMEPAD_ACTIVE_BG : ANIMGAMEPAD_INACTIVE_BG;
+		//}
+		//ImU32 guideColor = (gamepad.wButtons & XUSB_GAMEPAD_GUIDE) != 0 ? activeColor : pGuideColor;
+		//drawList->AddCircleFilled(ImVec2(pMiddle1.x + 2.5f + (pMiddle1.y - pMiddle0.y) / 1.5, pMiddle2.y), (pMiddle1.y - pMiddle0.y) / 2, guideColor);
 	}
 
 	ImGui::SetCursorPos(cursor);
@@ -180,8 +188,8 @@ void AnimatedGamepadWidget::renderHSpace(float distance)
 
 void AnimatedGamepadWidget::renderSquare(ImDrawList* drawlist, ImVec2 center, float edge, ImU32 color)
 {
-	ImVec2 p0 = sum(center, mul(ImVec2(-0.5f, 0.5f), edge));
-	ImVec2 p1 = sum(center, mul(ImVec2(0.5f, -0.5f), edge));
+	ImVec2 p0 = center + (ImVec2(-0.5f, 0.5f) * edge);
+	ImVec2 p1 = center + (ImVec2(0.5f, -0.5f) * edge);
 	drawlist->AddRectFilled(p0, p1, color);
 }
 
@@ -248,7 +256,7 @@ void AnimatedGamepadWidget::drawTrigger()
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + 100, p0.y + 100);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 	ImU32 col_a = ImGui::GetColorU32(IM_COL32(54, 54, 54, 255));
 	ImU32 col_b = ImGui::GetColorU32(IM_COL32(255, 255, 255, 255));
 	static float angle_min_left = IM_PI / 4.0f;
@@ -266,10 +274,10 @@ void AnimatedGamepadWidget::RenderImageRotated(ImTextureID tex_id, ImVec2 center
 	float sin_a = sinf(angle);
 	ImVec2 pos[4] =
 	{
-		sum(center, ImRotate(ImVec2(-size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a)),
-		sum(center, ImRotate(ImVec2(+size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a)),
-		sum(center, ImRotate(ImVec2(+size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a)),
-		sum(center, ImRotate(ImVec2(-size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a))
+		center + ImRotate(ImVec2(-size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+		center + ImRotate(ImVec2(+size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+		center + ImRotate(ImVec2(+size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a),
+		center + ImRotate(ImVec2(-size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a)
 	};
 	ImVec2 uvs[4] =
 	{

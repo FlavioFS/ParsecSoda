@@ -254,6 +254,7 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="imgui\ImVecExtensions.h" />
     <ClInclude Include="Widgets\SwitchWidget.h" />
     <ClInclude Include="Widgets\BadgeButtonWidget.h" />
     <ClInclude Include="Widgets\BadgeIconWidget.h" />

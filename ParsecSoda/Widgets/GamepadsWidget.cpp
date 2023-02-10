@@ -397,7 +397,7 @@ void GamepadsWidget::renderOptionsMenu()
     {
         if (SwitchWidget::render(
             MetadataCache::preferences.defaultMirrorValue,
-            "###Mirror default", "Default mirror",
+            "###Mirror default switch", "Default mirror",
             "Mirror [ON]", "Default behaviour: enabled.\n\nLeft Stick and Dpad mirror each other.\nUse this if you need to choose between\nDPad and Analog.",
             "Mirror [OFF]", "Default behaviour: disabled.\n\nLeft Stick and Dpad are independent.\nUse this if you need to choose between\nDPad and Analog."
         ))
@@ -407,9 +407,19 @@ void GamepadsWidget::renderOptionsMenu()
 
         if (SwitchWidget::render(
             MetadataCache::preferences.defaultMultitapValue,
-            "###Multitap default", "Default multitap",
+            "###Multitap default switch", "Default multitap",
             "Multitap [ON]", "Default behaviour: enabled.\n\nDeviceID active.\nA guest may have multiple gamepads\nin the same account.",
             "Multitap [OFF]", "Default behaviour: disabled.\n\nDeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        if (SwitchWidget::render(
+            MetadataCache::preferences.enableGuideButton,
+            "###Guide button switch", "Allow Guide button",
+            "Guide Button [ON]", "Guests can press the menu button.",
+            "Guide Button [OFF]", "Guests cannot press the menu button."
         ))
         {
             MetadataCache::savePreferences();

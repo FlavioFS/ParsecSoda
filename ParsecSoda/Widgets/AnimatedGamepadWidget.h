@@ -3,6 +3,7 @@
 #include <cmath>
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
+#include "../imgui/ImVecExtensions.h"
 #include "../AGamepad.h"
 #include "../globals/AppColors.h"
 
@@ -15,6 +16,8 @@
 #define ANIMGAMEPAD_COL_B  ImGui::GetColorU32(IM_COL32(255, 102, 102, 255))
 #define ANIMGAMEPAD_COL_X  ImGui::GetColorU32(IM_COL32(115, 157, 255, 255))
 #define ANIMGAMEPAD_COL_Y  ImGui::GetColorU32(IM_COL32(255, 255, 115, 255))
+#define ANIMGAMEPAD_ACTIVE_BG  ImGui::GetColorU32(IM_COL32(40, 40, 40, 255))
+#define ANIMGAMEPAD_INACTIVE_BG  ImGui::GetColorU32(IM_COL32(20, 20, 20, 75))
 
 class AnimatedGamepadWidget
 {
@@ -32,22 +35,8 @@ private:
 
 	static void drawTrigger();
 
-	static inline ImVec2 sum(const ImVec2& lhs, const ImVec2& rhs)
-	{
-		return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y);
-	}
-	static inline ImVec2 mul(const ImVec2& lhs, const float lambda)
-	{
-		return ImVec2(lhs.x * lambda, lhs.y * lambda);
-	}
-	static inline ImVec2 lerp(const ImVec2& v1, const ImVec2& v2, const float t)
-	{
-		return sum(mul(v1, 1.0f - t), mul(v2, t));
-	}
-	static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
-	{
-		return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
-	}
+	static inline ImVec2 lerp(const ImVec2& v1, const ImVec2& v2, const float t)	{ return (v1 * (1.0f - t)) + (v2 * t); }
+	static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)		{ return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a); }
 
 	static void RenderImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle);
 };

@@ -694,7 +694,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, AGamepad*
 	rawState.Gamepad.sThumbRY = state.thumbRY;
 
 	// Block guide button
-	if (MetadataCache::preferences.disableGuideButton)
+	if (!MetadataCache::preferences.enableGuideButton)
 	{
 		Bitwise::setValue(rawState.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, false);
 	}
@@ -736,7 +736,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, const X
 		buttonCode = XUSB_GAMEPAD_BACK;
 		break;
 	case GAMEPAD_BUTTON_GUIDE:
-		if (!MetadataCache::preferences.disableGuideButton)
+		if (MetadataCache::preferences.enableGuideButton)
 		{
 			buttonCode = XUSB_GAMEPAD_GUIDE;
 		}

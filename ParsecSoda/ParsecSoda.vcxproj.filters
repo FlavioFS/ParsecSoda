@@ -734,6 +734,9 @@
     <ClInclude Include="Widgets\SwitchWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\ImVecExtensions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
