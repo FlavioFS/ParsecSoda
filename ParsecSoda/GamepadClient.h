@@ -105,7 +105,6 @@ public:
 	bool lock = false;
 	bool isPuppetMaster = false;
 
-
 private:
 	bool _isBusy = false;
 
@@ -115,8 +114,6 @@ private:
 	bool sendKeyboardMessage(ParsecKeyboardMessage& keyboard, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
 
 	void releaseGamepads();
-	void setMirror(uint32_t guestUserID, bool mirror);
-	void setMultitap(uint32_t guestUserID, bool ignoreDeviceID);
 	bool tryAssignGamepad(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
 	bool enqueueHotseatRequest(Guest guest, uint32_t deviceId, int currentSlots, bool isKeyboard, GuestPreferences prefs = GuestPreferences());
 	bool isRequestState(ParsecMessage message);
@@ -128,10 +125,10 @@ private:
 
 	bool isHotseatsActive();
 
-	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs);
-	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadStateMessage& state, AGamepad* pad, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadButtonMessage& button, const XINPUT_STATE& previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecGamepadAxisMessage& axis, const XINPUT_STATE& previousState, GuestPreferences& prefs);
+	XINPUT_STATE toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, const XINPUT_STATE& previousState, GuestPreferences& prefs);
 	
 	int getDpadSignX(const WORD& wButtons);
 	int getDpadSignY(const WORD& wButtons);

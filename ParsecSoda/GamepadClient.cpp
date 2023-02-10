@@ -504,7 +504,7 @@ bool GamepadClient::sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadSt
 			slots++;
 			if (!(isPuppetMaster && pad->isPuppet) && !pad->isLocked() && (!prefs.isMultitap() || gamepadState.id == pad->owner.deviceID))
 			{
-				pad->setStateSafe(toXInput(gamepadState, pad->getState(), prefs));
+				pad->setStateSafe(toXInput(gamepadState, pad, prefs));
 				return true;
 			}
 		}
@@ -679,50 +679,40 @@ void GamepadClient::toggleLockGamepad(int index)
 }
 
 
-XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, AGamepad* pad, GuestPreferences& prefs)
 {
-	XINPUT_STATE result = previousState;
+	XINPUT_STATE rawState = pad->getState();
+	XINPUT_STATE result = rawState;
+	XINPUT_STATE mirrorCache = pad->getMirrorCache();
 
-	//if (_isAlive && _isConnected && _client != nullptr)
-	result.Gamepad.wButtons = state.buttons;
-	result.Gamepad.bLeftTrigger = state.leftTrigger;
-	result.Gamepad.bRightTrigger = state.rightTrigger;
-	result.Gamepad.sThumbLX = state.thumbLX;
-	result.Gamepad.sThumbLY = state.thumbLY;
-	result.Gamepad.sThumbRX = state.thumbRX;
-	result.Gamepad.sThumbRY = state.thumbRY;
+	rawState.Gamepad.wButtons = state.buttons;
+	rawState.Gamepad.bLeftTrigger = state.leftTrigger;
+	rawState.Gamepad.bRightTrigger = state.rightTrigger;
+	rawState.Gamepad.sThumbLX = state.thumbLX;
+	rawState.Gamepad.sThumbLY = state.thumbLY;
+	rawState.Gamepad.sThumbRX = state.thumbRX;
+	rawState.Gamepad.sThumbRY = state.thumbRY;
 
 	// Block guide button
 	if (MetadataCache::preferences.disableGuideButton)
 	{
-		Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, 0);
+		Bitwise::setValue(rawState.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, false);
 	}
 
 	if (prefs.isMirror())
+	{	
+		result = isDpadEqual(mirrorCache, rawState) ? stickToDpad(rawState) : dpadToStick(rawState);
+		pad->setMirrorCache(rawState);
+	}
+	else
 	{
-		XINPUT_STATE stickBefore = stickToDpad(previousState);
-		XINPUT_STATE stickNow = stickToDpad(result);
-		
-		if (!isDpadEqual(stickBefore, stickNow))
-		{
-			result = stickNow;
-		}
-		else
-		{
-			XINPUT_STATE dpadBefore = dpadToStick(previousState);
-			XINPUT_STATE dpadNow = dpadToStick(result);
-
-			if (!isDpadEqual(dpadBefore, dpadNow))
-			{
-				result = dpadNow;
-			}
-		}
+		result = rawState;
 	}
 
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, const XINPUT_STATE& previousState, GuestPreferences& prefs)
 {
 	XINPUT_STATE result = previousState;
 	
@@ -791,7 +781,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, XINPUT_
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, const XINPUT_STATE& previousState, GuestPreferences& prefs)
 {
 	XINPUT_STATE result = previousState;
 
@@ -830,7 +820,10 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, XINPUT_STAT
 	return result;
 }
 
-XINPUT_STATE GamepadClient::toXInput(ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard, XINPUT_STATE previousState, GuestPreferences& prefs)
+XINPUT_STATE GamepadClient::toXInput(
+	ParsecKeyboardMessage& key, AGamepad::Keyboard& keyboard,
+	const XINPUT_STATE& previousState, GuestPreferences& prefs
+)
 {
 	XINPUT_STATE result = previousState;
 

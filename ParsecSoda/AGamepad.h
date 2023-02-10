@@ -75,6 +75,9 @@ public:
 	void setLocked(const bool value);
 	void toggleLocked();
 
+	void setMirrorCache(const XINPUT_STATE newState);
+	const XINPUT_STATE& getMirrorCache();
+
 	// Child specific implementations
 	virtual bool alloc() = 0;
 	virtual bool connect() = 0;
@@ -98,4 +101,5 @@ protected:
 	bool _isLocked = false;
 
 	XINPUT_STATE _currentState;
+	XINPUT_STATE _mirrorCache;
 };

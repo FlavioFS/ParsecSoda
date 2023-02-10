@@ -128,3 +128,13 @@ void AGamepad::toggleLocked()
 {
 	setLocked(!_isLocked);
 }
+
+void AGamepad::setMirrorCache(const XINPUT_STATE newState)
+{
+	_mirrorCache = newState;
+}
+
+const XINPUT_STATE& AGamepad::getMirrorCache()
+{
+	return _mirrorCache;
+}

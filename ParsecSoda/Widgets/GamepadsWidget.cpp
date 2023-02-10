@@ -194,11 +194,9 @@ bool GamepadsWidget::render()
         {
             static bool isMultitap, isMirror;
             static ImVec4 iconColor;
-            static GamepadClient::GuestPreferences* pprefs;
             tooltipTitle = "Multitap (disabled)";
             tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
             iconColor = AppColors::negative;
-            pprefs = nullptr;
 
             isMultitap = MetadataCache::preferences.defaultMultitapValue;
             isMirror = MetadataCache::preferences.defaultMirrorValue;
@@ -207,26 +205,25 @@ bool GamepadsWidget::render()
                 _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
                     isMultitap = prefs.isMultitap();
                     isMirror = prefs.isMirror();
-                    pprefs = &prefs;
                 });
             }
 
             if (isMirror)
             {
-                tooltipTitle = "Mirror enabled (Left Stick to DPad)";
-                tooltipDescription = "Left Analog inputs are copied to the DPad.";
+                tooltipTitle = "Mirror enabled";
+                tooltipDescription = "DPad and Left Stick mirror each other.";
                 iconColor = AppColors::positive;
             }
             else
             {
-                tooltipTitle = "Mirror disabled (Left Stick to DPad)";
-                tooltipDescription = "DPad and Left Analog are independent.";
+                tooltipTitle = "Mirror disabled";
+                tooltipDescription = "DPad and Left Stick are independent.";
                 iconColor = AppColors::negative;
             }
             id = "###Mirror dpad " + to_string(i);
             if (BadgeButtonWidget::render(AppIcons::mirror, tooltipTitle, tooltipDescription, id, ImVec2(25, 25), iconColor))
             {
-                if (gi->owner.guest.isValid() && pprefs) pprefs->toggleMirror();
+                if (gi->owner.guest.isValid()) _hosting.getGamepadClient().toggleMirror(gi->owner.guest.userID);
             }
 
             ImGui::SameLine();
@@ -247,7 +244,7 @@ bool GamepadsWidget::render()
             id = "###Guest multitap " + to_string(i);
             if (BadgeButtonWidget::render(AppIcons::multitap, tooltipTitle, tooltipDescription, id, ImVec2(25,25), iconColor))
             {
-                if (gi->owner.guest.isValid() && pprefs) pprefs->toggleMultitap();
+                if (gi->owner.guest.isValid()) _hosting.getGamepadClient().toggleMultitap(gi->owner.guest.userID);
             }
 
             ImGui::SameLine();
@@ -400,9 +397,9 @@ void GamepadsWidget::renderOptionsMenu()
     {
         if (SwitchWidget::render(
             MetadataCache::preferences.defaultMirrorValue,
-            "###Mirror default", "Default mirror (LStick to DPad)",
-            "Mirror [ON]", "Default behaviour: enabled.\n\nLeft Stick inputs are copied to DPad.\nUse this if you need to choose between\nDPad and Analog.",
-            "Mirror [OFF]", "Default behaviour: disabled.\n\nLeft Stick and Left Stick are independent.\nUse this if you need to choose between\nDPad and Analog."
+            "###Mirror default", "Default mirror",
+            "Mirror [ON]", "Default behaviour: enabled.\n\nLeft Stick and Dpad mirror each other.\nUse this if you need to choose between\nDPad and Analog.",
+            "Mirror [OFF]", "Default behaviour: disabled.\n\nLeft Stick and Dpad are independent.\nUse this if you need to choose between\nDPad and Analog."
         ))
         {
             MetadataCache::savePreferences();
