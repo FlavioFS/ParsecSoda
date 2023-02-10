@@ -265,9 +265,12 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 	// ===============
 	// Guide
 	// ===============
-	button = XUSB_GAMEPAD_GUIDE;
-	updateColor(pressId + 3);
-	drawList->AddCircleFilled(ImVec2(pMiddle1.x + 2.5f + (pMiddle1.y - pMiddle0.y) / 1.5, pMiddle2.y), (pMiddle1.y - pMiddle0.y) / 2, color);
+	if (!isRightTrigger)
+	{
+		button = XUSB_GAMEPAD_GUIDE;
+		updateColor(pressId + 3);
+		drawList->AddCircleFilled(ImVec2(p1.x + 0.08f * height, pMiddle.y), 1.25f * shoulderRadius, color);
+	}
 
 
 	ImGui::SetCursorPos(cursor);
