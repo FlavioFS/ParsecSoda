@@ -84,4 +84,6 @@ public:
 	* @param newPattern Pattern to insert.
 	*/
 	static void replacePatternOnce(string& source, string oldPattern, string newPattern);
+
+	static inline const string stripFirst(string const& source) { return source.substr(1, source.size()-1); }
 };

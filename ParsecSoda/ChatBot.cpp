@@ -68,11 +68,11 @@ const std::string ChatBot::formatGuestConnection(Guest guest, ParsecGuestState s
 	std::ostringstream reply;
 	if (state == GUEST_CONNECTED)
 	{
-		reply << "@ >>  joined \t " << guest.name << " \t(#" << guest.userID << ")\0";
+		reply << "@joined \t " << guest.name << " \t(#" << guest.userID << ")\0";
 	}
 	else
 	{
-		reply << "! <<  quit \t\t  " << guest.name << " \t(#" << guest.userID << ")\0";
+		reply << "!quit \t\t  " << guest.name << " \t(#" << guest.userID << ")\0";
 	}
 
 	const std::string formattedMessage = reply.str();

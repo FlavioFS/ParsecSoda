@@ -4,6 +4,7 @@
 #include "../Hosting.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
+#include "../Stringer.h"
 
 class LogWidget
 {

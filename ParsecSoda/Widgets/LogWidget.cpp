@@ -18,23 +18,24 @@ bool LogWidget::render()
         
         it = commands.begin();
         ImGui::BeginChild("Log text", ImVec2(size.x, size.y));
+        string message;
         for (; it != commands.end(); ++it)
         {
             if ((*it)[0] == '@')
             {
                 AppStyle::pushPositive();
-                ImGui::TextWrapped((*it).c_str());
+                ImGui::TextWrapped(Stringer::stripFirst(*it).c_str());
                 AppStyle::pop();
             }
             else if ((*it)[0] == '!')
             {
                 AppStyle::pushNegative();
-                ImGui::TextWrapped((*it).c_str());
+                ImGui::TextWrapped(Stringer::stripFirst(*it).c_str());
                 AppStyle::pop();
             }
             else
             {
-                ImGui::TextWrapped((*it).c_str());
+                ImGui::TextWrapped(Stringer::stripFirst(*it).c_str());
             }
         }
         if (_messageCount != commands.size())

@@ -38,9 +38,9 @@ namespace ImGui
 		colors[ImGuiCol_FrameBg] = ImVec4(0.08f, 0.07f, 0.07f, 1.00f);
 		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.08f, 0.07f, 0.07f, 1.00f);
 		colors[ImGuiCol_FrameBgActive] = ImVec4(0.08f, 0.07f, 0.07f, 1.00f);
-		colors[ImGuiCol_TitleBg] = ImVec4(0.00f, 0.39f, 0.47f, 1.00f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.31f, 0.31f, 0.33f, 1.00f);
 		colors[ImGuiCol_TitleBgActive] = AppColors::primary;
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.32f, 0.39f, 1.00f);
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.31f, 0.31f, 0.33f, 1.00f);
 		colors[ImGuiCol_MenuBarBg] = ImVec4(0.08f, 0.08f, 0.07f, 1.00f);
 		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.08f, 0.08f, 0.07f, 1.00f);
 		colors[ImGuiCol_ScrollbarGrab] = AppColors::secondary;
