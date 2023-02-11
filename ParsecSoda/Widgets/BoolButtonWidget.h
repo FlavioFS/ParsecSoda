@@ -8,5 +8,5 @@
 class BoolButtonWidget
 {
 public:
-	static bool render(const char* label, bool& value);
+	static bool render(const char* label, bool& value, ImVec2 size = ICONBUTTON_SIZE);
 };

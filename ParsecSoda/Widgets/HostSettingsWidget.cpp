@@ -48,7 +48,7 @@ bool HostSettingsWidget::render()
 
     AppStyle::pushTitle();
 
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 620), ImVec2(600, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(340, 620), ImVec2(600, 900));
     ImGui::Begin("Host Settings", (bool*)0);
     AppStyle::pushLabel();
 
@@ -161,43 +161,39 @@ bool HostSettingsWidget::render()
 
     cursor = ImGui::GetCursorPos();
 
-
     // ====================================================
     // Guest Slots
     // ====================================================
-    ImGui::BeginChild("##Guest Slots child", ImVec2(100.0f, 75.0f));
+    ImGui::BeginChild("##Guest Slots child", ImVec2(90.0f, 60.0f));
     ImGui::Text("Guest slots");
-    if (IntRangeWidget::render<uint32_t>("guest count", _maxGuests, 0, 64, 0.025f))
+    if (IntRangeWidget::render<uint32_t>("guest count", _maxGuests, 0, 64, nullptr, 0.025f))
     {
         TitleTooltipWidget::render("Room Slots", "How many guests do you want in this room?");
     }
     ImGui::EndChild();
 
     ImGui::SameLine();
-    ImGui::Dummy(ImVec2(2.0,0.0));
-    ImGui::SameLine();
 
 
     // ====================================================
     // Latency Limiter
     // ====================================================
-    ImGui::BeginChild("##Latency limiter child", ImVec2(170.0f, 75.0f));
+    ImGui::BeginChild("##Latency limiter child", ImVec2(120.0f, 60.0f));
     ImGui::Text("Latency Limit");
 
-    BoolButtonWidget::render(nullptr, MetadataCache::preferences.latencyLimiterEnabled);
+    BoolButtonWidget::render(nullptr, MetadataCache::preferences.latencyLimiterEnabled, ImVec2(30, 30));
     if (MetadataCache::preferences.latencyLimiterEnabled)   TitleTooltipWidget::render("Enabled", "Guests kicked if ping exceeds maximum limit.");
     else                                                    TitleTooltipWidget::render("Disabled", "Ping does not matter.");
 
     ImGui::SameLine();
 
-    if (IntRangeWidget::render<uint32_t>("Latency Limit intrange", MetadataCache::preferences.maxLatencyMs, 0, 999, 0.025f))
+    if (IntRangeWidget::render<uint32_t>("Latency Limit intrange", MetadataCache::preferences.maxLatencyMs, 0, 999, nullptr, 0.025f))
     {
         TitleTooltipWidget::render("Latency Limit (ms)", "Any guest whose ping is higher than this value (ms)\nwill be kicked automatically.");
     }
     ImGui::EndChild();
 
-    ImGui::Dummy(dummySize);
-
+    ImGui::SameLine();
 
     // ====================================================
     // Public / Private
@@ -206,9 +202,8 @@ bool HostSettingsWidget::render()
     {
         bool debug = true;
     }
-    ImGui::SetCursorPos(ImVec2(cursor.x + size.x - 90.0f, cursor.y));
-    BoolButtonWidget::render("Public room", _publicGame);
-
+    //ImGui::SetCursorPos(ImVec2(cursor.x + size.x - 90.0f, cursor.y));
+    BoolButtonWidget::render("Public room", _publicGame, ImVec2(30, 30));
     if (_publicGame)    TitleTooltipWidget::render("Public Game", "Anyone can enter this room.");
     else                TitleTooltipWidget::render("Private Game", "All guests must use the secret link to enter this room.");
 

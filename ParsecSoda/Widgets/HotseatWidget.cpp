@@ -104,7 +104,7 @@ void HotseatWidget::renderTimePickers(HotseatManager& hotseatManager)
 	AppStyle::pushLabel();
 	ImGui::Text("Minutes");
 	AppStyle::pop();
-	if (IntRangeWidget::render<uint32_t>("hotseat timer minutes", timerMinutes, 0, 300, 0.1f, 75.0f, onTimerChanged))
+	if (IntRangeWidget::render<uint32_t>("hotseat timer minutes", timerMinutes, 0, 300, onTimerChanged, 0.1f))
 	{
 		TitleTooltipWidget::render("Hotseat Timer (minutes)", "Seats will auto-rotate on cooldown timeout.");
 	}
@@ -116,7 +116,7 @@ void HotseatWidget::renderTimePickers(HotseatManager& hotseatManager)
 	AppStyle::pushLabel();
 	ImGui::Text("Seconds");
 	AppStyle::pop();
-	if (IntRangeWidget::render<uint32_t>("hotseat timer seconds", timerSeconds, 0, 59, 0.1f, 75.0f, onTimerChanged))
+	if (IntRangeWidget::render<uint32_t>("hotseat timer seconds", timerSeconds, 0, 59, onTimerChanged, 0.1f))
 	{
 		TitleTooltipWidget::render("Hotseat Timer (seconds)", "Seats will auto-rotate on cooldown timeout.");
 	}

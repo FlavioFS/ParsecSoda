@@ -16,7 +16,7 @@ bool GamepadsWidget::render()
     static string name, id, tooltipTitle, tooltipDescription;
 
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(330, 280), ImVec2(800, 1100));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(250, 280), ImVec2(800, 1100));
     ImGui::Begin("Virtual Gamepads", (bool*)0, isWindowLocked ? (ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize) : 0);
     AppStyle::pushInput();
     
@@ -374,7 +374,7 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
 
     ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
-    if (IntRangeWidget::render<uint32_t>("xboxCounter", MetadataCache::preferences.xboxPuppetCount, 0, 100, 0.05f, 75.0f, releaseDragCallback))
+    if (IntRangeWidget::render<uint32_t>("xboxCounter", MetadataCache::preferences.xboxPuppetCount, 0, 100, releaseDragCallback))
     {
         TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }
@@ -385,7 +385,7 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
 
     ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
-    if (IntRangeWidget::render<uint32_t>("ds4Counter", MetadataCache::preferences.ds4PuppetCount, 0, 100, 0.05f, 75.0f, releaseDragCallback))
+    if (IntRangeWidget::render<uint32_t>("ds4Counter", MetadataCache::preferences.ds4PuppetCount, 0, 100, releaseDragCallback))
     {
         TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }

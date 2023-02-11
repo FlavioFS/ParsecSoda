@@ -135,7 +135,7 @@ bool VideoWidget::render()
         MetadataCache::savePreferences();
     };
 
-    if (IntRangeWidget::render<uint32_t>("Bandwidth (Mbps)", _bandwidth, 1, 1000, 1, 75.0f, intRangeReleaseCallback))
+    if (IntRangeWidget::render<uint32_t>("Bandwidth (Mbps)", _bandwidth, 1, 1000, intRangeReleaseCallback, 1))
     {
         TitleTooltipWidget::render("Encoder Bandwidth", "Limits the encoder bandwidth usage.\n(This value is split between guests.)");
     }
@@ -150,7 +150,7 @@ bool VideoWidget::render()
     AppStyle::pushLabel();
     ImGui::Text("FPS");
     AppStyle::pop();
-    if (IntRangeWidget::render<uint32_t>("Encoder FPS", _fps, 10, 250, 0.5f, 75.0f, intRangeReleaseCallback))
+    if (IntRangeWidget::render<uint32_t>("Encoder FPS", _fps, 10, 250, intRangeReleaseCallback))
     {
         TitleTooltipWidget::render("Encoder FPS", "Limits the amount of frames per second.");
     }
