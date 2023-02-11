@@ -179,7 +179,7 @@ bool GamepadsWidget::render()
         ImGui::SameLine();
 
         id = "###Lock gamepad" + to_string(i);
-        if (ToggleIconButtonWidget::render(AppIcons::lock, AppIcons::unlock, gi->isLocked(), id.c_str(), ImVec2(25, 25)))
+        if (ToggleIconButtonWidget::render(AppIcons::lock, AppIcons::unlock, gi->isLocked(), id.c_str(), AppColors::negative, AppColors::positive, ImVec2(25, 25)))
         {
             gi->toggleLocked();
         }
