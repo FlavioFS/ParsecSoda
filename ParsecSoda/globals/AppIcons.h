@@ -19,6 +19,7 @@ public:
 	static ID3D11ShaderResourceView* skip;
 	static ID3D11ShaderResourceView* remove;
 	static ID3D11ShaderResourceView* cog;
+	static ID3D11ShaderResourceView* copy;
 
 	static ID3D11ShaderResourceView* yes;
 	static ID3D11ShaderResourceView* no;
@@ -99,6 +100,7 @@ private:
 	static Texture _skip;
 	static Texture _remove;
 	static Texture _cog;
+	static Texture _copy;
 
 	static Texture _yes;
 	static Texture _no;

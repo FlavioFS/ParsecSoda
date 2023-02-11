@@ -117,7 +117,7 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
         if (MTY_FileExists(filepath.c_str()))
         {
             MTY_JSON *json = MTY_JSONReadFile(filepath.c_str());
-            char roomName[256] = "", gameID[72] = "", secret[32] = "";
+            char roomName[256] = "", gameID[72] = "", secret[32] = "play-now";
 
             if (!MTY_JSONObjGetUInt(json, "audioInputDevice", &preferences.audioInputDevice)) {
                 preferences.audioInputDevice = 0;
@@ -166,7 +166,7 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             else preferences.gameID = "";
 
             if (MTY_JSONObjGetString(json, "secret", secret, 32)) preferences.secret = secret;
-            else preferences.secret = "";
+            else preferences.secret = "play-now";
 
             if (!MTY_JSONObjGetUInt(json, "guestCount", &preferences.guestCount)) {
                 preferences.guestCount = 1;

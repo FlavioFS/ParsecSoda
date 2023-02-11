@@ -34,6 +34,7 @@ public:
 	void renderDpad(WORD wButtons, float edge = 40.0f, ImU32 activeColor = COLOR_PRIMARY_U32);
 	void renderFaceButtons(WORD wButtons, float height = 40.0f);
 	void renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTrigger, float height = 40.0f, ImU32 activeColor = COLOR_PRIMARY_U32, size_t pressId = 0);
+	void renderGuideButton(XINPUT_GAMEPAD gamepad, ImVec2 triggerLPos, ImVec2 TriggerRPos, float height = 40.0f, ImU32 activeColor = COLOR_PRIMARY_U32);
 
 	static void tryResizeAnimations(vector<AnimatedGamepadWidget>& animations, const size_t size, const bool fading = true);
 

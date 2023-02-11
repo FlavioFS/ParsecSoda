@@ -10,6 +10,7 @@ ID3D11ShaderResourceView* AppIcons::stop;
 ID3D11ShaderResourceView* AppIcons::skip;
 ID3D11ShaderResourceView* AppIcons::remove;
 ID3D11ShaderResourceView* AppIcons::cog;
+ID3D11ShaderResourceView* AppIcons::copy;
 
 ID3D11ShaderResourceView* AppIcons::yes;
 ID3D11ShaderResourceView* AppIcons::no;
@@ -89,6 +90,7 @@ Texture AppIcons::_stop;
 Texture AppIcons::_skip;
 Texture AppIcons::_remove;
 Texture AppIcons::_cog;
+Texture AppIcons::_copy;
 
 Texture AppIcons::_yes;
 Texture AppIcons::_no;
@@ -171,6 +173,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _skip.loadFromFile(pd3dDevice, "./icons/skip.png");
     _remove.loadFromFile(pd3dDevice, "./icons/remove.png");
     _cog.loadFromFile(pd3dDevice, "./icons/cog.png");
+    _copy.loadFromFile(pd3dDevice, "./icons/copy.png");
 
     _yes.loadFromFile(pd3dDevice, "./icons/check-on.png");
     _no.loadFromFile(pd3dDevice, "./icons/close-circle.png");
@@ -250,6 +253,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     skip = _skip.texture;
     remove = _remove.texture;
     cog = _cog.texture;
+    copy = _copy.texture;
     
     yes = _yes.texture;
     no = _no.texture;

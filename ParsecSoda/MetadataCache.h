@@ -50,7 +50,7 @@ public:
 		uint32_t adapter = 0;
 		string roomName = "";
 		string gameID = "";
-		string secret = "";
+		string secret = "play-now";
 		uint32_t guestCount = 1;
 		bool publicRoom = false;
 		bool isValid = false;

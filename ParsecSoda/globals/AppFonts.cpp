@@ -10,13 +10,13 @@ ImFont* AppFonts::sugoidekai;
 void AppFonts::init(ImGuiIO& io)
 {
 	// Default
-	label = io.Fonts->AddFontFromFileTTF(APPFONTS_REGULAR, 16.0f);
+	label = io.Fonts->AddFontFromFileTTF(APPFONTS_REGULAR, 14.0f);
 
-	caption = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 14.0f);
-	title = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 20.0f);
+	caption = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 12.0f);
+	title = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 18.0f);
 	input = io.Fonts->AddFontFromFileTTF(APPFONTS_SEMI_BOLD, 16.0f);
 	bigheader = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 24.0f);
-	sugoidekai = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 39.0f);
+	sugoidekai = io.Fonts->AddFontFromFileTTF(APPFONTS_BOLD, 36.0f);
 }
 
 void AppFonts::pushCaption()

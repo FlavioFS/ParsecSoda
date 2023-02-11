@@ -27,7 +27,7 @@ void AppColors::init()
 	label = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
 	input = ImVec4(0.70f, 0.70f, 0.70f, 1.0f);
 	positive = ImVec4(0.00f, 0.67f, 0.41f, 1.00f);
-	negative = ImVec4(0.31f, 0.31f, 0.33f, 1.00f);
+	negative = ImVec4(0.41f, 0.41f, 0.45f, 1.00f);
 	warning = ImVec4(0.83f, 0.35f, 0.03f, 1.00f);
 	warning2 = ImVec4(0.70f, 0.61f, 0.17f, 1.00f);
 

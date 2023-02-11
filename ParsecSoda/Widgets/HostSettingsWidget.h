@@ -12,6 +12,7 @@
 #include "TooltipWidget.h"
 #include "ConfirmPopupWidget.h"
 #include "IconButton.h"
+#include "BadgeButtonWidget.h"
 #include "IntRangeWidget.h"
 #include "BoolButtonWidget.h"
 #include "AudioControlWidget.h"
@@ -45,7 +46,7 @@ private:
 	// Attributes
 	char _roomName[HOST_NAME_LEN];
 	char _gameID[GAME_ID_LEN];
-	char _secret[HOST_SECRET_LEN];
+	char _secret[HOST_SECRET_LEN] = "play-now";
 	char _secretLink[128];
 	uint32_t _maxGuests;
 	bool _publicGame;

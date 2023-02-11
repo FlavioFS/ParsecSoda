@@ -146,8 +146,15 @@ bool HostSettingsWidget::render()
     AppColors::pop();
     TitleTooltipWidget::render("Room Secret", "Generates the share link that lets people\njoin your room anytime.\nMust have 8 characters.");
     AppStyle::pop();
+
+    if (BadgeButtonWidget::render(AppIcons::copy, "Copy Link", "Press to copy the room link.", "###Copy secret link btn", ImVec2(20, 20)))
+    {
+        Utils::copyToClipboard(_secretLink);
+    }
+
+    ImGui::SameLine();
     
-    ImGui::SetNextItemWidth(size.x);
+    ImGui::SetNextItemWidth(size.x - 35);
     ImGui::InputText("##Secret link", _secretLink, 128, ImGuiInputTextFlags_ReadOnly);
 
     ImGui::Dummy(dummySize);

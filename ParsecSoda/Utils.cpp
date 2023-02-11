@@ -76,3 +76,15 @@ bool Utils::findUser(std::string targetUserName, ParsecGuest* guests, int guestC
 
 	return result;
 }
+
+void Utils::copyToClipboard(const string& text)
+{
+	const size_t len = strlen(text.c_str()) + 1;
+	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
+	memcpy(GlobalLock(hMem), text.c_str(), len);
+	GlobalUnlock(hMem);
+	OpenClipboard(0);
+	EmptyClipboard();
+	SetClipboardData(CF_TEXT, hMem);
+	CloseClipboard();
+}
