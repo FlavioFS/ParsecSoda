@@ -100,7 +100,7 @@ void HotseatWidget::renderTimePickers(HotseatManager& hotseatManager)
 	renderDummy();
 	ImGui::SameLine();
 
-	ImGui::BeginChild("##Timer Minutes", ImVec2(120.0f, 75.0f));
+	ImGui::BeginChild("##Timer Minutes", ImVec2(90.0f, 60.0f));
 	AppStyle::pushLabel();
 	ImGui::Text("Minutes");
 	AppStyle::pop();
@@ -112,7 +112,7 @@ void HotseatWidget::renderTimePickers(HotseatManager& hotseatManager)
 
 	ImGui::SameLine();
 
-	ImGui::BeginChild("##Timer Seconds", ImVec2(120.0f, 75.0f));
+	ImGui::BeginChild("##Timer Seconds", ImVec2(90.0f, 60.0f));
 	AppStyle::pushLabel();
 	ImGui::Text("Seconds");
 	AppStyle::pop();

@@ -15,10 +15,10 @@ bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, IntR
     AppStyle::pushInput();
     AppColors::pushPrimary();
 
-
-    ImGui::BeginGroup();
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
+
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    ImGui::BeginGroup();
     ImGui::PushButtonRepeat(true);
     if (ImGui::ArrowButton(idUp.c_str(), ImGuiDir_Up))
     {
@@ -33,9 +33,8 @@ bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, IntR
     }
     if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
     ImGui::PopButtonRepeat();
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar();
     ImGui::EndGroup();
+    ImGui::PopStyleVar();
     
     ImGui::SameLine();
 
@@ -54,9 +53,10 @@ bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, IntR
     {
         releaseDragCallback();
     }
-
     AppFonts::pop();
 
+    
+    ImGui::PopStyleVar();
 
     AppColors::pop();
     AppStyle::pop();

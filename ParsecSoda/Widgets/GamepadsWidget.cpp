@@ -372,7 +372,7 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
         MetadataCache::savePreferences();
     };
 
-    ImGui::Image(AppIcons::xinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    ImGui::Image(AppIcons::xinput, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
     if (IntRangeWidget::render<uint32_t>("xboxCounter", MetadataCache::preferences.xboxPuppetCount, 0, 100, releaseDragCallback))
     {
@@ -380,10 +380,10 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
     }
 
     ImGui::SameLine();
-    ImGui::Dummy(ImVec2(20, 0));
+    ImGui::Dummy(ImVec2(5, 0));
     ImGui::SameLine();
-
-    ImGui::Image(AppIcons::dinput, ImVec2(45, 45), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
+    
+    ImGui::Image(AppIcons::dinput, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
     if (IntRangeWidget::render<uint32_t>("ds4Counter", MetadataCache::preferences.ds4PuppetCount, 0, 100, releaseDragCallback))
     {
