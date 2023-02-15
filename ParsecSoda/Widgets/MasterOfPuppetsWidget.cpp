@@ -78,7 +78,7 @@ bool MasterOfPuppetsWidget::render()
 
     ImGui::SameLine();
     ImGui::SetCursorPosX(ImGui::GetWindowContentRegionWidth() - 20);
-    if (IconButton::render(AppIcons::move, isWindowLocked ? AppColors::negative : AppColors::positive))
+    if (ToggleIconButtonWidget::render(AppIcons::moveOff, AppIcons::move, isWindowLocked, AppColors::negative, AppColors::positive))
     {
         isWindowLocked = !isWindowLocked;
     }

@@ -13,7 +13,7 @@
 #include "IconButton.h"
 #include "IntRangeWidget.h"
 #include "TitleTooltipWidget.h"
-
+#include "ToggleIconButtonWidget.h"
 
 class MasterOfPuppetsWidget
 {

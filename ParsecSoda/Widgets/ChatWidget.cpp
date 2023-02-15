@@ -190,11 +190,8 @@ bool ChatWidget::renderTopBar(bool& isWindowLocked, bool& isClearChat)
     ImGui::SameLine();
     cursor = ImGui::GetCursorPos();
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
-    if (IconButton::render(
-        AppIcons::move,
-        isWindowLocked ? AppColors::negative : AppColors::positive,
-        ImVec2(30, 30)
-    ))
+
+    if (ToggleIconButtonWidget::render(AppIcons::moveOff, AppIcons::move, isWindowLocked, AppColors::negative, AppColors::positive, ImVec2(30, 30)))
     {
         isWindowLocked = !isWindowLocked;
     }

@@ -63,13 +63,9 @@ void HotseatWidget::renderTopBar(HotseatManager& hotseatManager, bool& isWindowL
 	static ImVec2 cursor;
 	cursor = ImGui::GetCursorPos();
 
-	ImGui::SetCursorPosY(31);
+	ImGui::SetCursorPosY(26);
 	ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 45);
-	if (IconButton::render(
-		AppIcons::move,
-		isWindowLocked ? AppColors::negative : AppColors::positive,
-		ImVec2(30, 30)
-	))
+	if (ToggleIconButtonWidget::render(AppIcons::moveOff, AppIcons::move, isWindowLocked, AppColors::negative, AppColors::positive, ImVec2(30, 30)))
 	{
 		isWindowLocked = !isWindowLocked;
 	}

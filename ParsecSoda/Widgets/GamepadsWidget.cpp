@@ -351,11 +351,7 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
     ImGui::SameLine();
 
     ImGui::SetCursorPosX(windowSize.x - 25);
-    if (IconButton::render(
-        AppIcons::move,
-        isWindowLocked ? AppColors::negative : AppColors::positive,
-        buttonSize
-    ))
+    if (ToggleIconButtonWidget::render(AppIcons::moveOff, AppIcons::move, isWindowLocked, AppColors::negative, AppColors::positive, buttonSize))
     {
         isWindowLocked = !isWindowLocked;
     }

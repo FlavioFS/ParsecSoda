@@ -43,6 +43,7 @@ ID3D11ShaderResourceView* AppIcons::edit;
 ID3D11ShaderResourceView* AppIcons::image;
 ID3D11ShaderResourceView* AppIcons::trash;
 ID3D11ShaderResourceView* AppIcons::move;
+ID3D11ShaderResourceView* AppIcons::moveOff;
 
 ID3D11ShaderResourceView* AppIcons::chat;
 ID3D11ShaderResourceView* AppIcons::users;
@@ -123,6 +124,7 @@ Texture AppIcons::_edit;
 Texture AppIcons::_image;
 Texture AppIcons::_trash;
 Texture AppIcons::_move;
+Texture AppIcons::_moveOff;
 
 Texture AppIcons::_chat;
 Texture AppIcons::_users;
@@ -206,6 +208,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _image.loadFromFile(pd3dDevice, "./icons/image.png");
     _trash.loadFromFile(pd3dDevice, "./icons/trash.png");
     _move.loadFromFile(pd3dDevice, "./icons/move.png");
+    _moveOff.loadFromFile(pd3dDevice, "./icons/move-off.png");
 
     _chat.loadFromFile(pd3dDevice, "./icons/chat.png");
     _users.loadFromFile(pd3dDevice, "./icons/users.png");
@@ -286,6 +289,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     image = _image.texture;
     trash = _trash.texture;
     move = _move.texture;
+    moveOff = _moveOff.texture;
 
     chat = _chat.texture;
     users = _users.texture;

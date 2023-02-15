@@ -52,6 +52,7 @@ public:
 	static ID3D11ShaderResourceView* image;
 	static ID3D11ShaderResourceView* trash;
 	static ID3D11ShaderResourceView* move;
+	static ID3D11ShaderResourceView* moveOff;
 
 	static ID3D11ShaderResourceView* chat;
 	static ID3D11ShaderResourceView* users;
@@ -133,6 +134,7 @@ private:
 	static Texture _image;
 	static Texture _trash;
 	static Texture _move;
+	static Texture _moveOff;
 
 	static Texture _chat;
 	static Texture _users;
