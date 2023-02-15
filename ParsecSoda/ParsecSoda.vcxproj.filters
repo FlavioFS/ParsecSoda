@@ -207,9 +207,6 @@
     <ClCompile Include="Widgets\ProgressCircularWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Widgets\Vec2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Timespan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -633,9 +630,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Widgets\ProgressCircularWidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Widgets\Vec2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timespan.h">

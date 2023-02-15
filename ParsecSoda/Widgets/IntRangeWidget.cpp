@@ -5,11 +5,12 @@ bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, IntR
 {
     static bool isDragHover, isArrowClick;
     static string idUp, idDown, idDrag;
+    static const ImVec2 arrowSize = Vector2::one * 14;
     isDragHover = false;
     isArrowClick = false;
-    idUp = (string("##Arrow up") + string(id));
-    idDown = (string("##Arrow down") + string(id));
-    idDrag = (string("##Drag int") + string(id));
+    idUp = (string("##Arrow up ") + string(id));
+    idDown = (string("##Arrow down ") + string(id));
+    idDrag = (string("##Drag int ") + string(id));
 
     ImGui::BeginGroup();
     AppStyle::pushInput();
@@ -18,22 +19,28 @@ bool IntRangeWidget::render(const char* id, T& value, T minimum, T maximum, IntR
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
     ImGui::BeginGroup();
     ImGui::PushButtonRepeat(true);
-    if (ImGui::ArrowButton(idUp.c_str(), ImGuiDir_Up))
+    ImGui::PushID(idUp.c_str());
+    if (ImGui::ArrowButton("## Arrow button UP", ImGuiDir_Up))
     {
         if (value < maximum) value++;
         isArrowClick = true;
     }
     if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-    if (ImGui::ArrowButton(idDown.c_str(), ImGuiDir_Down))
+    ImGui::PopID();
+    ImGui::PushID(idDown.c_str());
+    if (ImGui::ArrowButton("## Arrow button DOWN", ImGuiDir_Down))
     {
         if (value > minimum) value--;
         isArrowClick = true;
     }
     if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+    ImGui::PopID();
     ImGui::PopButtonRepeat();
     ImGui::EndGroup();
+    ImGui::PopStyleVar();
     ImGui::PopStyleVar();
     
     ImGui::SameLine();

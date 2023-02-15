@@ -221,6 +221,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 preferences.maxLatencyMs = 300;
             }
 
+            if (!MTY_JSONObjGetUInt(json, "defaultMultitapPadLimit", &preferences.defaultMultitapPadLimit)) {
+                preferences.defaultMultitapPadLimit = 4;
+            }
+
             if (!MTY_JSONObjGetBool(json, "defaultMultitapValue", &preferences.defaultMultitapValue)) {
                 preferences.defaultMultitapValue = false;
             }
@@ -283,6 +287,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetBool(json, "isLatencyLimited", preferences.latencyLimiterEnabled);
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
         MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
+        MTY_JSONObjSetBool(json, "defaultMultitapPadLimit", preferences.defaultMultitapPadLimit);
         MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
         MTY_JSONObjSetBool(json, "defaultMirrorValue", preferences.defaultMirrorValue);
         MTY_JSONObjSetBool(json, "disableGuideButton", preferences.enableGuideButton);

@@ -29,7 +29,6 @@ bool GamepadsWidget::render()
 
     renderTopBar(isWindowLocked, size);
 
-    ImGui::Dummy(ImVec2(0, 20));
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
@@ -372,23 +371,28 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
         MetadataCache::savePreferences();
     };
 
+    static ImVec2 intRangeChildSize = ImVec2(85, 50);
     ImGui::Image(AppIcons::xinput, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
+    ImGui::BeginChild("Child: XBox Puppet Counter", intRangeChildSize); // Avoids imgui render bug (arrow button spacing in second IntRange)
     if (IntRangeWidget::render<uint32_t>("xboxCounter", MetadataCache::preferences.xboxPuppetCount, 0, 100, releaseDragCallback))
     {
         TitleTooltipWidget::render("XBox Puppet Counter", "Set the amount of XBox controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }
+    ImGui::EndChild();
 
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(5, 0));
     ImGui::SameLine();
-    
+
     ImGui::Image(AppIcons::dinput, ImVec2(35, 35), ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon);
     ImGui::SameLine();
+    ImGui::BeginChild("Child: Dualshock Puppet Counter", intRangeChildSize);
     if (IntRangeWidget::render<uint32_t>("ds4Counter", MetadataCache::preferences.ds4PuppetCount, 0, 100, releaseDragCallback))
     {
         TitleTooltipWidget::render("Dualshock Puppet Counter", "Set the amount of DS4 controllers.\n\n* Warning: disconnect all gamepads before changing this.");
     }
+    ImGui::EndChild();
 }
 
 void GamepadsWidget::renderOptionsMenu()
@@ -426,6 +430,22 @@ void GamepadsWidget::renderOptionsMenu()
         {
             MetadataCache::savePreferences();
         }
+
+        ImGui::Indent(8);
+        AppStyle::pushLabel();
+        ImGui::Text("Default Multitap Limit");
+        AppStyle::pop();
+        ImGui::Dummy(ImVec2(0, 4));
+        if (IntRangeWidget::render<uint32_t>("###Default Multitap limit", MetadataCache::preferences.defaultMultitapPadLimit, 0, 100, [&]() {
+            MetadataCache::savePreferences();
+        }))
+        {
+            TitleTooltipWidget::render(
+                "Default Gamepad Limit for Multitap",
+                "Set the ammount of puppets a single Guest account can request when multitap is enabled."
+            );
+        }
+        ImGui::Unindent();
 
         ImGui::EndPopup();
     }

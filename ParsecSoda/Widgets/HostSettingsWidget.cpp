@@ -85,7 +85,7 @@ bool HostSettingsWidget::render()
     // ====================================================
     ImGui::Text("Room name");
     AppStyle::pushInput();
-    ImGui::InputTextMultiline(" ", _roomName, HOST_NAME_LEN, ImVec2(size.x, 50));
+    ImGui::InputTextMultiline(" ", _roomName, MAX_ROOM_NAME_SIZE, ImVec2(size.x, 50));
     TitleTooltipWidget::render("Room Title", "The text displayed below thumbnails in Arcade list.");
     AppStyle::pop();
 

@@ -46,7 +46,7 @@ public:
 		{}
 
 		uint32_t userID = 0;
-		int padLimit = 4;
+		int padLimit = MetadataCache::preferences.defaultMultitapPadLimit;
 		
 		const bool& isMultitap() const {
 			return _isDefaultMultitap ?

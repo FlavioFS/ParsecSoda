@@ -33,8 +33,8 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 
 	float lDistance = 0;
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + 2 * radius, p0.y + 2 * radius);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 p1 = p0 + Vector2::one * 2 * radius;
+	ImVec2 center = (p0 + p1) * 0.5f;
 	drawList->AddCircleFilled(center, radius, VGAMEPAD_COL_BG);
 
 	static ImU32 disabled = ImGui::GetColorU32(IM_COL32(25, 25, 25, 255));
@@ -49,7 +49,7 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 	if (isStickTilt)
 	{
 		ImVec2 mouse = ImGui::GetMousePos();
-		stick = mul(dif(mouse, center), 1.0f / radius);
+		stick = (mouse - center) * (1.0f / radius);
 		stick.x = max(min(stick.x, 1.0f), -1.0f);
 		stick.y = max(min(stick.y, 1.0f), -1.0f);
 		stick.y = -stick.y;
@@ -75,8 +75,7 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 
 	ImVec2 dotCenter = stick;
 	float dotRatio = 0.4f;
-	dotCenter.x = center.x + stick.x * radius * (1.0f - dotRatio);
-	dotCenter.y = center.y - stick.y * radius * (1.0f - dotRatio);
+	dotCenter = center + ImVec2(stick.x, -stick.y) * radius * (1.0f - dotRatio);
 
 	drawList->AddCircleFilled(dotCenter, dotRatio * radius, isStickTilt ? activeColor : disabled);
 
@@ -89,7 +88,7 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 	}
 
 	ImGui::SetCursorPos(cursor);
-	ImGui::Dummy(ImVec2(2*radius, 2*radius));
+	ImGui::Dummy(Vector2::one * 2 * radius);
 }
 
 void VirtualGamepadWidget::renderDpad(float height, ImU32 activeColor)
@@ -100,16 +99,17 @@ void VirtualGamepadWidget::renderDpad(float height, ImU32 activeColor)
 	cursor = ImGui::GetCursorPos();
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 p1 = p0 + Vector2::one * height;
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;
 	float dotEdge = height * dotRatio;
 
-	ImVec2 pUp    = ImVec2(center.x, center.y - height * 0.5f * (1.0f - dotRatio));
-	ImVec2 pDown  = ImVec2(center.x, center.y + height * 0.5f * (1.0f - dotRatio));
-	ImVec2 pLeft  = ImVec2(center.x - height * 0.5f * (1.0f - dotRatio), center.y);
-	ImVec2 pRight = ImVec2(center.x + height * 0.5f * (1.0f - dotRatio), center.y);
+	float pDistance = height * 0.5f * (1.0f - dotRatio);
+	ImVec2 pUp    = center + Vector2::down   * pDistance;
+	ImVec2 pDown  = center + Vector2::up     * pDistance;
+	ImVec2 pLeft  = center + Vector2::left  * pDistance;
+	ImVec2 pRight = center + Vector2::right   * pDistance;
 
 	static bool up, down, left, right;
 
@@ -135,16 +135,17 @@ void VirtualGamepadWidget::renderFaceButtons(float height)
 	cursor = ImGui::GetCursorPos();
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 p1 = p0 + ImVec2(1, 1) * height;
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;
 	float dotRadius = height * dotRatio * 0.5f;
 
-	ImVec2 pA = ImVec2(center.x, center.y + height * 0.5f * (1.0f - dotRatio));
-	ImVec2 pB = ImVec2(center.x + height * 0.5f * (1.0f - dotRatio), center.y);
-	ImVec2 pX = ImVec2(center.x - height * 0.5f * (1.0f - dotRatio), center.y);
-	ImVec2 pY = ImVec2(center.x, center.y - height * 0.5f * (1.0f - dotRatio));
+	float pDistance = height * 0.5f * (1.0f - dotRatio);
+	ImVec2 pA = center + Vector2::up    * pDistance;
+	ImVec2 pB = center + Vector2::right * pDistance;
+	ImVec2 pX = center + Vector2::left  * pDistance;
+	ImVec2 pY = center + Vector2::down  * pDistance;
 
 	drawList->AddCircleFilled(pA, dotRadius, (_gamepad.wButtons & XUSB_GAMEPAD_A) != 0 ? VGAMEPAD_COL_A : VGAMEPAD_COL_BG);
 	drawList->AddCircleFilled(pB, dotRadius, (_gamepad.wButtons & XUSB_GAMEPAD_B) != 0 ? VGAMEPAD_COL_B : VGAMEPAD_COL_BG);
@@ -174,8 +175,8 @@ void VirtualGamepadWidget::renderTrigger(bool isLeftTrigger, float height, ImU32
 	cursor = ImGui::GetCursorPos();
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + height/3.0f, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 p1 = p0 + ImVec2(1.0f/3.0f, 1) * height;
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float t = 0;
 	BYTE trigger = 0;
@@ -209,8 +210,8 @@ void VirtualGamepadWidget::renderMenuAndBumper(bool isLeftSide, float height, Im
 	cursor = ImGui::GetCursorPos();
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = mul(sum(p0, p1), 0.5f);
+	ImVec2 p1 = p0 + Vector2::one * height;
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float offset = height / 3.0f;
 	float radius = offset / 2.0f;
@@ -218,13 +219,13 @@ void VirtualGamepadWidget::renderMenuAndBumper(bool isLeftSide, float height, Im
 	// ===============================================
 	// Bumper
 	// ===============================================
-	ImVec2 pBumper  = ImVec2(center.x, center.y - offset);
-	ImVec2 pBumperL = ImVec2(pBumper.x - radius, pBumper.y);
-	ImVec2 pBumperR = ImVec2(pBumper.x + radius, pBumper.y);
-	ImVec2 pBumper0 = ImVec2(pBumperL.x, pBumper.y - radius);
-	ImVec2 pBumper1 = ImVec2(pBumperR.x, pBumper.y + radius);
-	ImVec2 pBumperCheck0 = ImVec2(pBumper0.x - radius, pBumper0.y);
-	ImVec2 pBumperCheck1 = ImVec2(pBumper1.x + radius, pBumper1.y);
+	ImVec2 pBumper  = center + Vector2::down * offset;
+	ImVec2 pBumperL = pBumper + Vector2::left * radius;
+	ImVec2 pBumperR = pBumper + Vector2::right * radius;
+	ImVec2 pBumper0 = pBumperL + Vector2::down * radius;
+	ImVec2 pBumper1 = pBumperR + Vector2::up * radius;
+	ImVec2 pBumperCheck0 = pBumper0 + Vector2::left * radius;
+	ImVec2 pBumperCheck1 = pBumper1 + Vector2::right * radius;
 	
 	bool isBumperPressed = checkSquarePress(pBumperCheck0, pBumperCheck1);
 	ImU32 bumperColor = isBumperPressed ? activeColor : VGAMEPAD_COL_BG;
@@ -237,21 +238,21 @@ void VirtualGamepadWidget::renderMenuAndBumper(bool isLeftSide, float height, Im
 	// Menu
 	// ===============================================
 	ImVec2 pMenu, pMenu0, pMenu1, pMenu2, pMenuCheck0, pMenuCheck1;
-	pMenu = ImVec2(center.x, center.y + offset);
+	pMenu = center + Vector2::up * offset;
 	if (isLeftSide)
 	{
-		pMenu0 = ImVec2(pMenu.x + radius, pMenu.y - radius);
-		pMenu1 = ImVec2(pMenu.x + radius, pMenu.y + radius);
-		pMenu2 = ImVec2(pMenu.x - 2 * radius, pMenu.y);
+		pMenu0 = pMenu + (Vector2::right + Vector2::down) * radius;
+		pMenu1 = pMenu + (Vector2::right + Vector2::up)   * radius;
+		pMenu2 = pMenu + Vector2::left * 2 * radius;
 		pMenuCheck0 = ImVec2(pMenu2.x, pMenu0.y);
-		pMenuCheck1 = ImVec2(pMenu1.x, pMenu1.y);
+		pMenuCheck1 = pMenu1;
 	}
 	else
 	{
-		pMenu0 = ImVec2(pMenu.x - radius, pMenu.y - radius);
-		pMenu1 = ImVec2(pMenu.x - radius, pMenu.y + radius);
-		pMenu2 = ImVec2(pMenu.x + 2 * radius, pMenu.y);
-		pMenuCheck0 = ImVec2(pMenu0.x, pMenu0.y);
+		pMenu0 = pMenu + (Vector2::left + Vector2::down) * radius;
+		pMenu1 = pMenu + (Vector2::left + Vector2::up) * radius;
+		pMenu2 = pMenu + Vector2::right * 2 * radius;
+		pMenuCheck0 = pMenu0;
 		pMenuCheck1 = ImVec2(pMenu2.x, pMenu1.y);
 	}
 	
@@ -267,20 +268,20 @@ void VirtualGamepadWidget::renderMenuAndBumper(bool isLeftSide, float height, Im
 	Bitwise::setValue(_gamepad.wButtons, isLeftSide ? XUSB_GAMEPAD_BACK : XUSB_GAMEPAD_START, isMenuPressed);
 
 	ImGui::SetCursorPos(cursor);
-	ImGui::Dummy(ImVec2(2 * height / 3.0f, height));
+	ImGui::Dummy(ImVec2(2.0f / 3.0f, 1.0f) * height);
 }
 
 void VirtualGamepadWidget::renderHSpace(float distance)
 {
 	ImGui::SameLine();
-	ImGui::Dummy(ImVec2(distance, 0));
+	ImGui::Dummy(Vector2::right * distance);
 	ImGui::SameLine();
 }
 
 bool VirtualGamepadWidget::renderSquare(ImDrawList* drawlist, ImVec2 center, float edge, ImU32 color)
 {
-	ImVec2 p0 = sum(center, mul(ImVec2(-0.5f, -0.5f), edge));
-	ImVec2 p1 = sum(center, mul(ImVec2(0.5f, 0.5f), edge));
+	ImVec2 p0 = center - Vector2::one * (0.5f * edge);
+	ImVec2 p1 = center + Vector2::one * (0.5f * edge);
 	drawlist->AddRectFilled(p0, p1, color);
 	return checkSquarePress(p0, p1);
 }
@@ -307,8 +308,7 @@ ImVec2 VirtualGamepadWidget::stickShortToFloat(SHORT lx, SHORT ly, float& distan
 				float maxDiagonal = sqrtf(xx * xx + yy * yy);
 				if (maxDiagonal > 0.01f)
 				{
-					stick.x /= maxDiagonal;
-					stick.y /= maxDiagonal;
+					stick = stick / maxDiagonal;
 				}
 			}
 		}
@@ -321,8 +321,7 @@ ImVec2 VirtualGamepadWidget::stickShortToFloat(SHORT lx, SHORT ly, float& distan
 				float maxDiagonal = sqrtf(xx * xx + yy * yy);
 				if (maxDiagonal > 0.01f)
 				{
-					stick.x /= maxDiagonal;
-					stick.y /= maxDiagonal;
+					stick = stick / maxDiagonal;
 				}
 			}
 		}
@@ -365,9 +364,9 @@ bool VirtualGamepadWidget::checkCirclePress(ImVec2 center, float radius, MouseBu
 {
 	static ImVec2 mouse, distance;
 	mouse = ImGui::GetMousePos();
-	distance = dif(mouse, center);
+	distance = mouse - center;
 	return 
 		isMouseDown(mouseBtn) &&
-		sqModulus(distance) <= radius * radius
+		Vector2::sqMod(distance) <= radius * radius
 		;
 }

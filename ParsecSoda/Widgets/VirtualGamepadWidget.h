@@ -3,6 +3,7 @@
 #include <cmath>
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
+#include "../imgui/ImVecExtensions.h"
 #include "../AGamepad.h"
 #include "../globals/AppColors.h"
 #include "../globals/AppIcons.h"
@@ -47,31 +48,6 @@ private:
 	static bool isMouseDown(MouseButton mouseBtn = MouseButton::ALL);
 	static bool checkSquarePress(ImVec2 upLeftCorner, ImVec2 downRightCorner, MouseButton mouseBtn = MouseButton::ALL);
 	static bool checkCirclePress(ImVec2 center, float radius, MouseButton mouseBtn = MouseButton::ALL);
-
-	static inline ImVec2 sum(const ImVec2& lhs, const ImVec2& rhs)
-	{
-		return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y);
-	}
-	static inline ImVec2 dif(const ImVec2& lhs, const ImVec2& rhs)
-	{
-		return ImVec2(lhs.x - rhs.x, lhs.y - rhs.y);
-	}
-	static inline ImVec2 mul(const ImVec2& lhs, const float lambda)
-	{
-		return ImVec2(lhs.x * lambda, lhs.y * lambda);
-	}
-	static inline float sqModulus(const ImVec2& vec)
-	{
-		return vec.x * vec.x + vec.y * vec.y;
-	}
-	static inline ImVec2 lerp(const ImVec2& v1, const ImVec2& v2, const float t)
-	{
-		return sum(mul(v1, 1.0f - t), mul(v2, t));
-	}
-	static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)
-	{
-		return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
-	}
 	
 	// ==============================================
 	// Attributes

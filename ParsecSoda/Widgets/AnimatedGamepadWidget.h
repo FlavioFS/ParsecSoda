@@ -54,9 +54,6 @@ private:
 
 	void drawTrigger();
 
-	static inline ImVec2 lerp(const ImVec2& v1, const ImVec2& v2, const float t)	{ return (v1 * (1.0f - t)) + (v2 * t); }
-	static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a)		{ return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a); }
-
 	static void RenderImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle);
 
 	void updatePressed(const size_t pressId);

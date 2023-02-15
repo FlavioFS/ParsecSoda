@@ -2,9 +2,9 @@
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_internal.h"
+#include "../imgui/ImVecExtensions.h"
 #include "../globals/AppIcons.h"
 #include "../globals/AppStyle.h"
-#include "Vec2.h"
 #include <cmath>
 
 class ProgressCircularWidget

@@ -27,7 +27,8 @@ public:
 	void updateSecretLink();
 
 	const ImVec2 DEFAULT_BUTTON_SIZE = ImVec2(40, 40);
-	const uint8_t LINK_COMPATIBLE_SECRET_SIZE = 9;
+	static const uint8_t LINK_COMPATIBLE_SECRET_SIZE = 9;
+	static const uint8_t MAX_ROOM_NAME_SIZE = 45;
 
 private:
 	void savePreferences();
@@ -46,7 +47,7 @@ private:
 	// Attributes
 	char _roomName[HOST_NAME_LEN];
 	char _gameID[GAME_ID_LEN];
-	char _secret[HOST_SECRET_LEN] = "play-now";
+	char _secret[MAX_ROOM_NAME_SIZE] = "play-now";
 	char _secretLink[128];
 	uint32_t _maxGuests;
 	bool _publicGame;

@@ -11,7 +11,7 @@ void ProgressCircularWidget::render(int radius, int thickness, float value, floa
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
 	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
-	ImVec2 center = Vec2::mul(Vec2::sum(p0, p1), 0.5f);
+	ImVec2 center = (p0 + p1) * 0.5f;
 
 	value = max(min(value, valueMax), valueMin);
 	

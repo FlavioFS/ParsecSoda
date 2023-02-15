@@ -175,7 +175,7 @@ void AnimatedGamepadWidget::renderTrigger(XINPUT_GAMEPAD gamepad, bool isRightTr
 	drawList = ImGui::GetWindowDrawList();
 
 	ImVec2 p0 = ImGui::GetCursorScreenPos();
-	ImVec2 p1 = ImVec2(p0.x + height, p0.y + height);
+	ImVec2 p1 = p0 + Vector2::one * height;
 	ImVec2 center = (p0 + p1) * 0.5f;
 
 	float dotRatio = 0.32f;

@@ -65,6 +65,7 @@ public:
 		bool latencyLimiterEnabled = false;
 		uint32_t maxLatencyMs = 100;
 		uint32_t hotseatDurationSeconds = 300;
+		uint32_t defaultMultitapPadLimit = 4;
 		bool defaultMultitapValue = false;
 		bool defaultMirrorValue = false;
 		bool enableGuideButton = false;

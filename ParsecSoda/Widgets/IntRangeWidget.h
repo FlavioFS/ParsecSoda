@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../imgui/imgui.h"
+#include "../imgui/ImVecExtensions.h"
 #include "../globals/AppStyle.h"
+#include "IconButton.h"
 #include <string>
 #include <functional>
 
