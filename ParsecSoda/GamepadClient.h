@@ -39,7 +39,7 @@ public:
 	{
 	public:
 		GuestPreferences()
-			: userID(0), padLimit(1), _isDefaultMirror(true), _isDefaultMultitap(true)
+			: userID(0), padLimit(MetadataCache::preferences.defaultMultitapPadLimit), _isDefaultMirror(true), _isDefaultMultitap(true)
 		{}
 		GuestPreferences(uint32_t userID, int padLimit = 1, bool isDefaultMirror = true, bool isDefaultMultitap = true)
 			: userID(userID), padLimit(padLimit), _isDefaultMirror(isDefaultMirror), _isDefaultMultitap(isDefaultMultitap)
