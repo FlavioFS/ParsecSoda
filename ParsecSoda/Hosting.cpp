@@ -92,7 +92,6 @@ void Hosting::init()
 	audioOut.setDevice(preferences.audioOutputDevice);
 	audioOut.captureAudio();
 	audioOut.volume = 0.3f;
-	audioOut.setFrequency(MetadataCache::preferences.speakersFrequency);
 
 	audioIn.fetchDevices();
 	vector<AudioSourceDevice> audioInputDevices = audioIn.getDevices();
@@ -102,7 +101,6 @@ void Hosting::init()
 	audioIn.setDevice(preferences.audioInputDevice);
 	audioIn.captureAudio();
 	audioIn.volume = 0.8f;
-	audioIn.setFrequency(MetadataCache::preferences.micFrequency);
 
 	preferences.isValid = true;
 	MetadataCache::savePreferences(preferences);

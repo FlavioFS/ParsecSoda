@@ -119,123 +119,56 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             MTY_JSON *json = MTY_JSONReadFile(filepath.c_str());
             char roomName[256] = "", gameID[72] = "", secret[32] = "play-now";
 
-            if (!MTY_JSONObjGetUInt(json, "audioInputDevice", &preferences.audioInputDevice)) {
-                preferences.audioInputDevice = 0;
-            }
-            
-            if (!MTY_JSONObjGetUInt(json, "audioOutputDevice", &preferences.audioOutputDevice)) {
-                preferences.audioOutputDevice = 0;
-            }
+            const auto clamp = [](int32_t& value, const int32_t& min = -8192, const int32_t& max = 8192) {
+                if (value < min) value = min;
+                if (value > max) value = max;
+            };
 
-            if (!MTY_JSONObjGetUInt(json, "micFrequency", &preferences.micFrequency)) {
-                preferences.micFrequency = 44100;
-            }
+            const auto tryLoadBool = [&json](const char* key, bool& pref, const bool& fallback = true) {
+                if (!MTY_JSONObjGetBool(json, key, &pref)) pref = fallback;
+            };
 
-            if (!MTY_JSONObjGetUInt(json, "micVolume", &preferences.micVolume)) {
-                preferences.micVolume = 80;
-            }
-            
-            if (!MTY_JSONObjGetBool(json, "micEnabled", &preferences.micEnabled)) {
-                preferences.micEnabled = true;
-            }
+            const auto tryLoadUInt = [&json](const char* key, uint32_t& pref, const uint32_t& fallback = 0) {
+                if (!MTY_JSONObjGetUInt(json, key, &pref)) pref = fallback;
+            };
 
-            if (!MTY_JSONObjGetUInt(json, "speakersFrequency", &preferences.speakersFrequency)) {
-                preferences.speakersFrequency = 44100;
-            }
+            const auto tryLoadInt = [&json](const char* key, int32_t& pref, const int32_t& fallback = 0) {
+                if (!MTY_JSONObjGetInt(json, key, &pref)) pref = fallback;
+            };
 
-            if (!MTY_JSONObjGetUInt(json, "speakersVolume", &preferences.speakersVolume)) {
-                preferences.speakersVolume = 30;
-            }
+            const auto tryLoadString = [&json](const char* key, char *val, const size_t size, string& pref, const char* fallback = "") {
+                pref = (MTY_JSONObjGetString(json, key, val, size)) ? val : fallback;
+            };
 
-            if (!MTY_JSONObjGetBool(json, "speakersEnabled", &preferences.speakersEnabled)) {
-                preferences.speakersEnabled = true;
-            }
 
-            if (!MTY_JSONObjGetUInt(json, "monitor", &preferences.monitor)) {
-                preferences.monitor = 0;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "adapter", &preferences.adapter)) {
-                preferences.adapter = 0;
-            }
-            
-            if (MTY_JSONObjGetString(json, "roomName", roomName, 256)) preferences.roomName = roomName;
-            else preferences.roomName = "Let's have fun!";
-
-            if (MTY_JSONObjGetString(json, "gameID", gameID, 72)) preferences.gameID = gameID;
-            else preferences.gameID = "";
-
-            if (MTY_JSONObjGetString(json, "secret", secret, 32)) preferences.secret = secret;
-            else preferences.secret = "play-now";
-
-            if (!MTY_JSONObjGetUInt(json, "guestCount", &preferences.guestCount)) {
-                preferences.guestCount = 1;
-            }
-
-            if (!MTY_JSONObjGetBool(json, "publicRoom", &preferences.publicRoom)) {
-                preferences.publicRoom = false;
-            }
-
-            static int LIMIT_POS = 4096 * 2;
-            if (!MTY_JSONObjGetInt(json, "windowX", &preferences.windowX) || preferences.windowX < -LIMIT_POS || preferences.windowX > LIMIT_POS) {
-                preferences.windowX = 0;
-            }
-
-            if (!MTY_JSONObjGetInt(json, "windowY", &preferences.windowY) || preferences.windowY < -LIMIT_POS || preferences.windowY > LIMIT_POS) {
-                preferences.windowY = 0;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "windowW", &preferences.windowW) || preferences.windowW < 400) {
-                preferences.windowW = 1280;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "windowH", &preferences.windowH) || preferences.windowH < 400) {
-                preferences.windowH = 720;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "fps", &preferences.fps)) {
-                preferences.fps = 60;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "bandwidth", &preferences.bandwidth)) {
-                preferences.bandwidth = 20;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "xboxPuppetCount", &preferences.xboxPuppetCount)) {
-                preferences.xboxPuppetCount = 4;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "ds4PuppetCount", &preferences.ds4PuppetCount)) {
-                preferences.ds4PuppetCount = 0;
-            }
-
-            if (!MTY_JSONObjGetBool(json, "latencyLimiterEnabled", &preferences.latencyLimiterEnabled)) {
-                preferences.latencyLimiterEnabled = false;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "maxLatencyMs", &preferences.maxLatencyMs)) {
-                preferences.maxLatencyMs = 100;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "hotseatDurationSeconds", &preferences.hotseatDurationSeconds)) {
-                preferences.maxLatencyMs = 300;
-            }
-
-            if (!MTY_JSONObjGetUInt(json, "defaultMultitapPadLimit", &preferences.defaultMultitapPadLimit)) {
-                preferences.defaultMultitapPadLimit = 4;
-            }
-
-            if (!MTY_JSONObjGetBool(json, "defaultMultitapValue", &preferences.defaultMultitapValue)) {
-                preferences.defaultMultitapValue = false;
-            }
-
-            if (!MTY_JSONObjGetBool(json, "defaultMirrorValue", &preferences.defaultMirrorValue)) {
-                preferences.defaultMirrorValue = false;
-            }
-
-            if (!MTY_JSONObjGetBool(json, "disableGuideButton", &preferences.enableGuideButton)) {
-                preferences.enableGuideButton = false;
-            }
+            tryLoadUInt("audioInputDevice", preferences.audioInputDevice);
+            tryLoadUInt("audioOutputDevice", preferences.audioOutputDevice);
+            tryLoadUInt("micVolume", preferences.micVolume, 80);
+            tryLoadBool("micEnabled", preferences.micEnabled, true);
+            tryLoadUInt("speakersVolume", preferences.speakersVolume, 30);
+            tryLoadBool("speakersEnabled", preferences.speakersEnabled, true);
+            tryLoadUInt("monitor", preferences.monitor);
+            tryLoadUInt("adapter", preferences.adapter);           
+            tryLoadString("roomName", roomName, 256, preferences.roomName, "Let's have fun!");
+            tryLoadString("gameID", gameID, 72, preferences.gameID);
+            tryLoadString("secret", secret, 72, preferences.secret, "play-now");
+            tryLoadUInt("guestCount", preferences.guestCount, 1);
+            tryLoadBool("publicRoom", preferences.publicRoom, false);            
+            tryLoadInt("windowX", preferences.windowX); clamp(preferences.windowX);
+            tryLoadInt("windowY", preferences.windowY); clamp(preferences.windowY);
+            tryLoadUInt("windowW", preferences.windowW, 1280); if (preferences.windowW < 400) preferences.windowW = 1280;
+            tryLoadUInt("windowH", preferences.windowH, 720);  if (preferences.windowH < 400) preferences.windowH = 720;
+            tryLoadUInt("fps", preferences.fps, 60);
+            tryLoadUInt("bandwidth", preferences.bandwidth, 20);
+            tryLoadUInt("xboxPuppetCount", preferences.xboxPuppetCount, 4);
+            tryLoadUInt("ds4PuppetCount", preferences.ds4PuppetCount, 0);            
+            tryLoadBool("latencyLimiterEnabled", preferences.latencyLimiterEnabled, false);
+            tryLoadUInt("maxLatencyMs", preferences.maxLatencyMs, 100);
+            tryLoadUInt("hotseatDurationSeconds", preferences.hotseatDurationSeconds, 300);
+            tryLoadUInt("defaultMultitapPadLimit", preferences.defaultMultitapPadLimit, 4);
+            tryLoadBool("defaultMultitapValue", preferences.defaultMultitapValue, false);
+            tryLoadBool("defaultMirrorValue", preferences.defaultMirrorValue, false);
+            tryLoadBool("enableGuideButton", preferences.enableGuideButton, false);
             
             preferences.isValid = true;
 
@@ -262,10 +195,8 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
             
         MTY_JSONObjSetUInt(json, "audioInputDevice", preferences.audioInputDevice);
         MTY_JSONObjSetUInt(json, "audioOutputDevice", preferences.audioOutputDevice);
-        MTY_JSONObjSetUInt(json, "micFrequency", preferences.micFrequency);
         MTY_JSONObjSetUInt(json, "micVolume", preferences.micVolume);
         MTY_JSONObjSetBool(json, "micEnabled", preferences.micEnabled);
-        MTY_JSONObjSetUInt(json, "speakersFrequency", preferences.speakersFrequency);
         MTY_JSONObjSetUInt(json, "speakersVolume", preferences.speakersVolume);
         MTY_JSONObjSetBool(json, "speakersEnabled", preferences.speakersEnabled);
         MTY_JSONObjSetUInt(json, "monitor", preferences.monitor);
@@ -284,13 +215,13 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "adapter", preferences.adapter);
         MTY_JSONObjSetUInt(json, "xboxPuppetCount", preferences.xboxPuppetCount);
         MTY_JSONObjSetUInt(json, "ds4PuppetCount", preferences.ds4PuppetCount);
-        MTY_JSONObjSetBool(json, "isLatencyLimited", preferences.latencyLimiterEnabled);
+        MTY_JSONObjSetBool(json, "latencyLimiterEnabled", preferences.latencyLimiterEnabled);
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
         MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
-        MTY_JSONObjSetBool(json, "defaultMultitapPadLimit", preferences.defaultMultitapPadLimit);
+        MTY_JSONObjSetUInt(json, "defaultMultitapPadLimit", preferences.defaultMultitapPadLimit);
         MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
         MTY_JSONObjSetBool(json, "defaultMirrorValue", preferences.defaultMirrorValue);
-        MTY_JSONObjSetBool(json, "disableGuideButton", preferences.enableGuideButton);
+        MTY_JSONObjSetBool(json, "enableGuideButton", preferences.enableGuideButton);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

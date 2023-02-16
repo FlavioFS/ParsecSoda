@@ -40,10 +40,8 @@ public:
 	public:
 		uint32_t audioInputDevice = 0;
 		uint32_t audioOutputDevice = 0;
-		uint32_t micFrequency = 44100;
 		uint32_t micVolume = 80;
 		bool micEnabled = true;
-		uint32_t speakersFrequency = 44100;
 		uint32_t speakersVolume = 30;
 		bool speakersEnabled = true;
 		uint32_t monitor = 0;
