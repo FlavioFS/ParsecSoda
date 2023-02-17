@@ -172,7 +172,6 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             tryLoadUInt("defaultMultitapPadLimit", preferences.defaultMultitapPadLimit, 4);
             tryLoadBool("defaultMultitapValue", preferences.defaultMultitapValue, false);
             tryLoadBool("defaultMirrorValue", preferences.defaultMirrorValue, false);
-            tryLoadBool("enableGuideButton", preferences.enableGuideButton, false);
             tryLoadUShort("buttonLock.buttons", preferences.buttonLock.buttons, 0);
             tryLoadBool("buttonLock.leftTrigger", preferences.buttonLock.leftTrigger, false);
             tryLoadBool("buttonLock.rightTrigger", preferences.buttonLock.rightTrigger, false);
@@ -231,7 +230,6 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "defaultMultitapPadLimit", preferences.defaultMultitapPadLimit);
         MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
         MTY_JSONObjSetBool(json, "defaultMirrorValue", preferences.defaultMirrorValue);
-        MTY_JSONObjSetBool(json, "enableGuideButton", preferences.enableGuideButton);
         MTY_JSONObjSetUInt(json, "buttonLock.buttons", preferences.buttonLock.buttons);
         MTY_JSONObjSetBool(json, "buttonLock.leftTrigger", preferences.buttonLock.leftTrigger);
         MTY_JSONObjSetBool(json, "buttonLock.rightTrigger", preferences.buttonLock.rightTrigger);

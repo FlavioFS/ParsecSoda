@@ -439,16 +439,6 @@ void GamepadsWidget::renderOptionsMenu()
             MetadataCache::savePreferences();
         }
 
-        if (SwitchWidget::render(
-            MetadataCache::preferences.enableGuideButton,
-            "###Guide button switch", "Allow Guide button",
-            "Guide Button [ON]", "Guests can press the menu button.",
-            "Guide Button [OFF]", "Guests cannot press the menu button."
-        ))
-        {
-            MetadataCache::savePreferences();
-        }
-
         ImGui::Indent(8);
         AppStyle::pushLabel();
         ImGui::Text("Default Multitap Limit");

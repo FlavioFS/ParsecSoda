@@ -712,12 +712,6 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, AGamepad*
 	rawState.Gamepad.sThumbRX = state.thumbRX;
 	rawState.Gamepad.sThumbRY = state.thumbRY;
 
-	// Block guide button
-	if (MetadataCache::preferences.enableGuideButton)
-	{
-		Bitwise::setValue(rawState.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, false);
-	}
-
 	if (prefs.isMirror())
 	{	
 		result = isDpadEqual(mirrorCache, rawState) ? stickToDpad(rawState) : dpadToStick(rawState);
@@ -757,10 +751,7 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, const X
 		buttonCode = XUSB_GAMEPAD_BACK;
 		break;
 	case GAMEPAD_BUTTON_GUIDE:
-		if (MetadataCache::preferences.enableGuideButton)
-		{
-			buttonCode = XUSB_GAMEPAD_GUIDE;
-		}
+		buttonCode = XUSB_GAMEPAD_GUIDE;
 		break;
 	case GAMEPAD_BUTTON_START:
 		buttonCode = XUSB_GAMEPAD_START;
@@ -954,9 +945,7 @@ XINPUT_STATE GamepadClient::toXInput(
 	// Center
 	if (key.code == _keyboardMap.Back)  Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_BACK, key.pressed);
 	if (key.code == _keyboardMap.Start) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_START, key.pressed);
-	if (MetadataCache::preferences.enableGuideButton) {
-		if (key.code == _keyboardMap.Guide) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, key.pressed);
-	}
+	if (key.code == _keyboardMap.Guide) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_GUIDE, key.pressed);
 
 	// Shoulders
 	if (key.code == _keyboardMap.LB) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_SHOULDER, key.pressed);
