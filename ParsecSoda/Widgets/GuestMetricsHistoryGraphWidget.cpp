@@ -30,7 +30,7 @@ void GuestMetricsHistoryGraphWidget::render(GuestData guest, CircularMetrics& me
 
     const auto plotFloatStat = [&](const char* titleID, const vector<float>& values, ImVec4 color, bool mustSetupAxis = false, const char* tagNumberFormat = "%4.1f") {
         currentValue = values[metricsHistory.newestIndex()];
-        snprintf(tag, 32, tagNumberFormat, currentValue);
+        snprintf(tag, 32, tagNumberFormat, (float)currentValue);
         if (mustSetupAxis) setupAxes(currentValue);
         const string label = string(titleID) + ": " + tag;
         ImPlot::PushStyleColor(ImPlotCol_Line, color);
@@ -40,7 +40,7 @@ void GuestMetricsHistoryGraphWidget::render(GuestData guest, CircularMetrics& me
 
     const auto plotIntStat = [&](const char* titleID, const vector<uint32_t>& values, ImVec4 color, bool mustSetupAxis = false, const char* tagNumberFormat = "%3d") {
         currentValue = values[metricsHistory.newestIndex()];
-        snprintf(tag, 32, tagNumberFormat, currentValue);
+        snprintf(tag, 32, tagNumberFormat, (uint32_t)currentValue);
         if (mustSetupAxis) setupAxes(currentValue);
         const string label = string(titleID) + ": " + tag;
         ImPlot::PushStyleColor(ImPlotCol_Line, color);
