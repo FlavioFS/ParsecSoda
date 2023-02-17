@@ -7,6 +7,7 @@
 #define COLOR_PRIMARY_U32 ImGui::GetColorU32(IM_COL32(0, 120, 204, 255))
 #define COLOR_POSITIVE_U32 ImGui::GetColorU32(IM_COL32(0, 171, 105, 255))
 #define COLOR_NEGATIVE_U32 ImGui::GetColorU32(IM_COL32(191, 41, 71, 255))
+#define COLOR_RED_U32 ImGui::GetColorU32(IM_COL32(191, 41, 71, 255))
 #define COLOR_WIDGET_BG_U32 ImGui::GetColorU32(IM_COL32(20, 20, 20, 255))
 
 class AppColors
@@ -38,6 +39,7 @@ public:
 	static ImVec4 warning;
 	static ImVec4 warning2;
 
+	static ImVec4 red;
 	static ImVec4 white;
 	static ImVec4 black;
 	static ImVec4 gray25;

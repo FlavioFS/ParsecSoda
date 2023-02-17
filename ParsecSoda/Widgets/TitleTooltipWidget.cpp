@@ -31,3 +31,15 @@ bool TitleTooltipWidget::render(const char* title, const char* description, bool
 
 	return false;
 }
+
+bool TitleTooltipWidget::renderBool(
+	const bool& state,
+	const char* titleTrue, const char* titleFalse,
+	const char* descriptionTrue, const char* descriptionFalse,
+	bool forceShow
+)
+{
+	if (state) return render(titleTrue, descriptionTrue, forceShow);
+	return render(titleFalse, descriptionFalse, forceShow);
+}
+

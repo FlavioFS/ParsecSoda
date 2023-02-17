@@ -193,7 +193,7 @@ bool GamepadsWidget::render()
         }
         else
         {
-            static bool isMultitap, isMirror;
+            static bool isMultitap, isMirror, isButtonLock;
             static ImVec4 iconColor;
             tooltipTitle = "Multitap (disabled)";
             tooltipDescription = "DeviceID ignored.\nA guest account may only use 1 gamepad.\nMultiple gamepads will overlap.";
@@ -201,13 +201,35 @@ bool GamepadsWidget::render()
 
             isMultitap = MetadataCache::preferences.defaultMultitapValue;
             isMirror = MetadataCache::preferences.defaultMirrorValue;
+            isButtonLock = MetadataCache::preferences.buttonLock.isEnabled;
             if (gi->owner.guest.isValid())
             {
                 _hosting.getGamepadClient().findPreferences(gi->owner.guest.userID, [&](GamepadClient::GuestPreferences& prefs) {
                     isMultitap = prefs.isMultitap();
                     isMirror = prefs.isMirror();
+                    isButtonLock = prefs.isButtonLock();
                 });
             }
+
+            if (isButtonLock)
+            {
+                tooltipTitle = "Button lock enabled";
+                tooltipDescription = "Guest can only press allowed buttons.\n\n* Setup at Button Lock window.";
+                iconColor = AppColors::positive;
+            }
+            else
+            {
+                tooltipTitle = "Button lock disabled";
+                tooltipDescription = "Guest can press any button.\n\n* Setup at Button Lock window.";
+                iconColor = AppColors::negative;
+            }
+            id = "###Button lock " + to_string(i);
+            if (BadgeButtonWidget::render(AppIcons::buttonLock, tooltipTitle, tooltipDescription, id, ImVec2(25, 25), iconColor))
+            {
+                if (gi->owner.guest.isValid()) _hosting.getGamepadClient().toggleButtonLock(gi->owner.guest.userID);
+            }
+
+            ImGui::SameLine();
 
             if (isMirror)
             {

@@ -15,6 +15,7 @@
 #include "GuestList.h"
 #include "MetadataCache.h"
 #include "HotseatManager.h"
+#include "ButtonLock.h"
 
 using namespace std;
 
@@ -41,8 +42,8 @@ public:
 		GuestPreferences()
 			: userID(0), padLimit(MetadataCache::preferences.defaultMultitapPadLimit), _isDefaultMirror(true), _isDefaultMultitap(true)
 		{}
-		GuestPreferences(uint32_t userID, int padLimit = 1, bool isDefaultMirror = true, bool isDefaultMultitap = true)
-			: userID(userID), padLimit(padLimit), _isDefaultMirror(isDefaultMirror), _isDefaultMultitap(isDefaultMultitap)
+		GuestPreferences(uint32_t userID, int padLimit = 1, bool isDefaultMirror = true, bool isDefaultMultitap = true, bool isDefaultButtonLock = true)
+			: userID(userID), padLimit(padLimit), _isDefaultMirror(isDefaultMirror), _isDefaultMultitap(isDefaultMultitap), _isDefaultButtonLock(isDefaultButtonLock)
 		{}
 
 		uint32_t userID = 0;
@@ -58,13 +59,20 @@ public:
 				MetadataCache::preferences.defaultMirrorValue :
 				!MetadataCache::preferences.defaultMirrorValue;
 		}
+		const bool& isButtonLock() const {
+			return _isDefaultButtonLock ?
+				MetadataCache::preferences.buttonLock.isEnabled :
+				!MetadataCache::preferences.buttonLock.isEnabled;
+		}
 
 		void toggleMultitap() { _isDefaultMultitap = !_isDefaultMultitap; }
 		void toggleMirror() { _isDefaultMirror = !_isDefaultMirror; }
+		void toggleButtonLock() { _isDefaultButtonLock = !_isDefaultButtonLock; }
 
 	private:
 		bool _isDefaultMultitap = true;
 		bool _isDefaultMirror = true;
+		bool _isDefaultButtonLock = true;
 	};
 
 	~GamepadClient();
@@ -94,6 +102,7 @@ public:
 	void setLimit(uint32_t guestUserId, uint8_t padLimit);
 	bool toggleMirror(uint32_t guestUserID);
 	bool toggleMultitap(uint32_t guestUserID);
+	bool toggleButtonLock(uint32_t guestUserID);
 	const PICK_REQUEST pick(Guest guest, int gamepadIndex);
 	bool findPreferences(uint32_t guestUserID, function<void(GuestPreferences&)> callback);
 
@@ -143,6 +152,8 @@ private:
 	XINPUT_STATE stickToDpad(XINPUT_STATE state);
 	bool isDpadEqual(XINPUT_STATE before, XINPUT_STATE now);
 	bool isStickAsDpadEqual(XINPUT_STATE before, XINPUT_STATE now);
+
+	XINPUT_STATE buttonLockFilter(const XINPUT_STATE& state);
 
 
 	PVIGEM_CLIENT _client;

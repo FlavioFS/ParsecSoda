@@ -8,6 +8,7 @@ ImVec4 AppColors::negative;
 ImVec4 AppColors::warning;
 ImVec4 AppColors::warning2;
 
+ImVec4 AppColors::red;
 ImVec4 AppColors::white;
 ImVec4 AppColors::black;
 ImVec4 AppColors::gray25;
@@ -31,6 +32,7 @@ void AppColors::init()
 	warning = ImVec4(0.83f, 0.35f, 0.03f, 1.00f);
 	warning2 = ImVec4(0.70f, 0.61f, 0.17f, 1.00f);
 
+	red = ImVec4(0.75f, 0.16f, 0.28f, 1.00f);
 	white = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 	black = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
 	gray25 = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);

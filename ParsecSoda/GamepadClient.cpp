@@ -337,7 +337,7 @@ void GamepadClient::setLimit(uint32_t guestUserID, uint8_t padLimit)
 
 bool GamepadClient::toggleMirror(uint32_t guestUserID)
 {
-	bool currentValue = false;
+	bool currentValue = MetadataCache::preferences.defaultMirrorValue;
 
 	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
 		prefs.toggleMirror();
@@ -356,7 +356,7 @@ bool GamepadClient::toggleMirror(uint32_t guestUserID)
 
 bool GamepadClient::toggleMultitap(uint32_t guestUserID)
 {
-	bool currentValue = false;
+	bool currentValue = MetadataCache::preferences.defaultMultitapValue;
 
 	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
 		prefs.toggleMultitap();
@@ -368,6 +368,25 @@ bool GamepadClient::toggleMultitap(uint32_t guestUserID)
 		GuestPreferences prefs = GuestPreferences(guestUserID, 1, true, false);
 		guestPreferences.push_back(prefs);
 		currentValue = prefs.isMultitap();
+	}
+
+	return currentValue;
+}
+
+bool GamepadClient::toggleButtonLock(uint32_t guestUserID)
+{
+	bool currentValue = MetadataCache::preferences.buttonLock.isEnabled;
+
+	bool found = findPreferences(guestUserID, [&currentValue](GuestPreferences& prefs) {
+		prefs.toggleButtonLock();
+		currentValue = prefs.isButtonLock();
+	});
+
+	if (!found)
+	{
+		GuestPreferences prefs = GuestPreferences(guestUserID, 1, true, true, false);
+		guestPreferences.push_back(prefs);
+		currentValue = prefs.isButtonLock();
 	}
 
 	return currentValue;
@@ -709,6 +728,8 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadStateMessage& state, AGamepad*
 		result = rawState;
 	}
 
+	if (prefs.isButtonLock()) result = buttonLockFilter(result);
+
 	return result;
 }
 
@@ -778,6 +799,8 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadButtonMessage& button, const X
 
 	Bitwise::setValue(result.Gamepad.wButtons, buttonCode, button.pressed);
 
+	if (prefs.isButtonLock()) result = buttonLockFilter(result);
+
 	return result;
 }
 
@@ -816,6 +839,8 @@ XINPUT_STATE GamepadClient::toXInput(ParsecGamepadAxisMessage& axis, const XINPU
 	default:
 		break;
 	}
+
+	if (prefs.isButtonLock()) result = buttonLockFilter(result);
 
 	return result;
 }
@@ -945,6 +970,8 @@ XINPUT_STATE GamepadClient::toXInput(
 	if (key.code == _keyboardMap.LThumb) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_LEFT_THUMB, key.pressed);
 	if (key.code == _keyboardMap.RThumb) Bitwise::setValue(result.Gamepad.wButtons, XUSB_GAMEPAD_RIGHT_THUMB, key.pressed);
 
+	if (prefs.isButtonLock()) result = buttonLockFilter(result);
+
 	return result;
 }
 
@@ -1041,4 +1068,29 @@ bool GamepadClient::isStickAsDpadEqual(XINPUT_STATE before, XINPUT_STATE now)
 	XINPUT_STATE dNow = stickToDpad(now);
 
 	return isDpadEqual(dBefore, dNow);
+}
+
+XINPUT_STATE GamepadClient::buttonLockFilter(const XINPUT_STATE& state)
+{
+	XINPUT_STATE filtered = state;
+	const ButtonLock& lock = MetadataCache::preferences.buttonLock;
+
+	if (lock.isEnabled)
+	{
+		filtered.Gamepad.wButtons &= ~lock.buttons;
+		if (lock.leftStick)
+		{
+			filtered.Gamepad.sThumbLX = 0;
+			filtered.Gamepad.sThumbLY = 0;
+		}
+		if (lock.rightStick)
+		{
+			filtered.Gamepad.sThumbRX = 0;
+			filtered.Gamepad.sThumbRY = 0;
+		}
+		if (lock.leftTrigger) filtered.Gamepad.bLeftTrigger = 0;
+		if (lock.rightTrigger) filtered.Gamepad.bRightTrigger = 0;
+	}
+
+	return filtered;
 }

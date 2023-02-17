@@ -39,11 +39,6 @@ void VirtualGamepadWidget::renderAnalog(bool isLeftStick, float radius, ImU32 ac
 
 	static ImU32 disabled = ImGui::GetColorU32(IM_COL32(25, 25, 25, 255));
 
-	if (isMouseDown(MouseButton::LEFT))
-	{
-		bool debug = true;
-	}
-
 	ImVec2 stick;
 	bool isStickTilt = checkSquarePress(p0, p1, MouseButton::LEFT);	
 	if (isStickTilt)

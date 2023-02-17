@@ -35,6 +35,7 @@
 #include "Widgets/ThumbnailsWidget.h"
 #include "Widgets/MasterOfPuppetsWidget.h"
 #include "Widgets/HotseatWidget.h"
+#include "Widgets/ButtonLockWidget.h"
 
 using namespace std;
 
@@ -149,8 +150,9 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showLog = true;
     bool showGuests = true;
     bool showGamepads = true;
-    bool showMasterOfPuppets = false;
+    bool showButtonLock = false;
     bool showHotseats = true;
+    bool showMasterOfPuppets = false;
     bool showAudio = false;
     bool showVideo = false;
     bool showStyles = true;
@@ -215,16 +217,28 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showLog)                logWindow.render();
             if (showGuests)             guestsWindow.render();
             if (showGamepads)           gamepadsWindow.render();
-            if (showMasterOfPuppets)    masterOfPuppets.render();
+            if (showButtonLock)         ButtonLockWidget::render();
             if (showHotseats)           HotseatWidget::render(g_hosting);
+            if (showMasterOfPuppets)    masterOfPuppets.render();
             if (showAudio)              audioSettingswidget.render();
             if (showVideo)              videoWidget.render();
             if (showInfo)               InfoWidget::render();
             if (showThumbs)             ThumbnailsWidget::render(g_session);
             NavBar::render(
                 g_hosting,
-                showLogin, showHostSettings, showGamepads, showMasterOfPuppets, showHotseats, showChat,
-                showGuests, showThumbs, showLog, showAudio, showVideo, showInfo
+                showLogin,
+                showHostSettings,
+                showGamepads,
+                showButtonLock,
+                showHotseats,
+                showMasterOfPuppets,
+                showChat,
+                showGuests,
+                showThumbs,
+                showLog,
+                showAudio,
+                showVideo,
+                showInfo
             );
             hostInfoWidget.render();
         }

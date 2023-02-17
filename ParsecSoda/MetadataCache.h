@@ -11,6 +11,7 @@
 #include "GuestTier.h"
 #include "Thumbnail.h"
 #include "Stringer.h"
+#include "ButtonLock.h"
 
 using namespace std;
 
@@ -67,6 +68,7 @@ public:
 		bool defaultMultitapValue = false;
 		bool defaultMirrorValue = false;
 		bool enableGuideButton = false;
+		ButtonLock buttonLock;
 	};
 
 	static SessionCache loadSessionCache();

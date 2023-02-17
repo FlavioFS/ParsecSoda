@@ -30,6 +30,7 @@ public:
 
 	static ID3D11ShaderResourceView* lock;
 	static ID3D11ShaderResourceView* unlock;
+	static ID3D11ShaderResourceView* buttonLock;
 
 	static ID3D11ShaderResourceView* padOn;
 	static ID3D11ShaderResourceView* padOff;
@@ -90,6 +91,17 @@ public:
 	static ID3D11ShaderResourceView* ltc;
 	static ID3D11ShaderResourceView* eth;
 
+	static Texture gamepadAnalog;
+	static Texture gamepadBg;
+	static Texture gamepadBumper;
+	static Texture gamepadButton;
+	static Texture gamepadDpadUp;
+	static Texture gamepadDpadRight;
+	static Texture gamepadMenu;
+	static Texture gamepadGuide;
+	static Texture gamepadThumb;
+	static Texture gamepadTrigger;
+
 private:
 	static Texture _switchOn;
 	static Texture _switchOff;
@@ -116,6 +128,7 @@ private:
 
 	static Texture _lock;
 	static Texture _unlock;
+	static Texture _buttonLock;
 	
 	static Texture _micOn;
 	static Texture _micOff;

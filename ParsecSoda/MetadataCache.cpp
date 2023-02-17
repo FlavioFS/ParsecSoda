@@ -132,6 +132,10 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
                 if (!MTY_JSONObjGetUInt(json, key, &pref)) pref = fallback;
             };
 
+            const auto tryLoadUShort = [&json](const char* key, uint16_t& pref, const uint16_t& fallback = 0) {
+                if (!MTY_JSONObjGetUInt16(json, key, &pref)) pref = fallback;
+            };
+
             const auto tryLoadInt = [&json](const char* key, int32_t& pref, const int32_t& fallback = 0) {
                 if (!MTY_JSONObjGetInt(json, key, &pref)) pref = fallback;
             };
@@ -169,7 +173,13 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             tryLoadBool("defaultMultitapValue", preferences.defaultMultitapValue, false);
             tryLoadBool("defaultMirrorValue", preferences.defaultMirrorValue, false);
             tryLoadBool("enableGuideButton", preferences.enableGuideButton, false);
-            
+            tryLoadUShort("buttonLock.buttons", preferences.buttonLock.buttons, 0);
+            tryLoadBool("buttonLock.leftTrigger", preferences.buttonLock.leftTrigger, false);
+            tryLoadBool("buttonLock.rightTrigger", preferences.buttonLock.rightTrigger, false);
+            tryLoadBool("buttonLock.leftStick", preferences.buttonLock.leftStick, false);
+            tryLoadBool("buttonLock.rightStick", preferences.buttonLock.rightStick, false);
+            tryLoadBool("buttonLock.isEnabled", preferences.buttonLock.isEnabled, false);
+
             preferences.isValid = true;
 
             MTY_JSONDestroy(&json);
@@ -222,6 +232,12 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetBool(json, "defaultMultitapValue", preferences.defaultMultitapValue);
         MTY_JSONObjSetBool(json, "defaultMirrorValue", preferences.defaultMirrorValue);
         MTY_JSONObjSetBool(json, "enableGuideButton", preferences.enableGuideButton);
+        MTY_JSONObjSetUInt(json, "buttonLock.buttons", preferences.buttonLock.buttons);
+        MTY_JSONObjSetBool(json, "buttonLock.leftTrigger", preferences.buttonLock.leftTrigger);
+        MTY_JSONObjSetBool(json, "buttonLock.rightTrigger", preferences.buttonLock.rightTrigger);
+        MTY_JSONObjSetBool(json, "buttonLock.leftStick", preferences.buttonLock.leftStick);
+        MTY_JSONObjSetBool(json, "buttonLock.rightStick", preferences.buttonLock.rightStick);
+        MTY_JSONObjSetBool(json, "buttonLock.isEnabled", preferences.buttonLock.isEnabled);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

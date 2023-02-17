@@ -21,6 +21,7 @@ ID3D11ShaderResourceView* AppIcons::sendTop;
 
 ID3D11ShaderResourceView* AppIcons::lock;
 ID3D11ShaderResourceView* AppIcons::unlock;
+ID3D11ShaderResourceView* AppIcons::buttonLock;
 
 ID3D11ShaderResourceView* AppIcons::padOn;
 ID3D11ShaderResourceView* AppIcons::padOff;
@@ -73,6 +74,17 @@ ID3D11ShaderResourceView* AppIcons::xbox2;
 ID3D11ShaderResourceView* AppIcons::xbox3;
 ID3D11ShaderResourceView* AppIcons::xbox4;
 
+Texture AppIcons::gamepadAnalog;
+Texture AppIcons::gamepadBg;
+Texture AppIcons::gamepadBumper;
+Texture AppIcons::gamepadButton;
+Texture AppIcons::gamepadDpadUp;
+Texture AppIcons::gamepadDpadRight;
+Texture AppIcons::gamepadMenu;
+Texture AppIcons::gamepadGuide;
+Texture AppIcons::gamepadThumb;
+Texture AppIcons::gamepadTrigger;
+
 ID3D11ShaderResourceView* AppIcons::vpad;
 ID3D11ShaderResourceView* AppIcons::multitap;
 ID3D11ShaderResourceView* AppIcons::mirror;
@@ -106,6 +118,7 @@ Texture AppIcons::_plug;
 
 Texture AppIcons::_lock;
 Texture AppIcons::_unlock;
+Texture AppIcons::_buttonLock;
 
 Texture AppIcons::_micOn;
 Texture AppIcons::_micOff;
@@ -182,6 +195,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
 
     _lock.loadFromFile(pd3dDevice, "./icons/lock.png");
     _unlock.loadFromFile(pd3dDevice, "./icons/unlock.png");
+    _buttonLock.loadFromFile(pd3dDevice, "./icons/button-lock.png");
 
     _padOn.loadFromFile(pd3dDevice, "./icons/pad-on.png");
     _padOff.loadFromFile(pd3dDevice, "./icons/pad-off.png");
@@ -238,6 +252,17 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _xbox3.loadFromFile(pd3dDevice, "./icons/xbox3.png");
     _xbox4.loadFromFile(pd3dDevice, "./icons/xbox4.png");
 
+    gamepadAnalog.loadFromFile(pd3dDevice, "./icons/gamepad-analog.png");
+    gamepadBg.loadFromFile(pd3dDevice, "./icons/gamepad-bg.png");
+    gamepadBumper.loadFromFile(pd3dDevice, "./icons/gamepad-bumper.png");
+    gamepadButton.loadFromFile(pd3dDevice, "./icons/gamepad-button.png");
+    gamepadDpadUp.loadFromFile(pd3dDevice, "./icons/gamepad-dpad-up.png");
+    gamepadDpadRight.loadFromFile(pd3dDevice, "./icons/gamepad-dpad-right.png");
+    gamepadMenu.loadFromFile(pd3dDevice, "./icons/gamepad-menu.png");
+    gamepadGuide.loadFromFile(pd3dDevice, "./icons/gamepad-guide.png");
+    gamepadThumb.loadFromFile(pd3dDevice, "./icons/gamepad-thumb.png");
+    gamepadTrigger.loadFromFile(pd3dDevice, "./icons/gamepad-trigger.png");
+
     _vpad.loadFromFile(pd3dDevice, "./icons/vpad.png");
     _multitap.loadFromFile(pd3dDevice, "./icons/multitap.png");
     _mirror.loadFromFile(pd3dDevice, "./icons/mirror.png");
@@ -263,6 +288,7 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     
     lock = _lock.texture;
     unlock = _unlock.texture;
+    buttonLock = _buttonLock.texture;
 
     padOn = _padOn.texture;
     padOff = _padOff.texture;

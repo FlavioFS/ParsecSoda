@@ -5,8 +5,9 @@ void NavBar::render(
 	bool& showLogin,
 	bool& showHostSettings,
 	bool& showGamepads,
-	bool& showMasterOfPuppets,
+	bool& showButtonLock,
 	bool& showHotseats,
+	bool& showMasterOfPuppets,
 	bool& showChat,
 	bool& showGuests,
 	bool& showThumbnails,
@@ -45,6 +46,7 @@ void NavBar::render(
 	renderNavItem(AppIcons::play, AppIcons::play, showHostSettings, iconSize, "Host settings");
 	renderNavItem(AppIcons::padOn, AppIcons::padOn, showGamepads, iconSize, "Gamepads");
 	renderNavItem(AppIcons::seat, AppIcons::seat, showHotseats, iconSize, "Hotseats");
+	renderNavItem(AppIcons::buttonLock, AppIcons::buttonLock, showButtonLock, iconSize, "Button Lock");
 	renderNavItem(AppIcons::puppet, AppIcons::puppet, showMasterOfPuppets, iconSize, "Master of Puppets");
 	renderNavItem(AppIcons::chat, AppIcons::chat, showChat, iconSize, "Chat");
 	renderNavItem(AppIcons::users, AppIcons::users, showGuests, iconSize, "Guests");

@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Widgets\ButtonLockWidget.cpp" />
     <ClCompile Include="Widgets\SwitchWidget.cpp" />
     <ClCompile Include="Widgets\BadgeButtonWidget.cpp" />
     <ClCompile Include="Widgets\BadgeIconWidget.cpp" />
@@ -253,6 +254,9 @@
     <ClCompile Include="Widgets\NavBar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ButtonLock.h" />
+    <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Widgets\ButtonLockWidget.h" />
     <ClInclude Include="imgui\ImVecExtensions.h" />
     <ClInclude Include="Widgets\SwitchWidget.h" />
     <ClInclude Include="Widgets\BadgeButtonWidget.h" />
