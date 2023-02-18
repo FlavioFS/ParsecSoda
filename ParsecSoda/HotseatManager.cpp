@@ -226,15 +226,15 @@ void HotseatManager::rotate()
 
 	for (; iSeat != m_seats.end(); ++iSeat)
 	{
-		if (!iSeat->guest.isOnline)
-		{
-			spectateSeat(index);
-		}
-
 		if (iSeat->isEmpty || iSeat->timer.isRunComplete())
 		{
 			next(*iSeat);
 		}
+		else if (!iSeat->guest.isOnline)
+		{
+			spectateSeat(index);
+		}
+
 
 		++index;
 	}
