@@ -18,10 +18,10 @@ public:
 		const char* overlay = "",
 		const ImVec4 colorFull = AppColors::positive,
 		const ImVec4 colorHalf = AppColors::warning2,
-		const ImVec4 colorEmpty = AppColors::negative
+		const ImVec4 colorEmpty = AppColors::red
 	);
 
-	static ImVec4 lerpColors3(const float t, ImVec4 colorFull = AppColors::positive, ImVec4 colorHalf = AppColors::warning2, ImVec4 colorEmpty = AppColors::negative)
+	static ImVec4 lerpColors3(const float t, ImVec4 colorFull = AppColors::positive, ImVec4 colorHalf = AppColors::warning2, ImVec4 colorEmpty = AppColors::red)
 	{
 		if (t >= 0.5f)
 		{
