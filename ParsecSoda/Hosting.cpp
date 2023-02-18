@@ -718,7 +718,7 @@ void Hosting::onGuestStateChange(ParsecGuestState& state, Guest& guest)
 		{
 			_guestHistory.add(GuestData(guest.name, guest.userID));
 		}
-		else
+		else if (!_hotseatManager.isEnabled())
 		{
 			int droppedPads = 0;
 			CommandFF command(guest, _gamepadClient, _hotseatManager);
