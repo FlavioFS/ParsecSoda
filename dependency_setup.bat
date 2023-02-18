@@ -31,11 +31,6 @@ COPY .\Dependencies\sdl\lib\x64\SDL2.dll .\x64\Release
 COPY .\Dependencies\sdl\lib\x86\SDL2.dll .\Debug
 COPY .\Dependencies\sdl\lib\x86\SDL2.dll .\Release
 
-COPY .\ParsecSoda\icons\ .\x64\Debug\icons\
-COPY .\ParsecSoda\icons\ .\x64\Release\icons\
-COPY .\ParsecSoda\icons\ .\Debug\icons\
-COPY .\ParsecSoda\icons\ .\Release\icons\
-
 COPY .\ParsecSoda\fonts\ .\x64\Debug\fonts\
 COPY .\ParsecSoda\fonts\ .\x64\Release\fonts\
 COPY .\ParsecSoda\fonts\ .\Debug\fonts\
@@ -44,6 +39,11 @@ COPY .\ParsecSoda\fonts\ .\Release\fonts\
 COPY .\ParsecSoda\sfx\ .\x64\Debug\sfx\
 COPY .\ParsecSoda\sfx\ .\x64\Release\sfx\
 COPY .\ParsecSoda\sfx\ .\Debug\sfx\
+
 COPY .\ParsecSoda\sfx\ .\Release\sfx\
+COPY .\ParsecSoda\icons\ .\x64\Debug\icons\
+COPY .\ParsecSoda\icons\ .\x64\Release\icons\
+COPY .\ParsecSoda\icons\ .\Debug\icons\
+COPY .\ParsecSoda\icons\ .\Release\icons\
 
 pause
