@@ -9,6 +9,7 @@
 #include "../CircularMetrics.h"
 #include <functional>
 #include "IconButton.h"
+#include "BadgeButtonWidget.h"
 #include "TitleTooltipWidget.h"
 #include "AbstractTooltipWidget.h"
 #include "ConfirmPopupWidget.h"
@@ -35,7 +36,7 @@ private:
 	bool isGuestFilterMatch(const string name, const uint32_t userID, const string filterTextStr);
 	void sendHostMessage(const string command, const uint32_t userID);
 	ImVec4 getLatencyColor(float latency);
-	void renderPopupButton(const string title, const string command, const GuestData guest, bool& showPopup, string& popupTitle, Icon btnIcon, Action action);
+	void renderPopupButton(const string title, const string command, const GuestData& guest, const size_t& index, bool& showPopup, string& popupTitle, Icon btnIcon, Action action);
 
 	void renderGuestMetricsTooltip(GuestData guest);
 

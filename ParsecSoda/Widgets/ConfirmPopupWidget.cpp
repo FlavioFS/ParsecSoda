@@ -10,8 +10,7 @@ bool ConfirmPopupWidget::render(const char * title, bool &showPopup)
     AppStyle::pushTitle();
     if (ImGui::BeginPopupModal(title, nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
     {
-        ImGui::BeginChild(title, ImVec2(10, 40));
-        ImGui::EndChild();
+        ImGui::Dummy(ImVec2(10, 40));
 
         ImGui::Indent(10);
         if (IconButton::render(AppIcons::no, AppColors::negative, BUTTON_SIZE))

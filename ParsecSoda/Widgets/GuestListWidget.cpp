@@ -8,7 +8,7 @@ GuestListWidget::GuestListWidget(Hosting& hosting)
 bool GuestListWidget::render()
 {
     AppStyle::pushTitle();
-    ImGui::SetNextWindowSizeConstraints(ImVec2(300, 300), ImVec2(800, 900));
+    ImGui::SetNextWindowSizeConstraints(ImVec2(250, 300), ImVec2(800, 900));
     ImGui::Begin("Guests", (bool*)0);
     AppStyle::pushInput();
 
@@ -88,17 +88,12 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     static GuestData guestData;
     guestData = GuestData(guest.name, guest.userID);
 
-    Action enqueueKickAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); }); };
-    renderPopupButton("Kick", "!kick", guestData, showKickPopup, kickPopupTitle, AppIcons::kick, enqueueKickAction);
-    
-    ImGui::SameLine();
-    
-    Action enqueueBanAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!ban", guest.userID); }); };
-    renderPopupButton("Ban", "!ban", guestData, showBanPopup, banPopupTitle, AppIcons::block, enqueueBanAction);
-
-
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(1, 1));
-    ImGui::SameLine();
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 1));
+
+    ImGui::Dummy(ImVec2(1, 5));
+
+    ImGui::PushID(("## Online guest " + to_string(index)).c_str());
 
     // ===================
     // Name and userID
@@ -106,7 +101,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     cursor = ImGui::GetCursorPos();
     ImGui::BeginGroup();
     AppStyle::pushLabel();
-    ImGui::TextWrapped("(# %d)\t", guest.userID);
+    ImGui::TextWrapped("# %d\t", guest.userID);
     AppStyle::pop();
     AppStyle::pushInput();
     ImGui::TextWrapped(guest.name.c_str());
@@ -114,7 +109,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     ImGui::Dummy(ImVec2(0.0f, 5.0f));
     ImGui::EndGroup();
     ImGui::SetCursorPos(cursor);
-    ImGui::Button((string("##") + to_string(index + 1)).c_str(), ImVec2(size.x - 45, 40));
+    ImGui::Button((string("##") + to_string(index + 1)).c_str(), ImVec2(size.x, 30));
 
     if (ImGui::BeginDragDropSource())
     {
@@ -133,22 +128,35 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
         ImGui::EndDragDropSource();
     }
 
-    ImGui::Dummy(ImVec2(10.0f, 0.0f));
+    Action enqueueKickAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); }); };
+    renderPopupButton("Kick", "!kick", guestData, index, showKickPopup, kickPopupTitle, AppIcons::kick, enqueueKickAction);
+    
+    ImGui::SameLine();
+
+    Action enqueueBanAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!ban", guest.userID); }); };
+    renderPopupButton("Ban", "!ban", guestData, index, showBanPopup, banPopupTitle, AppIcons::block, enqueueBanAction);
+
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(5, 0));
     ImGui::SameLine();
 
     // ===================
     // Latency
     // ===================
     static ImVec4 latencyColor;
+    static const float TEXT_HEIGHT = ImGui::CalcTextSize("ms").y, BUTTON_HEIGHT = 20;
     latencyColor = getLatencyColor(guest.metrics.getLatency());
     AppStyle::pushInput();
     AppColors::pushColor(latencyColor);
+    ImGui::AlignTextToFramePadding();
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 0.5f * (BUTTON_HEIGHT - TEXT_HEIGHT));
     ImGui::Text("%.0f ms", guest.metrics.getLatency());
     renderGuestMetricsTooltip(guestData);
     AppColors::pop();
     AppStyle::pop();
 
-    ImGui::PopStyleVar();
+    ImGui::PopID();
+    ImGui::PopStyleVar(2);
 }
 
 void GuestListWidget::renderOneBannedGuest(GuestData& guest, size_t index)
@@ -156,6 +164,8 @@ void GuestListWidget::renderOneBannedGuest(GuestData& guest, size_t index)
     static bool showUnbanPopup = false;
     static string popupTitle = "";
     static size_t popupIndex;
+
+    ImGui::PushID((string("Banned Guest ") + to_string(index)).c_str());
 
     IconButton::render(AppIcons::userOff, AppColors::negative, ImVec2(30, 30));
     if (ImGui::IsItemActive())
@@ -194,6 +204,8 @@ void GuestListWidget::renderOneBannedGuest(GuestData& guest, size_t index)
     ImGui::Dummy(ImVec2(0.0f, 5.0f));
     ImGui::EndGroup();
     ImGui::PopStyleVar();
+
+    ImGui::PopID();
 }
 
 void GuestListWidget::renderOneHistoryGuest(GuestData& guest, size_t index)
@@ -201,6 +213,8 @@ void GuestListWidget::renderOneHistoryGuest(GuestData& guest, size_t index)
     static bool showBanPopup = false;
     static string popupTitle = "";
     static size_t popupIndex;
+
+    ImGui::PushID((string("History Guest ") + to_string(index)).c_str());
 
     IconButton::render(AppIcons::block, AppColors::primary, ImVec2(30, 30));
     if (ImGui::IsItemActive())
@@ -237,6 +251,8 @@ void GuestListWidget::renderOneHistoryGuest(GuestData& guest, size_t index)
     ImGui::Dummy(ImVec2(0.0f, 5.0f));
     ImGui::EndGroup();
     ImGui::PopStyleVar();
+
+    ImGui::PopID();
 }
 
 
@@ -317,19 +333,20 @@ ImVec4 GuestListWidget::getLatencyColor(float latency)
     return AppColors::warning;
 }
 
-void GuestListWidget::renderPopupButton(const string title, const string command, const GuestData guest, bool& showPopup, string& popupTitle, Icon btnIcon, Action action)
+void GuestListWidget::renderPopupButton(const string title, const string command, const GuestData& guest, const size_t& index, bool& showPopup, string& popupTitle, Icon btnIcon, Action action)
 {
-    IconButton::render(btnIcon, AppColors::primary, ImVec2(30, 30));
-    if (ImGui::IsItemActive())
+    static string tooltipTitle, tooltipDescription, id;
+
+    tooltipTitle = title + " user";
+    tooltipDescription = "Press to " + title + " " + guest.name;
+    id = title + " " + to_string(index);
+    if (BadgeButtonWidget::render(btnIcon, tooltipTitle.c_str(), tooltipDescription.c_str(), id.c_str(), ImVec2(20, 20)))
     {
         showPopup = true;
-        popupTitle = title + " " + guest.name + "?" + "##Online " + title + to_string(guest.userID);
+        popupTitle = title + " " + guest.name + "?" + "##Online " + to_string(index)+ title + to_string(guest.userID);
         ImGui::OpenPopup(popupTitle.c_str());
     }
-    TitleTooltipWidget::render(
-        (title + " user").c_str(),
-        (string("Press to ") + title + " " + guest.name).c_str()
-    );
+
     if (showPopup)
     {
         if (ConfirmPopupWidget::render(

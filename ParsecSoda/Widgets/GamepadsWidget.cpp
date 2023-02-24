@@ -297,15 +297,11 @@ bool GamepadsWidget::render()
 
         ImGui::Dummy(ImVec2(0, 5));
     }
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(4);
 
-    ImGui::PopStyleVar();
     AppStyle::pop();
     ImGui::End();
     AppStyle::pop();
-
-    ImGui::PopStyleVar();
 
 
     if (isConnectionButtonPressed)
