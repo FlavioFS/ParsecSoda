@@ -41,6 +41,6 @@ public:
 		this->userID = userID;
 	}
 
-	std::string name;
+	std::string name{""};
 	uint32_t userID;
 };

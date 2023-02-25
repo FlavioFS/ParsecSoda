@@ -57,7 +57,7 @@ public:
 	Guest copy(const Guest& guest);
 
 
-	string name;
+	string name{""};
 	uint32_t userID;
 	uint32_t id;
 	Status status;
