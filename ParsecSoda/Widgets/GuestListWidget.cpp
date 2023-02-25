@@ -135,7 +135,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     if (ToggleIconButtonWidget::render(
         AppIcons::chatOff, AppIcons::chatOn,
         isMuted, ("Mute Online Guest " + to_string(index)).c_str(),
-        AppColors::red, AppColors::negative,
+        AppColors::red, AppColors::positive,
         ImVec2(20, 20)
     ))
     {
@@ -148,8 +148,8 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
             _mutedGuests.add(GuestData(guest.name, guest.userID));
         }
     }
-    if (isMuted)  TitleTooltipWidget::render("Unmute guest", ("Press to unmute " + guest.name + ".").c_str());
-    else          TitleTooltipWidget::render("Mute guest", ("Press to mute " + guest.name + ".").c_str());
+    if (isMuted)  TitleTooltipWidget::render("Muted guest", ("Guest cannot type in chat.\nPress to unmute " + guest.name + ".").c_str());
+    else          TitleTooltipWidget::render("Chatting guest", ("Guest can type in chat.\nPress to mute " + guest.name + ".").c_str());
 
     ImGui::SameLine();
 
