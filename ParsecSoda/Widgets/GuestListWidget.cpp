@@ -312,7 +312,7 @@ void GuestListWidget::renderAnyGuestDataList(GuestDataList& guestDataList, funct
 
 bool GuestListWidget::isGuestFilterMatch(const string name, const uint32_t userID, const string filterTextStr)
 {
-    if (!filterTextStr.empty()) return true;
+    if (filterTextStr.empty()) return true;
     if (Stringer::fuzzyDistance(_filterText, name) == 0) return true;
     if (Stringer::fuzzyDistance(_filterText, to_string(userID)) == 0) return true;
 
