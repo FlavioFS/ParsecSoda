@@ -17,20 +17,20 @@ public:
 	{
 		if (!MetadataCache::preferences.enableSfx)
 		{
-			_replyMessage = "[ChatBot] | Sound effects are disabled.\0";
+			_replyMessage = "[ChatBot]\tSound effects are disabled.\0";
 			return false;
 		}
 
 		if (_sfxList.size() <= 0)
 		{
-			_replyMessage = "[ChatBot] | No sound effects available.\0";
+			_replyMessage = "[ChatBot]\tNo sound effects available.\0";
 			return false;
 		}
 
 		if ( !ACommandStringArg::run() )
 		{
 			_replyMessage =
-				string("[ChatBot] | Usage: !sfx <sound name> | Example: !sfx bruh\n") +
+				string("[ChatBot]\tUsage: !sfx <sound name> | Example: !sfx bruh\n") +
 				string("List of available sound names:\n") +
 				_sfxList.loadedTags() +
 				string("\0");
@@ -43,13 +43,13 @@ public:
 		{
 		case SFXList::SFXPlayResult::COOLDOWN:
 			_replyMessage =
-				string("[ChatBot] | Command !sfx is on cooldown: ") +
+				string("[ChatBot]\tCommand !sfx is on cooldown: ") +
 				to_string(_sfxList.getRemainingCooldown()) +
 				string(" seconds left.");
 			break;
 		case SFXList::SFXPlayResult::NOT_FOUND:
 			_replyMessage =
-				string("[ChatBot] | This sound does not exist.\n") +
+				string("[ChatBot]\tThis sound does not exist.\n") +
 				string("List of available sound effects:\n") +
 				_sfxList.loadedTags() +
 				string("\0");

@@ -15,7 +15,7 @@ public:
 
 	bool run() override
 	{
-		_replyMessage = "[ChatBot] | Refreshing Directx11...\0";
+		_replyMessage = "[ChatBot]\tRefreshing Directx11...\0";
 		_dx11.recover();
 		return true;
 	}

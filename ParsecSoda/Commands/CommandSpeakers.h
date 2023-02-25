@@ -17,14 +17,14 @@ public:
 	{
 		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = std::string() + "[ChatBot] | Usage: !speakers <integer in range [0, 100]>\nExample: !speakers 42\0";
+			_replyMessage = std::string() + "[ChatBot]\tUsage: !speakers <integer in range [0, 100]>\nExample: !speakers 42\0";
 			return false;
 		}
 
 		_audioOut.volume = (float)_intArg / 100.0f;
 
 		std::ostringstream reply;
-		reply << "[ChatBot] | Speakers volume set to " << _intArg << "%\0";
+		reply << "[ChatBot]\tSpeakers volume set to " << _intArg << "%\0";
 		_replyMessage = reply.str();
 		return true;
 	}

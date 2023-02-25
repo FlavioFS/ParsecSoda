@@ -15,7 +15,7 @@ public:
 
 	bool run() override
 	{
-		_replyMessage = "[ChatBot] | Room settings applied.\0";
+		_replyMessage = "[ChatBot]\tRoom settings applied.\0";
 		ParsecHostSetConfig(_parsec, _config, _sessionId);
 		return true;
 	}

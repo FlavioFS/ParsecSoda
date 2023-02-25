@@ -16,7 +16,7 @@ public:
 	{
 		if ( !ACommandStringArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: !gameid <id>\nExample: !gameid 1RR6JAsP4sdrjUOMEV4i7lVwMht\0";
+			_replyMessage = "[ChatBot]\tUsage: !gameid <id>\nExample: !gameid 1RR6JAsP4sdrjUOMEV4i7lVwMht\0";
 			return false;
 		}
 
@@ -26,11 +26,11 @@ public:
 		}
 		catch (const std::exception&)
 		{
-			_replyMessage = "[ChatBot] | Failed to write game ID.\0";
+			_replyMessage = "[ChatBot]\tFailed to write game ID.\0";
 			return false;
 		}
 
-		_replyMessage = std::string() + "[ChatBot] | Game ID changed:\n" + _stringArg + "\0";
+		_replyMessage = std::string() + "[ChatBot]\tGame ID changed:\n" + _stringArg + "\0";
 		return true;
 	}
 

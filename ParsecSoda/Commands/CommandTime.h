@@ -25,26 +25,26 @@ public:
 
 			if (!_hotseatManager.isQueueEmpty())
 			{
-				_replyMessage = "[ChatBot] | " + _sender.name + ", waiting queue must be empty to refresh timer.\0";
+				_replyMessage = "[ChatBot]\t" + _sender.name + ", waiting queue must be empty to refresh timer.\0";
 			}
 			else
 			{
 				bool found = _hotseatManager.findSeatByGuest(_sender.userID, [&](Hotseat& seat) {
 					if (seat.timer.getRemainingTime() * FILL_FRACTION_INVERSE > seat.timer.getDuration())
 					{
-						_replyMessage = "[ChatBot] | " + _sender.name + ", your seat timer must be below 25% to run this command.\0";
+						_replyMessage = "[ChatBot]\t" + _sender.name + ", your seat timer must be below 25% to run this command.\0";
 					}
 					else
 					{
 						_hotseatManager.refresh(seat);
-						_replyMessage = "[ChatBot] | " + _sender.name + ", seat timer refreshed.\0";
+						_replyMessage = "[ChatBot]\t" + _sender.name + ", seat timer refreshed.\0";
 						result = true;
 					}
 				});
 
 				if (!found)
 				{
-					_replyMessage = "[ChatBot] | " + _sender.name + ", you must be in a seat to run this command.\0";
+					_replyMessage = "[ChatBot]\t" + _sender.name + ", you must be in a seat to run this command.\0";
 				}
 			}
 		});

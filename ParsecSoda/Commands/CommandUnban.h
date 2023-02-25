@@ -20,7 +20,7 @@ public:
 	{
 		if ( !ACommandStringArg::run())
 		{
-			_replyMessage = "[ChatBot] | Usage: !unban <username>\nExample: !unban melon\0";
+			_replyMessage = "[ChatBot]\tUsage: !unban <username>\nExample: !unban melon\0";
 			return false;
 		}
 		
@@ -46,7 +46,7 @@ public:
 		{
 			std::ostringstream reply;
 			reply
-				<< "[ChatBot] | " << _sender.name << " has revoked a ban:\n"
+				<< "[ChatBot]\t" << _sender.name << " has revoked a ban:\n"
 				<< "\t\t" << unbannedGuest.name << "\t(#" << unbannedGuest.userID << ")\0";
 			_replyMessage = reply.str();
 			_guestHistory.add(unbannedGuest);
@@ -54,7 +54,7 @@ public:
 		}
 		else
 		{
-			_replyMessage = std::string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to unban.\0";
+			_replyMessage = std::string() + "[ChatBot]\t" + _sender.name + ", I cannot find the user you want to unban.\0";
 			return false;
 		}
 	}

@@ -17,7 +17,7 @@ public:
 	{
 		bool isMultitap = _gamepadClient.toggleMultitap(_sender.userID);
 		_replyMessage = std::string()
-			+ "[ChatBot] | " + _sender.name
+			+ "[ChatBot]\t" + _sender.name
 			+ " toggled multitap:\t" + (isMultitap ? "ON" : "OFF")
 			+ "\0";
 		return true;

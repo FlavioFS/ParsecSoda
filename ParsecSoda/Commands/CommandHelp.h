@@ -65,7 +65,7 @@ public:
 		else							commandList = pleb_commands;
 
 		_replyMessage =
-			string("[ChatBot] | Command list: ")
+			string("[ChatBot]\tCommand list: ")
 			+ commandList
 			+ "\n\0";
 

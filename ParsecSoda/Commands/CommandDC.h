@@ -21,7 +21,7 @@ public:
 		{
 			_replyMessage =
 				std::string() +
-				"[ChatBot] | Usage: !dc <integer in range [1, " +
+				"[ChatBot]\tUsage: !dc <integer in range [1, " +
 				to_string(maxIndex) +
 				"]>\nExample: !dc 1\0"
 				;
@@ -32,16 +32,16 @@ public:
 		std::ostringstream reply;
 		if (_intArg < 1 || _intArg > maxIndex)
 		{
-			reply << "[ChatBot] | Wrong index: " << _intArg << " is not in range [1, " << maxIndex << "].\0";
+			reply << "[ChatBot]\tWrong index: " << _intArg << " is not in range [1, " << maxIndex << "].\0";
 		}
 
 		if (_gamepadClient.disconnect(_intArg - 1))
 		{
-			reply << "[ChatBot] | Gamepad " << _intArg << " disconnected.\0";
+			reply << "[ChatBot]\tGamepad " << _intArg << " disconnected.\0";
 		}
 		else
 		{
-			reply << "[ChatBot] | Gamepad " << _intArg << " fail to disconnect.\0";
+			reply << "[ChatBot]\tGamepad " << _intArg << " fail to disconnect.\0";
 		}
 
 		_replyMessage = reply.str();

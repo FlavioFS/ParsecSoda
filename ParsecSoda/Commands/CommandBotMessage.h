@@ -15,7 +15,7 @@ public:
 
 	bool run() override
 	{
-		_replyMessage = std::string() + "[ChatBot] | " + _msg + "\0";
+		_replyMessage = std::string() + "[ChatBot]\t" + _msg + "\0";
 		return true;
 	}
 

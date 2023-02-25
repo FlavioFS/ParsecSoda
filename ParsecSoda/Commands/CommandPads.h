@@ -17,7 +17,7 @@ public:
 	bool run() override
 	{
 		std::ostringstream reply;
-		reply << "[ChatBot] | Gamepad Holders:\n";
+		reply << "[ChatBot]\tGamepad Holders:\n";
 
 		std::vector<AGamepad*>::iterator gi = _gamepadClient.gamepads.begin();
 		uint16_t i = 1;

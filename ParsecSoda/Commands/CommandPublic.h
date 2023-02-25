@@ -15,7 +15,7 @@ public:
 
 	bool run() override
 	{
-		_replyMessage = "[ChatBot] | Room set to public.\0";
+		_replyMessage = "[ChatBot]\tRoom set to public.\0";
 		_config.publicGame = true;
 		return true;
 	}

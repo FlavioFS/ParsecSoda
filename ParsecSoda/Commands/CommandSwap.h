@@ -18,7 +18,7 @@ public:
 	{
 		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = "[ChatBot] | Usage: !swap <integer in range [1, 4]>\nExample: !swap 4\0";
+			_replyMessage = "[ChatBot]\tUsage: !swap <integer in range [1, 4]>\nExample: !swap 4\0";
 			return false;
 		}
 
@@ -31,43 +31,43 @@ public:
 		{
 		case GamepadClient::PICK_REQUEST::OK:
 			reply
-				<< "[ChatBot] | Gamepad " << _intArg << " was given to " << _sender.name << "\t(#" << _sender.userID << ")\n"
+				<< "[ChatBot]\tGamepad " << _intArg << " was given to " << _sender.name << "\t(#" << _sender.userID << ")\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			rv = true;
 			break;
 		case GamepadClient::PICK_REQUEST::DISCONNECTED:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", gamepad " << _intArg << " is offline.\n"
+				<< "[ChatBot]\t" << _sender.name << ", gamepad " << _intArg << " is offline.\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::SAME_USER:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", you have that gamepad already.\n"
+				<< "[ChatBot]\t" << _sender.name << ", you have that gamepad already.\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::TAKEN:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", the gamepad you tried to pick is already taken.\n"
+				<< "[ChatBot]\t" << _sender.name << ", the gamepad you tried to pick is already taken.\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::EMPTY_HANDS:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", you must be holding a gamepad to use !swap command.\n"
+				<< "[ChatBot]\t" << _sender.name << ", you must be holding a gamepad to use !swap command.\n"
 				<< "\t\tPress any face button (A, B, X, Y) to receive a random gamepad (if available).\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::LIMIT_BLOCK:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", your current gamepad limit is set to 0.\0";
+				<< "[ChatBot]\t" << _sender.name << ", your current gamepad limit is set to 0.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::OUT_OF_RANGE:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", your gamepad index is wrong (valid range is [1, 4]).\n"
+				<< "[ChatBot]\t" << _sender.name << ", your gamepad index is wrong (valid range is [1, 4]).\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		case GamepadClient::PICK_REQUEST::PUPPET:
 			reply
-				<< "[ChatBot] | " << _sender.name << ", puppet master is handling that gamepad.\n"
+				<< "[ChatBot]\t" << _sender.name << ", puppet master is handling that gamepad.\n"
 				<< "\t\tType !pads to see the gamepad list.\0";
 			break;
 		default:

@@ -18,20 +18,20 @@ public:
 	{
 		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = "[ChatBot] | Usage: !strip <integer in range [1, 4]>\nExample: !strip 4\0";
+			_replyMessage = "[ChatBot]\tUsage: !strip <integer in range [1, 4]>\nExample: !strip 4\0";
 			return false;
 		}
 
 		bool success = _gamepadClient.clearOwner(_intArg-1);
 		if (!success)
 		{
-			_replyMessage = "[ChatBot] | Usage: !strip <integer in range [1, 4]>\nExample: !strip 4\0";
+			_replyMessage = "[ChatBot]\tUsage: !strip <integer in range [1, 4]>\nExample: !strip 4\0";
 			return false;
 		}
 
 		std::ostringstream reply;
 		reply
-			<< "[ChatBot] | Gamepad " << _intArg << " was forcefully dropped by " << _sender.name << "\n"
+			<< "[ChatBot]\tGamepad " << _intArg << " was forcefully dropped by " << _sender.name << "\n"
 			<< "\t\tType !pads to see the gamepad list.\0";
 
 		_replyMessage = reply.str();

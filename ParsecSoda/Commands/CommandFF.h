@@ -35,15 +35,15 @@ public:
 		std::ostringstream reply;
 		if (_droppedPadCount > 1)
 		{
-			reply << "[ChatBot] | " << _sender.name << " has dropped " << _droppedPadCount << " gamepads!\0";
+			reply << "[ChatBot]\t" << _sender.name << " has dropped " << _droppedPadCount << " gamepads!\0";
 		}
 		else if (_droppedPadCount > 0)
 		{
-			reply << "[ChatBot] | " << _sender.name << " has dropped " << _droppedPadCount << " gamepad!\0";
+			reply << "[ChatBot]\t" << _sender.name << " has dropped " << _droppedPadCount << " gamepad!\0";
 		}
 		else
 		{
-			reply << "[ChatBot] | " << _sender.name << " has no gamepads to drop.\0";
+			reply << "[ChatBot]\t" << _sender.name << " has no gamepads to drop.\0";
 		}
 
 		_replyMessage = reply.str();
@@ -58,7 +58,7 @@ public:
 
 		if (_hotseatManager.spectateGuestID(_sender.userID))
 		{
-			_replyMessage = "[ChatBot] | " + _sender.name + " is now only watching.\0";
+			_replyMessage = "[ChatBot]\t" + _sender.name + " is now only watching.\0";
 			return true;
 		}
 

@@ -17,14 +17,14 @@ public:
 	{
 		if ( !ACommandSearchUserIntArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: !limit <username> <number>\nExample: !limit melon 2\0";
+			_replyMessage = "[ChatBot]\tUsage: !limit <username> <number>\nExample: !limit melon 2\0";
 			return false;
 		}
 
 		_gamepadClient.setLimit(_targetGuest.userID, _intArg);
 
 		std::ostringstream reply;
-		reply << "[ChatBot] | " << _targetGuest.name << " gamepad limit set to " << _intArg << "\0";
+		reply << "[ChatBot]\t" << _targetGuest.name << " gamepad limit set to " << _intArg << "\0";
 		_replyMessage = reply.str();
 		return true;
 	}

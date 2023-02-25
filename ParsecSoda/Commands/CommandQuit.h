@@ -13,7 +13,7 @@ public:
 
 	bool run() override
 	{
-		_replyMessage = "[ChatBot] | Closing stream...\0";
+		_replyMessage = "[ChatBot]\tClosing stream...\0";
 		_hostingLoopController = false;
 		return true;
 	}

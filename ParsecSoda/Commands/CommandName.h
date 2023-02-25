@@ -16,7 +16,7 @@ public:
 	{
 		if ( !ACommandStringArg::run() )
 		{
-			_replyMessage = "[ChatBot] | Usage: !name <roomname>\nExample: !name Let's Play Gauntlet!\0";
+			_replyMessage = "[ChatBot]\tUsage: !name <roomname>\nExample: !name Let's Play Gauntlet!\0";
 			return false;
 		}
 
@@ -33,7 +33,7 @@ public:
 
 		strcpy_s(_config.name, _stringArg.c_str());
 
-		_replyMessage = std::string() + "[ChatBot] | Room name changed:\n" + _stringArg + "\0";
+		_replyMessage = std::string() + "[ChatBot]\tRoom name changed:\n" + _stringArg + "\0";
 		return true;
 	}
 
