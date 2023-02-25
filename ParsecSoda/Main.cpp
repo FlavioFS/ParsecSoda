@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 #include <SDL.h>
+#include <sys/types.h>
+#include <fstream>
 #include "resource.h"
 #include "Hosting.h"
 #include "Texture.h"
@@ -54,6 +56,9 @@ void CleanupDeviceD3D();
 void CreateRenderTarget();
 void CleanupRenderTarget();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+bool fileExists(const string& path);
+bool tryLoadImguiIniCache();
+bool trySaveImguiIniCache();
 
 // Main code
 int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd)
@@ -95,6 +100,8 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     // Show the window
     ::ShowWindow(hwnd, SW_SHOWDEFAULT);
     ::UpdateWindow(hwnd);
+
+    tryLoadImguiIniCache();
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -369,9 +376,52 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             MetadataCache::preferences.windowH = windowRect.bottom - windowRect.top;
             MetadataCache::savePreferences();
         }
+        trySaveImguiIniCache();
         Sleep(1000);
         ::PostQuitMessage(0);
         return 0;
     }
     return ::DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+inline bool fileExists(const string& path)
+{
+    struct stat buffer;
+    return (stat(path.c_str(), &buffer) == 0);
+}
+
+bool tryLoadImguiIniCache()
+{
+    const string imguiIniPath = MetadataCache::getUserDir() + "imgui.ini";
+
+    if (fileExists(imguiIniPath))
+    {
+        std::ifstream src(imguiIniPath, std::ios::binary);
+        std::ofstream dst(".\\imgui.ini", std::ios::binary);
+
+        if (src.is_open() && dst.is_open())
+        {
+            dst << src.rdbuf();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool trySaveImguiIniCache()
+{
+    if (fileExists(".\\imgui.ini"))
+    {
+        std::ifstream src(".\\imgui.ini", std::ios::binary);
+        std::ofstream dst(MetadataCache::getUserDir() + "imgui.ini", std::ios::binary);
+
+        if (src.is_open() && dst.is_open())
+        {
+            dst << src.rdbuf();
+            return true;
+        }
+    }
+
+    return false;
 }

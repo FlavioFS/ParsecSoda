@@ -505,7 +505,7 @@ const string MetadataCache::getSfxPath()
     return getUserDir() + "sfx\\_sfx.json";
 }
 
-string MetadataCache::getUserDir()
+const string MetadataCache::getUserDir()
 {
     TCHAR tAppdata[1024];
     if (SUCCEEDED(SHGetFolderPath(nullptr, CSIDL_APPDATA, NULL, 0, tAppdata)))

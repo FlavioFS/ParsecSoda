@@ -95,9 +95,9 @@ public:
 	static GuestData host;
 
 	static const string getSfxPath();
+	static const string getUserDir();
 
 private:
-	static string getUserDir();
 	
 	// This is not ideal, especially in an open source environment.
 	// I'm using these values just as placeholders until I find an
