@@ -133,7 +133,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
     static bool isMuted;
     isMuted = _mutedGuests.find(guest.userID);
     if (ToggleIconButtonWidget::render(
-        AppIcons::speakersOff, AppIcons::speakersOn,
+        AppIcons::chatOff, AppIcons::chatOn,
         isMuted, ("Mute Online Guest " + to_string(index)).c_str(),
         AppColors::red, AppColors::negative,
         ImVec2(20, 20)

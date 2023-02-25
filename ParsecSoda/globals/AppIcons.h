@@ -40,6 +40,8 @@ public:
 	static ID3D11ShaderResourceView* micOff;
 	static ID3D11ShaderResourceView* speakersOn;
 	static ID3D11ShaderResourceView* speakersOff;
+	static ID3D11ShaderResourceView* chatOn;
+	static ID3D11ShaderResourceView* chatOff;
 
 	static ID3D11ShaderResourceView* video;
 
@@ -134,6 +136,8 @@ private:
 	static Texture _micOff;
 	static Texture _speakersOn;
 	static Texture _speakersOff;
+	static Texture _chatOn;
+	static Texture _chatOff;
 
 	static Texture _video;
 	

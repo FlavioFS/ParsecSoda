@@ -31,6 +31,8 @@ ID3D11ShaderResourceView* AppIcons::micOn;
 ID3D11ShaderResourceView* AppIcons::micOff;
 ID3D11ShaderResourceView* AppIcons::speakersOn;
 ID3D11ShaderResourceView* AppIcons::speakersOff;
+ID3D11ShaderResourceView* AppIcons::chatOn;
+ID3D11ShaderResourceView* AppIcons::chatOff;
 
 ID3D11ShaderResourceView* AppIcons::video;
 
@@ -124,6 +126,8 @@ Texture AppIcons::_micOn;
 Texture AppIcons::_micOff;
 Texture AppIcons::_speakersOn;
 Texture AppIcons::_speakersOff;
+Texture AppIcons::_chatOn;
+Texture AppIcons::_chatOff;
 
 Texture AppIcons::_video;
 
@@ -209,6 +213,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     _micOff.loadFromFile(pd3dDevice, "./icons/microphone-off.png");
     _speakersOn.loadFromFile(pd3dDevice, "./icons/speakers-on.png");
     _speakersOff.loadFromFile(pd3dDevice, "./icons/speakers-off.png");
+    _chatOn.loadFromFile(pd3dDevice, "./icons/chat-on.png");
+    _chatOff.loadFromFile(pd3dDevice, "./icons/chat-off.png");
 
     _video.loadFromFile(pd3dDevice, "./icons/video.png");
 
@@ -302,6 +308,8 @@ void AppIcons::init(ID3D11Device* pd3dDevice)
     micOff = _micOff.texture;
     speakersOn = _speakersOn.texture;
     speakersOff = _speakersOff.texture;
+    chatOn = _chatOn.texture;
+    chatOff = _chatOff.texture;
     
     video = _video.texture;
 
