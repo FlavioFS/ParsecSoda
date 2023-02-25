@@ -12,8 +12,8 @@ class CommandKick : public ACommandSearchUser
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::KICK; }
 
-	CommandKick(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests, bool isHost = false)
-		:ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec), _isHost(isHost)
+	CommandKick(const char* msg, Guest& sender, ParsecDSO* parsec, GuestList &guests)
+		:ACommandSearchUser(msg, internalPrefixes(), guests), _sender(sender), _parsec(parsec)
 	{}
 
 	bool run() override
@@ -24,18 +24,18 @@ public:
 		{
 		case SEARCH_USER_RESULT::NOT_FOUND:
 			{
-				_replyMessage = std::string() + "[ChatBot] | " + _sender.name + ", I cannot find the user you want to kick.\0";
+				_replyMessage = std::string() + "[ChatBot]\t" + _sender.name + ", I cannot find the user you want to kick.\0";
 			}
 			break;
 
 		case SEARCH_USER_RESULT::FOUND:
 			if (_sender.userID == _targetGuest.userID)
 			{
-				_replyMessage = std::string() + "[ChatBot] | Thou shall not kick thyself, " + _sender.name + " ...\0";
+				_replyMessage = std::string() + "[ChatBot]\tThou shall not kick thyself, " + _sender.name + " ...\0";
 			}
 			else
 			{
-				_replyMessage = std::string() + "[ChatBot] | " + _targetGuest.name+ " was kicked by " + _sender.name + "!\0";
+				_replyMessage = std::string() + "[ChatBot]\t" + _targetGuest.name+ " was kicked by " + _sender.name + "!\0";
 				ParsecHostKickGuest(_parsec, _targetGuest.id);
 				
 				if (MetadataCache::preferences.enableKickSfx)
@@ -53,7 +53,7 @@ public:
 		
 		case SEARCH_USER_RESULT::FAILED:
 		default:
-			_replyMessage = "[ChatBot] | Usage: !kick <username>\nExample: !kick melon\0";
+			_replyMessage = "[ChatBot]\tUsage: !kick <username>\nExample: !kick melon\0";
 			break;
 		}
 
@@ -73,6 +73,5 @@ protected:
 
 	Guest& _sender;
 	ParsecDSO* _parsec;
-	bool _isHost;
 };
 

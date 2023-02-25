@@ -15,8 +15,6 @@ public:
 	const CONGESTION getCongestion() const;
 	const ParsecMetrics getMetrics() const;
 
-	std::string toString() const;
-
 private:
 	ParsecMetrics m_parsecMetrics { 0, 0, 0, 0, 0, 0, 0, 0 };
 	CONGESTION m_congestion;

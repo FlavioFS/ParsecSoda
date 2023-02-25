@@ -38,6 +38,7 @@ public:
 			+ "\n  " + "!ban\t\t\t\t|\tBan a guest."
 			+ "\n  " + "!dc\t\t\t\t   |\tDisconnect a specific gamepad."
 			+ "\n  " + "!kick\t\t\t   |\tKick user from the room."
+			+ "\n  " + "!mute\t\t\t   |\tMute/Unmute user from chat."
 			+ "\n  " + "!strip\t\t\t |\tStrip gamepad from player's hand."
 			+ "\n  " + "!limit\t\t\t   |\tSet the maximum amount of pads a guest can hold."
 			+ "\n  " + "!unban\t\t   |\tUnban a guest."

@@ -1,7 +1,9 @@
 #include "GuestListWidget.h"
 
 GuestListWidget::GuestListWidget(Hosting& hosting)
-    : _hosting(hosting), _banList(hosting.getBanList()), _historyList(hosting.getGuestHistory()), _metricsHistory(hosting.getGuestMetricsHistory())
+    : _hosting(hosting),
+    _banList(hosting.getBanList()), _historyList(hosting.getGuestHistory()),
+    _mutedGuests(hosting.getMutedGuests()), _metricsHistory(hosting.getGuestMetricsHistory())
 {
 }
 
@@ -128,6 +130,29 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
         ImGui::EndDragDropSource();
     }
 
+    static bool isMuted;
+    isMuted = _mutedGuests.find(guest.userID);
+    if (ToggleIconButtonWidget::render(
+        AppIcons::speakersOff, AppIcons::speakersOn,
+        isMuted, ("Mute Online Guest " + to_string(index)).c_str(),
+        AppColors::red, AppColors::negative,
+        ImVec2(20, 20)
+    ))
+    {
+        if (isMuted)
+        {
+            _mutedGuests.pop(guest.userID);
+        }
+        else
+        {
+            _mutedGuests.add(GuestData(guest.name, guest.userID));
+        }
+    }
+    if (isMuted)  TitleTooltipWidget::render("Unmute guest", ("Press to unmute " + guest.name + ".").c_str());
+    else          TitleTooltipWidget::render("Mute guest", ("Press to mute " + guest.name + ".").c_str());
+
+    ImGui::SameLine();
+
     Action enqueueKickAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!kick", guest.userID); }); };
     renderPopupButton("Kick", "!kick", guestData, index, showKickPopup, kickPopupTitle, AppIcons::kick, enqueueKickAction);
     
@@ -135,6 +160,7 @@ void GuestListWidget::renderOneOnlineGuest(Guest& guest, size_t index)
 
     Action enqueueBanAction = [&]() { _actionQueue.add([&]() {sendHostMessage("!ban", guest.userID); }); };
     renderPopupButton("Ban", "!ban", guestData, index, showBanPopup, banPopupTitle, AppIcons::block, enqueueBanAction);
+
 
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(5, 0));

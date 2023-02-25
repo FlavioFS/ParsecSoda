@@ -27,6 +27,7 @@
 #include "Commands/CommandKick.h"
 #include "Commands/CommandMic.h"
 #include "Commands/CommandMirror.h"
+#include "Commands/CommandMute.h"
 #include "Commands/CommandName.h"
 #include "Commands/CommandLimit.h"
 #include "Commands/CommandMultitap.h"
@@ -53,12 +54,12 @@ public:
 
 	ChatBot(
 		AudioIn& audioIn, AudioOut& audioOut, BanList& ban, DX11& dx11,
-		GamepadClient& gamepadClient, HotseatManager& hotseatManager, GuestList& guests, GuestDataList& guestHistory, ParsecDSO* parsec,
-		ParsecHostConfig& hostConfig, ParsecSession& parsecSession, SFXList& sfxList, TierList& _tierList,
+		GamepadClient& gamepadClient, HotseatManager& hotseatManager, GuestList& guests, GuestDataList& guestHistory, GuestDataList& mutedGuests,
+		ParsecDSO* parsec, ParsecHostConfig& hostConfig, ParsecSession& parsecSession, SFXList& sfxList, TierList& _tierList,
 		bool& hostingLoopController, Guest& host
 	)
 		: _audioIn(audioIn), _audioOut(audioOut), _ban(ban), _dx11(dx11), _gamepadClient(gamepadClient), _hotseatManager(hotseatManager),
-		_guests(guests), _guestHistory(guestHistory), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
+		_guests(guests), _guestHistory(guestHistory), _mutedGuests(mutedGuests), _parsec(parsec), _hostConfig(hostConfig), _parsecSession(parsecSession),
 		_sfxList(sfxList), _tierList(_tierList), _hostingLoopController(hostingLoopController), _host(host)
 	{}
 
@@ -88,6 +89,7 @@ private:
 	GamepadClient& _gamepadClient;
 	GuestList& _guests;
 	GuestDataList& _guestHistory;
+	GuestDataList& _mutedGuests;
 	HotseatManager& _hotseatManager;
 	ParsecHostConfig &_hostConfig;
 	ParsecSession &_parsecSession;

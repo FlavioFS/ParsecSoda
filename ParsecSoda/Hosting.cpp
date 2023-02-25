@@ -64,9 +64,14 @@ void Hosting::broadcastChatMessage(string message)
 
 		for (gi = guests.begin(); gi != guests.end(); ++gi)
 		{
-			ParsecHostSendUserData(_parsec, (*gi).id, HOSTING_CHAT_MSG_ID, message.c_str());
+			sendChatMessageToGuest(message, (*gi).id);
 		}
 	});
+}
+
+void Hosting::sendChatMessageToGuest(string message, uint32_t guestIndexId)
+{
+	ParsecHostSendUserData(_parsec, guestIndexId, HOSTING_CHAT_MSG_ID, message.c_str());
 }
 
 void Hosting::init()
@@ -111,7 +116,7 @@ void Hosting::init()
 
 	_chatBot = new ChatBot(
 		audioIn, audioOut, _banList, _dx11,
-		_gamepadClient, _hotseatManager, _guestList, _guestHistory, _parsec,
+		_gamepadClient, _hotseatManager, _guestList, _guestHistory, _mutedGuests, _parsec,
 		_hostConfig, _parsecSession, _sfxList, _tierList,
 		_isRunning, _host
 	);
@@ -201,6 +206,11 @@ GuestList& Hosting::getGuestList()
 GuestDataList& Hosting::getGuestHistory()
 {
 	return _guestHistory;
+}
+
+GuestDataList& Hosting::getMutedGuests()
+{
+	return _mutedGuests;
 }
 
 GuestMetricsHistory& Hosting::getGuestMetricsHistory()
@@ -351,18 +361,27 @@ void Hosting::handleMessage(const char* message, Guest& guest, bool isHost, bool
 	{
 		Tier tier = _tierList.getTier(guest.userID);
 
-		CommandDefaultMessage defaultMessage(message, guest, _chatBot->getLastUserId(), tier);
-		defaultMessage.run();
-		_chatBot->setLastUserId(guest.userID);
-
-		if (!defaultMessage.replyMessage().empty() && !isHidden)
+		bool isMuted = _mutedGuests.find(guest.userID);
+		if (isMuted)
 		{
-			broadcastChatMessage(defaultMessage.replyMessage());
-			
-			string adjustedMessage = defaultMessage.replyMessage();
-			Stringer::replacePatternOnce(adjustedMessage, "%", "%%");
-			_chatLog.logMessage(adjustedMessage);
+			sendChatMessageToGuest("@You are muted and cannot send chat messages.", guest.id);
 		}
+		else
+		{
+			CommandDefaultMessage defaultMessage(message, guest, _chatBot->getLastUserId(), tier);
+			defaultMessage.run();
+			_chatBot->setLastUserId(guest.userID);
+
+			if (!defaultMessage.replyMessage().empty() && !isHidden)
+			{
+				broadcastChatMessage(defaultMessage.replyMessage());
+			
+				string adjustedMessage = defaultMessage.replyMessage();
+				Stringer::replacePatternOnce(adjustedMessage, "%", "%%");
+				_chatLog.logMessage(adjustedMessage);
+			}
+		}
+
 	}
 
 	// Chatbot's command reply

@@ -45,6 +45,7 @@ public:
 	Hosting();
 	void applyHostConfig();
 	void broadcastChatMessage(string message);
+	void sendChatMessageToGuest(string message, uint32_t guestIndexId);
 	void init();
 	void release();
 	bool isReady();
@@ -59,6 +60,7 @@ public:
 	ChatLog& getChatLog();
 	GuestList& getGuestList();
 	GuestDataList& getGuestHistory();
+	GuestDataList& getMutedGuests();
 	GuestMetricsHistory& getGuestMetricsHistory();
 	BanList& getBanList();
 	vector<AGamepad*>& getGamepads();
@@ -103,6 +105,7 @@ private:
 	BanList _banList;
 	GuestList _guestList;
 	GuestDataList _guestHistory;
+	GuestDataList _mutedGuests;
 	GuestMetricsHistory _guestMetricsHistory;
 
 	ChatBot *_chatBot;

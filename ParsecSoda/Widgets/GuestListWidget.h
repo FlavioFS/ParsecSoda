@@ -14,6 +14,7 @@
 #include "AbstractTooltipWidget.h"
 #include "ConfirmPopupWidget.h"
 #include "GuestMetricsHistoryGraphWidget.h"
+#include "ToggleIconButtonWidget.h"
 
 class GuestListWidget
 {
@@ -44,6 +45,7 @@ private:
 	Hosting& _hosting;
 	BanList& _banList;
 	GuestDataList& _historyList;
+	GuestDataList& _mutedGuests;
 	GuestMetricsHistory& _metricsHistory;
 	
 	// Attributes

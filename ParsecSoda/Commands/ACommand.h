@@ -23,6 +23,7 @@ enum class COMMAND_TYPE
 	LIMIT,
 	MIC,
 	MIRROR,
+	MUTE,
 	NAME,
 	MULTITAP,
 	PADS,

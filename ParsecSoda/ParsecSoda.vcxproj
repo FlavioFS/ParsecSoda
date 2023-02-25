@@ -257,6 +257,7 @@
   <ItemGroup>
     <ClInclude Include="ButtonLock.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="Commands\CommandMute.h" />
     <ClInclude Include="Widgets\SettingsWidget.h" />
     <ClInclude Include="Widgets\ButtonLockWidget.h" />
     <ClInclude Include="imgui\ImVecExtensions.h" />

@@ -55,24 +55,3 @@ const ParsecMetrics GuestMetrics::getMetrics() const
 	return m_parsecMetrics;
 }
 
-std::string GuestMetrics::toString() const
-{
-	char buffer[128] = { 0 };
-
-	snprintf(
-		buffer,
-		sizeof(buffer),
-		"[NED: %.1f/%.1f/%.1f]  [B: %.1f]  [RT: %d/%d]  [Q: %d] [P: %d]",
-		m_parsecMetrics.networkLatency,
-		m_parsecMetrics.encodeLatency,
-		m_parsecMetrics.decodeLatency,
-		m_parsecMetrics.bitrate,
-		m_parsecMetrics.fastRTs,
-		m_parsecMetrics.slowRTs,
-		m_parsecMetrics.queuedFrames,
-		m_parsecMetrics.packetsSent
-	);
-
-	return (std::string)buffer;
-}
-
