@@ -82,11 +82,14 @@ private:
 					ParsecHostKickGuest(_parsec, guestID);
 				}
 
-				try
+				if (MetadataCache::preferences.enableBanSfx)
 				{
-					PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+					try
+					{
+						PlaySound(TEXT("./sfx/ban.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+					}
+					catch (const std::exception&) {}
 				}
-				catch (const std::exception&) {}
 
 				result = true;
 			}

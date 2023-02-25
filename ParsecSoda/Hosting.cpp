@@ -32,7 +32,7 @@ Hosting::Hosting()
 	);
 	setHostVideoConfig(MetadataCache::preferences.fps, MetadataCache::preferences.bandwidth);
 
-	_sfxList.init("./sfx/custom/_sfx.json");
+	_sfxList.init(MetadataCache::getSfxPath().c_str());
 	
 	_tierList.loadTiers();
 	_tierList.saveTiers();
@@ -231,6 +231,11 @@ MasterOfPuppets& Hosting::getMasterOfPuppets()
 HotseatManager& Hosting::getHotseatManager()
 {
 	return _hotseatManager;
+}
+
+SFXList& Hosting::getSFXList()
+{
+	return _sfxList;
 }
 
 void Hosting::toggleGamepadLock()

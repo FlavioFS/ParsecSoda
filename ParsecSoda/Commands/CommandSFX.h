@@ -15,6 +15,12 @@ public:
 
 	bool run() override
 	{
+		if (!MetadataCache::preferences.enableSfx)
+		{
+			_replyMessage = "[ChatBot] | Sound effects are disabled.\0";
+			return false;
+		}
+
 		if (_sfxList.size() <= 0)
 		{
 			_replyMessage = "[ChatBot] | No sound effects available.\0";

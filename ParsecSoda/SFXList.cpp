@@ -6,6 +6,8 @@ void SFXList::init(const char* jsonPath)
 	_lastCooldown = 0;
 	stringstream tags;
 
+	_sfxList.clear();
+
     if (MTY_FileExists(jsonPath))
     {
 		try

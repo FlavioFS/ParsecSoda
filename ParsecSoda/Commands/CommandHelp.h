@@ -20,18 +20,14 @@ public:
 	{
 		const string pleb_commands = string()
 			+ "\n  " + "---- Normal Commands ----"
-#if !BASIC_VERSION
 			+ "\n  " + "!bonk\t\t\t\t |\tBonk another user."
-#endif
 			+ "\n  " + "!help\t\t\t\t  |\tShow command list."
 			+ "\n  " + "!ff\t\t\t\t\t\t |\tDrop your gamepads / Spectate."
 			+ "\n  " + "!time\t\t\t\t  |\tRefresh hotseat timer (conditions: empty line, <25% timer)."
 			+ "\n  " + "!mirror\t\t\t   |\tToggle mirroring of L-Stick into DPad."
 			+ "\n  " + "!multitap\t\t    |\tMaps all of your devices to the same gamepad."
 			+ "\n  " + "!pads\t\t\t\t  |\tShow who's holding each gamepad."
-#if !BASIC_VERSION
 			+ "\n  " + "!sfx\t\t\t\t\t  |\tPlay sound effect."
-#endif
 			+ "\n  " + "!swap\t\t\t\t |\tReplace your gamepad with another one."
 			;
 

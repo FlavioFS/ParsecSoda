@@ -25,6 +25,7 @@ public:
         bool& showLog,
         bool& showAudio,
         bool& showVideo,
+        bool& showSettings,
         bool& showInfo
     );
 

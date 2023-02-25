@@ -14,10 +14,11 @@ void NavBar::render(
 	bool& showLog,
 	bool& showAudio,
 	bool& showVideo,
+	bool& showSettings,
 	bool& showInfo
 )
 {
-	static const size_t ICON_COUNT = 12;
+	static const size_t ICON_COUNT = 13;
 	static const float ICON_EDGE = 24;
 	static const float BUTTON_EDGE = ICON_EDGE + 8;
 	static const float ICON_PADDING = 4;
@@ -54,6 +55,7 @@ void NavBar::render(
 	renderNavItem(AppIcons::log, AppIcons::log, showLog, iconSize, "Log");
 	renderNavItem(AppIcons::speakersOn, AppIcons::speakersOn, showAudio, iconSize, "Audio");
 	renderNavItem(AppIcons::video, AppIcons::video, showVideo, iconSize, "Video");
+	renderNavItem(AppIcons::cog, AppIcons::cog, showSettings, iconSize, "Settings");
 	renderNavItem(AppIcons::info, AppIcons::info, showInfo, iconSize, "About");
 
 

@@ -21,7 +21,11 @@ bool LogWidget::render()
         string message;
         for (; it != commands.end(); ++it)
         {
-            if ((*it)[0] == '@')
+            if ((*it)[0] == '[')
+            {
+                ImGui::TextWrapped((*it).c_str());
+            }
+            else if ((*it)[0] == '@')
             {
                 AppStyle::pushPositive();
                 ImGui::TextWrapped(Stringer::stripFirst(*it).c_str());

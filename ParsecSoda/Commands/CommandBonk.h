@@ -8,6 +8,7 @@
 #include "parsec.h"
 #include "../Dice.h"
 #include "../Stopwatch.h"
+#include "../MetadataCache.h"
 
 class CommandBonk : public ACommandSearchUser
 {
@@ -20,6 +21,12 @@ public:
 
 	bool run() override
 	{
+		if (!MetadataCache::preferences.enableSfx)
+		{
+			_replyMessage = "[ChatBot] | Sound effects are disabled.\0";
+			return false;
+		}
+
 		if (!_stopwatch.isRunComplete())
 		{
 			_replyMessage = std::string() +

@@ -65,6 +65,7 @@ public:
 	GamepadClient& getGamepadClient();
 	MasterOfPuppets& getMasterOfPuppets();
 	HotseatManager& getHotseatManager();
+	SFXList& getSFXList();
 	void toggleGamepadLock();
 	void setGameID(string gameID);
 	void setMaxGuests(uint8_t maxGuests);

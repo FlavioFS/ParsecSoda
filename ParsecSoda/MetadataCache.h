@@ -69,6 +69,9 @@ public:
 		bool defaultMirrorValue = false;
 		ButtonLock buttonLock;
 		bool enableNotifications = true;
+		bool enableSfx = false;
+		bool enableKickSfx = true;
+		bool enableBanSfx = true;
 	};
 
 	static SessionCache loadSessionCache();
@@ -90,6 +93,8 @@ public:
 	static Preferences preferences;
 
 	static GuestData host;
+
+	static const string getSfxPath();
 
 private:
 	static string getUserDir();

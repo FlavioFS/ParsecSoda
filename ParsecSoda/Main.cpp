@@ -36,6 +36,7 @@
 #include "Widgets/MasterOfPuppetsWidget.h"
 #include "Widgets/HotseatWidget.h"
 #include "Widgets/ButtonLockWidget.h"
+#include "Widgets/SettingsWidget.h"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
 static IDXGISwapChain*          g_pSwapChain = NULL;
 static ID3D11RenderTargetView*  g_mainRenderTargetView = NULL;
 Hosting g_hosting;
+SFXList& g_sfxList = g_hosting.getSFXList();
 
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
@@ -131,6 +133,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     VideoWidget videoWidget(g_hosting);
     HostInfoWidget hostInfoWidget(g_hosting);
     MasterOfPuppetsWidget masterOfPuppets(g_hosting);
+    g_sfxList = g_hosting.getSFXList();
     
     FLASHWINFO fi;
     fi.cbSize = sizeof(FLASHWINFO);
@@ -151,11 +154,12 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
     bool showGuests = true;
     bool showGamepads = true;
     bool showButtonLock = false;
-    bool showHotseats = true;
+    bool showHotseats = false;
     bool showMasterOfPuppets = false;
     bool showAudio = false;
     bool showVideo = false;
-    bool showStyles = true;
+    bool showSettings = false;
+    bool showStyles = false;
     bool showInfo = false;
     bool showLogin = true;
     bool showThumbs = false;
@@ -222,6 +226,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
             if (showMasterOfPuppets)    masterOfPuppets.render();
             if (showAudio)              audioSettingswidget.render();
             if (showVideo)              videoWidget.render();
+            if (showSettings)           SettingsWidget::render(g_sfxList);
             if (showInfo)               InfoWidget::render();
             if (showThumbs)             ThumbnailsWidget::render(g_session);
             NavBar::render(
@@ -238,6 +243,7 @@ int CALLBACK WinMain( _In_ HINSTANCE hInstance, _In_ HINSTANCE hPrevInstance, _I
                 showLog,
                 showAudio,
                 showVideo,
+                showSettings,
                 showInfo
             );
             hostInfoWidget.render();
