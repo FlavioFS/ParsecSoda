@@ -8,6 +8,7 @@
 #include "../Hosting.h"
 #include "../Stopwatch.h"
 #include <functional>
+#include "SwitchWidget.h"
 
 class ChatWidget
 {
@@ -22,6 +23,7 @@ public:
 
 private:
 	bool renderTopBar(bool& isWindowLocked, bool& isClearChat);
+	void renderOptionsMenu();
 
 	bool isDirty();
 	void sendMessage();

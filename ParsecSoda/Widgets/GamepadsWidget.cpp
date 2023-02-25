@@ -356,11 +356,6 @@ void GamepadsWidget::renderTopBar(bool& isWindowLocked, const ImVec2& windowSize
 
     ImGui::SameLine();
 
-    ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonRight);
-
-    ImGui::SameLine();
-
-
     IconButton::render(AppIcons::cog, AppColors::primary, buttonSize, "###Gamepad settings button");
     TitleTooltipWidget::render("Gamepad Settings", "Press to open Gamepad Settings menu.");
     renderOptionsMenu();

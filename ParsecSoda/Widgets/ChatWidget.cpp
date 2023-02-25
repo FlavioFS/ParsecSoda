@@ -64,7 +64,7 @@ bool ChatWidget::render()
             }
             _messageCount = messages.size();
 
-            if (_onMessageCallback != nullptr)
+            if (MetadataCache::preferences.enableNotifications && _onMessageCallback != nullptr)
             {
                 _onMessageCallback();
             }
@@ -188,6 +188,12 @@ bool ChatWidget::renderTopBar(bool& isWindowLocked, bool& isClearChat)
     }
 
     ImGui::SameLine();
+
+    IconButton::render(AppIcons::cog, AppColors::primary, ImVec2(30, 30), "###Chat settings button");
+    TitleTooltipWidget::render("Chat Settings", "Press to open Chat Settings menu.");
+    renderOptionsMenu();
+
+    ImGui::SameLine();
     cursor = ImGui::GetCursorPos();
     ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 40);
 
@@ -264,4 +270,27 @@ void ChatWidget::toClipboard(const string& message)
     SetClipboardData(CF_TEXT, hg);
     CloseClipboard();
     GlobalFree(hg);
+}
+
+
+void ChatWidget::renderOptionsMenu()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+
+    if (ImGui::BeginPopupContextItem("Gamepad Options", ImGuiPopupFlags_MouseButtonLeft))
+    {
+        if (SwitchWidget::render(
+            MetadataCache::preferences.enableNotifications,
+            "###Enable notifications switch", "Enable notifications",
+            "Chat notifications [ON]", "Parsec Soda will blink in taskbar when new chat messages arrive.",
+            "Chat notifications [OFF]", "Parsec Soda will not notify when new messages arrive."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    ImGui::PopStyleVar();
 }

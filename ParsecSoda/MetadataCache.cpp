@@ -178,6 +178,7 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             tryLoadBool("buttonLock.leftStick", preferences.buttonLock.leftStick, false);
             tryLoadBool("buttonLock.rightStick", preferences.buttonLock.rightStick, false);
             tryLoadBool("buttonLock.isEnabled", preferences.buttonLock.isEnabled, false);
+            tryLoadBool("enableNotifications", preferences.enableNotifications, true);
 
             preferences.isValid = true;
 
@@ -236,6 +237,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetBool(json, "buttonLock.leftStick", preferences.buttonLock.leftStick);
         MTY_JSONObjSetBool(json, "buttonLock.rightStick", preferences.buttonLock.rightStick);
         MTY_JSONObjSetBool(json, "buttonLock.isEnabled", preferences.buttonLock.isEnabled);
+        MTY_JSONObjSetBool(json, "enableNotifications", preferences.enableNotifications);
 
         MTY_JSONWriteFile(filepath.c_str(), json);
         MTY_JSONDestroy(&json);

@@ -68,6 +68,7 @@ public:
 		bool defaultMultitapValue = false;
 		bool defaultMirrorValue = false;
 		ButtonLock buttonLock;
+		bool enableNotifications = true;
 	};
 
 	static SessionCache loadSessionCache();
