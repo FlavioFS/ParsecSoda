@@ -33,7 +33,7 @@ public:
 		uint32_t cooldown = 0;
 	};
 
-	void init(const char* jsonPath);
+	void init(const char* sfxDirPath);
 	int64_t getRemainingCooldown();
 	SFXPlayResult play(const string tag);
 	const string loadedTags();
@@ -45,4 +45,6 @@ private:
 	vector<SFX> _sfxList;
 	string _loadedTags;
 	int64_t _lastCooldown;
+
+	string _sfxDirPath{"./"};
 };

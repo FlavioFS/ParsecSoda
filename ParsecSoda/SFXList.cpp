@@ -1,18 +1,24 @@
 #include "SFXList.h"
 
-void SFXList::init(const char* jsonPath)
+void SFXList::init(const char* sfxDirPath)
 {
 	_lastUseTimestamp = steady_clock::now();
 	_lastCooldown = 0;
 	stringstream tags;
 
 	_sfxList.clear();
+	_sfxDirPath = sfxDirPath;
+	string jsonPath = string(sfxDirPath) + "_sfx.json";
+	
+	// PlaySound only recognizes paths in format "/"
+	// but most Windows functions expect format "\\".
+	Stringer::replacePattern(jsonPath, "\\", "/");
 
-    if (MTY_FileExists(jsonPath))
+    if (MTY_FileExists(jsonPath.c_str()))
     {
 		try
 		{
-			MTY_JSON* json = MTY_JSONReadFile(jsonPath);
+			MTY_JSON* json = MTY_JSONReadFile(jsonPath.c_str());
 			const MTY_JSON* sfxArray = MTY_JSONObjGetItem(json, "sfx");
 
 			uint32_t size = MTY_JSONGetLength(sfxArray);
@@ -40,7 +46,7 @@ void SFXList::init(const char* jsonPath)
 				}
 			}
 
-			sort(_sfxList.begin(), _sfxList.end(), [](const SFX a, const SFX b) {
+			std::sort(_sfxList.begin(), _sfxList.end(), [](const SFX a, const SFX b) {
 				return a.tag.compare(b.tag) < 0;
 			});
 
@@ -84,7 +90,7 @@ SFXList::SFXPlayResult SFXList::play(const string tag)
 				return SFXPlayResult::COOLDOWN;
 			}
 
-			string path = string("./sfx/custom/") + string((*it).path);
+			string path = _sfxDirPath + string((*it).path);
 			wstring wide (path.begin(), path.end());
 			PlaySound(wide.c_str(), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
 			_lastCooldown = (*it).cooldown;

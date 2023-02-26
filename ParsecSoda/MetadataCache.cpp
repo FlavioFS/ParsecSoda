@@ -504,7 +504,7 @@ bool MetadataCache::saveThumbnails(vector<Thumbnail> thumbnails)
 
 const string MetadataCache::getSfxPath()
 {
-    return getUserDir() + "sfx\\_sfx.json";
+    return getUserDir() + "sfx\\";
 }
 
 const string MetadataCache::getUserDir()
