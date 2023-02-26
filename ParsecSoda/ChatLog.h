@@ -6,6 +6,8 @@
 #include <regex>
 #include <functional>
 #include <mutex>
+#include <Windows.h>
+#include "MetadataCache.h"
 
 #define CHATLOG_COMMAND_LENGTH 200
 #define CHATLOG_MESSAGE_LENGTH 100

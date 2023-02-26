@@ -281,9 +281,19 @@ void ChatWidget::renderOptionsMenu()
     {
         if (SwitchWidget::render(
             MetadataCache::preferences.enableNotifications,
-            "###Enable notifications switch", "Enable notifications",
-            "Chat notifications [ON]", "Parsec Soda will blink in taskbar when new chat messages arrive.",
-            "Chat notifications [OFF]", "Parsec Soda will not notify when new messages arrive."
+            "###Enable notifications switch", "Enable taskbar notifications",
+            "Taskbar notifications [ON]", "Parsec Soda will blink in taskbar\nwhen new chat messages arrive.",
+            "Taskbar notifications [OFF]", "Parsec Soda will not notify\nwhen new messages arrive."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        if (SwitchWidget::render(
+            MetadataCache::preferences.enableChatSoundNotification,
+            "###Enable sound notifications switch", "Enable sound notifications",
+            "Sound notifications [ON]", "Parsec Soda play a sound effect\nwhen new chat messages arrive.",
+            "Sound notifications [OFF]", "Parsec Soda not play sound effects\nwhen new messages arrive."
         ))
         {
             MetadataCache::savePreferences();

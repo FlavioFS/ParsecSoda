@@ -3,7 +3,6 @@
 #include "ACommandSearchUserHistory.h"
 #include <iostream>
 #include <Windows.h>
-#include <mmsystem.h>
 #include "parsec-dso.h"
 #include "../BanList.h"
 

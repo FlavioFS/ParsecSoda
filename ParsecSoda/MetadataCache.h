@@ -69,6 +69,7 @@ public:
 		bool defaultMirrorValue = false;
 		ButtonLock buttonLock;
 		bool enableNotifications = true;
+		bool enableChatSoundNotification = false;
 		bool enableSfx = false;
 		bool enableKickSfx = true;
 		bool enableBanSfx = true;

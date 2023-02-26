@@ -3,7 +3,6 @@
 #include "ACommandSearchUser.h"
 #include <iostream>
 #include <Windows.h>
-#include <mmsystem.h>
 #include "parsec-dso.h"
 
 

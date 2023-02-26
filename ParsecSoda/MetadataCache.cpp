@@ -179,6 +179,7 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             tryLoadBool("buttonLock.rightStick", preferences.buttonLock.rightStick, false);
             tryLoadBool("buttonLock.isEnabled", preferences.buttonLock.isEnabled, false);
             tryLoadBool("enableNotifications", preferences.enableNotifications, true);
+            tryLoadBool("enableChatSoundNotification", preferences.enableChatSoundNotification, false);
             tryLoadBool("enableSfx", preferences.enableSfx, false);
             tryLoadBool("enableKickSfx", preferences.enableKickSfx, true);
             tryLoadBool("enableBanSfx", preferences.enableBanSfx, true);
@@ -241,6 +242,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetBool(json, "buttonLock.rightStick", preferences.buttonLock.rightStick);
         MTY_JSONObjSetBool(json, "buttonLock.isEnabled", preferences.buttonLock.isEnabled);
         MTY_JSONObjSetBool(json, "enableNotifications", preferences.enableNotifications);
+        MTY_JSONObjSetBool(json, "enableChatSoundNotification", preferences.enableChatSoundNotification);
         MTY_JSONObjSetBool(json, "enableSfx", preferences.enableSfx);
         MTY_JSONObjSetBool(json, "enableKickSfx", preferences.enableKickSfx);
         MTY_JSONObjSetBool(json, "enableBanSfx", preferences.enableBanSfx);

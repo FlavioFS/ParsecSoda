@@ -24,6 +24,15 @@ void ChatLog::logMessage(string message)
 		tryCleanOldMessages();
 		m_messageLog.push_back(message);
 
+		if (MetadataCache::preferences.enableChatSoundNotification)
+		{
+			try
+			{
+				PlaySound(TEXT("./sfx/chat.wav"), NULL, SND_FILENAME | SND_NODEFAULT | SND_ASYNC);
+			}
+			catch (const std::exception&) {}
+		}
+
 		m_messageMutex.unlock();
 	}
 	else

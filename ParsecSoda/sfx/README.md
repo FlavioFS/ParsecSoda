@@ -1,7 +1,7 @@
 # Custom SFX
 If you want custom SFX, then...
 
-  1. Go to your build folder and create a sub-folder named *custom* (for instance, *x64/Release/sfx/custom*).  
+  1. Go to your user folder (%appdata%/ParsecSoda) and create a sub-folder named *sfx* (for instance, *%appdata%/ParsecSoda/sfx*).  
   2. In that folder, put all of your custom sound effects in \*.wav format.  
   3. Copy the file [_sfx-sample.json](_sfx-sample.json) to that folder and rename it to **_sfx.json**.  
   4. Open the file and list all of the sound effects you want to use and fill all key fields.  
