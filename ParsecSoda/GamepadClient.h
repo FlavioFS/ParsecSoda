@@ -115,6 +115,14 @@ public:
 	bool isPuppetMaster = false;
 
 private:
+	struct HotSeatRequest
+	{
+		bool up { false };
+		bool down { false };
+		bool pick{ false };
+		bool release{ false };
+	};
+
 	bool _isBusy = false;
 
 	bool sendGamepadStateMessage(ParsecGamepadStateMessage& gamepadState, Guest& guest, int& slots, GuestPreferences prefs = GuestPreferences());
@@ -128,6 +136,10 @@ private:
 	bool isRequestState(ParsecMessage message);
 	bool isRequestButton(ParsecMessage message);
 	bool isRequestKeyboard(ParsecMessage message);
+
+	const HotSeatRequest& toHotseatRequest(const ParsecGamepadStateMessage& gamepadState) const;
+	const HotSeatRequest& toHotseatRequest(const ParsecGamepadButtonMessage& gamepadButton) const;
+	const HotSeatRequest& toHotseatRequest(const ParsecKeyboardMessage& keyboard) const;
 
 	void reduce(function<void(AGamepad*)> func);
 	bool reduceUntilFirst(function<bool(AGamepad*)> func);

@@ -78,7 +78,7 @@ bool AudioSettingsWidget::render()
 
     static char infrequencyLabel[32];
     
-    (infrequencyLabel, sizeof(infrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
+    snprintf(infrequencyLabel, sizeof(infrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
     AppStyle::pushLabel();
     ImGui::Text(infrequencyLabel);
     AppStyle::pop();
@@ -154,7 +154,7 @@ bool AudioSettingsWidget::render()
     AppFonts::pop();
 
     static char outfrequencyLabel[32];
-    snprintf(outfrequencyLabel, sizeof(outfrequencyLabel), "@ %d Hz", _audioIn.getFrequency());
+    snprintf(outfrequencyLabel, sizeof(outfrequencyLabel), "@ %d Hz", _audioOut.getFrequency());
     AppStyle::pushLabel();
     ImGui::Text(outfrequencyLabel);
     AppStyle::pop();

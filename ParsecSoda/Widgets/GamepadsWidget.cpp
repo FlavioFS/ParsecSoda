@@ -162,7 +162,7 @@ bool GamepadsWidget::render()
 
         ImGui::EndGroup();
         
-        
+        _gamepadAnimations[i].render(gi->getState().Gamepad, 25.0f);
 
         // ==================
         // Badge Buttons
@@ -290,8 +290,6 @@ bool GamepadsWidget::render()
             AppFonts::pop();
             ImGui::EndGroup();
         }
-
-        _gamepadAnimations[i].render(gi->getState().Gamepad, 25.0f);
 
         ImGui::EndGroup();
 

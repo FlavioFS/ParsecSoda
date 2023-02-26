@@ -359,8 +359,14 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 			ImGui::EndDragDropSource();
 		}
 
-
 		ImGui::SetCursorPos(backupCursor);
+
+		AppColors::pushColor(AppColors::gray40);
+		ImGui::Text("Waiting for: ");
+		AppColors::pop();
+		ImGui::SameLine();
+		if (iGuest->desiredSeatIndex >= 0) ImGui::Text("Seat %d", iGuest->desiredSeatIndex + 1);
+		else ImGui::Text("Any Seat");
 
 		badgeTooltip = "Instantly send " + iGuest->guest.name + " to a seat?";
 		id = "###Hotseats cut line " + to_string(index);
@@ -441,17 +447,41 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 			break;
 		}
 	}
+	ImGui::Unindent();
 
 	renderDummy(2, 10);
 
 	ImGui::BeginGroup();
 	AppColors::pushColor(AppColors::gray40);
+	
 	AppFonts::pushBigHeader();
-	TextCenteredWidget::render("Press [A, B, X, Y]");
+	TextCenteredWidget::render("[ A ]");
 	AppFonts::pop();
+
 	AppFonts::pushTitle();
-	TextCenteredWidget::render("to join the waiting list.");
+	TextCenteredWidget::render("to JOIN waiting list.");
 	AppFonts::pop();
+
+	renderDummy(1, 7);
+
+	AppFonts::pushBigHeader();
+	TextCenteredWidget::render("[ B ]");
+	AppFonts::pop();
+
+	AppFonts::pushTitle();
+	TextCenteredWidget::render("to QUIT waiting list.");
+	AppFonts::pop();
+
+	renderDummy(1, 7);
+
+	AppFonts::pushBigHeader();
+	TextCenteredWidget::render("[ X / Y ]");
+	AppFonts::pop();
+
+	AppFonts::pushTitle();
+	TextCenteredWidget::render("to CHOOSE seat.");
+	AppFonts::pop();
+	
 	AppColors::pop();
 	ImGui::EndGroup();
 	TitleTooltipWidget::render("Message for guests only", "If you are the Host, use the puppet button.");
@@ -469,8 +499,6 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		TitleTooltipWidget::render("Join as Master", "Enter waiting queue through Master of Puppets.");
 	}
 	ImGui::SetCursorPos(cursor);
-
-	ImGui::Unindent();
 }
 
 void HotseatWidget::renderDummy(float x, float y)

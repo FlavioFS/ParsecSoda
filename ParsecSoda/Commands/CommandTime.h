@@ -29,7 +29,7 @@ public:
 			}
 			else
 			{
-				bool found = _hotseatManager.findSeatByGuest(_sender.userID, [&](Hotseat& seat) {
+				bool found = _hotseatManager.findSeatByGuest(_sender.userID, [&](Hotseat& seat, int seatIndex) {
 					if (seat.timer.getRemainingTime() * FILL_FRACTION_INVERSE > seat.timer.getDuration())
 					{
 						_replyMessage = "[ChatBot]\t" + _sender.name + ", your seat timer must be below 25% to run this command.\0";
@@ -37,7 +37,7 @@ public:
 					else
 					{
 						_hotseatManager.refresh(seat);
-						_replyMessage = "[ChatBot]\t" + _sender.name + ", seat timer refreshed.\0";
+						_replyMessage = "[ChatBot]\t" + _sender.name + ", seat timer refreshed. (Seat " + to_string(seatIndex) + ")\0";
 						result = true;
 					}
 				});

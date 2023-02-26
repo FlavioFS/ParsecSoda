@@ -464,6 +464,7 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 	bool success = false;
 	uint32_t padId = GAMEPAD_INDEX_ERROR;
 	bool isGamepadRequest = false;
+	HotSeatRequest hotRequest;
 	int slots = 0;
 	
 	GuestPreferences guestPrefs = GuestPreferences();
@@ -475,6 +476,7 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 	{
 	case MESSAGE_GAMEPAD_STATE:
 		padId = message.gamepadState.id;
+		if (isHotseatsActive()) hotRequest = toHotseatRequest(message.gamepadState);
 		isGamepadRequest = isRequestState(message);
 		if (sendGamepadStateMessage(message.gamepadState, guest, slots, guestPrefs)) { return true; }
 		break;
@@ -487,12 +489,14 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 	case MESSAGE_GAMEPAD_BUTTON:
 		padId = message.gamepadButton.id;
 		isGamepadRequest = isRequestButton(message);
+		if (isHotseatsActive()) hotRequest = toHotseatRequest(message.gamepadButton);
 		if (sendGamepadButtonMessage(message.gamepadButton, guest, slots, guestPrefs)) { return true; }
 		break;
 
 	case MESSAGE_KEYBOARD:
 		padId = 0;
 		isGamepadRequest = isRequestKeyboard(message);
+		if (isHotseatsActive()) hotRequest = toHotseatRequest(message.keyboard);
 		if (sendKeyboardMessage(message.keyboard, guest, slots, guestPrefs)) { return true; }
 		break;
 
@@ -500,13 +504,27 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 		break;
 	}
 
-	if (!success && isGamepadRequest)
+	if (!success)
 	{
 		if (isHotseatsActive())
 		{
-			success = enqueueHotseatRequest(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
+			_hotseatManager->runThreadSafe([&]() {
+				if (hotRequest.pick)
+				{
+					success = enqueueHotseatRequest(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
+				}
+				else if (hotRequest.release) {
+					_hotseatManager->spectateGuestID(guest.userID);
+				}
+				else if (hotRequest.up) {
+					_hotseatManager->incrementDesiredSeat(guest.userID);
+				}
+				else if (hotRequest.down) {
+					_hotseatManager->decrementDesiredSeat(guest.userID);
+				}
+			});
 		}
-		else
+		else if (isGamepadRequest)
 		{
 			success = tryAssignGamepad(guest, padId, slots, message.type == MESSAGE_KEYBOARD, guestPrefs);
 		}
@@ -640,6 +658,64 @@ bool GamepadClient::isRequestKeyboard(ParsecMessage message)
 		message.keyboard.code == _keyboardMap.Y
 	);
 }
+
+const GamepadClient::HotSeatRequest& GamepadClient::toHotseatRequest(const ParsecGamepadStateMessage& gamepadState) const
+{
+	HotSeatRequest result;
+
+	result.pick = Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_A);
+	result.release = Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_B);
+	result.up = Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_DPAD_UP) || Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_Y);
+	result.down = Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_DPAD_DOWN) || Bitwise::getBit(gamepadState.buttons, XUSB_GAMEPAD_X);
+
+	return result;
+}
+
+const GamepadClient::HotSeatRequest& GamepadClient::toHotseatRequest(const ParsecGamepadButtonMessage& gamepadButton) const
+{
+	HotSeatRequest result;
+	
+	if (gamepadButton.pressed)
+	{
+		switch (gamepadButton.button)
+		{
+		case GAMEPAD_BUTTON_A:
+			result.pick = true;
+			break;
+		case GAMEPAD_BUTTON_B:
+			result.release = true;
+			break;
+		case GAMEPAD_BUTTON_DPAD_UP:
+		case GAMEPAD_BUTTON_Y:
+			result.up = true;
+			break;
+		case GAMEPAD_BUTTON_DPAD_DOWN:
+		case GAMEPAD_BUTTON_X:
+			result.down = true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	return result;
+}
+
+const GamepadClient::HotSeatRequest& GamepadClient::toHotseatRequest(const ParsecKeyboardMessage& keyboard) const
+{
+	HotSeatRequest result;
+
+	if (keyboard.pressed)
+	{
+		if (keyboard.code == _keyboardMap.A) result.pick = true;
+		else if (keyboard.code == _keyboardMap.B) result.release = true;
+		else if (keyboard.code == _keyboardMap.DUp || keyboard.code == _keyboardMap.LUp || keyboard.code == _keyboardMap.Y) result.up = true;
+		else if (keyboard.code == _keyboardMap.DDown || keyboard.code == _keyboardMap.LDown || keyboard.code == _keyboardMap.X) result.down = true;
+	}
+
+	return result;
+}
+
 
 void GamepadClient::reduce(function<void(AGamepad*)> func)
 {

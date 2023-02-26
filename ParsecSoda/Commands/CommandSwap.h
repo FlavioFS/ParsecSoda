@@ -10,23 +10,35 @@ class CommandSwap : public ACommandIntegerArg
 public:
 	const COMMAND_TYPE type() override { return COMMAND_TYPE::SWAP; }
 
-	CommandSwap(const char* msg, Guest &sender, GamepadClient  &gamepadClient)
-		: ACommandIntegerArg(msg, internalPrefixes()), _sender(sender), _gamepadClient(gamepadClient)
+	CommandSwap(const char* msg, Guest &sender, GamepadClient  &gamepadClient, HotseatManager &hotseatManager)
+		: ACommandIntegerArg(msg, internalPrefixes()), _sender(sender), _gamepadClient(gamepadClient), _hotseatManager(hotseatManager)
 	{}
 
 	bool run() override
 	{
+
 		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = "[ChatBot]\tUsage: !swap <integer in range [1, 4]>\nExample: !swap 4\0";
+			_replyMessage = "[ChatBot]\tUsage: !swap <integer in range [1, gamepadCount]>\nExample: !swap 4\0";
 			return false;
 		}
-
-		GamepadClient::PICK_REQUEST result = _gamepadClient.pick(_sender, _intArg - 1);
 
 		bool rv = false;
 		std::ostringstream reply;
 
+		if (_hotseatManager.isEnabled())
+		{
+			int seatIndex = _hotseatManager.setDesiredSeat(_sender.userID, _intArg - 1);
+
+			reply << "[ChatBot]\tHotseats - Waiting for: ";
+			if (seatIndex < 0) reply << "Any seat\0";
+			else reply << "Seat " << seatIndex + 1 << "\0";
+			_replyMessage = reply.str();
+
+			return true;
+		}
+
+		GamepadClient::PICK_REQUEST result = _gamepadClient.pick(_sender, _intArg - 1);
 		switch (result)
 		{
 		case GamepadClient::PICK_REQUEST::OK:
@@ -91,5 +103,6 @@ protected:
 	string _msg;
 	Guest& _sender;
 	GamepadClient& _gamepadClient;
+	HotseatManager& _hotseatManager;
 };
 

@@ -24,12 +24,15 @@ public:
 	HotseatGuest(Guest guest, const uint32_t deviceID, const bool isKeyboard = false, const bool isMaster = false, const bool isOnline = true)
 		: HotseatGuest(GuestData(guest.name, guest.userID), deviceID, isKeyboard, isMaster, isOnline) {}
 
+	static const int ANY_SEAT { -1 };
+
 	GuestData guest;
 	uint32_t deviceID = 0;
 	bool isKeyboard = false;
 	bool isMaster = false;
 	bool isOnline = true;
 	bool isMultitap = false;
+	int desiredSeatIndex = ANY_SEAT;
 };
 
 
@@ -59,7 +62,7 @@ class HotseatManager
 public:
 	typedef function<void(void)> Action;
 	typedef function<void(size_t)> IndexAction;
-	typedef function<void(Hotseat&)> HotseatAction;
+	typedef function<void(Hotseat&, int index)> HotseatAction;
 	typedef function<void(HotseatGuest&)> HotseatGuestAction;
 	typedef function<const bool(const GuestData&)> GuestToBoolAction;
 
@@ -71,6 +74,10 @@ public:
 	 * @return True if guest was added to list. False otherwise (e.g.: guest already in list).
 	 */
 	bool enqueue(const HotseatGuest guest);
+
+	void incrementDesiredSeat(uint32_t userID);
+	void decrementDesiredSeat(uint32_t userID);
+	int setDesiredSeat(uint32_t userID, int seatIndex);
 	
 	/** 
 	 * Turn target into spectator (remove guest from queue).
@@ -111,7 +118,7 @@ public:
 	 * Skip a seating guest to next in line - pick specific seat.
 	 * @param seat Seat to rotate.
 	 */
-	void next(Hotseat& seat);
+	void next(Hotseat& seat, int index);
 
 	/**
 	 * Restart cooldown of a specific seat.
@@ -251,10 +258,11 @@ private:
 
 	/**
 	 * Search in waiting queue for the next online guest and removes it from queue.
+	 * @param desiredSeatIndex Seat index the guest is waiting for.
 	 * @param callback Invoked when an online guest was found and poped from queue.
 	 * @return True if an online guest was found (callback invoked). False otherwise (callback ignored).
 	 */
-	bool popNextGuest(HotseatGuestAction callback);
+	bool popNextGuest(const int& desiredSeatIndex, HotseatGuestAction callback);
 
 	/**
 	 * Find the Hotseat closest to timeout. Empty Hotseats take priority.
