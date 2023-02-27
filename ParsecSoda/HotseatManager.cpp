@@ -16,26 +16,36 @@ bool HotseatManager::enqueue(const HotseatGuest guest)
 	return found;
 }
 
-void HotseatManager::incrementDesiredSeat(uint32_t userID)
+void HotseatManager::incrementDesiredSeatByUserID(uint32_t userID)
 {
 	findGuestIndex(userID, [&](size_t index) {
-		int seatIndex = m_waitingGuests[index].desiredSeatIndex;
-		seatIndex = isSeatIndexInRange(seatIndex+1) ? seatIndex + 1 : -1;
-		m_waitingGuests[index].desiredSeatIndex = seatIndex;
+		incrementDesiredSeat(index);
 	});
 }
 
-void HotseatManager::decrementDesiredSeat(uint32_t userID)
+void HotseatManager::incrementDesiredSeat(size_t guestIndex)
+{
+	int seatIndex = m_waitingGuests[guestIndex].desiredSeatIndex;
+	seatIndex = isSeatIndexInRange(seatIndex + 1) ? seatIndex + 1 : HotseatGuest::ANY_SEAT;
+	m_waitingGuests[guestIndex].desiredSeatIndex = seatIndex;
+}
+
+void HotseatManager::decrementDesiredSeatByUserID(uint32_t userID)
 {
 	findGuestIndex(userID, [&](size_t index) {
-		int seatIndex = m_waitingGuests[index].desiredSeatIndex;
-		
-		if (seatIndex == HotseatGuest::ANY_SEAT) seatIndex = m_seats.size() - 1;
-		else if (isSeatIndexInRange(seatIndex)) seatIndex = seatIndex - 1;
-		else seatIndex = HotseatGuest::ANY_SEAT;
-		
-		m_waitingGuests[index].desiredSeatIndex = seatIndex;
+		decrementDesiredSeat(index);
 	});
+}
+
+void HotseatManager::decrementDesiredSeat(size_t guestIndex)
+{
+	int seatIndex = m_waitingGuests[guestIndex].desiredSeatIndex;
+
+	if (seatIndex == HotseatGuest::ANY_SEAT) seatIndex = m_seats.size() - 1;
+	else if (isSeatIndexInRange(seatIndex)) seatIndex = seatIndex - 1;
+	else seatIndex = HotseatGuest::ANY_SEAT;
+
+	m_waitingGuests[guestIndex].desiredSeatIndex = seatIndex;
 }
 
 int HotseatManager::setDesiredSeat(uint32_t userID, int seatIndex)
@@ -412,19 +422,18 @@ bool HotseatManager::findGuestIndex(const uint32_t userID, IndexAction callback)
 
 bool HotseatManager::popNextGuest(const int& desiredSeatIndex, HotseatGuestAction callback)
 {
-	vector<HotseatGuest>::iterator iGuest = m_waitingGuests.begin();
-	for (; iGuest != m_waitingGuests.end(); ++iGuest)
+	for (size_t i = 0; i < m_waitingGuests.size(); ++i)
 	{
-		if (!iGuest->isOnline)
+		if (!m_waitingGuests[i].isOnline)
 		{
-			m_waitingGuests.erase(iGuest);
+			m_waitingGuests.erase(m_waitingGuests.begin() + i);
 			continue;
 		}
 
-		if (iGuest->desiredSeatIndex == HotseatGuest::ANY_SEAT || iGuest->desiredSeatIndex == desiredSeatIndex)
+		if (m_waitingGuests[i].desiredSeatIndex == HotseatGuest::ANY_SEAT || m_waitingGuests[i].desiredSeatIndex == desiredSeatIndex)
 		{
-			HotseatGuest guest = *iGuest;
-			m_waitingGuests.erase(iGuest);
+			HotseatGuest guest = m_waitingGuests[i];
+			m_waitingGuests.erase(m_waitingGuests.begin() + i);
 
 			if (callback)
 			{

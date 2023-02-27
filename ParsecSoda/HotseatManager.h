@@ -75,8 +75,10 @@ public:
 	 */
 	bool enqueue(const HotseatGuest guest);
 
-	void incrementDesiredSeat(uint32_t userID);
-	void decrementDesiredSeat(uint32_t userID);
+	void incrementDesiredSeatByUserID(uint32_t userID);
+	void incrementDesiredSeat(size_t guestIndex);
+	void decrementDesiredSeatByUserID(uint32_t userID);
+	void decrementDesiredSeat(size_t guestIndex);
 	int setDesiredSeat(uint32_t userID, int seatIndex);
 	
 	/** 

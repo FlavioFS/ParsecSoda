@@ -340,7 +340,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		ImGui::SetCursorPos(ImVec2(cursor.x - 10, cursor.y));
 		ImGui::Button(
 			(string("##Hotseat drag-and-drop source ") + to_string(index)).c_str(),
-			ImVec2(windowSize.x - 40.0f, 40.0f)
+			ImVec2(windowSize.x - 40.0f, 35.0f)
 		);
 		if (ImGui::BeginDragDropSource())
 		{
@@ -364,9 +364,24 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 		AppColors::pushColor(AppColors::gray40);
 		ImGui::Text("Waiting for: ");
 		AppColors::pop();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 0));
+		ImGui::SameLine();
+		if (ImGui::ArrowButton((string("Waiting for seat - ") + to_string(index)).c_str(), ImGuiDir_Left))
+		{
+			hotseatManager.decrementDesiredSeat(index);
+		}
+
 		ImGui::SameLine();
 		if (iGuest->desiredSeatIndex >= 0) ImGui::Text("Seat %d", iGuest->desiredSeatIndex + 1);
 		else ImGui::Text("Any Seat");
+
+		ImGui::SameLine();
+		if (ImGui::ArrowButton((string("Waiting for seat + ") + to_string(index)).c_str(), ImGuiDir_Right))
+		{
+			hotseatManager.incrementDesiredSeat(index);
+		}
+		ImGui::PopStyleVar();
 
 		badgeTooltip = "Instantly send " + iGuest->guest.name + " to a seat?";
 		id = "###Hotseats cut line " + to_string(index);
@@ -455,7 +470,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	AppColors::pushColor(AppColors::gray40);
 	
 	AppFonts::pushBigHeader();
-	TextCenteredWidget::render("[ A ]");
+	TextCenteredWidget::render("Press [ A ]");
 	AppFonts::pop();
 
 	AppFonts::pushTitle();
@@ -465,7 +480,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	renderDummy(1, 7);
 
 	AppFonts::pushBigHeader();
-	TextCenteredWidget::render("[ B ]");
+	TextCenteredWidget::render("Press [ B ]");
 	AppFonts::pop();
 
 	AppFonts::pushTitle();
@@ -475,7 +490,7 @@ void HotseatWidget::renderWaitingGuests(HotseatManager& hotseatManager)
 	renderDummy(1, 7);
 
 	AppFonts::pushBigHeader();
-	TextCenteredWidget::render("[ X / Y ]");
+	TextCenteredWidget::render("Press [ X / Y ]");
 	AppFonts::pop();
 
 	AppFonts::pushTitle();

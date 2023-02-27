@@ -517,10 +517,10 @@ bool GamepadClient::sendMessage(Guest guest, ParsecMessage message)
 					_hotseatManager->spectateGuestID(guest.userID);
 				}
 				else if (hotRequest.up) {
-					_hotseatManager->incrementDesiredSeat(guest.userID);
+					_hotseatManager->incrementDesiredSeatByUserID(guest.userID);
 				}
 				else if (hotRequest.down) {
-					_hotseatManager->decrementDesiredSeat(guest.userID);
+					_hotseatManager->decrementDesiredSeatByUserID(guest.userID);
 				}
 			});
 		}
