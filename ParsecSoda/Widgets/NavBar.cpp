@@ -18,7 +18,7 @@ void NavBar::render(
 	bool& showInfo
 )
 {
-	static const size_t ICON_COUNT = 13;
+	static const size_t ICON_COUNT = 14;
 	static const float ICON_EDGE = 24;
 	static const float BUTTON_EDGE = ICON_EDGE + 8;
 	static const float ICON_PADDING = 4;
