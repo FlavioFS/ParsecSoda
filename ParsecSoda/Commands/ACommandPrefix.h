@@ -26,6 +26,9 @@ public:
 		return false;
 	}
 
+	inline const string getPrefix() const { return _prefix; }
+	inline const string getMessage() const { return _msg; }
+
 protected:
 	const char* _msg;
 	const char* _prefix;

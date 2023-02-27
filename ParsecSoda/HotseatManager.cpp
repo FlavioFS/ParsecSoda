@@ -69,7 +69,21 @@ int HotseatManager::setDesiredSeat(uint32_t userID, int desiredSeatIndex)
 		if (desiredSeatIndex != currentSeatIndex && desiredSeatIndex != HotseatGuest::ANY_SEAT)
 		{
 			seat.guest.desiredSeatIndex = result;
-			reverse(currentSeatIndex);
+			
+			if (seat.timer.getRemainingTime() > 0.90f * seat.timer.getDuration())
+			{
+				reverse(currentSeatIndex);
+			}
+			else
+			{
+				HotseatGuest guest = seat.guest;
+				spectateSeat(currentSeatIndex);
+				enqueue(guest);
+			}
+		}
+		else
+		{
+			seat.guest.desiredSeatIndex = result;
 		}
 	});
 

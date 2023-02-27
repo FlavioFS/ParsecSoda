@@ -2,6 +2,7 @@
 
 #include "ACommandPrefix.h"
 #include "../Stringer.h"
+#include <functional>
 
 class ACommandStringArg : public ACommandPrefix
 {
@@ -23,6 +24,8 @@ public:
 
 		return true;
 	}
+
+	inline const string& getArg() const { return _stringArg; }
 
 protected:
 	string _stringArg;

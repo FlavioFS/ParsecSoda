@@ -30,6 +30,8 @@ public:
 		}
 	}
 
+	inline const int getArg() const { return _intArg; }
+
 protected:
 	int _intArg;
 };

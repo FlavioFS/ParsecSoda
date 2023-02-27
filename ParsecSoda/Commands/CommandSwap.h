@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include "ACommandStringArg.h"
 #include "ACommandIntegerArg.h"
 #include "../GamepadClient.h"
 
@@ -19,8 +20,25 @@ public:
 
 		if (!ACommandIntegerArg::run())
 		{
-			_replyMessage = "[ChatBot]\tUsage: !swap <integer in range [1, gamepadCount]>\nExample: !swap 4\0";
-			return false;
+			bool recoverySuccess = false;
+
+			const string msg = getMessage();
+			if (!msg.empty())
+			{
+				ACommandStringArg stringArg(msg.c_str(), internalPrefixes());
+				stringArg.run();
+				if (Stringer::compareNoCase(stringArg.getArg(), "Any") == 0)
+				{
+					_intArg = 0;
+					recoverySuccess = true;
+				}
+			}
+
+			if (!recoverySuccess)
+			{
+				_replyMessage = "[ChatBot]\tUsage: !swap <integer in range [1, gamepadCount]>\nExample: !swap 4\0";
+				return false;
+			}
 		}
 
 		bool rv = false;
