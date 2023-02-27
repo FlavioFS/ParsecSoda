@@ -79,7 +79,7 @@ public:
 	void incrementDesiredSeat(size_t guestIndex);
 	void decrementDesiredSeatByUserID(uint32_t userID);
 	void decrementDesiredSeat(size_t guestIndex);
-	int setDesiredSeat(uint32_t userID, int seatIndex);
+	int setDesiredSeat(uint32_t userID,  int seatIndex);
 	
 	/** 
 	 * Turn target into spectator (remove guest from queue).

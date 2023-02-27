@@ -48,21 +48,29 @@ void HotseatManager::decrementDesiredSeat(size_t guestIndex)
 	m_waitingGuests[guestIndex].desiredSeatIndex = seatIndex;
 }
 
-int HotseatManager::setDesiredSeat(uint32_t userID, int seatIndex)
+int HotseatManager::setDesiredSeat(uint32_t userID, int desiredSeatIndex)
 {
 	int result = -1;
 
-	findGuestIndex(userID, [&](size_t index) {
-		if (isSeatIndexInRange(seatIndex) || seatIndex == HotseatGuest::ANY_SEAT)
-		{
-			result = seatIndex;
-		}
-		else
-		{
-			result = HotseatGuest::ANY_SEAT;
-		}
+	if (isSeatIndexInRange(desiredSeatIndex) || desiredSeatIndex == HotseatGuest::ANY_SEAT)
+	{
+		result = desiredSeatIndex;
+	}
+	else
+	{
+		result = HotseatGuest::ANY_SEAT;
+	}
 
-		m_waitingGuests[index].desiredSeatIndex = result;
+	findGuestIndex(userID, [&](size_t guestIndex) {
+		m_waitingGuests[guestIndex].desiredSeatIndex = result;
+	});
+
+	findSeatByGuest(userID, [&](Hotseat& seat, int currentSeatIndex) {
+		if (desiredSeatIndex != currentSeatIndex && desiredSeatIndex != HotseatGuest::ANY_SEAT)
+		{
+			seat.guest.desiredSeatIndex = result;
+			reverse(currentSeatIndex);
+		}
 	});
 
 	return result;
@@ -180,6 +188,7 @@ void HotseatManager::reverse(const uint32_t seatIndex)
 	if (!isSeatIndexInRange(seatIndex)) return;
 
 	m_waitingGuests.insert(m_waitingGuests.begin(), m_seats[seatIndex].guest);
+	spectateSeat(seatIndex);
 }
 
 void HotseatManager::setTimer(const uint32_t duration)
