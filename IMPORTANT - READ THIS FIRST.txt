@@ -1,0 +1,6 @@
+Parsec Soda requires VigemBus to connect the Gamepads!
+
+Download it from their official releases page:
+https://github.com/ViGEm/ViGEmBus/releases
+
+This used to be bundled with Parsec, but was removed.

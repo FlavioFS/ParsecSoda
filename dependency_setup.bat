@@ -19,6 +19,11 @@ MKDIR .\x64\Release\icons
 MKDIR .\x64\Release\fonts
 MKDIR .\x64\Release\sfx
 
+@REM Copying important notice
+COPY ".\IMPORTANT - READ THIS FIRST.txt" .\x64\Debug
+COPY ".\IMPORTANT - READ THIS FIRST.txt" .\x64\Release
+COPY ".\IMPORTANT - READ THIS FIRST.txt" .\Debug
+COPY ".\IMPORTANT - READ THIS FIRST.txt" .\Release
 
 @REM Copying dependencies...
 COPY .\Dependencies\parsecsdk\windows\parsec.dll .\x64\Debug
