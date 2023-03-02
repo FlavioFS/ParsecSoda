@@ -292,7 +292,19 @@ void GamepadClient::loadFromHotseats(GuestList& guests)
 	{
 		if (iSeat->guest.isMaster)
 		{
-			iSeat->gamepad->clearOwner();
+			if (iSeat->gamepad->isPuppet)
+			{
+				// Does not clear state (already puppet)
+				// This line prevents a bug that will keep resetting the gamepad state
+				// every hotseat tick, for 1 frame.
+				// It is speacially disruptive for games where the Master must hold
+				// an analog direction for a long time.
+				iSeat->gamepad->AGamepad::clearOwner();
+			}
+			else
+			{
+				iSeat->gamepad->clearOwner();
+			}
 			iSeat->gamepad->isPuppet = true;
 		}
 		else
