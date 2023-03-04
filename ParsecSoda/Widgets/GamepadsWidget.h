@@ -24,7 +24,7 @@ public:
 private:
 	void renderTopBar(bool& isWindowLocked, const ImVec2& windowSize);
 	void renderOptionsMenu();
-	void renderPadInputTypeIcon(AGamepad* pad);
+	void renderPadInputTypeIcon(AGamepad* pad, const size_t& gamepadIndex, bool& refreshGamepads);
 
 	// Dependency injection
 	Hosting& _hosting;

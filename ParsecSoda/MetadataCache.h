@@ -61,6 +61,7 @@ public:
 		uint32_t bandwidth = 20;
 		uint32_t xboxPuppetCount = 4;
 		uint32_t ds4PuppetCount = 0;
+		bool autoXInputIndexFetching = false;
 		bool latencyLimiterEnabled = false;
 		uint32_t maxLatencyMs = 100;
 		uint32_t hotseatDurationSeconds = 300;

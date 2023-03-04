@@ -11,7 +11,7 @@ bool GamepadsWidget::render()
 
     static ImVec2 cursor;
     static bool isWindowLocked = false;
-    static bool isConnectionButtonPressed = false;
+    static bool isConnectionButtonPressed = false, refreshGamepads = false;
     static ImVec2 dummySize = ImVec2(0.0f, 5.0f);
     static string name, id, tooltipTitle, tooltipDescription;
 
@@ -42,7 +42,7 @@ bool GamepadsWidget::render()
         userID = gi->owner.guest.userID;
 
         ImGui::BeginGroup();
-        renderPadInputTypeIcon(gi);
+        renderPadInputTypeIcon(gi, i, refreshGamepads);
 
         id = "###Connect gamepad" + to_string(i);
         if (ToggleIconButtonWidget::render(AppIcons::padOn, AppIcons::padOff, gi->isConnected(), id.c_str()))
@@ -302,8 +302,9 @@ bool GamepadsWidget::render()
     AppStyle::pop();
 
 
-    if (isConnectionButtonPressed)
+    if (refreshGamepads || (MetadataCache::preferences.autoXInputIndexFetching && isConnectionButtonPressed))
     {
+        refreshGamepads = false;
         isConnectionButtonPressed = false;
         for (size_t i = 0; i < _gamepads.size(); ++i)
         {
@@ -409,6 +410,16 @@ void GamepadsWidget::renderOptionsMenu()
     if (ImGui::BeginPopupContextItem("Gamepad Options", ImGuiPopupFlags_MouseButtonLeft))
     {
         if (SwitchWidget::render(
+            MetadataCache::preferences.autoXInputIndexFetching,
+            "###Auto XInput Fetching switch", "Automatic XInput Fetching",
+            "Auto XInput Fetch [ON]", "XInput indices will be identified automatically.\n\nBeware! Enabling this may cause BSOD's for some users.",
+            "Auto XInput Fetch [OFF]", "XInput indices will be identified manually on button press.\n\nManual fetch is the safest option."
+        ))
+        {
+            MetadataCache::savePreferences();
+        }
+
+        if (SwitchWidget::render(
             MetadataCache::preferences.defaultMirrorValue,
             "###Mirror default switch", "Default mirror",
             "Mirror [ON]", "Default behaviour: enabled.\n\nLeft Stick and Dpad mirror each other.\nUse this if you need to choose between\nDPad and Analog.",
@@ -450,7 +461,7 @@ void GamepadsWidget::renderOptionsMenu()
     ImGui::PopStyleVar();
 }
 
-void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad)
+void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad, const size_t& gamepadIndex, bool& refreshGamepads)
 {
     static ImVec2 cursor;
     static const ImVec2 ICON_SIZE = ImVec2(40, 40);
@@ -476,14 +487,16 @@ void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad)
             );
 
             ImGui::SetCursorPos(cursor);
-            ImGui::Image(
-                xboxIcons[xboxIndex],
-                ICON_SIZE, ImVec2(0, 0), ImVec2(1, 1), AppColors::primary
-            );
+            if (IconButton::render(xboxIcons[xboxIndex], AppColors::primary, ICON_SIZE, (string("XInput index btn ") + to_string(gamepadIndex)).c_str()))
+            {
+                refreshGamepads = true;
+            }
             TitleTooltipWidget::render(
                 (string() + "XInput " + to_string(padIndex)).c_str(),
                 (
-                    string("This controller is using XInput slot ") + to_string(padIndex) + ".\n\n" +
+                    string("")
+                    + "Press to identify XInput indices (this is visual only).\n\n"
+                    + "This controller is using XInput slot " + to_string(padIndex) + ".\n" +
                     "* Remember:\nYour physical controllers may also occupy XInput slots."
                     ).c_str()
             );
@@ -491,14 +504,16 @@ void GamepadsWidget::renderPadInputTypeIcon(AGamepad* pad)
         }
         else
         {
-            ImGui::Image(
-                AppIcons::xinput,
-                ICON_SIZE, ImVec2(0, 0), ImVec2(1, 1), AppColors::backgroundIcon
-            );
+            if (IconButton::render(AppIcons::xinput, AppColors::backgroundIcon, ICON_SIZE, (string("XInput index btn ") + to_string(gamepadIndex)).c_str()))
+            {
+                refreshGamepads = true;
+            }
             TitleTooltipWidget::render(
                 (string() + "XBox controller").c_str(),
                 (
-                    string("This is an XBox controller out of XInput range.") + "\n\n" +
+                    string("") +
+                    + "Press to identify XInput indices (this is visual only).\n\n"
+                    + "This is an XBox controller out of XInput range." + "\n" +
                     "* It still works, but as a generic controller without XInput features."
                     ).c_str()
             );

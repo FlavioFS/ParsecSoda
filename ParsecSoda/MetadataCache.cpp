@@ -165,7 +165,8 @@ MetadataCache::Preferences MetadataCache::loadPreferences()
             tryLoadUInt("fps", preferences.fps, 60);
             tryLoadUInt("bandwidth", preferences.bandwidth, 20);
             tryLoadUInt("xboxPuppetCount", preferences.xboxPuppetCount, 4);
-            tryLoadUInt("ds4PuppetCount", preferences.ds4PuppetCount, 0);            
+            tryLoadUInt("ds4PuppetCount", preferences.ds4PuppetCount, 0);
+            tryLoadBool("autoXInputIndexFetching", preferences.autoXInputIndexFetching, false);
             tryLoadBool("latencyLimiterEnabled", preferences.latencyLimiterEnabled, false);
             tryLoadUInt("maxLatencyMs", preferences.maxLatencyMs, 100);
             tryLoadUInt("hotseatDurationSeconds", preferences.hotseatDurationSeconds, 300);
@@ -229,6 +230,7 @@ bool MetadataCache::savePreferences(MetadataCache::Preferences preferences)
         MTY_JSONObjSetUInt(json, "adapter", preferences.adapter);
         MTY_JSONObjSetUInt(json, "xboxPuppetCount", preferences.xboxPuppetCount);
         MTY_JSONObjSetUInt(json, "ds4PuppetCount", preferences.ds4PuppetCount);
+        MTY_JSONObjSetBool(json, "autoXInputIndexFetching", preferences.autoXInputIndexFetching);
         MTY_JSONObjSetBool(json, "latencyLimiterEnabled", preferences.latencyLimiterEnabled);
         MTY_JSONObjSetUInt(json, "maxLatencyMs", preferences.maxLatencyMs);
         MTY_JSONObjSetUInt(json, "hotseatDurationSeconds", preferences.hotseatDurationSeconds);
